@@ -8,31 +8,20 @@
 
 **Type:** `class StorageExecutor<K, V, Opt>`
 
-Executes a pipeline of storage plugins, implementing
-`StorageInterface`
-.
+Executes a pipeline of storage plugins, implementing `StorageInterface`.
 
-Core concept: values flow through plugins in order on
-`set`
-(e.g. serialize → encrypt → storage),
-and in reverse order on
-`get`
-(storage → decrypt → deserialize). Each plugin receives the value
+Core concept: values flow through plugins in order on `set` (e.g. serialize → encrypt → storage),
+and in reverse order on `get` (storage → decrypt → deserialize). Each plugin receives the value
 from the previous step and may return a transformed value for the next.
 
 Main features:
 
-- **setItem**: Iterates plugins forward; each
-  `set`
-  may return a new value (e.g. serialized/encrypted) for the next
+- **setItem**: Iterates plugins forward; each `set` may return a new value (e.g. serialized/encrypted) for the next
 - **getItem**: Iterates plugins backward. **When there are multiple storage plugins, only the value from the
   last storage (the one at the end of the plugin array) is used for reading; all other storage plugins are
   skipped and their values are ignored.** Pipe plugins (serializer, encryptor, etc.) still transform the
   value as usual.
-- **removeItem** / **clear**: Delegated to all plugins that implement
-  `remove`
-  /
-  `clear`
+- **removeItem** / **clear**: Delegated to all plugins that implement `remove` / `clear`
 
 **Example:** Single storage backend
 
@@ -94,9 +83,7 @@ executor.getItem('key'); // reads only from localStorage (last); sessionStorage 
 
 **Type:** `void`
 
-Clears data in all plugins that implement
-`clear`
-.
+Clears data in all plugins that implement `clear`.
 
 ---
 
@@ -157,9 +144,7 @@ Clears data in all plugins that implement
 
 **Type:** `void`
 
-Removes item for the given key from all plugins that implement
-`remove`
-.
+Removes item for the given key from all plugins that implement `remove`.
 
 #### Parameters
 
@@ -206,14 +191,8 @@ Writes value through the plugin chain (forward). Each plugin may return a transf
 
 Plugin contract for the storage pipeline.
 
-Each plugin participates in a chain: on
-`set`
-, value flows forward (e.g. serialize → encrypt → persist);
-on
-`get`
-, value flows backward (e.g. read → decrypt → deserialize). The second argument to
-`get`
-is
+Each plugin participates in a chain: on `set`, value flows forward (e.g. serialize → encrypt → persist);
+on `get`, value flows backward (e.g. read → decrypt → deserialize). The second argument to `get` is
 the value produced by the previous plugin in the chain so each step can transform it.
 
 ---
@@ -222,17 +201,9 @@ the value produced by the previous plugin in the chain so each step can transfor
 
 **Type:** `string`
 
-When
-`'storage'`
-, this plugin reads from a backing store. On
-`getItem`
-, once the first
+When `'storage'`, this plugin reads from a backing store. On `getItem`, once the first
 storage (from tail) returns a value, no further storage plugins are used for get; only
-
-`'pipe'`
-plugins keep transforming the value. When
-`'pipe'`
-or omitted, the plugin only
+`'pipe'` plugins keep transforming the value. When `'pipe'` or omitted, the plugin only
 transforms (e.g. serialize, encrypt).
 
 **Example:** type=storage use first storage
@@ -282,16 +253,12 @@ Optional: clear all data. Only storage plugins typically implement this.
 
 **Type:** `undefined \| null \| V`
 
-Transform or read value in the get pipeline. Receives
-`valueFromPrevious`
-from the next plugin
+Transform or read value in the get pipeline. Receives `valueFromPrevious` from the next plugin
 in the chain (e.g. raw string from storage, then decrypted, then deserialized).
 
 **Returns:**
 
-Transformed value, or
-`undefined`
-to keep current pipeline value
+Transformed value, or `undefined` to keep current pipeline value
 
 #### Parameters
 
@@ -353,9 +320,7 @@ Transform or persist value in the set pipeline. May return the transformed value
 
 **Returns:**
 
-Transformed value for the next plugin, or
-`undefined`
-if this step does not change the value
+Transformed value for the next plugin, or `undefined` if this step does not change the value
 
 #### Parameters
 

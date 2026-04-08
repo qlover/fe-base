@@ -43,9 +43,8 @@ import type { PersistentInterface } from '../interface/PersistentInterface';
  *
  * @example Subclass sketch (advanced)
  * The constructor is `super(storage, initRestore)` — there is **no** state factory parameter
- * on `PersistentStore`. Subclasses must override {@link PersistentStore.update} to apply
- * snapshots, and keep their own “current” snapshot if `persist()` needs a default when called
- * with no argument.
+ * on `PersistentStore`.
+ * 
  * ```typescript
  * class MyStoreState implements StoreStateInterface {
  *   data = '';
@@ -309,23 +308,24 @@ export abstract class PersistentStore<
    * }
    * ```
    */
-  public emit(state: T, options?: { persist?: boolean }): void {
-    this.update(state);
-
+  public emit(
+    state: T | StoreUpdateValue<T>,
+    options?: { persist?: boolean }
+  ): void {
     const shouldPersist = options?.persist !== false && this.storage;
     if (!shouldPersist) {
       return;
     }
 
     try {
-      this.persist(state);
+      if (state != null) {
+        this.persist(state as T);
+      }
     } catch {
       // Silently ignore persistence errors to prevent state update failures
       // Subclasses can override this method to handle errors differently if needed
     }
   }
-
-  protected update(_state: T | StoreUpdateValue<T>): void {}
 
   /**
    * Restore state from storage and merge with current state
@@ -477,11 +477,11 @@ export abstract class PersistentStore<
    *
    * @example Basic implementation
    * ```typescript
- * persist(state?: MyStoreState): void {
- *   if (!this.storage) return;
- *   const stateToPersist = state ?? this.current;
- *   this.storage.setItem('my-state', stateToPersist);
- * }
+   * persist(state?: MyStoreState): void {
+   *   if (!this.storage) return;
+   *   const stateToPersist = state ?? this.current;
+   *   this.storage.setItem('my-state', stateToPersist);
+   * }
    * ```
    *
    * @example With storage key
@@ -532,5 +532,9 @@ export abstract class PersistentStore<
    * store.persist(customState);
    * ```
    */
-  public abstract persist<S extends T>(state?: S): void;
+  public abstract persist(state?: T): void;
+  /**
+   * @override
+   */
+  public abstract persist(state?: StoreUpdateValue<T>): void;
 }

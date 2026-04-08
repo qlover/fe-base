@@ -23,8 +23,7 @@ Core functionality:
 
 ### Exported Members
 
-- `EncryptorInterface`
-  : Base interface for encryption implementations
+- `EncryptorInterface`: Base interface for encryption implementations
 
 ### Basic Usage
 
@@ -166,10 +165,7 @@ const encryptor = new ChainedEncryptor([
 
 **See:**
 
-- EncryptorInterface
-  for the encryption interface
-
-- https://github.com/qlover/fe-base/tree/main/packages/corekit-node
-  for Node.js encryption implementations
+- <a href="./EncryptorInterface.md#encryptorinterface-interface" class="tsd-kind-interface">EncryptorInterface</a> for the encryption interface
+- <a href="https://github.com/qlover/fe-base/tree/main/packages/corekit-node">https://github.com/qlover/fe-base/tree/main/packages/corekit-node</a> for Node.js encryption implementations
 
 ---

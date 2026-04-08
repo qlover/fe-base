@@ -218,12 +218,10 @@ resolution and providing fallback values.
 
 Resolution priority:
 
-1.  `FE_RELEASE_SOURCE_BRANCH`
-    environment variable (primary)
-2.  `FE_RELEASE_BRANCH`
-    environment variable (fallback)
-3.  'master' (default fallback)
-4.  Explicitly set value (highest priority)
+1. `FE_RELEASE_SOURCE_BRANCH` environment variable (primary)
+2. `FE_RELEASE_BRANCH` environment variable (fallback)
+3. 'master' (default fallback)
+4. Explicitly set value (highest priority)
 
 Use cases:
 

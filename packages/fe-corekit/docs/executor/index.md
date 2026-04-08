@@ -12,12 +12,8 @@ retry logic, and context management.
 Core functionality:
 
 - Task execution: Execute tasks with full lifecycle management
-  - Async execution with
-    `LifecycleExecutor`
-
-  - Sync execution with
-    `LifecycleSyncExecutor`
-
+  - Async execution with `LifecycleExecutor`
+  - Sync execution with `LifecycleSyncExecutor`
   - Mixed sync/async support through await
   - Type-safe task definitions
 
@@ -43,41 +39,28 @@ Core functionality:
 
 **Implementations:**
 
-- `LifecycleExecutor`
-  : Async task executor with plugin support
-- `LifecycleSyncExecutor`
-  : Sync task executor with plugin support
-- `ExecutorContextImpl`
-  : Default context implementation
-- `BasePluginExecutor`
-  : Base class for plugin executors
+- `LifecycleExecutor`: Async task executor with plugin support
+- `LifecycleSyncExecutor`: Sync task executor with plugin support
+- `ExecutorContextImpl`: Default context implementation
+- `BasePluginExecutor`: Base class for plugin executors
 
 **Interfaces:**
 
-- `ExecutorInterface`
-  : Core executor interface
-- `ExecutorContextInterface`
-  : Context interface
-- `LifecyclePluginInterface`
-  : Plugin interface for async executors
-- `SyncLifecyclePluginInterface`
-  : Plugin interface for sync executors
-- `ExecutorHookRuntimesInterface`
-  : Hook runtime information
+- `ExecutorInterface`: Core executor interface
+- `ExecutorContextInterface`: Context interface
+- `LifecyclePluginInterface`: Plugin interface for async executors
+- `SyncLifecyclePluginInterface`: Plugin interface for sync executors
+- `ExecutorHookRuntimesInterface`: Hook runtime information
 
 **Plugins:**
 
-- `RetryPlugin`
-  : Automatic retry logic with configurable strategies
+- `RetryPlugin`: Automatic retry logic with configurable strategies
 
 **Utilities:**
 
-- `ExecutorError`
-  : Custom error class for executor failures
-- `pluginHook`
-  : Async plugin hook utilities
-- `pluginHookSync`
-  : Sync plugin hook utilities
+- `ExecutorError`: Custom error class for executor failures
+- `pluginHook`: Async plugin hook utilities
+- `pluginHookSync`: Sync plugin hook utilities
 - Constants for error identification
 
 ### Basic Usage
@@ -212,13 +195,8 @@ const doubled = executor.exec({ value: 21 }, (ctx) => ctx.parameters.value * 2);
 
 **See:**
 
-- LifecycleExecutor
-  for async execution
-
-- LifecycleSyncExecutor
-  for sync execution
-
-- LifecyclePluginInterface
-  for plugin development
+- <a href="./impl/LifecycleExecutor.md#lifecycleexecutor-class" class="tsd-kind-class">LifecycleExecutor</a> for async execution
+- <a href="./impl/LifecycleSyncExecutor.md#lifecyclesyncexecutor-class" class="tsd-kind-class">LifecycleSyncExecutor</a> for sync execution
+- <a href="./interface/LifecyclePluginInterface.md#lifecycleplugininterface-interface" class="tsd-kind-interface">LifecyclePluginInterface</a> for plugin development
 
 ---

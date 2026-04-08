@@ -19,28 +19,11 @@ options such as maximum retries, delay strategies, and custom retry conditions.
 
 **Executor Compatibility:**
 
-- ✅ **Supported:**
-  `LifecycleExecutor`
-- This plugin is designed for use with
-  `LifecycleExecutor`
-  .
-  The
-  `onExec`
-  method returns a new task function that wraps the original task with retry logic.
-
-`LifecycleExecutor`
-will detect that the return value is a function and execute it.
-
-- ❌ **Not Supported:**
-  `AsyncExecutor`
-- This plugin no longer supports
-  `AsyncExecutor`
-  .
-  If you need retry functionality with
-  `AsyncExecutor`
-  , consider migrating to
-  `LifecycleExecutor`
-  .
+- ✅ **Supported:** `LifecycleExecutor` - This plugin is designed for use with `LifecycleExecutor`.
+  The `onExec` method returns a new task function that wraps the original task with retry logic.
+  `LifecycleExecutor` will detect that the return value is a function and execute it.
+- ❌ **Not Supported:** `AsyncExecutor` - This plugin no longer supports `AsyncExecutor`.
+  If you need retry functionality with `AsyncExecutor`, consider migrating to `LifecycleExecutor`.
 
 **v3.0.0 Refactored to use Retryer for retry logic. All retry logic is now delegated to Retryer. **
 
@@ -126,9 +109,7 @@ Return value behavior:
 
 Type inference:
 
-- The return type
-  `R`
-  is automatically inferred from the task parameter
+- The return type `R` is automatically inferred from the task parameter
 - Return values are type-safe and match the task's return type
 - TypeScript can infer types from return statements without explicit annotations
 
@@ -219,44 +200,24 @@ using the configured Retryer to handle all retry logic.
 
 **Executor Compatibility:**
 
-- ✅ **LifecycleExecutor:** This method returns a new
-  `ExecutorTask`
-  function that wraps
-  the original task with retry logic.
-  `LifecycleExecutor`
-  will detect that the return value
+- ✅ **LifecycleExecutor:** This method returns a new `ExecutorTask` function that wraps
+  the original task with retry logic. `LifecycleExecutor` will detect that the return value
   is a function and execute it, applying retry logic automatically.
-- ❌ **AsyncExecutor:** This method is **NOT compatible** with
-  `AsyncExecutor`
-  .
-  `AsyncExecutor`
-
-  expects
-  `onExec`
-  to return a direct value (Promise), not a function. Using this plugin with
-
-`AsyncExecutor`
-will not work correctly.
+- ❌ **AsyncExecutor:** This method is **NOT compatible** with `AsyncExecutor`. `AsyncExecutor`
+  expects `onExec` to return a direct value (Promise), not a function. Using this plugin with
+  `AsyncExecutor` will not work correctly.
 
 **Implementation Details:**
 
 - Wraps the original task to ensure it always returns a Promise
-- Uses
-  `Retryer.makeRetriable()`
-  to create a retriable version of the task
-- Returns a function that
-  `LifecycleExecutor`
-  will execute
+- Uses `Retryer.makeRetriable()` to create a retriable version of the task
+- Returns a function that `LifecycleExecutor` will execute
 
 **Type Compatibility:**
 
-- Accepts any parameter type that extends
-  `RetryOptions`
-
+- Accepts any parameter type that extends `RetryOptions`
 - This allows the plugin to work with executors that use extended parameter types
-- The retry logic only uses
-  `RetryOptions`
-  properties, so extended types are safe
+- The retry logic only uses `RetryOptions` properties, so extended types are safe
 
 **Returns:**
 

@@ -27,20 +27,13 @@ Extensibility:
 This class is designed to be extended. Subclasses can override protected methods
 to customize behavior:
 
-- `validateResponseStatus()`
-- Custom response validation
-- `extractHeaders()`
-- Custom header extraction
-- `buildAdapterResponse()`
-- Custom response structure
-- `inferParserFromContentType()`
-- Custom Content-Type detection
-- `getFallbackParsers()`
-- Custom fallback strategy
-- `processAdapterResponse()`
-- Custom adapter response processing
-- `defaultParseResponseData()`
-- Custom default parsing logic
+- `validateResponseStatus()` - Custom response validation
+- `extractHeaders()` - Custom header extraction
+- `buildAdapterResponse()` - Custom response structure
+- `inferParserFromContentType()` - Custom Content-Type detection
+- `getFallbackParsers()` - Custom fallback strategy
+- `processAdapterResponse()` - Custom adapter response processing
+- `defaultParseResponseData()` - Custom default parsing logic
 
 **Example:** Basic usage
 
@@ -592,9 +585,7 @@ If response is not OK
 Response parsers mapping
 
 Maps responseType to parser functions.
-Set to
-`false`
-to disable parsing for that type.
+Set to `false` to disable parsing for that type.
 
 **Example:**
 
@@ -691,12 +682,8 @@ const plugin = new ResponsePlugin({
 Response parsers mapping
 
 Allows you to provide custom parsers for specific response types,
-disable certain parsers by setting them to
-`false`
-,
-or disable all parsing by setting the entire object to
-`false`
-.
+disable certain parsers by setting them to `false`,
+or disable all parsing by setting the entire object to `false`.
 
 **Example:**
 

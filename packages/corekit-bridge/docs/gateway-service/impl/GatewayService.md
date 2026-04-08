@@ -12,40 +12,28 @@
 
 Gateway service implementation
 
-Concrete implementation of
-`GatewayServiceInterface`
-that provides the foundational infrastructure
+Concrete implementation of `GatewayServiceInterface` that provides the foundational infrastructure
 for all gateway services. This class handles the initialization and management of core service
 components: store, gateway, and logger. It serves as the base class for more specialized service
-implementations like
-`UserService`
-.
+implementations like `UserService`.
 
 **Core Implementation Principles:**
 
-1. **Unified Initialization**: The constructor accepts
-   `GatewayServiceOptions`
-   which combines
+1. **Unified Initialization**: The constructor accepts `GatewayServiceOptions` which combines
    service infrastructure configuration and store options, providing a single point of configuration.
 
-2. **Flexible Store Creation**: Uses
-   `createAsyncStore`
-   factory function to handle store creation:
+2. **Flexible Store Creation**: Uses `createAsyncStore` factory function to handle store creation:
    - If a store instance is provided, it uses it directly (allows dependency injection)
    - If store options are provided, it creates a new store instance
    - If nothing is provided, it creates a default store instance
      This flexibility enables both dependency injection and configuration-based initialization.
 
-3. **Protected Access**: All internal properties are
-   `protected readonly`
-   , allowing:
+3. **Protected Access**: All internal properties are `protected readonly`, allowing:
    - Subclasses to access and extend functionality
    - Prevention of external modification after construction
    - Clear encapsulation boundaries
 
-4. **Interface Compliance**: Implements
-   `GatewayServiceInterface`
-   to ensure consistent service
+4. **Interface Compliance**: Implements `GatewayServiceInterface` to ensure consistent service
    structure across all service implementations.
 
 - Significance: Foundation implementation for all gateway services
@@ -66,22 +54,16 @@ Design decisions:
 - Concrete class: Provides default implementation that can be extended
 - Generic types: Supports different data types, store types, and gateway types
 - Protected properties: Allows subclasses to access while preventing external modification
-- Factory pattern: Uses
-  `createAsyncStore`
-  for flexible store creation
+- Factory pattern: Uses `createAsyncStore` for flexible store creation
 - Readonly properties: Prevents accidental modification after construction
 
 Initialization flow:
 
-1. Constructor receives
-   `GatewayServiceOptions`
-
+1. Constructor receives `GatewayServiceOptions`
 2. Service name is assigned (required, readonly)
 3. Gateway is assigned (optional, readonly)
 4. Logger is assigned (optional, readonly)
-5. Store is created via
-   `createAsyncStore`
-   factory:
+5. Store is created via `createAsyncStore` factory:
    - If store instance provided → use directly
    - If store options provided → create new store
    - If nothing provided → create default store
@@ -157,13 +139,13 @@ if (logger) {
 
 #### `new GatewayService` (Constructor)
 
-**Type:** `(options: GatewayServiceOptions<T, Gateway, string>) => GatewayService<T, Store, Gateway>`
+**Type:** `(options: GatewayServiceOptions<T, Gateway>) => GatewayService<T, Store, Gateway>`
 
 #### Parameters
 
-| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                           |
-| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `options` | `GatewayServiceOptions<T, Gateway, string>` | ❌       | -       | -     | -          | Configuration options for the service |
+| Name      | Type                                | Optional | Default | Since | Deprecated | Description                           |
+| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `options` | `GatewayServiceOptions<T, Gateway>` | ❌       | -       | -     | -          | Configuration options for the service |
 
 ---
 
@@ -193,7 +175,7 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `serviceName` (Property)
 
-**Type:** `string \| symbol`
+**Type:** `GatewayServiceName`
 
 Service name identifier
 
@@ -227,15 +209,11 @@ Protected to allow subclasses to access while preventing external modification.
 Get the gateway instance
 
 Returns the gateway instance used by this service for API operations.
-Returns
-`undefined`
-if no gateway was configured.
+Returns `undefined` if no gateway was configured.
 
 **Returns:**
 
-The gateway instance, or
-`undefined`
-if not configured
+The gateway instance, or `undefined` if not configured
 
 **Example:** Access gateway methods
 
@@ -270,15 +248,11 @@ if (!gateway) {
 Get the logger instance
 
 Returns the logger instance used by this service for logging.
-Returns
-`undefined`
-if no logger was configured.
+Returns `undefined` if no logger was configured.
 
 **Returns:**
 
-The logger instance, or
-`undefined`
-if not configured
+The logger instance, or `undefined` if not configured
 
 **Example:** Use logger for logging
 
@@ -333,7 +307,7 @@ port.subscribe((state) => {
 
 ### `GatewayServiceOptions` (Interface)
 
-**Type:** `interface GatewayServiceOptions<T, Gateway, Key>`
+**Type:** `interface GatewayServiceOptions<T, Gateway>`
 
 **Since:** `1.8.0`
 
@@ -358,22 +332,13 @@ Core features:
 
 Design decisions:
 
-- Builds on
-  `AsyncStoreOptions`
-  but **omits**
-  `store`
-  and redeclares it as
-  AsyncStoreInterface
+- Builds on `AsyncStoreOptions` but **omits** `store` and redeclares it as <a href="../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface" class="tsd-kind-interface">AsyncStoreInterface</a>
+  (gateway services inject an async facade, not a bare StoreInterface)
+- Other async options (`storage`, `defaultState`, …) are unchanged
 
-  (gateway services inject an async facade, not a bare
-  StoreInterface
-  )
+**Template:** Key
 
-- Other async options (
-  `storage`
-  ,
-  `defaultState`
-  , …) are unchanged
+The type of key used for store operations (default: string)
 
 **Example:** Basic usage with store instance
 
@@ -415,35 +380,6 @@ Optional - services can work without gateway (e.g., mock services).
 
 ---
 
-#### `initRestore` (Property)
-
-**Type:** `boolean`
-
-Whether to automatically restore state from storage during construction
-
-**⚠️ This is primarily a testing/internal property.**
-
-**Initialization Order Issues:**
-When
-`initRestore`
-is
-`true`
-,
-`restore()`
-is called during
-`super()`
-execution,
-which happens BEFORE subclass field initialization. This means:
-
-- Subclass fields (e.g.,
-  `private readonly storageKey = 'my-key'`
-  ) are NOT yet initialized
-- `restore()`
-  cannot access these fields, causing runtime errors or incorrect behavior
-- This is a fundamental limitation of JavaScript/TypeScript class initialization order
-
----
-
 #### `logger` (Property)
 
 **Type:** `LoggerInterface<unknown>`
@@ -457,40 +393,12 @@ Optional - services can work without logger.
 
 #### `serviceName` (Property)
 
-**Type:** `string \| symbol`
+**Type:** `GatewayServiceName`
 
 Service name identifier
 
 Used for logging, debugging, and service identification.
 Should be set during construction and remain constant.
-
----
-
-#### `storage` (Property)
-
-**Type:** `null \| StorageInterface<Key, null \| T, unknown>`
-
-Storage implementation for persisting state
-
-If provided, state changes will be automatically persisted to this storage.
-If
-`null`
-or
-`undefined`
-, the store will work without persistence.
-
----
-
-#### `storageKey` (Property)
-
-**Type:** `null \| Key`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Required if
-`storage`
-is provided.
 
 ---
 
@@ -500,94 +408,13 @@ is provided.
 
 Async store instance for state management
 
-Narrower than
-AsyncStoreOptions.store
-(
-`StoreInterface`
-): gateway services
-accept a full
-AsyncStoreInterface
-implementation (e.g.
-AsyncStore
-).
+Narrower than AsyncStoreOptions.store (`StoreInterface`): gateway services
+accept a full <a href="../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface" class="tsd-kind-interface">AsyncStoreInterface</a> implementation (e.g. AsyncStore).
 
 ---
 
-#### `defaultState` (Method)
+### `GatewayServiceName` (TypeAlias)
 
-**Type:** `(storage: null \| StorageInterface<Key, null \| T, unknown>, storageKey: null \| Key) => null \| AsyncStoreStateInterface<T>`
-
-#### Parameters
-
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, null \| T, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                       | ✅       | -       | -     | -          | Storage key (if provided in options)            |
-
----
-
-##### `defaultState` (CallSignature)
-
-**Type:** `null \| AsyncStoreStateInterface<T>`
-
-Create a new state instance
-
-Factory function that creates the initial state for the store.
-This function is called during store initialization and when state is reset.
-
-Behavior:
-
-- If
-  `storage`
-  is provided, the function receives storage and storageKey as parameters
-- If
-  `storage`
-  is not provided, the function receives
-  `undefined`
-  for both parameters
-- If the function returns
-  `null`
-  , a new
-  `AsyncStoreState`
-  instance will be created
-- If the function returns a state object, that object will be used as the initial state
-
-**Returns:**
-
-The initial state instance, or
-`null`
-to use default state
-
-**Example:** With storage restoration
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: (storage, storageKey) => {
-    const stored = storage?.getItem(storageKey);
-    if (stored) {
-      return new AsyncStoreState<User>(stored);
-    }
-    return null; // Use default state
-  }
-});
-```
-
-**Example:** Without storage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null // Always use default state
-});
-```
-
-#### Parameters
-
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, null \| T, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                       | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+**Type:** `string \| symbol`
 
 ---

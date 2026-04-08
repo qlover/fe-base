@@ -61,6 +61,7 @@ export class NextApiServer extends BootstrapServer {
       event_category: 'api',
       event_type: 'http.request',
       success,
+      request_id: correlationId?.trim() ? correlationId : null,
       payload: {
         http_method: req.method,
         http_path: req.nextUrl.pathname,

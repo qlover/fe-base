@@ -20,11 +20,8 @@
 
 Authentication header key name
 
-- If set to
-  `false`
-  , auth header will not be appended
-- Default is
-  `'Authorization'`
+- If set to `false`, auth header will not be appended
+- Default is `'Authorization'`
 
 **Example:**
 

@@ -141,7 +141,6 @@ cloned.getTime() === date.getTime(); // true (same value)
 **See:**
 
 - ExecutorContextImpl - Context implementation that uses this utility
-
 - LifecycleExecutor - Executor that uses cloned parameters
 
 #### Parameters

@@ -1062,16 +1062,11 @@ Content sections:
 
 Template variables:
 
-- `${tagName}`
-  : Release version tag
-- `${branch}`
-  : Source branch name
-- `${env}`
-  : Release environment
-- `${changelog}`
-  : Generated changelog content
-- `${pkgName}`
-  : Package name
+- `${tagName}`: Release version tag
+- `${branch}`: Source branch name
+- `${env}`: Release environment
+- `${changelog}`: Generated changelog content
+- `${pkgName}`: Package name
 
 **Example:** Simple PR body
 
@@ -1127,14 +1122,10 @@ Title components:
 
 Template variables:
 
-- `${pkgName}`
-  : Package name from package.json
-- `${tagName}`
-  : Release version tag
-- `${env}`
-  : Release environment
-- `${branch}`
-  : Source branch name
+- `${pkgName}`: Package name from package.json
+- `${tagName}`: Release version tag
+- `${env}`: Release environment
+- `${branch}`: Source branch name
 
 **Example:** Basic PR title
 
@@ -1270,14 +1261,10 @@ branch naming across different packages and environments.
 
 Template variables:
 
-- `${pkgName}`
-  : Package name from package.json
-- `${tagName}`
-  : Release version tag
-- `${env}`
-  : Release environment
-- `${branch}`
-  : Source branch name
+- `${pkgName}`: Package name from package.json
+- `${tagName}`: Release version tag
+- `${env}`: Release environment
+- `${branch}`: Source branch name
 
 Branch naming patterns:
 
@@ -1328,8 +1315,7 @@ Label usage:
 
 Template variables:
 
-- `${name}`
-  : Package name for label identification
+- `${name}`: Package name for label identification
 
 **Example:** Basic change label
 
@@ -1644,12 +1630,8 @@ The environment of the project
 
 default:
 
-- first, get from
-  `FE_RELEASE_ENV`
-
-- second, get from
-  `NODE_ENV`
-
+- first, get from `FE_RELEASE_ENV`
+- second, get from `NODE_ENV`
 - `development`
 
 ---
@@ -1738,12 +1720,10 @@ resolution and providing fallback values.
 
 Resolution priority:
 
-1.  `FE_RELEASE_SOURCE_BRANCH`
-    environment variable (primary)
-2.  `FE_RELEASE_BRANCH`
-    environment variable (fallback)
-3.  'master' (default fallback)
-4.  Explicitly set value (highest priority)
+1. `FE_RELEASE_SOURCE_BRANCH` environment variable (primary)
+2. `FE_RELEASE_BRANCH` environment variable (fallback)
+3. 'master' (default fallback)
+4. Explicitly set value (highest priority)
 
 Use cases:
 

@@ -20,11 +20,7 @@ detection and appropriate API usage.
 Main features:
 
 - Cross-platform compatibility: Works in both browser and Node.js
-  - Browser: Uses native
-    `btoa`
-    /
-    `atob`
-    with TextEncoder/TextDecoder
+  - Browser: Uses native `btoa`/`atob` with TextEncoder/TextDecoder
   - Node.js: Uses Buffer API for optimal performance
   - Automatic environment detection
   - Consistent behavior across platforms
@@ -35,19 +31,9 @@ Main features:
   - Prevents encoding errors
 
 - URL-safe encoding: Optional URL-safe Base64 format
-  - Replaces
-    `+`
-    with
-    `-`
-
-  - Replaces
-    `/`
-    with
-    `_`
-
-  - Removes padding
-    `=`
-    characters
+  - Replaces `+` with `-`
+  - Replaces `/` with `_`
+  - Removes padding `=` characters
   - Safe for use in URLs and filenames
 
 - Robust error handling: Graceful failure with default values

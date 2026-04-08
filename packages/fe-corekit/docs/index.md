@@ -58,77 +58,49 @@ Core Components:
 
 **Aborter Module:**
 
-- `Aborter`
-  : Main abort manager class
-- `AborterInterface`
-  : Abort management interface
-- `AborterConfig`
-  : Configuration type for abort operations
-- `AbortError`
-  : Custom error for abort operations
-- `isAbortError`
-  : Utility to detect abort errors
+- `Aborter`: Main abort manager class
+- `AborterInterface`: Abort management interface
+- `AborterConfig`: Configuration type for abort operations
+- `AbortError`: Custom error for abort operations
+- `isAbortError`: Utility to detect abort errors
 
 **Executor Module:**
 
-- `LifecycleExecutor`
-  : Async lifecycle executor
-- `LifecycleSyncExecutor`
-  : Sync lifecycle executor
-- `ExecutorContextImpl`
-  : Context implementation
-- `LifecyclePluginInterface`
-  : Plugin interface
-- `ExecutorError`
-  : Executor error class
-- `RetryPlugin`
-  : Retry logic plugin
-- `AbortPlugin`
-  : Abort integration plugin
+- `LifecycleExecutor`: Async lifecycle executor
+- `LifecycleSyncExecutor`: Sync lifecycle executor
+- `ExecutorContextImpl`: Context implementation
+- `LifecyclePluginInterface`: Plugin interface
+- `ExecutorError`: Executor error class
+- `RetryPlugin`: Retry logic plugin
+- `AbortPlugin`: Abort integration plugin
 
 **Request Module:**
 
-- `RequestExecutor`
-  : Main request executor
-- `RequestAdapterFetch`
-  : Fetch API adapter
-- `RequestAdapterAxios`
-  : Axios adapter
-- `RequestHeaderInjector`
-  : Header injection utility
-- `SimpleUrlBuilder`
-  : URL construction utility
-- `RequestPlugin`
-  : Request plugin base
-- `ResponsePlugin`
-  : Response plugin base
+- `RequestExecutor`: Main request executor
+- `RequestAdapterFetch`: Fetch API adapter
+- `RequestAdapterAxios`: Axios adapter
+- `RequestHeaderInjector`: Header injection utility
+- `SimpleUrlBuilder`: URL construction utility
+- `RequestPlugin`: Request plugin base
+- `ResponsePlugin`: Response plugin base
 
 **Storage Module:**
 
-- `SyncStorage`
-  : Synchronous storage implementation
-- `ObjectStorage`
-  : Object-based storage
-- `KeyStorage`
-  : Key-value storage
-- `StorageInterface`
-  : Storage interface
-- `ExpireOptions`
-  : Expiration configuration
+- `SyncStorage`: Synchronous storage implementation
+- `ObjectStorage`: Object-based storage
+- `KeyStorage`: Key-value storage
+- `StorageInterface`: Storage interface
+- `ExpireOptions`: Expiration configuration
 
 **Serializer Module:**
 
-- `JSONSerializer`
-  : JSON serialization
-- `Base64Serializer`
-  : Base64 encoding/decoding
-- `SerializerInterface`
-  : Serializer interface
+- `JSONSerializer`: JSON serialization
+- `Base64Serializer`: Base64 encoding/decoding
+- `SerializerInterface`: Serializer interface
 
 **Encrypt Module:**
 
-- `EncryptorInterface`
-  : Encryption interface
+- `EncryptorInterface`: Encryption interface
 
 ### Basic Usage
 
@@ -208,7 +180,6 @@ const data = await request.get('/data', { signal });
 
 **See:**
 
-https://github.com/qlover/fe-base/tree/main/packages/fe-corekit
-for detailed documentation
+<a href="https://github.com/qlover/fe-base/tree/main/packages/fe-corekit">https://github.com/qlover/fe-base/tree/main/packages/fe-corekit</a> for detailed documentation
 
 ---

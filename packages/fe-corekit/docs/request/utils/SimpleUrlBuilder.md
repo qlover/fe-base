@@ -10,9 +10,7 @@
 
 Simple URL builder implementation
 
-A lightweight implementation of
-`UrlBuilderInterface`
-that provides
+A lightweight implementation of `UrlBuilderInterface` that provides
 basic URL construction functionality using the native URL API.
 
 Core features:
@@ -34,9 +32,7 @@ Important behaviors:
 
 Design considerations:
 
-- Uses temporary domain (
-  `http://temp`
-  ) for relative URL processing to leverage URL API
+- Uses temporary domain (`http://temp`) for relative URL processing to leverage URL API
 - Supports strict mode for stricter baseURL validation
 - Returns path-only strings for relative URLs without valid baseURL
 
@@ -44,9 +40,7 @@ Configuration options:
 
 - strict: Enables strict mode for stricter validation of base URLs (default: false)
 
-`@since`
-
-`3.0.0`
+`@since` `3.0.0`
 
 **Example:** Basic usage with absolute baseURL
 
@@ -149,10 +143,7 @@ When disabled (default):
 - Invalid baseURL is treated as relative path
 - More flexible URL handling for various scenarios
 
-`@default`
-
-`false`
-
+`@default` `false`
 `@optional`
 
 ---
@@ -180,24 +171,15 @@ Uses the native URL API for reliable URL construction and automatic encoding.
 
 URL construction rules:
 
-- Absolute URLs (starting with
-  `http://`
-  or
-  `https://`
-  ) are used directly
+- Absolute URLs (starting with `http://` or `https://`) are used directly
 - Relative URLs are combined with baseURL if provided
 - Query parameters are automatically encoded and appended
-- `null`
-  and
-  `undefined`
-  parameter values are filtered out
+- `null` and `undefined` parameter values are filtered out
 - Hash fragments are preserved in the final URL
 
 **Bug Fix Note**: This implementation correctly handles baseURLs that contain
 path segments. Previous versions incorrectly lost the path portion when using
-
-`new URL(relativePath, baseURLWithPath)`
-. Now the relative path is properly
+`new URL(relativePath, baseURLWithPath)`. Now the relative path is properly
 appended to the base URL's path instead of replacing it.
 
 **Returns:**
@@ -299,19 +281,15 @@ URL construction strategy:
 Technical implementation:
 
 - Uses native URL API for reliable URL parsing and normalization
-- Employs temporary domain (
-  `http://temp`
-  ) for relative URL processing
+- Employs temporary domain (`http://temp`) for relative URL processing
 - Returns flag indicating whether to strip domain from final result
 
 **Returns:**
 
 Object containing:
 
-- `urlObject`
-  : Constructed URL instance
-- `shouldReturnPathOnly`
-  : Whether to return only pathname + search + hash
+- `urlObject`: Constructed URL instance
+- `shouldReturnPathOnly`: Whether to return only pathname + search + hash
 
 **Example:** Override in subclass
 
@@ -370,21 +348,14 @@ const result = this.createUrlObject('/users', 'https://api.example.com');
 
 **Type:** `boolean`
 
-Checks if URL is absolute (starts with
-`http://`
-or
-`https://`
-)
+Checks if URL is absolute (starts with `http://` or `https://`)
 
 This method determines whether a URL string represents an absolute URL
 that can be used directly without a base URL.
 
 **Returns:**
 
-`true`
-if URL is absolute,
-`false`
-otherwise
+`true` if URL is absolute, `false` otherwise
 
 **Example:**
 

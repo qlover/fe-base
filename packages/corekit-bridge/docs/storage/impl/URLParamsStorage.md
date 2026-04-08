@@ -16,9 +16,7 @@ Core idea: Read-only storage that extracts values from URL search parameters bas
 dynamic key(s) provided at call time. Since URLs are immutable after construction,
 results are cached per key configuration for performance optimization.
 
-Main function: Provide a full
-`StorageInterface`
-implementation that reads from URL parameters
+Main function: Provide a full `StorageInterface` implementation that reads from URL parameters
 instead of traditional storage mechanisms like localStorage or sessionStorage.
 
 Main purpose: Enable configuration and data passing through URL parameters with flexible
@@ -26,23 +24,11 @@ key matching, caching, and standard storage interface compliance.
 
 Features:
 
-- Flexible key matching: Accepts single key (
-  `string`
-  ) or multiple keys (
-  `string[]`
-  ) with fallback
-- Case sensitivity control: Configurable per-call via
-  `URLParamsStorageOptions`
-  , with optional global default
-- Type-safe operations: Keys are restricted to
-  `Key`
-  for URL compatibility
+- Flexible key matching: Accepts single key (`string`) or multiple keys (`string[]`) with fallback
+- Case sensitivity control: Configurable per-call via `URLParamsStorageOptions`, with optional global default
+- Type-safe operations: Keys are restricted to `Key` for URL compatibility
 - Performance optimization: Caching mechanism keyed by normalized key + case sensitivity
-- Read-only storage: URL parameters cannot be modified;
-  `setItem`
-  /
-  `removeItem`
-  only affect cache
+- Read-only storage: URL parameters cannot be modified; `setItem`/`removeItem` only affect cache
 
 **Example:** Basic usage with default options
 
@@ -100,9 +86,7 @@ const value = storage.getItem('lang', 'en'); // Returns 'en'
 Cache map for lookup results
 
 Key: Generated cache key combining normalized key string and case sensitivity flag
-Value: Cached parameter value (
-`null`
-if not found)
+Value: Cached parameter value (`null` if not found)
 
 Enables O(1) repeated access for the same (key, caseSensitive) combination.
 
@@ -137,9 +121,7 @@ The URL object containing query parameters (fixed at construction)
 Clear all cached lookup results
 
 Removes all entries from the internal cache map. Forces all subsequent
-
-`getItem`
-calls to re-parse the URL parameters (with caching re-enabled).
+`getItem` calls to re-parse the URL parameters (with caching re-enabled).
 
 **Example:**
 
@@ -172,15 +154,11 @@ storage.getItem('token'); // Re-parses URL and caches again
 Find value from URL search parameters based on provided key(s) and case sensitivity
 
 Searches the URL's query parameters for matching keys according to the specified
-case sensitivity rule. Returns the first matching value found, or
-`null`
-if none match.
+case sensitivity rule. Returns the first matching value found, or `null` if none match.
 
 Search process:
 
-- Case-sensitive: Direct lookup using
-  `URLSearchParams.has/get`
-
+- Case-sensitive: Direct lookup using `URLSearchParams.has/get`
 - Case-insensitive: Build lowercase map of all params, then match keys in order
 
 Performance note: Case-insensitive mode requires iterating all parameters once,
@@ -188,9 +166,7 @@ but result is cached for future calls with same configuration.
 
 **Returns:**
 
-The value of the first matching URL parameter, or
-`null`
-if not found
+The value of the first matching URL parameter, or `null` if not found
 
 #### Parameters
 
@@ -223,8 +199,7 @@ Generate a unique cache key from key and case sensitivity setting
 Combines normalized key string with case sensitivity flag to create a
 cache identifier that distinguishes between different lookup configurations.
 
-Format:
-`{normalizedKey}:{caseSensitive}`
+Format: `{normalizedKey}:{caseSensitive}`
 
 **Returns:**
 
@@ -269,27 +244,18 @@ Fetches the value associated with the given key(s) from the URL’s query string
 Supports both single key and multiple keys (fallback order). Results are cached
 per (key, caseSensitive) configuration for performance.
 
-Uses the instance's default options unless overridden by the
-`options`
-parameter.
+Uses the instance's default options unless overridden by the `options` parameter.
 
 Overloads:
 
-- `getItem(key, options?)`
-  : Returns value or
-  `null`
-
-- `getItem(key, defaultValue, options?)`
-  : Returns value or
-  `defaultValue`
+- `getItem(key, options?)`: Returns value or `null`
+- `getItem(key, defaultValue, options?)`: Returns value or `defaultValue`
 
 Note: This method does not modify the URL. It only reads from it (or from cache).
 
 **Returns:**
 
-The matched value, or
-`defaultValue`
-if not found
+The matched value, or `defaultValue` if not found
 
 **Example:** Basic usage with default options
 
@@ -393,11 +359,7 @@ Normalize a key (string or string array) into a consistent string representation
 Converts input key into a flat string for cache key generation:
 
 - Single string: Used as-is
-- String array: Joined with commas (e.g.,
-  `['a', 'b']`
-  →
-  `'a,b'`
-  )
+- String array: Joined with commas (e.g., `['a', 'b']` → `'a,b'`)
 
 This ensures consistent hashing for equivalent key configurations.
 
@@ -441,9 +403,7 @@ Remove an item (read-only storage, required by interface)
 
 Note: URL storage is read-only and cannot remove actual URL parameters.
 This method removes the cached entry for the given key configuration.
-Subsequent
-`getItem`
-calls will re-parse the URL (and re-cache the result).
+Subsequent `getItem` calls will re-parse the URL (and re-cache the result).
 
 Uses merged options to locate the correct cache entry.
 
@@ -515,9 +475,7 @@ console.log(storage.getItem('token')); // Returns 'mocked-value'
 
 **Type:** `interface URLParamsStorageOptions`
 
-Configuration options for
-`URLParamsStorage.getItem`
-calls
+Configuration options for `URLParamsStorage.getItem` calls
 
 Controls how the storage searches and retrieves values from URL query parameters
 for a given key or set of keys. Supports flexible key matching with case sensitivity control.
@@ -534,24 +492,10 @@ Whether to perform case-sensitive matching when searching URL parameter names
 
 Controls case sensitivity during key lookup:
 
-- `true`
-  : Case-sensitive,
-  `token`
-  and
-  `Token`
-  are treated as different parameters
-- `false`
-  : Case-insensitive,
-  `token`
-  ,
-  `Token`
-  ,
-  `TOKEN`
-  are treated as the same
+- `true`: Case-sensitive, `token` and `Token` are treated as different parameters
+- `false`: Case-insensitive, `token`, `Token`, `TOKEN` are treated as the same
 
-When set to
-`false`
-, all URL parameters are normalized to lowercase for matching.
+When set to `false`, all URL parameters are normalized to lowercase for matching.
 
 **Example:**
 

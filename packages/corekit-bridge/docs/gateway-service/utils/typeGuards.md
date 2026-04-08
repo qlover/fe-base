@@ -98,10 +98,7 @@ by checking for required methods: getStore and getCredential.
 
 **Returns:**
 
-`true`
-if value is a UserStoreInterface instance,
-`false`
-otherwise
+`true` if value is a UserStoreInterface instance, `false` otherwise
 
 #### Parameters
 

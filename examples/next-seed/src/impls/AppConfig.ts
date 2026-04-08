@@ -15,5 +15,5 @@ export class AppConfig implements SeedSrcConfigInterface {
     process.env.NEXT_PUBLIC_LOGIN_PASSWORD ?? '';
 
   public readonly stringEncryptorKey: string =
-    process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY ?? '';
+    process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY ?? 'demo_string_encryptor_key';
 }

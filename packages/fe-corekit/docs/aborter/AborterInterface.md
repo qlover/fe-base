@@ -22,7 +22,6 @@ including timeout, external signal composition, and callbacks.
 Unique identifier for the abort operation
 
 If not provided, an ID will be auto-generated using the pattern:
-
 `{aborterName}-{counter}`
 
 **Example:**
@@ -48,9 +47,7 @@ If not provided, an ID will be auto-generated using the pattern:
 Timeout duration in milliseconds for automatic abort
 
 When set, the operation will be automatically aborted after this duration.
-Triggers
-`onAbortedTimeout`
-callback when timeout expires.
+Triggers `onAbortedTimeout` callback when timeout expires.
 
 **Example:**
 
@@ -68,7 +65,7 @@ callback when timeout expires.
 
 #### `signal` (Property)
 
-**Type:** `AbortSignal`
+**Type:** `null \| AbortSignal`
 
 External AbortSignal for request cancellation
 
@@ -83,7 +80,7 @@ can cancel all child operations.
 
 **See:**
 
-AbortSignal MDN
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal">AbortSignal MDN</a>
 
 **Example:**
 
@@ -114,9 +111,7 @@ const config = {
 
 **Type:** `void`
 
-Callback invoked when operation is manually aborted via
-`abort()`
-method
+Callback invoked when operation is manually aborted via `abort()` method
 
 Receives sanitized config (without callback functions) to prevent
 circular references. Use this to handle cleanup or notify users
@@ -155,8 +150,7 @@ onAborted: (config) => {
 
 **Type:** `void`
 
-Callback invoked when operation times out via
-`abortTimeout`
+Callback invoked when operation times out via `abortTimeout`
 
 Only triggered when timeout expires. NOT triggered by manual abort
 or external signal abort. Use this to show timeout-specific messages
@@ -193,9 +187,7 @@ ensuring consistent API across different abort strategies.
 All methods are designed to be safe and idempotent:
 
 - Cleanup of non-existent operations is a no-op
-- Aborting non-existent operations returns
-  `false`
-
+- Aborting non-existent operations returns `false`
 - Multiple cleanups of same operation are safe
 
 **Example:** Basic implementation
@@ -228,10 +220,7 @@ Manually aborts a specific operation
 
 **Returns:**
 
-`true`
-if operation was aborted,
-`false`
-if not found
+`true` if operation was aborted, `false` if not found
 
 #### Parameters
 
@@ -275,10 +264,7 @@ Cleans up resources for an operation
 
 **Returns:**
 
-`true`
-if operation was cleaned up,
-`false`
-if not found
+`true` if operation was cleaned up, `false` if not found
 
 #### Parameters
 

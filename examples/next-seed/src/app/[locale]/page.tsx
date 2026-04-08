@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { HomeAuthUserEmail } from '@/uikit/components-app/HomeAuthUserEmail';
 import { ZustandCounterCard } from '@/uikit/components-app/ZustandCounterCard';
+import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import { homeI18n, homeI18nNamespace } from '@config/i18n-mapping/HomeI18n';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';
@@ -41,34 +42,36 @@ export default async function Home({ params }: PageParamsProps) {
   const tt = await getI18nInterface(locale, homeI18n, homeI18nNamespace);
 
   return (
-    <AppRoutePage tt={tt} showAdminButton showAuthButton>
-      {/* Hero Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
-            {tt.welcome}
-          </h1>
-          <HomeAuthUserEmail />
-          <p className="text-xl text-secondary-text mb-8">{tt.description}</p>
-        </div>
-      </section>
+    <PageI18nProvider value={tt}>
+      <AppRoutePage tt={tt} showAdminButton showAuthButton>
+        {/* Hero Section */}
+        <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
+              {tt.welcome}
+            </h1>
+            <HomeAuthUserEmail />
+            <p className="text-xl text-secondary-text mb-8">{tt.description}</p>
+          </div>
+        </section>
 
-      {/* Call to Action Section */}
-      <section className="py-16 px-4 bg-elevated">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 text-primary-text">
-            {tt.getStartedTitle}
-          </h2>
-          <p className="text-lg text-secondary-text mb-8">
-            {tt.getStartedDescription}
-          </p>
-          <Button type="primary" size="large" className="px-8">
-            {tt.getStartedButton}
-          </Button>
-        </div>
-      </section>
+        {/* Call to Action Section */}
+        <section className="py-16 px-4 bg-elevated">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4 text-primary-text">
+              {tt.getStartedTitle}
+            </h2>
+            <p className="text-lg text-secondary-text mb-8">
+              {tt.getStartedDescription}
+            </p>
+            <Button type="primary" size="large" className="px-8">
+              {tt.getStartedButton}
+            </Button>
+          </div>
+        </section>
 
-      <ZustandCounterCard />
-    </AppRoutePage>
+        <ZustandCounterCard />
+      </AppRoutePage>
+    </PageI18nProvider>
   );
 }

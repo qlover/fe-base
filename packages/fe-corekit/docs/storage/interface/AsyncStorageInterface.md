@@ -11,33 +11,17 @@
 Asynchronous key-value storage interface.
 
 Core concept:
-Contract for a storage that performs I/O asynchronously. All methods return
-`Promise`
-s;
+Contract for a storage that performs I/O asynchronously. All methods return `Promise`s;
 use this when the backend is async (e.g. IndexedDB, remote storage, encrypted async APIs).
 
 Main features:
 
-- Key-value access:
-  `setItem`
-  /
-  `getItem`
-  /
-  `removeItem`
-  by key, all async
-- Optional default on read: overload with
-  `defaultValue`
-  returns a fallback when key is missing
-- Bulk clear:
-  `clear()`
-  removes all entries and resolves when done
-- Optional parameters: generic
-  `Opt`
-  allows implementations to support expiry, scope, etc.
+- Key-value access: `setItem` / `getItem` / `removeItem` by key, all async
+- Optional default on read: overload with `defaultValue` returns a fallback when key is missing
+- Bulk clear: `clear()` removes all entries and resolves when done
+- Optional parameters: generic `Opt` allows implementations to support expiry, scope, etc.
 
-When to use: Prefer this over sync
-`StorageInterface`
-when the underlying store is async
+When to use: Prefer this over sync `StorageInterface` when the underlying store is async
 or when you want to avoid blocking the main thread.
 
 **Example:** Basic usage
@@ -98,15 +82,11 @@ Promise that resolves when all values are cleared.
 
 Retrieves the value for the given key asynchronously.
 
-Use this overload when the caller handles missing keys explicitly (e.g. with
-`null`
-check).
+Use this overload when the caller handles missing keys explicitly (e.g. with `null` check).
 
 **Returns:**
 
-Promise resolving to the stored value, or
-`null`
-if the key does not exist.
+Promise resolving to the stored value, or `null` if the key does not exist.
 
 #### Parameters
 
@@ -123,17 +103,11 @@ if the key does not exist.
 
 Retrieves the value for the given key, or the default when missing.
 
-Use this overload when a fallback is required; the promise resolves to
-`ValueType`
-(never
-`null`
-).
+Use this overload when a fallback is required; the promise resolves to `ValueType` (never `null`).
 
 **Returns:**
 
-Promise resolving to the stored value if present, otherwise
-`defaultValue`
-.
+Promise resolving to the stored value if present, otherwise `defaultValue`.
 
 #### Parameters
 
@@ -199,9 +173,7 @@ Promise that resolves when the value is removed (or when no-op completes).
 
 Stores a value under the given key asynchronously.
 
-Overwrites any existing value for
-`key`
-. Resolves when the write has completed;
+Overwrites any existing value for `key`. Resolves when the write has completed;
 rejections are implementation-defined (e.g. quota, I/O errors).
 
 **Returns:**

@@ -332,9 +332,7 @@ assistant responses in the history.
 
 **Returns:**
 
-Updated message or
-`undefined`
-if update failed
+Updated message or `undefined` if update failed
 
 **Example:** Normal flow
 
@@ -386,10 +384,7 @@ Abort errors are handled differently from regular errors.
 
 **Returns:**
 
-`true`
-if error is an abort error,
-`false`
-otherwise
+`true` if error is an abort error, `false` otherwise
 
 **Example:**
 
@@ -435,10 +430,7 @@ the ASSISTANT role, indicating it's a response from the AI assistant.
 
 **Returns:**
 
-`true`
-if message is an assistant message,
-`false`
-otherwise
+`true` if message is an assistant message, `false` otherwise
 
 **Example:**
 
@@ -482,36 +474,22 @@ or wait until after successful send.
 
 **Strategy behavior:**
 
-`ADD_ON_SUCCESS`
-:
+`ADD_ON_SUCCESS`:
 
 - Don't add message to store yet
-- Set
-  `addedToStore=false`
-  flag
-- Message only added after successful send in
-  `onSuccess`
+- Set `addedToStore=false` flag
+- Message only added after successful send in `onSuccess`
 
-`KEEP_FAILED`
-/
-`DELETE_FAILED`
-:
+`KEEP_FAILED` / `DELETE_FAILED`:
 
-- Add message to store immediately with
-  `SENDING`
-  status
-- Set
-  `addedToStore=true`
-  flag
-- Update
-  `currentMessage`
-  with store-added version (includes generated ID)
+- Add message to store immediately with `SENDING` status
+- Set `addedToStore=true` flag
+- Update `currentMessage` with store-added version (includes generated ID)
 - Users see loading state in UI
 
 **Important notes:**
 
-- `addedToStore`
-  flag tracked in context parameters
+- `addedToStore` flag tracked in context parameters
 - Flag used by other hooks to determine update vs add logic
 - Store-added message may have different ID than input message
 
@@ -588,49 +566,29 @@ Error execution hook
 
 Handles errors during message send operation based on error type
 and configured failure strategy. Abort errors are delegated to
-
-`onStopError`
-for special handling with
-`STOPPED`
-status.
+`onStopError` for special handling with `STOPPED` status.
 
 **Error type handling:**
 
-- Abort errors: Delegated to
-  `onStopError()`
-  → status
-  `STOPPED`
-
-- Regular errors: Handled here → status
-  `FAILED`
+- Abort errors: Delegated to `onStopError()` → status `STOPPED`
+- Regular errors: Handled here → status `FAILED`
 
 **Strategy behavior:**
 
-`KEEP_FAILED`
-:
+`KEEP_FAILED`:
 
-- If
-  `addedToStore=true`
-  : Update message in store with
-  `FAILED`
-  status
-- If
-  `addedToStore=false`
-  : Merge error with current message
+- If `addedToStore=true`: Update message in store with `FAILED` status
+- If `addedToStore=false`: Merge error with current message
 - Message kept with error information
 - Throws if update fails
 
-`DELETE_FAILED`
-:
+`DELETE_FAILED`:
 
-- If
-  `addedToStore=true`
-  : Delete message from store
+- If `addedToStore=true`: Delete message from store
 - Merge error with current message for return value
 - Message not visible in store
 
-`ADD_ON_SUCCESS`
-:
+`ADD_ON_SUCCESS`:
 
 - Message never added to store
 - Merge error with current message
@@ -638,23 +596,15 @@ status.
 
 **Data flow:**
 
-1. Check if error is abort error → delegate to
-   `onStopError`
-
-2. Create failed data with
-   `FAILED`
-   status and error
+1. Check if error is abort error → delegate to `onStopError`
+2. Create failed data with `FAILED` status and error
 3. Update, delete, or merge based on strategy
 4. Update context with final failed message
-5. Call
-   `cleanup()`
-   to stop streaming state
+5. Call `cleanup()` to stop streaming state
 
 **Throws:**
 
-When message update fails for
-`KEEP_FAILED`
-strategy
+When message update fails for `KEEP_FAILED` strategy
 
 **Example:** KEEP_FAILED with addedToStore=true
 
@@ -719,64 +669,35 @@ strategy
 Handle abort/stop errors
 
 Special handling for abort errors when a send operation is cancelled.
-Sets message status to
-`STOPPED`
-(different from
-`FAILED`
-) and invokes
-the
-`onAborted`
-callback if provided. Prevents error propagation to
+Sets message status to `STOPPED` (different from `FAILED`) and invokes
+the `onAborted` callback if provided. Prevents error propagation to
 maintain proper control flow.
 
 **Process flow:**
 
-1. Create stopped data with
-   `STOPPED`
-   status and error
-2. Update or merge message based on
-   `addedToStore`
-   flag
+1. Create stopped data with `STOPPED` status and error
+2. Update or merge message based on `addedToStore` flag
 3. Update context with final stopped message
-4. Invoke
-   `onAborted`
-   callback (error-safe)
-5. Call
-   `cleanup()`
-   to stop streaming state
-6. Return
-   `undefined`
-   to prevent error propagation
+4. Invoke `onAborted` callback (error-safe)
+5. Call `cleanup()` to stop streaming state
+6. Return `undefined` to prevent error propagation
 
 **Message handling:**
 
-- If
-  `addedToStore=true`
-  : Update existing message in store
-- If
-  `addedToStore=false`
-  : Merge with current message (not added to store)
-- Fallback to merge if update returns
-  `null`
+- If `addedToStore=true`: Update existing message in store
+- If `addedToStore=false`: Merge with current message (not added to store)
+- Fallback to merge if update returns `null`
 
 **Important notes:**
 
-- Status set to
-  `STOPPED`
-  (not
-  `FAILED`
-  )
-- `onAborted`
-  callback wrapped in try-catch to prevent callback errors
-- Returns
-  `undefined`
-  to stop error propagation through plugin chain
+- Status set to `STOPPED` (not `FAILED`)
+- `onAborted` callback wrapped in try-catch to prevent callback errors
+- Returns `undefined` to stop error propagation through plugin chain
 - Cleanup always called to ensure streaming state is stopped
 
 **Returns:**
 
-`undefined`
-to prevent error propagation to other plugins
+`undefined` to prevent error propagation to other plugins
 
 **Example:** With KEEP_FAILED strategy
 
@@ -851,17 +772,11 @@ Handles message updates and state management during streaming operations.
 
 **Strategy behavior:**
 
-- `KEEP_FAILED`
-  /
-  `DELETE_FAILED`
-  : Update messages in store in real-time
-- `ADD_ON_SUCCESS`
-  : Don't update store, wait for completion
+- `KEEP_FAILED` / `DELETE_FAILED`: Update messages in store in real-time
+- `ADD_ON_SUCCESS`: Don't update store, wait for completion
 
 **Fallback handling:**
-If
-`onConnected`
-wasn't called but first chunk arrives with message still
+If `onConnected` wasn't called but first chunk arrives with message still
 in loading state, automatically triggers connection establishment logic.
 This ensures proper state management even if connection hook is missed.
 
@@ -908,30 +823,18 @@ Success execution hook
 
 Handles message finalization after successful send operation.
 Updates existing messages or adds new ones based on the configured
-strategy and
-`addedToStore`
-flag.
+strategy and `addedToStore` flag.
 
 **Strategy behavior:**
 
-`KEEP_FAILED`
-/
-`DELETE_FAILED`
-(
-`addedToStore=true`
-):
+`KEEP_FAILED` / `DELETE_FAILED` (`addedToStore=true`):
 
-- Message already in store from
-  `onBefore`
-
+- Message already in store from `onBefore`
 - Update existing message with success data
 - Merge gateway response into store message
 - Throws error if update fails
 
-`ADD_ON_SUCCESS`
-(
-`addedToStore=false`
-):
+`ADD_ON_SUCCESS` (`addedToStore=false`):
 
 - Message not in store yet
 - Add message to store with success data
@@ -940,29 +843,15 @@ flag.
 
 **Data flow:**
 
-1. Get success data from
-   `context.returnValue`
-   (gateway response)
-2. Update or add message based on
-   `addedToStore`
-   flag
-3. Update
-   `context.parameters.currentMessage`
-   with final message
-4. Update
-   `context.returnValue`
-   with final message
-5. Call
-   `cleanup()`
-   to stop streaming state
+1. Get success data from `context.returnValue` (gateway response)
+2. Update or add message based on `addedToStore` flag
+3. Update `context.parameters.currentMessage` with final message
+4. Update `context.returnValue` with final message
+5. Call `cleanup()` to stop streaming state
 
 **Throws:**
 
-When message update fails for
-`KEEP_FAILED`
-/
-`DELETE_FAILED`
-strategies
+When message update fails for `KEEP_FAILED`/`DELETE_FAILED` strategies
 
 **Example:** KEEP_FAILED flow
 

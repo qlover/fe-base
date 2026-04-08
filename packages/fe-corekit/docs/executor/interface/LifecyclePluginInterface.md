@@ -47,12 +47,12 @@ Enhanced onBefore Hook:
 
 - Return Value Support: Can return new parameters to update context
 
-```typescript
-onBefore: (ctx) => {
-  // Return new parameters - automatically updates context
-  return { ...ctx.parameters, newField: 'value' };
-};
-```
+  ```typescript
+  onBefore: (ctx) => {
+    // Return new parameters - automatically updates context
+    return { ...ctx.parameters, newField: 'value' };
+  };
+  ```
 
 - Type Safety: Return type inferred from context parameter type
   - TypeScript automatically infers correct return type
@@ -148,9 +148,7 @@ const plugin: LifecyclePluginInterface<
 **See:**
 
 - LifecycleExecutor - Executor that uses this as default plugin type
-
 - ExecutorPluginInterface - Base plugin interface
-
 - ExecutorContextInterface - Context interface used by plugins
 
 ---
@@ -174,9 +172,7 @@ Return value behavior:
 
 Type inference:
 
-- The return type
-  `R`
-  is automatically inferred from the task parameter
+- The return type `R` is automatically inferred from the task parameter
 - Return values are type-safe and match the task's return type
 - TypeScript can infer types from return statements without explicit annotations
 
@@ -352,16 +348,10 @@ Modified parameters (will update context parameters), void, or Promise of either
 
 Error handling hook
 
-- For
-  `exec`
-  : returning a value or throwing will break the chain
-- For
-  `execNoError`
-  : returning a value or throwing will return the error
+- For `exec`: returning a value or throwing will break the chain
+- For `execNoError`: returning a value or throwing will return the error
 
-Because
-`onError`
-can break the chain, best practice is each plugin only handle plugin related error
+Because `onError` can break the chain, best practice is each plugin only handle plugin related error
 
 **Returns:**
 

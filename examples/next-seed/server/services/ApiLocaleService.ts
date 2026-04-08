@@ -5,7 +5,8 @@ import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
 import { splitI18nKey } from '@schemas/i18nKeyScheam';
 import type { LocalesSchema } from '@schemas/LocalesSchema';
-import type { PaginationInterface } from '@interfaces/PaginationInterface';
+import type { PaginationResult } from '@schemas/SearchResultSchema';
+import type { DBTablePaginationParams } from '@server/interfaces/DBTableInterface';
 import { LocalesRepository } from '../repositorys/LocalesRepository';
 import type { BridgeOrderBy } from '../interfaces/DBBridgeInterface';
 import type {
@@ -19,12 +20,6 @@ export type ImportLocalesData = {
   values: {
     [key in LocaleType]?: Record<string, string>;
   };
-};
-
-export type GetLocalesParams = {
-  page: number;
-  pageSize: number;
-  orderBy?: BridgeOrderBy;
 };
 
 @injectable()
@@ -53,8 +48,8 @@ export class ApiLocaleService {
   }
 
   public async getLocales(
-    params: GetLocalesParams
-  ): Promise<PaginationInterface<LocalesSchema>> {
+    params: DBTablePaginationParams
+  ): Promise<PaginationResult<LocalesSchema>> {
     return this.localesRepository.pagination({
       page: params.page,
       pageSize: params.pageSize,

@@ -61,10 +61,7 @@ const obj = serializer.parse(json);
 
 **Example:**
 
-`JSON.parse`
-may encounter errors, so we use
-`deserialize`
-method to handle them, set default value if needed
+`JSON.parse` may encounter errors, so we use `deserialize` method to handle them, set default value if needed
 
 ```typescript
 const serializer = new JSONSerializer();
@@ -73,11 +70,7 @@ serializer.deserialize('invalid json', { fallback: true }); // returns { fallbac
 
 **Example:**
 
-Or, use
-`JSONSerializer`
-replace native
-`JSON`
-methods
+Or, use `JSONSerializer` replace native `JSON` methods
 
 ```typescript
 const JSON = new JSONSerializer();
@@ -247,9 +240,7 @@ const obj = serializer.deserialize('invalid json', { name: 'Default' });
 Standard JSON.parse implementation
 
 Parses a JSON string and returns the corresponding JavaScript value.
-Error handling is done in the
-`deserialize`
-method.
+Error handling is done in the `deserialize` method.
 
 **Returns:**
 
@@ -345,9 +336,7 @@ by avoiding object property enumeration and using direct array mapping.
 
 Performance benefits:
 
-- Faster than standard
-  `JSON.stringify`
-  for primitive arrays
+- Faster than standard `JSON.stringify` for primitive arrays
 - Avoids object property enumeration overhead
 - Direct string concatenation
 
@@ -464,11 +453,7 @@ const options: JSONSerializerOptions = {
 
 Number of spaces to use for indentation when pretty printing
 
-Only used when
-`pretty`
-is
-`true`
-. Controls the indentation level
+Only used when `pretty` is `true`. Controls the indentation level
 for nested objects and arrays.
 
 **Example:**

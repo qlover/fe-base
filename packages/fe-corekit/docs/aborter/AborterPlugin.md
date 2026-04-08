@@ -12,9 +12,7 @@
 
 Lifecycle plugin for managing operation cancellation with timeout support
 
-A lightweight abort management plugin that implements
-`LifecyclePluginInterface`
-
+A lightweight abort management plugin that implements `LifecyclePluginInterface`
 to provide abort control for executor operations. Supports timeout mechanisms,
 external signal composition, and automatic resource cleanup.
 
@@ -26,51 +24,30 @@ and external signal composition.
 Main features:
 
 - Lifecycle integration: Hooks into executor lifecycle for automatic management
-  - `onBefore`
-    : Registers abort operation, injects signal, validates config
-  - `onError`
-    : Handles abort errors and cleans up resources
-  - `onFinally`
-    : Ensures cleanup always happens
+  - `onBefore`: Registers abort operation, injects signal, validates config
+  - `onError`: Handles abort errors and cleans up resources
+  - `onFinally`: Ensures cleanup always happens
 
 - Timeout support: Automatic operation timeout with configurable duration
-  - Configure via
-    `abortTimeout`
-    in parameters or default timeout in options
-  - Triggers
-    `onAbortedTimeout`
-    callback when timeout occurs
+  - Configure via `abortTimeout` in parameters or default timeout in options
+  - Triggers `onAbortedTimeout` callback when timeout occurs
   - Automatically cleans up timeout timers
 
 - Signal composition: Combines multiple abort signals
   - Internal controller signal (for manual abort)
   - Timeout signal (if timeout configured)
-  - External signal (if provided in parameters via
-    `getConfig`
-    )
+  - External signal (if provided in parameters via `getConfig`)
 
 - Error handling: Detects and transforms abort errors
-  - Converts various abort error types to standard
-    `AbortError`
-
+  - Converts various abort error types to standard `AbortError`
   - Preserves abort context (ID, timeout, reason)
   - Allows other plugins to handle non-abort errors
 
 - Development warnings: Validates configuration in development mode
-  - Warns if
-    `signal`
-    property is missing from extracted config
-  - Warns if
-    `signal`
-    is not an
-    `AbortSignal`
-    instance
-  - Only active when
-    `NODE_ENV !== 'production'`
-
-  - Helps catch
-    `getConfig`
-    implementation errors early
+  - Warns if `signal` property is missing from extracted config
+  - Warns if `signal` is not an `AbortSignal` instance
+  - Only active when `NODE_ENV !== 'production'`
+  - Helps catch `getConfig` implementation errors early
 
 **Example:** Basic usage
 
@@ -230,10 +207,7 @@ access to abort functionality without exposing the aborter directly.
 
 **Returns:**
 
-`true`
-if operation was aborted,
-`false`
-if not found
+`true` if operation was aborted, `false` if not found
 
 **Example:**
 
@@ -332,11 +306,7 @@ Helper method to cleanup resources from context
 Get the internal aborter instance
 
 Provides access to the underlying aborter for advanced use cases.
-Most users should use
-`abort()`
-and
-`abortAll()`
-methods instead.
+Most users should use `abort()` and `abortAll()` methods instead.
 
 **Returns:**
 
@@ -374,9 +344,7 @@ Lifecycle hook: called before operation execution
 
 Performs the following operations:
 
-1. Extracts configuration using
-   `getConfig`
-
+1. Extracts configuration using `getConfig`
 2. Validates signal extraction (development mode only)
 3. Applies default timeout if not specified
 4. Aborts any existing operation with the same ID
@@ -385,17 +353,9 @@ Performs the following operations:
 
 **Development mode validation:**
 
-- Warns if
-  `config.signal`
-  is missing or not an
-  `AbortSignal`
-  instance
-- Only active when
-  `NODE_ENV !== 'production'`
-
-- Helps catch
-  `getConfig`
-  implementation errors
+- Warns if `config.signal` is missing or not an `AbortSignal` instance
+- Only active when `NODE_ENV !== 'production'`
+- Helps catch `getConfig` implementation errors
 
 **Example:** Context after execution
 
@@ -431,15 +391,12 @@ Performs the following operations:
 Lifecycle hook: called when execution fails
 
 Handles abort errors and cleans up resources.
-Returns
-`AbortError`
-if error is abort-related, otherwise returns void
+Returns `AbortError` if error is abort-related, otherwise returns void
 to allow other plugins to handle the error.
 
 **Returns:**
 
-`AbortError`
-if error is abort-related, void otherwise
+`AbortError` if error is abort-related, void otherwise
 
 #### Parameters
 
@@ -504,18 +461,12 @@ Custom abort manager instance
 
 Custom configuration extractor function
 
-Extracts
-`AborterConfig`
-from executor context parameters.
+Extracts `AborterConfig` from executor context parameters.
 This is crucial when using the plugin with custom parameter structures.
 
-**Important:** Make sure to extract the
-`signal`
-property if it exists
+**Important:** Make sure to extract the `signal` property if it exists
 in the original parameters. The plugin will warn in development mode
-if
-`signal`
-is missing or invalid.
+if `signal` is missing or invalid.
 
 **Example:**
 
@@ -563,15 +514,12 @@ Default timeout duration for all operations
 
 Configuration extractor function type for AborterPlugin
 
-Extracts
-`AborterConfig`
-from executor context parameters.
+Extracts `AborterConfig` from executor context parameters.
 Enables flexible configuration passing in different execution contexts.
 
 **Returns:**
 
-Extracted abort configuration compatible with
-`AborterConfig`
+Extracted abort configuration compatible with `AborterConfig`
 
 **Example:**
 

@@ -10,9 +10,7 @@
 
 **Since:** `3.0.0`
 
-ZustandStoreAdapter
-implementation wrapping a zustand vanilla
-StoreApi
+<a href="#zustandstoreadapter-class" class="tsd-kind-class">ZustandStoreAdapter</a> implementation wrapping a zustand vanilla StoreApi
 
 ---
 

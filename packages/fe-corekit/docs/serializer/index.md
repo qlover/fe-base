@@ -30,12 +30,9 @@ Core functionality:
 
 ### Exported Members
 
-- `SerializerInterface`
-  : Base interface for all serializers
-- `JSONSerializer`
-  : JSON serialization implementation
-- `Base64Serializer`
-  : Base64 encoding/decoding implementation
+- `SerializerInterface`: Base interface for all serializers
+- `JSONSerializer`: JSON serialization implementation
+- `Base64Serializer`: Base64 encoding/decoding implementation
 
 ### Basic Usage
 
@@ -224,13 +221,8 @@ const restored = serializer.deserialize(serialized);
 
 **See:**
 
-- JSONSerializer
-  for JSON serialization
-
-- Base64Serializer
-  for Base64 encoding
-
-- SerializerInterface
-  for custom serializer implementation
+- <a href="./JSONSerializer.md#jsonserializer-class" class="tsd-kind-class">JSONSerializer</a> for JSON serialization
+- <a href="./Base64Serializer.md#base64serializer-class" class="tsd-kind-class">Base64Serializer</a> for Base64 encoding
+- SerializerInterface for custom serializer implementation
 
 ---

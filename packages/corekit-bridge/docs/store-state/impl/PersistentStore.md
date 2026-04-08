@@ -13,62 +13,29 @@
 Abstract persistent store interface
 
 - Significance: Provides a base class for stores that need to persist state to storage
-- Core idea: Pair persistence hooks (
-  `restore`
-  /
-  `persist`
-  ) with a subclass-defined
-  `update()`
-  path
-  (see
-  AsyncStore
-  , which forwards to a composed
-  StoreInterface
-  )
+- Core idea: Pair persistence hooks (`restore` / `persist`) with a subclass-defined `update()` path
+  (see AsyncStore, which forwards to a composed StoreInterface)
 - Main function: Automatically sync state changes to storage and load state from storage
 - Main purpose: Enable state persistence with flexible storage backends
 
 Core features:
 
-- Automatic persistence: State changes via
-  `emit()`
-  call
-  `update()`
-  then persist (when enabled)
+- Automatic persistence: State changes via `emit()` call `update()` then persist (when enabled)
 - Storage restoration: Load state from storage during initialization
-- Flexible storage backends: Support any
-  `StorageInterface`
-  implementation (localStorage, sessionStorage, cookies, etc.)
+- Flexible storage backends: Support any `StorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
 - Error resilience: Persistence failures don't prevent state updates
 - Optional persistence: Can skip persistence during restore operations to prevent circular updates
 
 Design decisions:
 
 - Persistence errors are silently ignored to prevent state update failures
-- Storage is optional (can be
-  `null`
-  ) to support stores that don't need persistence
-- `restore()`
-  is NOT called automatically by default (
-  `initRestore`
-  defaults to
-  `false`
-  )
+- Storage is optional (can be `null`) to support stores that don't need persistence
+- `restore()` is NOT called automatically by default (`initRestore` defaults to `false`)
   to avoid initialization order issues with subclass fields (e.g., storageKey)
-- Subclasses should call
-  `restore()`
-  manually in their constructors after fields are initialized
-- Subclasses must implement
-  `restore()`
-  and
-  `persist()`
-  to define storage-specific logic
-- Expiration support: If a state needs expiration functionality, it can define an
-  `expires`
-  field
-  in its own state interface (e.g.,
-  `expires?: number | Date | null`
-  ). The base interface
+- Subclasses should call `restore()` manually in their constructors after fields are initialized
+- Subclasses must implement `restore()` and `persist()` to define storage-specific logic
+- Expiration support: If a state needs expiration functionality, it can define an `expires` field
+  in its own state interface (e.g., `expires?: number | Date | null`). The base interface
   doesn't enforce this, allowing subclasses to decide whether expiration is needed.
 
 **Example:**
@@ -81,18 +48,8 @@ implements `restore` / `persist`, and forwards mutations through a composed {@li
 
 **Example:** Subclass sketch (advanced)
 
-The constructor is
-`super(storage, initRestore)`
-— there is **no** state factory parameter
-on
-`PersistentStore`
-. Subclasses must override
-PersistentStore.update
-to apply
-snapshots, and keep their own “current” snapshot if
-`persist()`
-needs a default when called
-with no argument.
+The constructor is `super(storage, initRestore)` — there is **no** state factory parameter
+on `PersistentStore`.
 
 ```typescript
 class MyStoreState implements StoreStateInterface {
@@ -165,30 +122,22 @@ class MyStore extends PersistentStore<MyStoreState, string> {
 
 **Default:** `null`
 
-Storage implementation for persisting state, or
-`null`
-if persistence is not needed
-When
-`null`
-,
-`restore()`
-/
-`persist()`
-typically no-op (depending on subclass)
+Storage implementation for persisting state, or `null` if persistence is not needed
+When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
 
 ---
 
 #### `emit` (Method)
 
-**Type:** `(state: T, options: Object) => void`
+**Type:** `(state: T \| StoreUpdateValue<T>, options: Object) => void`
 
 #### Parameters
 
-| Name              | Type      | Optional | Default | Since | Deprecated | Description                              |
-| ----------------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `state`           | `T`       | ❌       | -       | -     | -          | The new state to emit and persist        |
-| `options`         | `Object`  | ✅       | -       | -     | -          | Optional configuration for emit behavior |
-| `options.persist` | `boolean` | ✅       | -       | -     | -          | Whether to persist state to storage      |
+| Name              | Type                       | Optional | Default | Since | Deprecated | Description                              |
+| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
+| `state`           | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | The new state to emit and persist        |
+| `options`         | `Object`                   | ✅       | -       | -     | -          | Optional configuration for emit behavior |
+| `options.persist` | `boolean`                  | ✅       | -       | -     | -          | Whether to persist state to storage      |
 
 - `true` or `undefined`: Persist state to storage (default behavior)
 - `false`: Skip persistence, useful during restore operations to prevent circular updates |
@@ -209,18 +158,8 @@ unless explicitly disabled via options.
 
 Behavior:
 
-- Dispatches through subclass
-  `update()`
-  (e.g.
-  AsyncStore
-  → inner
-  StoreInterface
-  )
-- Automatically persists state to storage if
-  `persist`
-  option is not
-  `false`
-  and storage is configured
+- Dispatches through subclass `update()` (e.g. AsyncStore → inner StoreInterface)
+- Automatically persists state to storage if `persist` option is not `false` and storage is configured
 - Persistence failures are silently ignored to prevent state update failures
 - State update always succeeds even if persistence fails
 
@@ -282,11 +221,11 @@ override emit(state: T, options?: { persist?: boolean }): void {
 
 #### Parameters
 
-| Name              | Type      | Optional | Default | Since | Deprecated | Description                              |
-| ----------------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `state`           | `T`       | ❌       | -       | -     | -          | The new state to emit and persist        |
-| `options`         | `Object`  | ✅       | -       | -     | -          | Optional configuration for emit behavior |
-| `options.persist` | `boolean` | ✅       | -       | -     | -          | Whether to persist state to storage      |
+| Name              | Type                       | Optional | Default | Since | Deprecated | Description                              |
+| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
+| `state`           | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | The new state to emit and persist        |
+| `options`         | `Object`                   | ✅       | -       | -     | -          | Optional configuration for emit behavior |
+| `options.persist` | `boolean`                  | ✅       | -       | -     | -          | Whether to persist state to storage      |
 
 - `true` or `undefined`: Persist state to storage (default behavior)
 - `false`: Skip persistence, useful during restore operations to prevent circular updates |
@@ -306,9 +245,7 @@ override emit(state: T, options?: { persist?: boolean }): void {
 Get the storage instance
 
 Returns the storage implementation used by this store for persistence operations.
-Returns
-`null`
-if no storage was configured during construction.
+Returns `null` if no storage was configured during construction.
 
 Use cases:
 
@@ -318,9 +255,7 @@ Use cases:
 
 **Returns:**
 
-The storage instance or
-`null`
-if not configured
+The storage instance or `null` if not configured
 
 **Example:** Check if storage is available
 
@@ -346,13 +281,13 @@ if (storage) {
 
 #### `persist` (Method)
 
-**Type:** `(state: S) => void`
+**Type:** `(state: T) => void`
 
 #### Parameters
 
 | Name    | Type | Optional | Default | Since | Deprecated | Description               |
 | ------- | ---- | -------- | ------- | ----- | ---------- | ------------------------- |
-| `state` | `S`  | ✅       | -       | -     | -          | Optional state to persist |
+| `state` | `T`  | ✅       | -       | -     | -          | Optional state to persist |
 
 - If provided: Persist the specified state object
 - If `undefined`: Persist the current snapshot your subclass holds (the base class has no `this.state`) |
@@ -366,64 +301,41 @@ if (storage) {
 Persist current state to storage
 
 This abstract method must be implemented by subclasses to define how state is persisted
-to storage. It is called automatically by
-`emit()`
-when state changes (only if storage
-is configured and
-`persist`
-option is not
-`false`
-).
+to storage. It is called automatically by `emit()` when state changes (only if storage
+is configured and `persist` option is not `false`).
 
 Implementation requirements:
 
-- Check if storage is configured (
-  `this.storage`
-  is not
-  `null`
-  )
+- Check if storage is configured (`this.storage` is not `null`)
 - Serialize state data appropriately for the storage backend
 - Use storage-specific keys to store the state
-- Handle storage-specific options if needed (via
-  `Opt`
-  type parameter)
+- Handle storage-specific options if needed (via `Opt` type parameter)
 - Do nothing if storage is not configured (graceful no-op)
 
 Error handling:
 
 - This method may throw errors (e.g., storage quota exceeded, permission denied, storage unavailable)
-- Errors thrown here are caught by
-  `emit()`
-  to prevent state update failures
+- Errors thrown here are caught by `emit()` to prevent state update failures
 - The state update will still succeed even if persistence fails
 - Subclasses can implement retry logic or error recovery if needed
 
 When called:
 
-- Automatically called by
-  `emit()`
-  after state is updated (unless
-  `{ persist: false }`
-  is specified)
+- Automatically called by `emit()` after state is updated (unless `{ persist: false }` is specified)
 - Can be called manually to force persistence of current state
 - Can be called with a specific state to persist that state instead of current state
 
 **Returns:**
 
-`void`
-
-- Persisting is a side effect operation with no return value
+`void` - Persisting is a side effect operation with no return value
 
 **Throws:**
 
 May throw errors if storage operations fail, including:
 
-- `QuotaExceededError`
-  : Storage quota exceeded (e.g., localStorage full)
-- `SecurityError`
-  : Permission denied (e.g., in private browsing mode)
-- `TypeError`
-  : Invalid data type for storage
+- `QuotaExceededError`: Storage quota exceeded (e.g., localStorage full)
+- `SecurityError`: Permission denied (e.g., in private browsing mode)
+- `TypeError`: Invalid data type for storage
 - Storage-specific errors from the storage implementation
 
 **Example:** Basic implementation
@@ -492,10 +404,22 @@ store.persist(customState);
 
 | Name    | Type | Optional | Default | Since | Deprecated | Description               |
 | ------- | ---- | -------- | ------- | ----- | ---------- | ------------------------- |
-| `state` | `S`  | ✅       | -       | -     | -          | Optional state to persist |
+| `state` | `T`  | ✅       | -       | -     | -          | Optional state to persist |
 
 - If provided: Persist the specified state object
 - If `undefined`: Persist the current snapshot your subclass holds (the base class has no `this.state`) |
+
+---
+
+##### `persist` (CallSignature)
+
+**Type:** `void`
+
+#### Parameters
+
+| Name    | Type                  | Optional | Default | Since | Deprecated | Description |
+| ------- | --------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `StoreUpdateValue<T>` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -512,67 +436,35 @@ store.persist(customState);
 Restore state from storage and merge with current state
 
 This abstract method must be implemented by subclasses to define how state is restored
-from storage. It is called automatically during construction (if
-`initRestore`
-is
-`true`
-)
+from storage. It is called automatically during construction (if `initRestore` is `true`)
 and can also be called manually to refresh state from storage.
 
 Implementation requirements:
 
-- Check if storage is configured (
-  `this.storage`
-  is not
-  `null`
-  )
+- Check if storage is configured (`this.storage` is not `null`)
 - Retrieve state from storage using storage-specific keys
 - Validate and transform stored data into the expected state type
-- Handle expiration checks if the state interface defines an
-  `expires`
-  field
-- Update store state using
-  `emit()`
-  with
-  `{ persist: false }`
-  to prevent circular updates
-- Return
-  `null`
-  if storage is not configured, no state is found, or restoration fails
+- Handle expiration checks if the state interface defines an `expires` field
+- Update store state using `emit()` with `{ persist: false }` to prevent circular updates
+- Return `null` if storage is not configured, no state is found, or restoration fails
 
 Error handling:
 
 - Should catch and handle storage errors gracefully
-- Return
-  `null`
-  on any error to indicate restoration failure
+- Return `null` on any error to indicate restoration failure
 - Should not throw errors that would break store initialization
 
 State update pattern:
 
-- Always use
-  `this.emit(restoredState, { persist: false })`
-  when updating state during restore
-- This prevents triggering
-  `persist()`
-  which would write back to storage unnecessarily
-- The
-  `{ persist: false }`
-  option ensures no circular updates occur
+- Always use `this.emit(restoredState, { persist: false })` when updating state during restore
+- This prevents triggering `persist()` which would write back to storage unnecessarily
+- The `{ persist: false }` option ensures no circular updates occur
 
 **Returns:**
 
-The restored state of type
-`R`
-, or
-`null`
-if:
+The restored state of type `R`, or `null` if:
 
-- Storage is not configured (
-  `this.storage`
-  is
-  `null`
-  )
+- Storage is not configured (`this.storage` is `null`)
 - No state is found in storage
 - State restoration fails (e.g., invalid data, storage error)
 - State has expired (if expiration checking is implemented)
@@ -653,29 +545,5 @@ restore(): string | null {
   return null;
 }
 ```
-
----
-
-#### `update` (Method)
-
-**Type:** `(_state: T \| StoreUpdateValue<T>) => void`
-
-#### Parameters
-
-| Name     | Type                       | Optional | Default | Since | Deprecated | Description |
-| -------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_state` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          |             |
-
----
-
-##### `update` (CallSignature)
-
-**Type:** `void`
-
-#### Parameters
-
-| Name     | Type                       | Optional | Default | Since | Deprecated | Description |
-| -------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_state` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          |             |
 
 ---

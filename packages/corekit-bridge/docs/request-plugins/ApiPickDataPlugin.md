@@ -8,15 +8,9 @@
 
 **Type:** `class ApiPickDataPlugin`
 
-From
-`RequestAdapterResponse`
-pick data
+From `RequestAdapterResponse` pick data
 
-Return
-`RequestAdapterResponse`
-'s
-`data`
-property
+Return `RequestAdapterResponse`'s `data` property
 
 ---
 

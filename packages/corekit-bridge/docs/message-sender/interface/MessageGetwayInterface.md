@@ -295,9 +295,7 @@ const options: GatewayOptions<ChatMessage, CustomParams> = {
 Additional request parameters
 
 Custom parameters to be sent with the message request.
-The type can be customized using the generic parameter
-`P`
-.
+The type can be customized using the generic parameter `P`.
 
 **Example:**
 
@@ -331,14 +329,8 @@ Whether to use streaming mode
 
 Controls the message transmission mode:
 
-- `true`
-  : Streaming mode - content is progressively output (
-  `onChunk`
-  will be called)
-- `false`
-  or
-  `undefined`
-  : Normal mode - complete content returned at once
+- `true`: Streaming mode - content is progressively output (`onChunk` will be called)
+- `false` or `undefined`: Normal mode - complete content returned at once
 
 Important:
 

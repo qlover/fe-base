@@ -88,9 +88,7 @@ various content formats (string, rich text, structured data).
 Message completion timestamp
 
 Unix timestamp (milliseconds) when the message processing completed.
-A value of
-`0`
-indicates the message is still in progress.
+A value of `0` indicates the message is still in progress.
 
 ---
 
@@ -103,9 +101,7 @@ indicates the message is still in progress.
 Error information if message processing failed
 
 Contains error details if the message failed to send or process.
-
-`null`
-indicates no error occurred.
+`null` indicates no error occurred.
 
 ---
 
@@ -115,9 +111,7 @@ indicates no error occurred.
 
 File attachments associated with the message
 
-Array of
-`File`
-objects attached to the message, such as images,
+Array of `File` objects attached to the message, such as images,
 documents, or other media files.
 
 ---
@@ -201,9 +195,7 @@ Used for message ordering and duration calculations.
 Current status of the message
 
 Indicates the processing state of the message (e.g., draft, sending,
-sent, failed). The specific statuses are defined by
-`MessageStatusType`
-.
+sent, failed). The specific statuses are defined by `MessageStatusType`.
 
 ---
 

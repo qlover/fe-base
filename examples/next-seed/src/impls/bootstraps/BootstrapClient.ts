@@ -5,7 +5,6 @@ import * as globals from '../globals';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import { restoreUserService } from './RestoreUserService';
-import { AppUserApiBootstrap } from '../appApi/AppUserApiBootstrap';
 import type {
   BootstrapExecutorPlugin,
   IOCContainerInterface,
@@ -65,7 +64,6 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
 
     const bootstrapList: BootstrapExecutorPlugin[] = [
       i18nService,
-      new AppUserApiBootstrap(this.IOC(I.JSONSerializer)),
       restoreUserService
     ];
 

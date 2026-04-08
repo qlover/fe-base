@@ -361,15 +361,11 @@ Behavior:
 - Validates registration parameters (email, phone, password, code, etc.)
 - Creates new user account in the system
 - Returns user information upon successful registration
-- Returns
-  `null`
-  if registration fails
+- Returns `null` if registration fails
 
 **Returns:**
 
-Promise resolving to user information if registration succeeds, or
-`null`
-if it fails
+Promise resolving to user information if registration succeeds, or `null` if it fails
 
 **Example:** Email registration
 
@@ -493,9 +489,7 @@ This is a convenience method that typically accesses the store's result.
 
 **Returns:**
 
-The current user information, or
-`null`
-if not available
+The current user information, or `null` if not available
 
 **Example:** Get current user
 
@@ -593,15 +587,11 @@ Behavior:
 
 - Returns cached user info if available and valid
 - Fetches from server if no cache exists
-- Returns
-  `null`
-  if user is not authenticated or info cannot be retrieved
+- Returns `null` if user is not authenticated or info cannot be retrieved
 
 **Returns:**
 
-Promise resolving to user information, or
-`null`
-if not available
+Promise resolving to user information, or `null` if not available
 
 **Example:** Get user info
 
@@ -689,15 +679,11 @@ Behavior:
 
 - Always fetches fresh data from server
 - Updates cache with new data
-- Returns
-  `null`
-  if refresh fails or user is not authenticated
+- Returns `null` if refresh fails or user is not authenticated
 
 **Returns:**
 
-Promise resolving to refreshed user information, or
-`null`
-if refresh fails
+Promise resolving to refreshed user information, or `null` if refresh fails
 
 **Example:** Refresh user info
 
@@ -756,12 +742,9 @@ User service gateway interface
 
 This interface combines three separate interfaces:
 
-- `LoginInterface`
-  : Handles user authentication (login/logout)
-- `RegisterInterface`
-  : Handles user registration
-- `UserInfoInterface`
-  : Handles user information retrieval
+- `LoginInterface`: Handles user authentication (login/logout)
+- `RegisterInterface`: Handles user registration
+- `UserInfoInterface`: Handles user information retrieval
 
 **Example:** Gateway implementation
 
@@ -822,15 +805,11 @@ Behavior:
 
 - Returns cached user info if available and valid
 - Fetches from server if no cache exists
-- Returns
-  `null`
-  if user is not authenticated or info cannot be retrieved
+- Returns `null` if user is not authenticated or info cannot be retrieved
 
 **Returns:**
 
-Promise resolving to user information, or
-`null`
-if not available
+Promise resolving to user information, or `null` if not available
 
 **Example:** Get user info
 
@@ -1059,15 +1038,11 @@ Behavior:
 
 - Always fetches fresh data from server
 - Updates cache with new data
-- Returns
-  `null`
-  if refresh fails or user is not authenticated
+- Returns `null` if refresh fails or user is not authenticated
 
 **Returns:**
 
-Promise resolving to refreshed user information, or
-`null`
-if refresh fails
+Promise resolving to refreshed user information, or `null` if refresh fails
 
 **Example:** Refresh user info
 
@@ -1145,15 +1120,11 @@ Behavior:
 - Validates registration parameters (email, phone, password, code, etc.)
 - Creates new user account in the system
 - Returns user information upon successful registration
-- Returns
-  `null`
-  if registration fails
+- Returns `null` if registration fails
 
 **Returns:**
 
-Promise resolving to user information if registration succeeds, or
-`null`
-if it fails
+Promise resolving to user information if registration succeeds, or `null` if it fails
 
 **Example:** Email registration
 
@@ -1248,9 +1219,7 @@ Core features:
 
 Design decisions:
 
-- Extends
-  `UserServiceGateway`
-  : Inherits all gateway operations
+- Extends `UserServiceGateway`: Inherits all gateway operations
 - Unified store: Single store manages both credential and user info
 - Authentication check: Verifies unified store for authentication status
 
@@ -1281,9 +1250,7 @@ This is a convenience method that accesses the state's credential property direc
 
 **Returns:**
 
-The current credential data, or
-`null`
-if not available
+The current credential data, or `null` if not available
 
 ---
 
@@ -1333,9 +1300,7 @@ that accesses the state's userInfo property directly.
 
 **Returns:**
 
-The current user information, or
-`null`
-if not available
+The current user information, or `null` if not available
 
 ---
 
@@ -1370,15 +1335,11 @@ Behavior:
 
 - Returns cached user info if available and valid
 - Fetches from server if no cache exists
-- Returns
-  `null`
-  if user is not authenticated or info cannot be retrieved
+- Returns `null` if user is not authenticated or info cannot be retrieved
 
 **Returns:**
 
-Promise resolving to user information, or
-`null`
-if not available
+Promise resolving to user information, or `null` if not available
 
 **Example:** Get user info
 
@@ -1451,10 +1412,7 @@ indicating that the user is fully authenticated.
 
 **Returns:**
 
-`true`
-if user is authenticated (both stores have valid results),
-`false`
-otherwise
+`true` if user is authenticated (both stores have valid results), `false` otherwise
 
 **Example:** Check authentication status
 
@@ -1491,10 +1449,7 @@ This method can be used to validate credential data before using it.
 
 **Returns:**
 
-`true`
-if the value is a valid credential,
-`false`
-otherwise
+`true` if the value is a valid credential, `false` otherwise
 
 **Example:** Validate credential
 
@@ -1538,10 +1493,7 @@ This method can be used to validate user data before using it.
 
 **Returns:**
 
-`true`
-if the value is a valid user,
-`false`
-otherwise
+`true` if the value is a valid user, `false` otherwise
 
 **Example:** Validate user
 
@@ -1735,15 +1687,11 @@ Behavior:
 
 - Always fetches fresh data from server
 - Updates cache with new data
-- Returns
-  `null`
-  if refresh fails or user is not authenticated
+- Returns `null` if refresh fails or user is not authenticated
 
 **Returns:**
 
-Promise resolving to refreshed user information, or
-`null`
-if refresh fails
+Promise resolving to refreshed user information, or `null` if refresh fails
 
 **Example:** Refresh user info
 
@@ -1821,15 +1769,11 @@ Behavior:
 - Validates registration parameters (email, phone, password, code, etc.)
 - Creates new user account in the system
 - Returns user information upon successful registration
-- Returns
-  `null`
-  if registration fails
+- Returns `null` if registration fails
 
 **Returns:**
 
-Promise resolving to user information if registration succeeds, or
-`null`
-if it fails
+Promise resolving to user information if registration succeeds, or `null` if it fails
 
 **Example:** Email registration
 

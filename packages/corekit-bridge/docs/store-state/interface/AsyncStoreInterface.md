@@ -77,20 +77,10 @@ when an operation encounters an error or exception.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  with the failure information
-- Optionally sets
-  `result`
-  if partial results are available
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` with the failure information
+- Optionally sets `result` if partial results are available
 - Sets status to indicate failed state
 
 **Example:** Handle API error
@@ -139,35 +129,20 @@ try {
 
 Get the duration of the async operation
 
-Calculates the duration of the async operation based on
-`startTime`
-and
-`endTime`
-.
+Calculates the duration of the async operation based on `startTime` and `endTime`.
 Returns the time elapsed in milliseconds.
 
 Behavior:
 
-- If operation hasn't completed (
-  `endTime`
-  is
-  `0`
-  ), returns time since start
+- If operation hasn't completed (`endTime` is `0`), returns time since start
 - If operation has completed, returns total duration
-- Returns
-  `0`
-  if operation hasn't started (
-  `startTime`
-  is
-  `0`
-  )
+- Returns `0` if operation hasn't started (`startTime` is `0`)
 
 **Returns:**
 
 The duration of the async operation in milliseconds
 
-- `0`
-  if operation hasn't started
+- `0` if operation hasn't started
 - Time since start if operation is in progress
 - Total duration if operation has completed
 
@@ -207,31 +182,11 @@ starting a new operation or clearing previous operation state.
 
 Behavior:
 
-- Resets
-  `loading`
-  to
-  `false`
-
-- Clears
-  `result`
-  (sets to
-  `null`
-  )
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
-- Resets
-  `startTime`
-  and
-  `endTime`
-  to
-  `0`
-
-- Resets
-  `status`
-  to initial value (if applicable)
+- Resets `loading` to `false`
+- Clears `result` (sets to `null`)
+- Clears `error` (sets to `null`)
+- Resets `startTime` and `endTime` to `0`
+- Resets `status` to initial value (if applicable)
 
 **Example:** Reset before new operation
 
@@ -271,30 +226,16 @@ asyncService.reset();
 
 Start an async operation
 
-Marks the beginning of an async operation and sets the loading state to
-`true`
-.
+Marks the beginning of an async operation and sets the loading state to `true`.
 This method should be called when initiating any asynchronous task (API calls,
 data fetching, background processing, etc.).
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `true`
-
-- Records
-  `startTime`
-  timestamp
-- Optionally sets initial
-  `result`
-  if provided
-- Resets
-  `error`
-  to
-  `null`
-  (if needed)
+- Sets `loading` to `true`
+- Records `startTime` timestamp
+- Optionally sets initial `result` if provided
+- Resets `error` to `null` (if needed)
 
 **Example:** Start API request
 
@@ -341,30 +282,15 @@ asyncService.start(cachedData);
 Stop an async operation manually
 
 Marks the end of an async operation due to manual cancellation or stopping.
-This is different from
-`failed()`
-or
-`success()`
-
-- it represents an intentional
-  stop (e.g., user cancellation, timeout, or abort signal).
+This is different from `failed()` or `success()` - it represents an intentional
+stop (e.g., user cancellation, timeout, or abort signal).
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  if provided (optional, for cancellation reasons)
-- Optionally sets
-  `result`
-  if available (e.g., partial results)
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` if provided (optional, for cancellation reasons)
+- Optionally sets `result` if available (e.g., partial results)
 - Sets status to indicate stopped state
 
 **Example:** Stop operation due to user cancellation
@@ -414,22 +340,10 @@ called when an operation completes successfully.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `result`
-  with the successful result data
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `result` with the successful result data
+- Clears `error` (sets to `null`)
 - Sets status to indicate success state
 
 **Example:** Handle successful API response
@@ -598,16 +512,11 @@ of an async operation without directly accessing state properties.
 
 Status checks:
 
-- `isSuccess()`
-  : Operation completed successfully
-- `isFailed()`
-  : Operation failed with an error
-- `isStopped()`
-  : Operation was manually stopped
-- `isCompleted()`
-  : Operation has finished (success, failed, or stopped)
-- `isPending()`
-  : Operation is currently in progress
+- `isSuccess()`: Operation completed successfully
+- `isFailed()`: Operation failed with an error
+- `isStopped()`: Operation was manually stopped
+- `isCompleted()`: Operation has finished (success, failed, or stopped)
+- `isPending()`: Operation is currently in progress
 
 **Example:** Check operation status
 
@@ -643,19 +552,12 @@ if (asyncService.isPending()) {
 
 Check if the async operation is completed
 
-Returns
-`true`
-if the operation has finished, regardless of outcome.
-This includes success, failure, and stopped states. Returns
-`false`
-if still in progress.
+Returns `true` if the operation has finished, regardless of outcome.
+This includes success, failure, and stopped states. Returns `false` if still in progress.
 
 **Returns:**
 
-`true`
-if the async operation is completed (success, failed, or stopped),
-`false`
-otherwise
+`true` if the async operation is completed (success, failed, or stopped), `false` otherwise
 
 **Example:** Check if operation finished
 
@@ -680,25 +582,12 @@ if (asyncService.isCompleted()) {
 
 Check if the async operation failed
 
-Returns
-`true`
-if the operation has failed with an error.
-This typically means
-`loading`
-is
-`false`
-and
-`error`
-is not
-`null`
-.
+Returns `true` if the operation has failed with an error.
+This typically means `loading` is `false` and `error` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is failed,
-`false`
-otherwise
+`true` if the async operation is failed, `false` otherwise
 
 **Example:** Handle failure
 
@@ -723,21 +612,12 @@ if (asyncService.isFailed()) {
 
 Check if the async operation is pending (in progress)
 
-Returns
-`true`
-if the operation is currently in progress.
-This is equivalent to checking if
-`loading`
-is
-`true`
-.
+Returns `true` if the operation is currently in progress.
+This is equivalent to checking if `loading` is `true`.
 
 **Returns:**
 
-`true`
-if the async operation is pending (in progress),
-`false`
-otherwise
+`true` if the async operation is pending (in progress), `false` otherwise
 
 **Example:** Show loading indicator
 
@@ -761,17 +641,12 @@ if (asyncService.isPending()) {
 
 Check if the async operation was stopped
 
-Returns
-`true`
-if the operation was manually stopped (e.g., user cancellation).
+Returns `true` if the operation was manually stopped (e.g., user cancellation).
 This is different from failure - stopping is intentional, failure is an error.
 
 **Returns:**
 
-`true`
-if the async operation is stopped,
-`false`
-otherwise
+`true` if the async operation is stopped, `false` otherwise
 
 **Example:** Handle stopped operation
 
@@ -795,29 +670,12 @@ if (asyncService.isStopped()) {
 
 Check if the async operation completed successfully
 
-Returns
-`true`
-if the operation has completed successfully with a result.
-This typically means
-`loading`
-is
-`false`
-,
-`error`
-is
-`null`
-, and
-`result`
-is not
-`null`
-.
+Returns `true` if the operation has completed successfully with a result.
+This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is successful,
-`false`
-otherwise
+`true` if the async operation is successful, `false` otherwise
 
 **Example:** Check success before accessing result
 
@@ -838,11 +696,7 @@ if (asyncService.isSuccess()) {
 
 Async store interface combining state management with async operation lifecycle
 
-This interface extends
-`AsyncStateAction`
-and
-`AsyncStateStatusInterface`
-to provide
+This interface extends `AsyncStateAction` and `AsyncStateStatusInterface` to provide
 a complete solution for managing asynchronous operations with reactive state management.
 
 Core features:
@@ -855,19 +709,10 @@ Core features:
 
 Implementation pattern:
 
-- Typically
-  AsyncStore
-  : extends
-  PersistentStore
-  , composes
-  `StoreInterface<State>`
-  ,
+- Typically AsyncStore: extends PersistentStore, composes `StoreInterface<State>`,
   and implements this interface
 - Combines async operation management with persistent state storage
-- Reactive updates: use
-  `getStore().subscribe(...)`
-  on the returned
-  StoreInterface
+- Reactive updates: use `getStore().subscribe(...)` on the returned <a href="./StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a>
 
 **Example:** Basic usage
 
@@ -952,11 +797,11 @@ const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
 
 #### Parameters
 
-| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                  |
-| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
-| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
-| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                              |
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                                                        |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                                                                    |
 
 ---
 
@@ -964,9 +809,7 @@ const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
 
 **Type:** `void`
 
-Apply a state patch and optionally persist (see
-PersistentStore.emit
-)
+Apply a state patch and optionally persist (see PersistentStore.emit)
 
 **Example:**
 
@@ -977,11 +820,11 @@ asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
 
 #### Parameters
 
-| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                  |
-| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
-| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
-| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                              |
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                                                        |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                                                                    |
 
 ---
 
@@ -1011,20 +854,10 @@ when an operation encounters an error or exception.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  with the failure information
-- Optionally sets
-  `result`
-  if partial results are available
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` with the failure information
+- Optionally sets `result` if partial results are available
 - Sets status to indicate failed state
 
 **Example:** Handle API error
@@ -1073,35 +906,20 @@ try {
 
 Get the duration of the async operation
 
-Calculates the duration of the async operation based on
-`startTime`
-and
-`endTime`
-.
+Calculates the duration of the async operation based on `startTime` and `endTime`.
 Returns the time elapsed in milliseconds.
 
 Behavior:
 
-- If operation hasn't completed (
-  `endTime`
-  is
-  `0`
-  ), returns time since start
+- If operation hasn't completed (`endTime` is `0`), returns time since start
 - If operation has completed, returns total duration
-- Returns
-  `0`
-  if operation hasn't started (
-  `startTime`
-  is
-  `0`
-  )
+- Returns `0` if operation hasn't started (`startTime` is `0`)
 
 **Returns:**
 
 The duration of the async operation in milliseconds
 
-- `0`
-  if operation hasn't started
+- `0` if operation hasn't started
 - Time since start if operation is in progress
 - Total duration if operation has completed
 
@@ -1136,18 +954,12 @@ console.log(`Operation completed in ${duration}ms`);
 
 Get the error from the async operation
 
-Returns the error information if the operation failed, or
-`null`
-if no error.
-Equivalent to
-`getState().error`
-.
+Returns the error information if the operation failed, or `null` if no error.
+Equivalent to `getState().error`.
 
 **Returns:**
 
-The error information if operation failed, or
-`null`
-if no error
+The error information if operation failed, or `null` if no error
 
 **Example:** Handle error
 
@@ -1173,16 +985,11 @@ if (error) {
 Get the loading state of the async operation
 
 Convenience method to check if an operation is currently in progress.
-Equivalent to
-`getState().loading`
-.
+Equivalent to `getState().loading`.
 
 **Returns:**
 
-`true`
-if the operation is in progress,
-`false`
-otherwise
+`true` if the operation is in progress, `false` otherwise
 
 **Example:** Check loading state
 
@@ -1206,18 +1013,12 @@ if (asyncService.getLoading()) {
 
 Get the result from the async operation
 
-Returns the result data if the operation succeeded, or
-`null`
-if no result.
-Equivalent to
-`getState().result`
-.
+Returns the result data if the operation succeeded, or `null` if no result.
+Equivalent to `getState().result`.
 
 **Returns:**
 
-The result data if operation succeeded, or
-`null`
-if no result
+The result data if operation succeeded, or `null` if no result
 
 **Example:** Access result
 
@@ -1249,18 +1050,12 @@ This is a snapshot of the current state at the time of call.
 
 Current state object containing:
 
-- `loading`
-  : Whether operation is in progress
-- `result`
-  : Operation result (if successful)
-- `error`
-  : Error information (if failed)
-- `startTime`
-  : Operation start timestamp
-- `endTime`
-  : Operation end timestamp
-- `status`
-  : Operation status
+- `loading`: Whether operation is in progress
+- `result`: Operation result (if successful)
+- `error`: Error information (if failed)
+- `startTime`: Operation start timestamp
+- `endTime`: Operation end timestamp
+- `status`: Operation status
 
 **Example:** Get current state
 
@@ -1296,18 +1091,12 @@ if (state.loading) {
 Get the status of the async operation
 
 Returns the status information about the operation state.
-The status type depends on the implementation (e.g.,
-`'pending' | 'success' | 'failed' | 'stopped'`
-).
-Equivalent to
-`getState().status`
-.
+The status type depends on the implementation (e.g., `'pending' | 'success' | 'failed' | 'stopped'`).
+Equivalent to `getState().status`.
 
 **Returns:**
 
-The status of the async operation, or
-`undefined`
-if not set
+The status of the async operation, or `undefined` if not set
 
 **Example:** Check status
 
@@ -1342,19 +1131,8 @@ This allows consumers to subscribe to state changes and react to updates.
 
 Implementation note:
 
-- AsyncStore
-  returns its composed
-  StoreInterface
-  instance (not
-  `this`
-  )
-- Subscribe with
-  StoreInterface.subscribe
-  ; underlying
-  `SliceStore`
-  may still use
-  `observe`
-  internally
+- AsyncStore returns its composed <a href="./StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> instance (not `this`)
+- Subscribe with <a href="./StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>; underlying `SliceStore` may still use `observe` internally
 
 **Returns:**
 
@@ -1390,19 +1168,12 @@ const currentState = port.getState();
 
 Check if the async operation is completed
 
-Returns
-`true`
-if the operation has finished, regardless of outcome.
-This includes success, failure, and stopped states. Returns
-`false`
-if still in progress.
+Returns `true` if the operation has finished, regardless of outcome.
+This includes success, failure, and stopped states. Returns `false` if still in progress.
 
 **Returns:**
 
-`true`
-if the async operation is completed (success, failed, or stopped),
-`false`
-otherwise
+`true` if the async operation is completed (success, failed, or stopped), `false` otherwise
 
 **Example:** Check if operation finished
 
@@ -1427,25 +1198,12 @@ if (asyncService.isCompleted()) {
 
 Check if the async operation failed
 
-Returns
-`true`
-if the operation has failed with an error.
-This typically means
-`loading`
-is
-`false`
-and
-`error`
-is not
-`null`
-.
+Returns `true` if the operation has failed with an error.
+This typically means `loading` is `false` and `error` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is failed,
-`false`
-otherwise
+`true` if the async operation is failed, `false` otherwise
 
 **Example:** Handle failure
 
@@ -1470,21 +1228,12 @@ if (asyncService.isFailed()) {
 
 Check if the async operation is pending (in progress)
 
-Returns
-`true`
-if the operation is currently in progress.
-This is equivalent to checking if
-`loading`
-is
-`true`
-.
+Returns `true` if the operation is currently in progress.
+This is equivalent to checking if `loading` is `true`.
 
 **Returns:**
 
-`true`
-if the async operation is pending (in progress),
-`false`
-otherwise
+`true` if the async operation is pending (in progress), `false` otherwise
 
 **Example:** Show loading indicator
 
@@ -1508,17 +1257,12 @@ if (asyncService.isPending()) {
 
 Check if the async operation was stopped
 
-Returns
-`true`
-if the operation was manually stopped (e.g., user cancellation).
+Returns `true` if the operation was manually stopped (e.g., user cancellation).
 This is different from failure - stopping is intentional, failure is an error.
 
 **Returns:**
 
-`true`
-if the async operation is stopped,
-`false`
-otherwise
+`true` if the async operation is stopped, `false` otherwise
 
 **Example:** Handle stopped operation
 
@@ -1542,29 +1286,12 @@ if (asyncService.isStopped()) {
 
 Check if the async operation completed successfully
 
-Returns
-`true`
-if the operation has completed successfully with a result.
-This typically means
-`loading`
-is
-`false`
-,
-`error`
-is
-`null`
-, and
-`result`
-is not
-`null`
-.
+Returns `true` if the operation has completed successfully with a result.
+This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is successful,
-`false`
-otherwise
+`true` if the async operation is successful, `false` otherwise
 
 **Example:** Check success before accessing result
 
@@ -1590,9 +1317,7 @@ if (asyncService.isSuccess()) {
 Reset store state to initial state
 
 Clears all state data and resets to default values. This method is inherited
-from
-`AsyncStateAction`
-but is also declared here for clarity.
+from `AsyncStateAction` but is also declared here for clarity.
 
 **Example:** Reset before new operation
 
@@ -1622,30 +1347,16 @@ asyncService.start();
 
 Start an async operation
 
-Marks the beginning of an async operation and sets the loading state to
-`true`
-.
+Marks the beginning of an async operation and sets the loading state to `true`.
 This method should be called when initiating any asynchronous task (API calls,
 data fetching, background processing, etc.).
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `true`
-
-- Records
-  `startTime`
-  timestamp
-- Optionally sets initial
-  `result`
-  if provided
-- Resets
-  `error`
-  to
-  `null`
-  (if needed)
+- Sets `loading` to `true`
+- Records `startTime` timestamp
+- Optionally sets initial `result` if provided
+- Resets `error` to `null` (if needed)
 
 **Example:** Start API request
 
@@ -1692,30 +1403,15 @@ asyncService.start(cachedData);
 Stop an async operation manually
 
 Marks the end of an async operation due to manual cancellation or stopping.
-This is different from
-`failed()`
-or
-`success()`
-
-- it represents an intentional
-  stop (e.g., user cancellation, timeout, or abort signal).
+This is different from `failed()` or `success()` - it represents an intentional
+stop (e.g., user cancellation, timeout, or abort signal).
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  if provided (optional, for cancellation reasons)
-- Optionally sets
-  `result`
-  if available (e.g., partial results)
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` if provided (optional, for cancellation reasons)
+- Optionally sets `result` if available (e.g., partial results)
 - Sets status to indicate stopped state
 
 **Example:** Stop operation due to user cancellation
@@ -1765,22 +1461,10 @@ called when an operation completes successfully.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `result`
-  with the successful result data
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `result` with the successful result data
+- Clears `error` (sets to `null`)
 - Sets status to indicate success state
 
 **Example:** Handle successful API response

@@ -46,24 +46,17 @@ Core functionality:
 
 **Implementations:**
 
-- `StorageExecutor`
-  : Pipeline-based storage (serializer / encryptor / storage chain);
+- `StorageExecutor`: Pipeline-based storage (serializer / encryptor / storage chain);
   getItem uses only the last storage's value when multiple storages are present
-- `KeyStorage`
-  : Key-value storage with expiration support
-- `ObjectStorage`
-  : Object-based storage for complex data structures
+- `KeyStorage`: Key-value storage with expiration support
+- `ObjectStorage`: Object-based storage for complex data structures
 
 **Interfaces:**
 
-- `StorageInterface`
-  : Core storage contract (setItem, getItem, removeItem, clear)
-- `StorageInterface`
-  : Synchronous storage interface
-- `AsyncStorageInterface`
-  : Asynchronous storage interface
-- `KeyStorageInterface`
-  : Key-value storage interface
+- `StorageInterface`: Core storage contract (setItem, getItem, removeItem, clear)
+- `StorageInterface`: Synchronous storage interface
+- `AsyncStorageInterface`: Asynchronous storage interface
+- `KeyStorageInterface`: Key-value storage interface
 
 ### Basic Usage
 
@@ -258,16 +251,9 @@ const userStorage = new NamespacedStorage(
 
 **See:**
 
-- StorageExecutor
-  pipeline implementation (getItem uses only the last storage when multiple exist)
-
-- createStoragePlugin
-  for building plugin arrays from serializer/encryptor/storage
-
-- KeyStorage
-  for key-value storage
-
-- ObjectStorage
-  for object-based storage
+- <a href="./impl/StorageExecutor.md#storageexecutor-class" class="tsd-kind-class">StorageExecutor</a> pipeline implementation (getItem uses only the last storage when multiple exist)
+- <a href="./utils/createStoragePlugin.md#createstorageplugin-function" class="tsd-kind-function">createStoragePlugin</a> for building plugin arrays from serializer/encryptor/storage
+- <a href="./impl/KeyStorage.md#keystorage-class" class="tsd-kind-class">KeyStorage</a> for key-value storage
+- <a href="./impl/ObjectStorage.md#objectstorage-class" class="tsd-kind-class">ObjectStorage</a> for object-based storage
 
 ---

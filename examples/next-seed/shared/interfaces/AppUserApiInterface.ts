@@ -1,4 +1,4 @@
-import type { AppApiTransaction } from '@/impls/AppApiRequester';
+import type { AppApiTransaction } from '@/impls/appApi/AppApiRequester';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 

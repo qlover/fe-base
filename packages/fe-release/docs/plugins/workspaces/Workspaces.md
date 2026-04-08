@@ -158,17 +158,9 @@ Determines whether a lifecycle method should be executed
 
 Skip Logic:
 
-- Returns
-  `false`
-  if skip is
-  `true`
-  (skip all)
-- Returns
-  `false`
-  if skip matches the lifecycle name (skip specific)
-- Returns
-  `true`
-  otherwise (execute normally)
+- Returns `false` if skip is `true` (skip all)
+- Returns `false` if skip matches the lifecycle name (skip specific)
+- Returns `true` otherwise (execute normally)
 
 **Returns:**
 
@@ -816,8 +808,7 @@ The absolute path of the workspace
 
 The change labels
 
-from
-`changePackagesLabel`
+from `changePackagesLabel`
 
 ---
 

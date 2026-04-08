@@ -39,47 +39,31 @@ Core functionality:
 
 **Implementations:**
 
-- `RequestExecutor`
-  : Main request executor class
-- `RequestHeaderInjector`
-  : Header injection utility
-- `RequestPlugin`
-  : Base request plugin
-- `ResponsePlugin`
-  : Base response plugin
+- `RequestExecutor`: Main request executor class
+- `RequestHeaderInjector`: Header injection utility
+- `RequestPlugin`: Base request plugin
+- `ResponsePlugin`: Base response plugin
 
 **Adapters:**
 
-- `RequestAdapterFetch`
-  : Fetch API adapter
-- `RequestAdapterAxios`
-  : Axios adapter
+- `RequestAdapterFetch`: Fetch API adapter
+- `RequestAdapterAxios`: Axios adapter
 
 **Interfaces:**
 
-- `RequestExecutorInterface`
-  : Request executor interface
-- `RequestAdapterInterface`
-  : Adapter interface
-- `HeaderInjectorInterface`
-  : Header injection interface
-- `UrlBuilderInterface`
-  : URL builder interface
+- `RequestExecutorInterface`: Request executor interface
+- `RequestAdapterInterface`: Adapter interface
+- `HeaderInjectorInterface`: Header injection interface
+- `UrlBuilderInterface`: URL builder interface
 
 **Utilities:**
 
-- `SimpleUrlBuilder`
-  : URL construction utility
-- `appendHeaders`
-  : Header merging utility
-- `httpMethods`
-  : HTTP method constants
-- `isAbsoluteUrl`
-  : URL validation utility
-- `isAsString`
-  : Type checking utility
-- `isRequestAdapterResponse`
-  : Response type guard
+- `SimpleUrlBuilder`: URL construction utility
+- `appendHeaders`: Header merging utility
+- `httpMethods`: HTTP method constants
+- `isAbsoluteUrl`: URL validation utility
+- `isAsString`: Type checking utility
+- `isRequestAdapterResponse`: Response type guard
 
 ### Basic Usage
 
@@ -277,16 +261,9 @@ const request = new RequestExecutor({
 
 **See:**
 
-- RequestExecutor
-  for the main request executor
-
-- RequestAdapterFetch
-  for fetch adapter
-
-- RequestAdapterAxios
-  for axios adapter
-
-- SimpleUrlBuilder
-  for URL construction
+- <a href="./impl/RequestExecutor.md#requestexecutor-class" class="tsd-kind-class">RequestExecutor</a> for the main request executor
+- <a href="./adapter/RequestAdapterFetch.md#requestadapterfetch-class" class="tsd-kind-class">RequestAdapterFetch</a> for fetch adapter
+- <a href="./adapter/RequestAdapterAxios.md#requestadapteraxios-class" class="tsd-kind-class">RequestAdapterAxios</a> for axios adapter
+- <a href="./utils/SimpleUrlBuilder.md#simpleurlbuilder-class" class="tsd-kind-class">SimpleUrlBuilder</a> for URL construction
 
 ---

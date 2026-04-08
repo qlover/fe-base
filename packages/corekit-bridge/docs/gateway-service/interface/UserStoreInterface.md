@@ -34,28 +34,19 @@ Core features:
 
 State property purposes (all for authentication operations only):
 
-- `loading`
-  : Indicates if authentication operation is in progress (login/logout)
-- `result`
-  : Stores user information (User type) after successful authentication
-- `error`
-  : Stores error information when authentication operation fails
-- `startTime/endTime`
-  : Tracks authentication operation duration for performance monitoring
-- `status`
-  : Authentication operation status ('draft' | 'pending' | 'success' | 'failed' | 'stopped')
-- `credential`
-  : Stores authentication credential separately from user info
-- `userInfo`
-  : Stores user information (same as result, but provides direct access)
+- `loading`: Indicates if authentication operation is in progress (login/logout)
+- `result`: Stores user information (User type) after successful authentication
+- `error`: Stores error information when authentication operation fails
+- `startTime/endTime`: Tracks authentication operation duration for performance monitoring
+- `status`: Authentication operation status ('draft' | 'pending' | 'success' | 'failed' | 'stopped')
+- `credential`: Stores authentication credential separately from user info
+- `userInfo`: Stores user information (same as result, but provides direct access)
 
 Design decisions:
 
 - Extends AsyncStoreStateInterface<User>: Result type is fixed to User (user information)
 - Separate credential: Credential is managed separately from result for independent lifecycle
-- Single status tracking: Uses
-  `status`
-  for authentication state (no separate loginStatus)
+- Single status tracking: Uses `status` for authentication state (no separate loginStatus)
 - Authentication-only: This store is only for login/logout operations
 - Other operations: getUserInfo, register, refreshUserInfo should manage their own state
 
@@ -92,9 +83,7 @@ const state: UserServiceState = {
 Authentication credential (typically a token)
 
 Stores the credential returned from login operation.
-This is separate from
-`result`
-to allow independent management of credential and user info.
+This is separate from `result` to allow independent management of credential and user info.
 Credential lifecycle is independent from user info lifecycle.
 
 ---
@@ -181,20 +170,13 @@ Used for:
 
 Current status of the async operation
 
-Status values are defined by
-`AsyncStoreStatus`
-:
+Status values are defined by `AsyncStoreStatus`:
 
-- `DRAFT`
-  : Initial state, operation hasn't started
-- `PENDING`
-  : Operation is in progress
-- `SUCCESS`
-  : Operation completed successfully
-- `FAILED`
-  : Operation failed with an error
-- `STOPPED`
-  : Operation was manually stopped
+- `DRAFT`: Initial state, operation hasn't started
+- `PENDING`: Operation is in progress
+- `SUCCESS`: Operation completed successfully
+- `FAILED`: Operation failed with an error
+- `STOPPED`: Operation was manually stopped
 
 ---
 
@@ -224,9 +206,7 @@ Design decisions:
 - Extends AsyncStoreInterface: Inherits async operation lifecycle management
 - Dual management: Manages credential and userInfo separately but in unified state
 - Authentication-only: This store is only for login/logout operations
-- Status tracking: Uses
-  `status`
-  field for authentication state (no separate loginStatus)
+- Status tracking: Uses `status` field for authentication state (no separate loginStatus)
 - Credential persistence: Only credential is persisted, user info is not persisted
 - Store adapters: Can be adapted to AsyncStore<Credential> and AsyncStore<User> for compatibility
 
@@ -274,11 +254,11 @@ port.subscribe((state) => {
 
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                  |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                              |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                                                                    |
 
 ---
 
@@ -286,9 +266,7 @@ port.subscribe((state) => {
 
 **Type:** `void`
 
-Apply a state patch and optionally persist (see
-PersistentStore.emit
-)
+Apply a state patch and optionally persist (see PersistentStore.emit)
 
 **Example:**
 
@@ -299,11 +277,11 @@ asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
 
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                  |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                              |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                                                                    |
 
 ---
 
@@ -333,20 +311,10 @@ when an operation encounters an error or exception.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  with the failure information
-- Optionally sets
-  `result`
-  if partial results are available
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` with the failure information
+- Optionally sets `result` if partial results are available
 - Sets status to indicate failed state
 
 **Example:** Handle API error
@@ -401,9 +369,7 @@ that accesses the state's credential property directly.
 
 **Returns:**
 
-The current credential data, or
-`null`
-if not available
+The current credential data, or `null` if not available
 
 **Example:** Get credential
 
@@ -428,35 +394,20 @@ if (credential) {
 
 Get the duration of the async operation
 
-Calculates the duration of the async operation based on
-`startTime`
-and
-`endTime`
-.
+Calculates the duration of the async operation based on `startTime` and `endTime`.
 Returns the time elapsed in milliseconds.
 
 Behavior:
 
-- If operation hasn't completed (
-  `endTime`
-  is
-  `0`
-  ), returns time since start
+- If operation hasn't completed (`endTime` is `0`), returns time since start
 - If operation has completed, returns total duration
-- Returns
-  `0`
-  if operation hasn't started (
-  `startTime`
-  is
-  `0`
-  )
+- Returns `0` if operation hasn't started (`startTime` is `0`)
 
 **Returns:**
 
 The duration of the async operation in milliseconds
 
-- `0`
-  if operation hasn't started
+- `0` if operation hasn't started
 - Time since start if operation is in progress
 - Total duration if operation has completed
 
@@ -491,18 +442,12 @@ console.log(`Operation completed in ${duration}ms`);
 
 Get the error from the async operation
 
-Returns the error information if the operation failed, or
-`null`
-if no error.
-Equivalent to
-`getState().error`
-.
+Returns the error information if the operation failed, or `null` if no error.
+Equivalent to `getState().error`.
 
 **Returns:**
 
-The error information if operation failed, or
-`null`
-if no error
+The error information if operation failed, or `null` if no error
 
 **Example:** Handle error
 
@@ -528,16 +473,11 @@ if (error) {
 Get the loading state of the async operation
 
 Convenience method to check if an operation is currently in progress.
-Equivalent to
-`getState().loading`
-.
+Equivalent to `getState().loading`.
 
 **Returns:**
 
-`true`
-if the operation is in progress,
-`false`
-otherwise
+`true` if the operation is in progress, `false` otherwise
 
 **Example:** Check loading state
 
@@ -561,18 +501,12 @@ if (asyncService.getLoading()) {
 
 Get the result from the async operation
 
-Returns the result data if the operation succeeded, or
-`null`
-if no result.
-Equivalent to
-`getState().result`
-.
+Returns the result data if the operation succeeded, or `null` if no result.
+Equivalent to `getState().result`.
 
 **Returns:**
 
-The result data if operation succeeded, or
-`null`
-if no result
+The result data if operation succeeded, or `null` if no result
 
 **Example:** Access result
 
@@ -604,18 +538,12 @@ This is a snapshot of the current state at the time of call.
 
 Current state object containing:
 
-- `loading`
-  : Whether operation is in progress
-- `result`
-  : Operation result (if successful)
-- `error`
-  : Error information (if failed)
-- `startTime`
-  : Operation start timestamp
-- `endTime`
-  : Operation end timestamp
-- `status`
-  : Operation status
+- `loading`: Whether operation is in progress
+- `result`: Operation result (if successful)
+- `error`: Error information (if failed)
+- `startTime`: Operation start timestamp
+- `endTime`: Operation end timestamp
+- `status`: Operation status
 
 **Example:** Get current state
 
@@ -651,18 +579,12 @@ if (state.loading) {
 Get the status of the async operation
 
 Returns the status information about the operation state.
-The status type depends on the implementation (e.g.,
-`'pending' | 'success' | 'failed' | 'stopped'`
-).
-Equivalent to
-`getState().status`
-.
+The status type depends on the implementation (e.g., `'pending' | 'success' | 'failed' | 'stopped'`).
+Equivalent to `getState().status`.
 
 **Returns:**
 
-The status of the async operation, or
-`undefined`
-if not set
+The status of the async operation, or `undefined` if not set
 
 **Example:** Check status
 
@@ -727,9 +649,7 @@ that accesses the state's userInfo property directly.
 
 **Returns:**
 
-The current user information, or
-`null`
-if not available
+The current user information, or `null` if not available
 
 **Example:** Get user info
 
@@ -754,19 +674,12 @@ if (user) {
 
 Check if the async operation is completed
 
-Returns
-`true`
-if the operation has finished, regardless of outcome.
-This includes success, failure, and stopped states. Returns
-`false`
-if still in progress.
+Returns `true` if the operation has finished, regardless of outcome.
+This includes success, failure, and stopped states. Returns `false` if still in progress.
 
 **Returns:**
 
-`true`
-if the async operation is completed (success, failed, or stopped),
-`false`
-otherwise
+`true` if the async operation is completed (success, failed, or stopped), `false` otherwise
 
 **Example:** Check if operation finished
 
@@ -791,25 +704,12 @@ if (asyncService.isCompleted()) {
 
 Check if the async operation failed
 
-Returns
-`true`
-if the operation has failed with an error.
-This typically means
-`loading`
-is
-`false`
-and
-`error`
-is not
-`null`
-.
+Returns `true` if the operation has failed with an error.
+This typically means `loading` is `false` and `error` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is failed,
-`false`
-otherwise
+`true` if the async operation is failed, `false` otherwise
 
 **Example:** Handle failure
 
@@ -834,21 +734,12 @@ if (asyncService.isFailed()) {
 
 Check if the async operation is pending (in progress)
 
-Returns
-`true`
-if the operation is currently in progress.
-This is equivalent to checking if
-`loading`
-is
-`true`
-.
+Returns `true` if the operation is currently in progress.
+This is equivalent to checking if `loading` is `true`.
 
 **Returns:**
 
-`true`
-if the async operation is pending (in progress),
-`false`
-otherwise
+`true` if the async operation is pending (in progress), `false` otherwise
 
 **Example:** Show loading indicator
 
@@ -872,17 +763,12 @@ if (asyncService.isPending()) {
 
 Check if the async operation was stopped
 
-Returns
-`true`
-if the operation was manually stopped (e.g., user cancellation).
+Returns `true` if the operation was manually stopped (e.g., user cancellation).
 This is different from failure - stopping is intentional, failure is an error.
 
 **Returns:**
 
-`true`
-if the async operation is stopped,
-`false`
-otherwise
+`true` if the async operation is stopped, `false` otherwise
 
 **Example:** Handle stopped operation
 
@@ -906,29 +792,12 @@ if (asyncService.isStopped()) {
 
 Check if the async operation completed successfully
 
-Returns
-`true`
-if the operation has completed successfully with a result.
-This typically means
-`loading`
-is
-`false`
-,
-`error`
-is
-`null`
-, and
-`result`
-is not
-`null`
-.
+Returns `true` if the operation has completed successfully with a result.
+This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is successful,
-`false`
-otherwise
+`true` if the async operation is successful, `false` otherwise
 
 **Example:** Check success before accessing result
 
@@ -954,9 +823,7 @@ if (asyncService.isSuccess()) {
 Reset store state to initial state
 
 Clears all state data and resets to default values. This method is inherited
-from
-`AsyncStateAction`
-but is also declared here for clarity.
+from `AsyncStateAction` but is also declared here for clarity.
 
 **Example:** Reset before new operation
 
@@ -1122,30 +989,15 @@ store.start(undefined, credential);
 Stop an async operation manually
 
 Marks the end of an async operation due to manual cancellation or stopping.
-This is different from
-`failed()`
-or
-`success()`
-
-- it represents an intentional
-  stop (e.g., user cancellation, timeout, or abort signal).
+This is different from `failed()` or `success()` - it represents an intentional
+stop (e.g., user cancellation, timeout, or abort signal).
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Records
-  `endTime`
-  timestamp
-- Sets
-  `error`
-  if provided (optional, for cancellation reasons)
-- Optionally sets
-  `result`
-  if available (e.g., partial results)
+- Sets `loading` to `false`
+- Records `endTime` timestamp
+- Sets `error` if provided (optional, for cancellation reasons)
+- Optionally sets `result` if available (e.g., partial results)
 - Sets status to indicate stopped state
 
 **Example:** Stop operation due to user cancellation

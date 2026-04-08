@@ -110,12 +110,9 @@ Context usage:
 
 Template syntax:
 
-- `<%= variable %>`
-  for escaped output
-- `<%- variable %>`
-  for unescaped output
-- `<% code %>`
-  for JavaScript code execution
+- `<%= variable %>` for escaped output
+- `<%- variable %>` for unescaped output
+- `<% code %>` for JavaScript code execution
 - Supports nested object access and function calls
 
 **Example:** Basic template context

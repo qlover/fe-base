@@ -22,20 +22,15 @@ Core Responsibilities:
 Main Features:
 
 - String Manipulation: Case conversion and string repetition
-  - `toLowerCase`
-    : Converts strings to lowercase
-  - `repeat`
-    : Repeats strings or content blocks
+  - `toLowerCase`: Converts strings to lowercase
+  - `repeat`: Repeats strings or content blocks
 
 - Comparison Operations: Equality and logical comparisons
-  - `eq`
-    : Performs strict equality comparison
-  - `or`
-    : Performs logical OR operation on multiple values
+  - `eq`: Performs strict equality comparison
+  - `or`: Performs logical OR operation on multiple values
 
 - Mathematical Operations: Basic arithmetic functions
-  - `add`
-    : Performs addition on numeric values
+  - `add`: Performs addition on numeric values
 
 Design Considerations:
 
@@ -46,14 +41,9 @@ Design Considerations:
 
 Usage Patterns:
 
-- Regular helpers:
-  `{{helperName arg1 arg2}}`
-
-- Block helpers:
-  `{{#helperName arg1}}content{{/helperName}}`
-
-- Nested helpers:
-  `{{helper1 (helper2 arg)}}`
+- Regular helpers: `{{helperName arg1 arg2}}`
+- Block helpers: `{{#helperName arg1}}content{{/helperName}}`
+- Nested helpers: `{{helper1 (helper2 arg)}}`
 
 **Example:** Basic Usage
 

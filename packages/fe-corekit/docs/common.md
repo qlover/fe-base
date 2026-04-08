@@ -62,9 +62,7 @@ type EditableFields = Intersection<FormData, UserProfile>;
 Create a deeply partial type with optional nested properties
 
 This utility type recursively makes all properties optional, including
-nested object properties. Unlike TypeScript's built-in
-`Partial<T>`
-,
+nested object properties. Unlike TypeScript's built-in `Partial<T>`,
 this type applies the optional modifier to all levels of nesting.
 
 Use cases:

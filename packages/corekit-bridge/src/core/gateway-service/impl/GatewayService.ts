@@ -1,8 +1,7 @@
-import { type LoggerInterface } from '@qlover/logger';
-import {
-  type AsyncStoreInterface,
-  type AsyncStoreOptions,
-  type AsyncStoreStateInterface
+import type { LoggerInterface } from '@qlover/logger';
+import type {
+  AsyncStoreInterface,
+  AsyncStoreStateInterface
 } from '../../store-state';
 import {
   type GatewayServiceInterface,
@@ -10,6 +9,8 @@ import {
 } from '../interface/GatewayServiceInterface';
 import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
 import { isServiceName } from '../utils/typeGuards';
+
+export type GatewayServiceName = string | symbol;
 
 /**
  * Gateway service options
@@ -65,21 +66,14 @@ import { isServiceName } from '../utils/typeGuards';
  * };
  * ```
  */
-export interface GatewayServiceOptions<
-  T,
-  Gateway,
-  Key = string
-> extends Omit<
-  AsyncStoreOptions<AsyncStoreStateInterface<T>, Key>,
-  'store'
-> {
+export interface GatewayServiceOptions<T, Gateway> {
   /**
    * Service name identifier
    *
    * Used for logging, debugging, and service identification.
    * Should be set during construction and remain constant.
    */
-  serviceName: string | symbol;
+  serviceName: GatewayServiceName;
 
   /**
    * Gateway instance for API operations
@@ -249,7 +243,7 @@ export class GatewayService<
    *
    * @readonly
    */
-  public readonly serviceName: string | symbol;
+  public readonly serviceName: GatewayServiceName;
 
   /**
    * Gateway instance for API operations
@@ -337,7 +331,7 @@ export class GatewayService<
    * });
    * ```
    */
-  constructor(options: GatewayServiceOptions<T, Gateway, string>) {
+  constructor(options: GatewayServiceOptions<T, Gateway>) {
     if (!isServiceName(options.serviceName)) {
       throw new Error(`Invalid service name`, {
         cause: options.serviceName

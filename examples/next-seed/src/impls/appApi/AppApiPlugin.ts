@@ -1,6 +1,6 @@
 import { ExecutorError, isRequestAdapterResponse } from '@qlover/fe-corekit';
 import type { AppApiErrorInterface } from '@interfaces/AppApiInterface';
-import type { AppApiConfig } from '../AppApiRequester';
+import type { AppApiConfig } from './AppApiRequester';
 import type {
   ExecutorContextInterface,
   LifecyclePluginInterface

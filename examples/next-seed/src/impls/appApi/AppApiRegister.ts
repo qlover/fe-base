@@ -9,23 +9,21 @@ import { StringEncryptor } from '@shared/StringEncryptor';
 import { I } from '@config/ioc-identifiter';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { AppApiPlugin } from './AppApiPlugin';
-import { AppApiRequester } from '../AppApiRequester';
-import type { AppApiConfig } from '../AppApiRequester';
+import { AppApiRequester } from './AppApiRequester';
+import type { AppApiConfig } from './AppApiRequester';
 import type {
-  BootstrapContext,
-  BootstrapExecutorPlugin
+  IOCContainerInterface,
+  IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 import type { SerializerIneterface } from '@qlover/fe-corekit';
 
-export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
-  public readonly pluginName = 'AppUserApiBootstrap';
-
+export class AppApiRegister implements IOCRegisterInterface<IOCContainerInterface> {
   constructor(protected serializer: SerializerIneterface) {}
 
   /**
    * @override
    */
-  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
+  public register(ioc: IOCContainerInterface): void {
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
     const appConfig = ioc.get<SeedSrcConfigInterface>(I.AppConfig);
 

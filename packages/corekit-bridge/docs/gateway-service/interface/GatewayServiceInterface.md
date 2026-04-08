@@ -76,15 +76,11 @@ Should be set during construction and remain constant.
 Get the gateway instance
 
 Returns the gateway instance used by this service for API operations.
-Returns
-`null`
-if no gateway was configured.
+Returns `null` if no gateway was configured.
 
 **Returns:**
 
-The gateway instance, or
-`null`
-if not configured
+The gateway instance, or `null` if not configured
 
 **Example:** Access gateway methods
 
@@ -119,15 +115,11 @@ if (!gateway) {
 Get the logger instance
 
 Returns the logger instance used by this service for logging.
-Returns
-`null`
-if no logger was configured.
+Returns `null` if no logger was configured.
 
 **Returns:**
 
-The logger instance, or
-`null`
-if not configured
+The logger instance, or `null` if not configured
 
 ---
 

@@ -255,9 +255,7 @@ Get the configured gateway instance
 
 **Returns:**
 
-Gateway instance or
-`undefined`
-if not configured
+Gateway instance or `undefined` if not configured
 
 ---
 
@@ -304,43 +302,25 @@ an error message based on configuration.
 
 **Error flow:**
 
-1. Check
-   `throwIfError`
-   configuration
+1. Check `throwIfError` configuration
 2. Retrieve current message state from store
 3. Log failure if logger configured
 4. Merge error with message state
-5. Set status to
-   `FAILED`
-   if still
-   `SENDING`
-
+5. Set status to `FAILED` if still `SENDING`
 6. Return error message or throw
 
 **Status handling:**
 Plugins can modify the final status before this method is called.
 Common plugin-modified statuses:
 
-- `STOPPED`
-  : Set by
-  `SenderStrategyPlugin`
-  for abort errors
-- `FAILED`
-  : Default for regular errors (set here if still
-  `SENDING`
-  )
+- `STOPPED`: Set by `SenderStrategyPlugin` for abort errors
+- `FAILED`: Default for regular errors (set here if still `SENDING`)
 
 **Important notes:**
 
 - Always retrieves latest message state from store
-- Preserves plugin-modified status (e.g.,
-  `STOPPED`
-  )
-- Sets
-  `loading=false`
-  and
-  `endTime`
-  if not already set
+- Preserves plugin-modified status (e.g., `STOPPED`)
+- Sets `loading=false` and `endTime` if not already set
 - Error object attached to message for inspection
 
 **Returns:**
@@ -349,10 +329,7 @@ Message with error state merged
 
 **Throws:**
 
-Error when
-`throwIfError`
-configuration is
-`true`
+Error when `throwIfError` configuration is `true`
 
 **Example:** Error message structure
 
@@ -403,9 +380,7 @@ error handling, and performance logging.
 
 **Send flow:**
 
-1. Generate sending message with
-   `SENDING`
-   status
+1. Generate sending message with `SENDING` status
 2. Create send options with merged configuration
 3. Execute through plugin pipeline (if executor configured)
 4. Send via gateway with abort signal support
@@ -414,29 +389,19 @@ error handling, and performance logging.
 
 **Error handling:**
 
-- `throwIfError=true`
-  : Throws error, no message returned
-- `throwIfError=false`
-  (default): Returns message with error state
+- `throwIfError=true`: Throws error, no message returned
+- `throwIfError=false` (default): Returns message with error state
 - Plugins can intercept and modify error handling
 
 **Abort signal management:**
 
-- No signal provided +
-  `AborterPlugin`
-  : Plugin creates signal automatically (stoppable via
-  `stop()`
-  )
-- Custom signal provided: Uses custom signal (must abort manually,
-  `stop()`
-  has no effect)
+- No signal provided + `AborterPlugin`: Plugin creates signal automatically (stoppable via `stop()`)
+- Custom signal provided: Uses custom signal (must abort manually, `stop()` has no effect)
 - No signal + no plugin: Operation not cancellable
 
 **Resource cleanup:**
 
-- Managed automatically by
-  `AborterPlugin`
-  when configured
+- Managed automatically by `AborterPlugin` when configured
 - Event listeners removed after operation completes
 - Abort controllers cleaned up properly
 
@@ -446,11 +411,7 @@ Promise resolving to sent message with response data or error state
 
 **Throws:**
 
-Error when
-`throwIfError`
-is
-`true`
-and send fails
+Error when `throwIfError` is `true` and send fails
 
 **Example:** Basic send
 
@@ -642,40 +603,24 @@ delegates to the configured aborter to trigger the abort signal.
 **Prerequisites:**
 
 - Aborter must be configured in constructor
-- `AborterPlugin`
-  must be registered for automatic signal management
+- `AborterPlugin` must be registered for automatic signal management
 - Message must be sent without custom signal (plugin creates signal automatically)
 
 **Behavior:**
 
-- With aborter + plugin: Aborts the operation, triggers
-  `AbortError`
-
-- Without aborter: Returns
-  `false`
-  , no effect
-- With custom signal: Returns
-  `true`
-  but doesn't affect custom signal
+- With aborter + plugin: Aborts the operation, triggers `AbortError`
+- Without aborter: Returns `false`, no effect
+- With custom signal: Returns `true` but doesn't affect custom signal
 
 **Result handling:**
 
-- Message status set to
-  `STOPPED`
-  by
-  `SenderStrategyPlugin`
-
-- `gatewayOptions.onAborted`
-  callback invoked if provided
-- Resources cleaned up automatically by
-  `AborterPlugin`
+- Message status set to `STOPPED` by `SenderStrategyPlugin`
+- `gatewayOptions.onAborted` callback invoked if provided
+- Resources cleaned up automatically by `AborterPlugin`
 
 **Returns:**
 
-`true`
-if abort signal was triggered,
-`false`
-if aborter not configured
+`true` if abort signal was triggered, `false` if aborter not configured
 
 **Example:** Basic usage with AborterPlugin
 
@@ -751,22 +696,14 @@ abort signals for all registered operations in the aborter.
 **Prerequisites:**
 
 - Aborter must be configured in constructor
-- `AborterPlugin`
-  must be registered for automatic signal management
+- `AborterPlugin` must be registered for automatic signal management
 
 **Behavior:**
 
 - Aborts all operations managed by the aborter
-- Each operation receives
-  `AbortError`
-  and status set to
-  `STOPPED`
-
-- `onAborted`
-  callbacks invoked for each aborted operation
-- Resources cleaned up automatically by
-  `AborterPlugin`
-
+- Each operation receives `AbortError` and status set to `STOPPED`
+- `onAborted` callbacks invoked for each aborted operation
+- Resources cleaned up automatically by `AborterPlugin`
 - Operations with custom signals are not affected
 
 **Example:** Basic usage
@@ -826,9 +763,7 @@ sender.stopAll();
 Register a plugin with the sender
 
 Plugins are executed in registration order during message sending.
-Returns
-`this`
-for method chaining.
+Returns `this` for method chaining.
 
 **Returns:**
 
@@ -866,26 +801,14 @@ for the message sender instance.
 Aborter for managing abort signals and operation cancellation
 
 Provides centralized abort signal management for message send operations.
-When configured with
-`AborterPlugin`
-, enables automatic signal creation
+When configured with `AborterPlugin`, enables automatic signal creation
 and cleanup for each send operation.
 
 **Important notes:**
 
-- Required for
-  `stop()`
-  and
-  `stopAll()`
-  methods to work
-- Must be used with
-  `AborterPlugin`
-  for automatic signal management
-- Without aborter:
-  `stop()`
-  returns
-  `false`
-  , send operations cannot be cancelled
+- Required for `stop()` and `stopAll()` methods to work
+- Must be used with `AborterPlugin` for automatic signal management
+- Without aborter: `stop()` returns `false`, send operations cannot be cancelled
 - With aborter but no plugin: Manual signal registration required
 
 **Recommended setup:**
@@ -929,9 +852,7 @@ Plugin executor
 Executor for managing the plugin pipeline.
 
 If executor is not specified, the send operation will not be executed.
-and can't use the
-`use`
-method to register plugins.
+and can't use the `use` method to register plugins.
 
 **Example:**
 
@@ -963,15 +884,7 @@ Gateway options for message operations
 
 Configuration for gateway behavior including:
 
-- Stream event handlers (
-  `onChunk`
-  ,
-  `onComplete`
-  ,
-  `onError`
-  ,
-  `onProgress`
-  )
+- Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
 - Abort signal for cancellation control
 - Custom request parameters
 
@@ -1091,9 +1004,7 @@ const config = {
 
 Whether to throw errors on send failure
 
-When
-`true`
-, failed send operations throw errors instead of
+When `true`, failed send operations throw errors instead of
 returning error messages. Useful for error boundary handling.
 
 **Example:**

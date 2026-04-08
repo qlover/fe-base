@@ -6,9 +6,10 @@ import {
 import type { RequestEncryptPluginProps } from '@/impls/RequestEncryptPlugin';
 import { injectable } from '@shared/container';
 import type { AppApiResult } from '@interfaces/AppApiInterface';
-import { AppApiPluginOptions } from './appApi/AppApiPlugin';
-import type { DialogErrorConfig } from './DialogErrorPlugin';
+import { AppApiPluginOptions } from './AppApiPlugin';
+import type { DialogErrorConfig } from '../DialogErrorPlugin';
 import type {
+  AborterConfig,
   ExecutorContextInterface,
   RequestAdapterConfig,
   RequestAdapterResponse
@@ -22,7 +23,8 @@ export interface RequestTransactionInterface<Request, Response> {
 export type AppApiConfig<Request = unknown> = RequestAdapterConfig<Request> &
   RequestEncryptPluginProps<Request> &
   DialogErrorConfig &
-  AppApiPluginOptions;
+  AppApiPluginOptions &
+  AborterConfig;
 
 export interface AppApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 
@@ -61,7 +63,7 @@ export class AppApiRequester extends RequestExecutor<
   constructor() {
     super(
       new RequestAdapterFetch({
-        baseURL: '/api',
+        // baseURL: '/api',
         responseType: 'json'
       }),
       new LifecycleExecutor()

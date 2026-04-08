@@ -113,7 +113,6 @@ class GameEngine {
 **See:**
 
 - LifecycleExecutor - Async version of this executor
-
 - LifecycleSyncPluginInterface - Default plugin interface
 
 ---
@@ -878,7 +877,6 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 **See:**
 
 - runPluginsHooksSync - The utility function that performs the actual execution
-
 - runHook - For executing a single hook
 
 #### Parameters
@@ -919,9 +917,7 @@ Main features:
 
 - Plugin registration: Adds plugins to the execution pipeline
 - Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
-- Deduplication: Prevents duplicate plugins when
-  `onlyOne`
-  is true
+- Deduplication: Prevents duplicate plugins when `onlyOne` is true
 - Order preservation: Maintains plugin execution order
 - Validation: Ensures plugin is a valid object
 

@@ -26,9 +26,7 @@ Type guard function to check if an object has a specific key
 Optionally performs case-insensitive key lookup
 
 This function is a type guard that provides type narrowing.
-For value checking, use
-`hasObjectKeyWithValue`
-instead.
+For value checking, use `hasObjectKeyWithValue` instead.
 
 **Returns:**
 
@@ -116,12 +114,8 @@ This function checks if an object contains a key and optionally verifies
 that the value matches a target value. Supports case-insensitive key lookup
 and case-sensitive/case-insensitive value comparison.
 
-When value is not provided, this function behaves similarly to
-`hasObjectKey`
-,
-but without type narrowing. Use
-`hasObjectKey`
-if you need type guards.
+When value is not provided, this function behaves similarly to `hasObjectKey`,
+but without type narrowing. Use `hasObjectKey` if you need type guards.
 
 **Returns:**
 

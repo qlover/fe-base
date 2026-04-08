@@ -825,7 +825,6 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 **See:**
 
 - runPluginsHooksSync - The utility function that performs the actual execution
-
 - runHook - For executing a single hook
 
 #### Parameters

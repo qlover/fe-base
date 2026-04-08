@@ -8,9 +8,7 @@
 
 **Type:** `class ThemeService`
 
-Theme DOM + optional persistence; reactive state lives on
-ThemeService.store
-.
+Theme DOM + optional persistence; reactive state lives on <a href="#store-property" class="tsd-kind-property">ThemeService.store</a>.
 
 ---
 
@@ -30,10 +28,7 @@ ThemeService.store
 
 **Type:** `StoreInterface<ThemeServiceState>`
 
-StoreInterface
-port (default
-SliceStoreAdapter
-)
+<a href="../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> port (default <a href="../store-state/impl/SliceStoreAdapter.md#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a>)
 
 ---
 

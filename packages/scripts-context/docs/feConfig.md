@@ -28,9 +28,7 @@ Use author name when create merge PR
 ["dist","node_modules","yarn.lock","package-lock.json",".eslintcache","*.log"]
 `
 
-Run
-`fe-clean`
-to includes files
+Run `fe-clean` to includes files
 
 ---
 
@@ -64,9 +62,7 @@ commitlint config
 ["master", "develop", "main"]
 `
 
-Run
-`fe-clean-branch`
-to exclude branches
+Run `fe-clean-branch` to exclude branches
 
 ---
 
@@ -131,18 +127,12 @@ Design considerations:
 
 Template variables:
 
-- `${pkgName}`
-  : Package name from package.json
-- `${tagName}`
-  : Release version tag
-- `${env}`
-  : Release environment (development, staging, production)
-- `${branch}`
-  : Source branch name
-- `${name}`
-  : Package name for labeling
-- `${changelog}`
-  : Generated changelog content
+- `${pkgName}`: Package name from package.json
+- `${tagName}`: Release version tag
+- `${env}`: Release environment (development, staging, production)
+- `${branch}`: Source branch name
+- `${name}`: Package name for labeling
+- `${changelog}`: Generated changelog content
 
 **Example:** Basic release configuration
 
@@ -208,16 +198,11 @@ Content sections:
 
 Template variables:
 
-- `${tagName}`
-  : Release version tag
-- `${branch}`
-  : Source branch name
-- `${env}`
-  : Release environment
-- `${changelog}`
-  : Generated changelog content
-- `${pkgName}`
-  : Package name
+- `${tagName}`: Release version tag
+- `${branch}`: Source branch name
+- `${env}`: Release environment
+- `${changelog}`: Generated changelog content
+- `${pkgName}`: Package name
 
 **Example:** Simple PR body
 
@@ -273,14 +258,10 @@ Title components:
 
 Template variables:
 
-- `${pkgName}`
-  : Package name from package.json
-- `${tagName}`
-  : Release version tag
-- `${env}`
-  : Release environment
-- `${branch}`
-  : Source branch name
+- `${pkgName}`: Package name from package.json
+- `${tagName}`: Release version tag
+- `${env}`: Release environment
+- `${branch}`: Source branch name
 
 **Example:** Basic PR title
 
@@ -408,14 +389,10 @@ branch naming across different packages and environments.
 
 Template variables:
 
-- `${pkgName}`
-  : Package name from package.json
-- `${tagName}`
-  : Release version tag
-- `${env}`
-  : Release environment
-- `${branch}`
-  : Source branch name
+- `${pkgName}`: Package name from package.json
+- `${tagName}`: Release version tag
+- `${env}`: Release environment
+- `${branch}`: Source branch name
 
 Branch naming patterns:
 
@@ -466,8 +443,7 @@ Label usage:
 
 Template variables:
 
-- `${name}`
-  : Package name for label identification
+- `${name}`: Package name for label identification
 
 **Example:** Basic change label
 

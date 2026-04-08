@@ -90,23 +90,10 @@ class MyStore extends ChatMessageStore {
 
 **Type:** `StoreInterface<ChatMessageStoreStateInterface<T>>`
 
-Backing store for state:
-`reset`
-,
-`update`
-,
-`getState`
-,
-`subscribe`
+Backing store for state: `reset`, `update`, `getState`, `subscribe`
 
-Default
-MessagesStore
-wiring uses
-SliceStoreAdapter
-; callers
-may inject another
-StoreInterface
-implementation.
+Default MessagesStore wiring uses SliceStoreAdapter; callers
+may inject another <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> implementation.
 
 ---
 
@@ -161,9 +148,7 @@ QUEUE mode (append to end, first in first out):
 Add a new draft message
 
 Creates and adds a draft message to the store. The message is automatically
-set to
-`DRAFT`
-status regardless of the provided status value.
+set to `DRAFT` status regardless of the provided status value.
 
 **Example:**
 
@@ -314,9 +299,7 @@ store.changeDisabledSend(false);
 
 **Type:** `ChatMessageStoreStateInterface<T>`
 
-Shallow-clone current state and apply a patch (aligned with
-SliceStoreAdapter.update
-)
+Shallow-clone current state and apply a patch (aligned with <a href="../../store-state/impl/SliceStoreAdapter.md#update-method" class="tsd-kind-method">SliceStoreAdapter.update</a>)
 
 #### Parameters
 
@@ -378,8 +361,7 @@ ChatMessage instance
 Generate default ID for a message
 
 Creates a unique ID using timestamp and random string.
-Format:
-`{timestamp}-{random}`
+Format: `{timestamp}-{random}`
 
 **Returns:**
 
@@ -486,20 +468,11 @@ store.deleteMessage('msg-123');
 
 **Type:** `void`
 
-Push a state patch into
-MessagesStore.store
+Push a state patch into MessagesStore.store
 
-- Callers pass **only the patch** (
-  `Partial<State>`
-  ), not a pre-merged snapshot.
-- This method runs
-  MessagesStore.cloneState
-  once, then
-  StoreInterface.update
-  ,
-  so we avoid double
-  `cloneState`
-  at every call site and keep merge semantics in one place.
+- Callers pass **only the patch** (`Partial<State>`), not a pre-merged snapshot.
+- This method runs MessagesStore.cloneState once, then <a href="../../store-state/interface/StoreInterface.md#update-method" class="tsd-kind-method">StoreInterface.update</a>,
+  so we avoid double `cloneState` at every call site and keep merge semantics in one place.
 - The adapter may still shallow-merge / emit internally; the important part is a single
   “current + patch” step on this class.
 
@@ -533,9 +506,7 @@ Retrieves a specific draft message from the draft message list.
 
 **Returns:**
 
-Draft message or
-`null`
-if not found
+Draft message or `null` if not found
 
 **Example:**
 
@@ -590,18 +561,12 @@ message, not necessarily the array's first element.
 
 **Returns:**
 
-First draft message to process, or
-`null`
-if none exists
+First draft message to process, or `null` if none exists
 
 **Mode behavior:**
 
-- STACK mode (LIFO):
-  `[A, B, C]`
-  → returns C (last, newest, sent first)
-- QUEUE mode (FIFO):
-  `[A, B, C]`
-  → returns A (first, oldest, sent first)
+- STACK mode (LIFO): `[A, B, C]` → returns C (last, newest, sent first)
+- QUEUE mode (FIFO): `[A, B, C]` → returns A (first, oldest, sent first)
 
 **Note:** "First" refers to the message that should be prioritized,
 not its position in the array.
@@ -655,9 +620,7 @@ Get a message by its unique identifier
 
 **Returns:**
 
-Message object or
-`undefined`
-if not found
+Message object or `undefined` if not found
 
 #### Parameters
 
@@ -687,9 +650,7 @@ Get a message by its index position
 
 **Returns:**
 
-Message at the index or
-`undefined`
-if out of bounds
+Message at the index or `undefined` if out of bounds
 
 #### Parameters
 
@@ -719,9 +680,7 @@ Get the index position of a message in the store
 
 **Returns:**
 
-Zero-based index of the message, or
-`-1`
-if not found
+Zero-based index of the message, or `-1` if not found
 
 #### Parameters
 
@@ -775,9 +734,7 @@ Determines which message should be sent next. Follows this priority:
 
 **Returns:**
 
-Message ready to send, or
-`null`
-if none available
+Message ready to send, or `null` if none available
 
 **Example:** Auto-send next draft
 
@@ -826,10 +783,7 @@ Type guard to check if a value is a ChatMessage instance
 
 **Returns:**
 
-`true`
-if value is a ChatMessage instance,
-`false`
-otherwise
+`true` if value is a ChatMessage instance, `false` otherwise
 
 #### Parameters
 
@@ -960,9 +914,7 @@ store.resetDraftMessages([draft1, draft2]);
 Replace all messages in the store
 
 Clears the current message list and replaces it with the provided
-messages. Each message is processed through
-`createMessage`
-to ensure
+messages. Each message is processed through `createMessage` to ensure
 proper defaults and structure.
 
 **Example:**
@@ -991,38 +943,26 @@ store.resetMessages([message1, message2, message3]);
 
 Get and remove the first draft message based on mode
 
-Similar to
-`Array.shift()`
-, but which message is removed depends on
+Similar to `Array.shift()`, but which message is removed depends on
 the configured draft mode. This is the atomic operation that both
 retrieves and removes the draft in a single transaction.
 
 **Returns:**
 
-Removed draft message, or
-`null`
-if no drafts exist
+Removed draft message, or `null` if no drafts exist
 
 **Behavior examples:**
 
 STACK mode (LIFO):
 
-- Before:
-  `[A, B, C]`
-
-- After:
-  `[A, B]`
-
+- Before: `[A, B, C]`
+- After: `[A, B]`
 - Returns: C (newest added)
 
 QUEUE mode (FIFO):
 
-- Before:
-  `[A, B, C]`
-
-- After:
-  `[B, C]`
-
+- Before: `[A, B, C]`
+- After: `[B, C]`
 - Returns: A (oldest added)
 
 **Mode differences:**
@@ -1081,16 +1021,8 @@ Array of remaining draft messages after removal
 
 **Mode behavior:**
 
-- STACK mode (LIFO):
-  `[A, B, C]`
-  →
-  `[A, B]`
-  (removes last: C)
-- QUEUE mode (FIFO):
-  `[A, B, C]`
-  →
-  `[B, C]`
-  (removes first: A)
+- STACK mode (LIFO): `[A, B, C]` → `[A, B]` (removes last: C)
+- QUEUE mode (FIFO): `[A, B, C]` → `[B, C]` (removes first: A)
 
 **Example:**
 
@@ -1189,9 +1121,7 @@ Uses a single traversal to find and update the message efficiently.
 
 **Returns:**
 
-Updated message or
-`undefined`
-if message not found
+Updated message or `undefined` if message not found
 
 **Example:**
 
@@ -1232,15 +1162,11 @@ Update an existing message in the store
 
 Applies multiple partial updates to a message identified by ID.
 Uses a single traversal to find and update the message efficiently.
-Returns
-`undefined`
-if no message with the given ID exists.
+Returns `undefined` if no message with the given ID exists.
 
 **Returns:**
 
-Updated message or
-`undefined`
-if message not found
+Updated message or `undefined` if message not found
 
 **Example:**
 

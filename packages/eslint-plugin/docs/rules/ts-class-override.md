@@ -6,12 +6,8 @@ ESLint rule that enforces consistent override notation for methods that override
 
 This rule enforces consistent override notation on methods that:
 
-- Override a method from a parent class (using
-  `extends`
-  )
-- Implement a method from an interface (using
-  `implements`
-  )
+- Override a method from a parent class (using `extends`)
+- Implement a method from an interface (using `implements`)
 
 The rule also reports errors if a method has or override keyword but doesn't actually override anything.
 
@@ -30,8 +26,7 @@ The rule checks all class methods and:
 
 ## Examples
 
-The following examples assume the default configuration:
-`{ parentClassOverrideStyle: 'either' }`
+The following examples assume the default configuration: `{ parentClassOverrideStyle: 'either' }`
 
 Examples of **incorrect** code for this rule:
 
@@ -183,11 +178,7 @@ class DerivedClass extends BaseClass {
 
 ### Private Methods
 
-Private methods (using
-`private`
-keyword or
-`#`
-syntax) are skipped:
+Private methods (using `private` keyword or `#` syntax) are skipped:
 
 ```typescript
 class BaseClass {
@@ -265,9 +256,7 @@ Available values:
 #### 'jsdoc' (JSDoc Comment Only)
 
 Requires only JSDoc comments for parent class method overrides.
-The TypeScript
-`override`
-keyword is not allowed.
+The TypeScript `override` keyword is not allowed.
 
 ```typescript
 class Parent {
@@ -286,9 +275,7 @@ class Child extends Parent {
 
 #### 'keyword' (TypeScript Keyword Only)
 
-Requires only TypeScript
-`override`
-keyword for parent class method overrides.
+Requires only TypeScript `override` keyword for parent class method overrides.
 JSDoc comments are not allowed.
 
 ```typescript
@@ -308,9 +295,7 @@ class Child extends Parent {
 
 #### 'both' (Both Required)
 
-Requires both JSDoc comment and TypeScript
-`override`
-keyword for parent class method overrides.
+Requires both JSDoc comment and TypeScript `override` keyword for parent class method overrides.
 
 ```typescript
 class Parent {
@@ -334,9 +319,7 @@ class Child extends Parent {
 
 #### 'either' (Either One) - Default
 
-Requires either JSDoc comment or TypeScript
-`override`
-keyword (or both) for parent class method overrides.
+Requires either JSDoc comment or TypeScript `override` keyword (or both) for parent class method overrides.
 This is the most flexible option.
 
 ```typescript
@@ -363,9 +346,7 @@ class Child extends Parent {
 
 ### Important Notes
 
-1. **Interface implementations always require JSDoc comments**, regardless of the
-   `parentClassOverrideStyle`
-   setting:
+1. **Interface implementations always require JSDoc comments**, regardless of the `parentClassOverrideStyle` setting:
 
 ```typescript
 interface MyInterface {
@@ -429,24 +410,14 @@ This rule provides automatic fixes for all reported errors:
 The fix logic handles various scenarios including existing JSDoc comments, complex modifier combinations,
 and preserves code formatting and indentation.
 
-**Note**: Fix functions may return
-`null`
-if they cannot create a fix (e.g., due to syntax issues
+**Note**: Fix functions may return `null` if they cannot create a fix (e.g., due to syntax issues
 or edge cases). In such cases, the rule will still report the error but without an automatic fix.
 This ensures compatibility with ESLint's fixable rule requirements.
 
-**Multiple fixes**: When using
-`parentClassOverrideStyle: 'both'`
-and a method is missing both
-the
-`@override`
-JSDoc comment and the
-`override`
-keyword, the rule reports two separate errors
+**Multiple fixes**: When using `parentClassOverrideStyle: 'both'` and a method is missing both
+the `@override` JSDoc comment and the `override` keyword, the rule reports two separate errors
 (one for each missing element). Each error has its own fix, and ESLint will apply them in sequence.
-The first fix adds the JSDoc comment, and the second fix adds the
-`override`
-keyword.
+The first fix adds the JSDoc comment, and the second fix adds the `override` keyword.
 
 ## When Not To Use It
 
@@ -484,9 +455,7 @@ checking methods that override or implement definitions from other files.
   impacts performance compared to single-file AST-based detection
 - Performance impact is most noticeable in large codebases with many cross-file dependencies
 - Recommended for projects where accuracy is more important than speed
-- Consider using
-  `projectService: true`
-  for better performance in monorepos
+- Consider using `projectService: true` for better performance in monorepos
 
 **AST-Based Fallback**:
 
@@ -548,15 +517,9 @@ export class ProductService extends BaseService {
 }
 ```
 
-In the above example, when checking
-`UserService.ts`
-and
-`ProductService.ts`
-, TypeScript must:
+In the above example, when checking `UserService.ts` and `ProductService.ts`, TypeScript must:
 
-1. Load
-   `BaseService.ts`
-   from disk
+1. Load `BaseService.ts` from disk
 2. Parse and analyze its type information
 3. Resolve the inheritance relationship
 4. Verify the override relationship

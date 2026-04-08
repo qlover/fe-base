@@ -229,7 +229,6 @@ context.registerFormatter(customFormatter);
 **See:**
 
 - [TypeDoc Documentation](https://typedoc.org/) for underlying parsing engine
-
 - [Handlebars Documentation](https://handlebarsjs.com/) for template syntax
 
 ---

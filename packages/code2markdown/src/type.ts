@@ -397,6 +397,12 @@ export interface FormatProjectDescription {
    * ```
    */
   content: CommentDisplayPart[];
+
+  /**
+   * Pre-rendered markdown/HTML for {@link CommentDisplayPart} arrays: joins parts
+   * without spurious line breaks and turns `@link` targets into in-document anchors.
+   */
+  contentMarkdown?: string;
 }
 
 /**

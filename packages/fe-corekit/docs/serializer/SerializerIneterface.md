@@ -30,12 +30,8 @@ Main features:
   - No exceptions thrown on parse errors
 
 - Type safety: Generic type parameters for compile-time safety
-  - Input type
-    `T`
-    for data to serialize
-  - Output type
-    `R`
-    for serialized format
+  - Input type `T` for data to serialize
+  - Output type `R` for serialized format
   - Type inference for better IDE support
 
 Use cases:

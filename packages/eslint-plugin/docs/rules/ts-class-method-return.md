@@ -18,12 +18,8 @@ The rule checks all class methods and requires them to have explicit return type
 The following are automatically excluded:
 
 - Setters (they cannot have return type annotations in TypeScript)
-- Constructors (configurable via
-  `allowConstructors`
-  option)
-- Private methods (configurable via
-  `allowPrivateMethods`
-  option)
+- Constructors (configurable via `allowConstructors` option)
+- Private methods (configurable via `allowPrivateMethods` option)
 
 ## Examples
 
@@ -67,36 +63,24 @@ class Example {
 
 This rule accepts an options object with the following properties:
 
-###
+### `allowConstructors`
 
-`allowConstructors`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`true`
+**Default:** `true`
 
 Whether to allow constructors without explicit return types.
 
-When
-`true`
-, constructors are exempt from requiring explicit return type annotations.
-When
-`false`
-, constructors must have explicit return type annotations (though this is uncommon).
+When `true`, constructors are exempt from requiring explicit return type annotations.
+When `false`, constructors must have explicit return type annotations (though this is uncommon).
 
 **Use cases:**
 
 - **Default behavior (true)**: Constructors typically don't need return type annotations
   - TypeScript constructors implicitly return the class instance type
-  - Example:
-    `constructor() {}`
-    ✅ (when allowConstructors: true)
+  - Example: `constructor() {}` ✅ (when allowConstructors: true)
 - **Strict mode (false)**: Require explicit return types for consistency
-  - Example:
-    `constructor(): Example {}`
-    ✅ (when allowConstructors: false)
+  - Example: `constructor(): Example {}` ✅ (when allowConstructors: false)
 
 **Configuration example:**
 
@@ -113,53 +97,32 @@ When
 }
 ```
 
-###
+### `allowPrivateMethods`
 
-`allowPrivateMethods`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`false`
+**Default:** `false`
 
 Whether to allow private methods without explicit return types.
 
-When
-`true`
-, private methods (using
-`private`
-keyword or
-`#`
-syntax) are exempt from
+When `true`, private methods (using `private` keyword or `#` syntax) are exempt from
 requiring explicit return type annotations.
-When
-`false`
-, all methods including private ones must have explicit return types.
+When `false`, all methods including private ones must have explicit return types.
 
 **Use cases:**
 
 - **Default behavior (false)**: Require return types for all methods including private ones
   - Ensures consistency across all methods
-  - Example:
-    `private helper(): void {}`
-    ✅ (when allowPrivateMethods: false)
+  - Example: `private helper(): void {}` ✅ (when allowPrivateMethods: false)
 - **Allow private methods (true)**: Exempt private methods from return type requirement
   - Private methods are internal implementation details
   - Reduces verbosity for internal methods
-  - Example:
-    `private helper() {}`
-    ✅ (when allowPrivateMethods: true)
+  - Example: `private helper() {}` ✅ (when allowPrivateMethods: true)
 
 **Note:** This applies to both:
 
-- Methods with
-  `private`
-  keyword:
-  `private method() {}`
-
-- Private identifier methods:
-  `#method() {}`
+- Methods with `private` keyword: `private method() {}`
+- Private identifier methods: `#method() {}`
 
 **Configuration example:**
 
@@ -183,9 +146,7 @@ a style guide that doesn't require explicit return types, you can disable this r
 
 ## Implementation Notes
 
-- The rule checks
-  `MethodDefinition`
-  nodes in class declarations
+- The rule checks `MethodDefinition` nodes in class declarations
 - Setters are automatically skipped as they cannot have return type annotations in TypeScript
 - Getters are checked and must have return type annotations
 - Static methods are checked and must have return type annotations
@@ -194,7 +155,6 @@ a style guide that doesn't require explicit return types, you can disable this r
 **See:**
 
 - [Rule source](../../src/rules/ts-class-method-return.ts)
-
 - [Test source](../../__tests__/rules/ts-class-method-return.test.ts)
 
 ---

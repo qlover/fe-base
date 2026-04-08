@@ -100,7 +100,7 @@ export interface AborterConfig {
    * // Aborts if parent cancels OR timeout expires
    * ```
    */
-  signal?: AbortSignal;
+  signal?: AbortSignal | null;
 }
 
 /**

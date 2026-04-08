@@ -412,22 +412,14 @@ Executes a command silently (deprecated)
 
 Core concept:
 Legacy method for silent command execution, now deprecated
-in favor of the more flexible
-`exec`
-method with silent option.
+in favor of the more flexible `exec` method with silent option.
 
 Deprecation notice:
 
 - This method is deprecated and will be removed in future versions
-- Use
-  `exec`
-  method with
-  `silent: true`
-  option instead
+- Use `exec` method with `silent: true` option instead
 - Provides backward compatibility for existing code
-- Maintains same functionality through
-  `exec`
-  method
+- Maintains same functionality through `exec` method
 
 Silent execution:
 
@@ -493,12 +485,9 @@ Template features:
 
 Template syntax:
 
-- `<%= variable %>`
-  for escaped output
-- `<%- variable %>`
-  for unescaped output
-- `<% code %>`
-  for JavaScript code execution
+- `<%= variable %>` for escaped output
+- `<%- variable %>` for unescaped output
+- `<% code %>` for JavaScript code execution
 - Supports nested object access and function calls
 
 Context handling:
@@ -613,12 +602,9 @@ Context usage:
 
 Template syntax:
 
-- `<%= variable %>`
-  for escaped output
-- `<%- variable %>`
-  for unescaped output
-- `<% code %>`
-  for JavaScript code execution
+- `<%= variable %>` for escaped output
+- `<%- variable %>` for unescaped output
+- `<% code %>` for JavaScript code execution
 - Supports nested object access and function calls
 
 **Example:** Basic template context

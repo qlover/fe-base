@@ -299,9 +299,16 @@ export class AsyncStore<
     this.storageKey = options?.storageKey ?? null;
     this.store = createAsyncStoreInterface(options);
   }
+  /**
+   * @override
+   */
+  public emit(
+    state: S | StoreUpdateValue<S>,
+    options?: { persist?: boolean }
+  ): void {
+    this.store.update(state as S);
 
-  protected override update(_state: S | StoreUpdateValue<S>): void {
-    this.store.update(_state as StoreUpdateValue<S>);
+    super.emit(state, options);
   }
 
   /**
@@ -413,7 +420,9 @@ export class AsyncStore<
    * // Storage contains full state object with loading, status, timestamps, etc.
    * ```
    */
-  public override persist<T extends S>(_state?: T | undefined): void {
+  public override persist<T extends S | StoreUpdateValue<S>>(
+    _state?: T | undefined
+  ): void {
     if (!this.storage || !this.storageKey) {
       return;
     }
@@ -452,18 +461,6 @@ export class AsyncStore<
   }
 
   /**
-   * Apply a patch or full snapshot, then persist when configured (see {@link PersistentStore.emit})
-   *
-   * @override
-   */
-  public override emit(
-    state: S | StoreUpdateValue<S>,
-    options?: { persist?: boolean }
-  ): void {
-    super.emit(state as S, options);
-  }
-
-  /**
    * Start an async operation
    *
    * Marks the beginning of an async operation and sets the loading state to `true`.
@@ -494,14 +491,12 @@ export class AsyncStore<
    * ```
    */
   public start(result?: S['result'] | undefined): void {
-    this.emit(
-      {
-        loading: true,
-        result,
-        status: AsyncStoreStatus.PENDING,
-        startTime: Date.now()
-      } as StoreUpdateValue<S>
-    );
+    this.emit({
+      loading: true,
+      result,
+      status: AsyncStoreStatus.PENDING,
+      startTime: Date.now()
+    } as StoreUpdateValue<S>);
   }
 
   /**
@@ -540,15 +535,13 @@ export class AsyncStore<
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
 
-    this.emit(
-      {
-        loading: false,
-        error,
-        result: newResult,
-        status: AsyncStoreStatus.STOPPED,
-        endTime: Date.now()
-      } as StoreUpdateValue<S>
-    );
+    this.emit({
+      loading: false,
+      error,
+      result: newResult,
+      status: AsyncStoreStatus.STOPPED,
+      endTime: Date.now()
+    } as StoreUpdateValue<S>);
   }
 
   /**
@@ -612,15 +605,13 @@ export class AsyncStore<
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
 
-    this.emit(
-      {
-        loading: false,
-        error,
-        result: newResult,
-        status: AsyncStoreStatus.FAILED,
-        endTime: Date.now()
-      } as StoreUpdateValue<S>
-    );
+    this.emit({
+      loading: false,
+      error,
+      result: newResult,
+      status: AsyncStoreStatus.FAILED,
+      endTime: Date.now()
+    } as StoreUpdateValue<S>);
   }
 
   /**
@@ -658,15 +649,13 @@ export class AsyncStore<
    * ```
    */
   public success(result: S['result']): void {
-    this.emit(
-      {
-        loading: false,
-        result,
-        error: null,
-        status: AsyncStoreStatus.SUCCESS,
-        endTime: Date.now()
-      } as StoreUpdateValue<S>
-    );
+    this.emit({
+      loading: false,
+      result,
+      error: null,
+      status: AsyncStoreStatus.SUCCESS,
+      endTime: Date.now()
+    } as StoreUpdateValue<S>);
   }
 
   /**

@@ -44,9 +44,7 @@ Main features:
 
 The built-in executor and plugin system have been removed from this adapter.
 If you need lifecycle hooks, request/response transformation, or plugin support,
-use
-`RequestExecutor`
-to compose with this adapter:
+use `RequestExecutor` to compose with this adapter:
 
 **Example:** Using RequestExecutor for plugin support
 
@@ -142,9 +140,7 @@ with per-request configurations. It includes:
 - Custom fetcher function
 
 The configuration is immutable after initialization to prevent accidental
-modifications. Use
-`setConfig()`
-to update configuration if needed.
+modifications. Use `setConfig()` to update configuration if needed.
 
 ---
 
@@ -172,11 +168,7 @@ and relative URLs appropriately.
 
 URL construction rules:
 
-- Absolute URLs (starting with
-  `http://`
-  or
-  `https://`
-  ) are used directly
+- Absolute URLs (starting with `http://` or `https://`) are used directly
 - Relative URLs are concatenated with baseURL if provided
 - Handles trailing slash in baseURL to avoid double slashes
 - If no baseURL, relative URLs are used as-is (browser resolves them)
@@ -643,8 +635,7 @@ A string indicating whether credentials will be sent with the request always, ne
 
 Request body data
 
-Mapping fetch
-`body`
+Mapping fetch `body`
 
 **TypeParam:** RequestData
 
@@ -830,8 +821,7 @@ Will be combined with baseURL if provided
 
 Processed by FetchURLPlugin during request
 
-TODO: Change to URL | Request, add attribute
-`input`
+TODO: Change to URL | Request, add attribute `input`
 
 **Example:**
 

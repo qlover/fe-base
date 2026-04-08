@@ -523,12 +523,9 @@ commonly used in error handling and early termination scenarios
 Main features:
 
 - Conditional termination: Breaks chain only when return value exists
-- Error handling: Commonly used in
-  `onError`
-  lifecycle hooks
+- Error handling: Commonly used in `onError` lifecycle hooks
 - Result-based control: Enables flow control based on hook results
-- Flexible termination: Provides more nuanced control than
-  `breakChain`
+- Flexible termination: Provides more nuanced control than `breakChain`
 
 Common usage:
 

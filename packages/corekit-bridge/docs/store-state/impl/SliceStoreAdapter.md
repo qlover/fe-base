@@ -10,48 +10,17 @@
 
 **Since:** `3.0.0`
 
-SliceStoreAdapter
-implementation wrapping a
-SliceStore
-
-`Store`
+<a href="#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> implementation wrapping a SliceStore `Store`
 
 - Significance: concrete adapter for slice-based apps and tests
-- Core idea: delegate lifecycle to inner
-  `SliceStore`
-  while exposing
-  `SliceStoreUpdateValue`
-  updates
-- Main function:
-  `update`
-  /
-  `reset`
-  /
-  `getState`
-  /
-  `getStore`
-
-- Main purpose: default implementation referenced from
-  `WithStoreInterface`
-  docs
+- Core idea: delegate lifecycle to inner `SliceStore` while exposing `SliceStoreUpdateValue` updates
+- Main function: `update` / `reset` / `getState` / `getStore`
+- Main purpose: default implementation referenced from `WithStoreInterface` docs
 
 Constructor overloads (order matters for TypeScript inference):
 
-1.  `init: () => Store`
-    — reuse an instance;
-    `init`
-    runs once;
-    `reset`
-    uses that store’s maker
-2.  `init: () => T`
-    — create
-    `SliceStore`
-    internally; first
-    `init()`
-    return is initial state;
-    `init`
-    runs again on each
-    `reset`
+1. `init: () => Store` — reuse an instance; `init` runs once; `reset` uses that store’s maker
+2. `init: () => T` — create `SliceStore` internally; first `init()` return is initial state; `init` runs again on each `reset`
 
 **Example:** Overload 2 — state factory
 
@@ -100,9 +69,7 @@ w.reset();
 
 **Type:** `Store`
 
-Inner
-`SliceStore`
-(or subclass) backing this adapter
+Inner `SliceStore` (or subclass) backing this adapter
 
 ---
 
@@ -118,11 +85,7 @@ Inner
 
 **Returns:**
 
-Current
-`state`
-from the inner store (same reference as
-`getStore().state`
-until next emit)
+Current `state` from the inner store (same reference as `getStore().state` until next emit)
 
 ---
 
@@ -138,9 +101,7 @@ until next emit)
 
 **Returns:**
 
-The inner
-`SliceStore`
-instance (use for subclass-specific APIs)
+The inner `SliceStore` instance (use for subclass-specific APIs)
 
 ---
 
@@ -154,9 +115,7 @@ instance (use for subclass-specific APIs)
 
 **Type:** `void`
 
-Reset state via the inner store’s maker (overload 1: that store’s factory; overload 2:
-`init()`
-again)
+Reset state via the inner store’s maker (overload 1: that store’s factory; overload 2: `init()` again)
 
 ---
 
@@ -192,9 +151,9 @@ Subscribe to state changes
 
 #### Parameters
 
-| Name    | Type                       | Optional | Default | Since | Deprecated | Description          |
-| ------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------- |
-| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See StoreUpdateValue |
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                                                              |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See <a href="../interface/StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a> |
 
 ---
 
@@ -202,43 +161,22 @@ Subscribe to state changes
 
 **Type:** `void`
 
-Apply a patch and notify observers via
-SliceStore.emit
+Apply a patch and notify observers via SliceStore.emit
 
 Behavior:
 
-- If
-  `Object.is(value, current)`
-  — no-op (skips emit)
-- If current is
-  `null`
-  ,
-  `undefined`
-  , or not an object — emit
-  `value`
-  as full
-  `T`
+- If `Object.is(value, current)` — no-op (skips emit)
+- If current is `null`, `undefined`, or not an object — emit `value` as full `T`
+- If current is an array — emit `clone(value)` (full array replacement)
+- Else — `clone(current)`, `Object.assign` with `value`, emit result (shallow merge for objects)
 
-- If current is an array — emit
-  `clone(value)`
-  (full array replacement)
-- Else —
-  `clone(current)`
-  ,
-  `Object.assign`
-  with
-  `value`
-  , emit result (shallow merge for objects)
-
-Aligns with
-`StoreInterface.cloneState`
-for plain objects (shallow clone + assign). Does not deep-merge.
+Aligns with `StoreInterface.cloneState` for plain objects (shallow clone + assign). Does not deep-merge.
 
 #### Parameters
 
-| Name    | Type                       | Optional | Default | Since | Deprecated | Description          |
-| ------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------- |
-| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See StoreUpdateValue |
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                                                              |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See <a href="../interface/StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a> |
 
 ---
 
@@ -248,30 +186,15 @@ for plain objects (shallow clone + assign). Does not deep-merge.
 
 **Since:** `2.3.0`
 
-Union initializer: returns state
-`T`
-or an existing
-SliceStore
+Union initializer: returns state `T` or an existing SliceStore
 
 - Significance: single callback type for the implementing constructor signature
-- Core idea: runtime chooses branch after one
-  `init()`
-  call
+- Core idea: runtime chooses branch after one `init()` call
 - Main function: support both “wrap state” and “reuse store” in one implementation
-- Main purpose: keep implementation
-  `constructor(init: …)`
-  simple
+- Main purpose: keep implementation `constructor(init: …)` simple
 
-Prefer the narrower
-SliceStoreStateInitFn
-or
-SliceStoreInstanceInitFn
-overloads on
-
-SliceStoreAdapter
-so
-`Store`
-is inferred correctly at call sites
+Prefer the narrower <a href="#slicestorestateinitfn-typealias" class="tsd-kind-type-alias">SliceStoreStateInitFn</a> or <a href="#slicestoreinstanceinitfn-typealias" class="tsd-kind-type-alias">SliceStoreInstanceInitFn</a> overloads on
+<a href="#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> so `Store` is inferred correctly at call sites
 
 ---
 
@@ -281,25 +204,12 @@ is inferred correctly at call sites
 
 **Since:** `2.3.0`
 
-Constructor overload 1:
-`init`
-always returns a store instance
+Constructor overload 1: `init` always returns a store instance
 
-- Significance: preserve
-  `Store`
-  generic as a subclass (e.g.
-  `StoreInterface`
-  extension)
-- Core idea:
-  `init`
-  runs once; inner
-  `reset`
-  uses that store’s maker
-- Main function: typed
-  `() => Store`
-  for inference
-- Main purpose: wrap existing stores without creating an extra
-  `SliceStore`
+- Significance: preserve `Store` generic as a subclass (e.g. `StoreInterface` extension)
+- Core idea: `init` runs once; inner `reset` uses that store’s maker
+- Main function: typed `() => Store` for inference
+- Main purpose: wrap existing stores without creating an extra `SliceStore`
 
 ---
 
@@ -309,24 +219,11 @@ always returns a store instance
 
 **Since:** `2.3.0`
 
-Constructor overload 2:
-`init`
-always returns state
-`T`
-; a
-SliceStore
-is created internally
+Constructor overload 2: `init` always returns state `T`; a SliceStore is created internally
 
 - Significance: ergonomic factory for plain state without defining a store class
-- Core idea: first return seeds initial state; further
-  `init()`
-  calls run on each
-  `reset`
-
-- Main function: typed
-  `() => T`
-  only
-- Main purpose: smallest migration path from
-  `new SliceStore(() => T)`
+- Core idea: first return seeds initial state; further `init()` calls run on each `reset`
+- Main function: typed `() => T` only
+- Main purpose: smallest migration path from `new SliceStore(() => T)`
 
 ---

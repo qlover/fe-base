@@ -41,12 +41,8 @@ Parameter Handling (Reference-Based):
   - Benefits: Better performance, user control, predictable behavior
 
 - **User Responsibility**: Users must clone parameters if isolation is needed
-  - If you need isolation:
-    `new ExecutorContextImpl({ ...params })`
-
-  - If you don't need isolation:
-    `new ExecutorContextImpl(params)`
-
+  - If you need isolation: `new ExecutorContextImpl({ ...params })`
+  - If you don't need isolation: `new ExecutorContextImpl(params)`
   - Trade-off: More control vs. more responsibility
 
 - **Performance**: Zero cloning overhead
@@ -168,7 +164,6 @@ if (context.error) {
 **See:**
 
 - ExecutorContextInterface - Interface that this class implements
-
 - LifecycleExecutor - Executor that uses this context implementation
 
 ---
@@ -219,9 +214,7 @@ onError: (ctx, error) => {
 Read-only access to execution parameters
 
 Provides immutable access to the current parameters. To modify parameters,
-use
-`setParameters()`
-method which ensures safe cloning.
+use `setParameters()` method which ensures safe cloning.
 
 **Example:**
 

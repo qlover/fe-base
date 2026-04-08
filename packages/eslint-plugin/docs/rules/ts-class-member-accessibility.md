@@ -21,12 +21,8 @@ The rule checks:
 
 - Class methods (including getters, setters, and static methods)
 - Class properties/fields (including static properties)
-- Does NOT check constructors by default (configurable via
-  `allowConstructors`
-  )
-- Does NOT check computed properties by default (configurable via
-  `allowComputedProperties`
-  )
+- Does NOT check constructors by default (configurable via `allowConstructors`)
+- Does NOT check computed properties by default (configurable via `allowComputedProperties`)
 
 ## Examples
 
@@ -62,47 +58,27 @@ class Example {
 
 This rule accepts an options object with the following properties:
 
-###
+### `allowConstructors`
 
-`allowConstructors`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`true`
+**Default:** `true`
 
 Whether to allow constructors without explicit accessibility modifiers.
 
-When
-`true`
-, constructors are exempt from requiring explicit accessibility modifiers.
-When
-`false`
-, constructors must have an explicit modifier (typically
-`public`
-).
+When `true`, constructors are exempt from requiring explicit accessibility modifiers.
+When `false`, constructors must have an explicit modifier (typically `public`).
 
 **Use cases:**
 
-- **Default behavior (true)**: Most codebases prefer
-  `constructor()`
-  over
-  `public constructor()`
+- **Default behavior (true)**: Most codebases prefer `constructor()` over `public constructor()`
   - Constructors are always public in TypeScript
   - Omitting the modifier is more concise and idiomatic
-  - Example:
-    `constructor() {}`
-    ✅ (when allowConstructors: true)
-
+  - Example: `constructor() {}` ✅ (when allowConstructors: true)
 - **Strict mode (false)**: Enforce explicit modifiers for consistency
   - Useful for teams wanting complete explicitness
-  - Forces
-    `public constructor() {}`
-    syntax
-  - Example:
-    `public constructor() {}`
-    ✅ (when allowConstructors: false)
+  - Forces `public constructor() {}` syntax
+  - Example: `public constructor() {}` ✅ (when allowConstructors: false)
 
 **Configuration example:**
 
@@ -119,61 +95,34 @@ When
 }
 ```
 
-###
+### `allowImplicitPublic`
 
-`allowImplicitPublic`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`false`
+**Default:** `false`
 
 Whether to allow implicit public members (members without explicit modifiers).
 
-When
-`true`
-, class members without explicit accessibility modifiers are allowed.
+When `true`, class members without explicit accessibility modifiers are allowed.
 These members are implicitly public in TypeScript.
-When
-`false`
-, all members must have explicit modifiers (public, private, or protected).
+When `false`, all members must have explicit modifiers (public, private, or protected).
 
 **Use cases:**
 
 - **Default behavior (false)**: Require explicit modifiers for all members
-  - Forces
-    `public method() {}`
-    instead of
-    `method() {}`
-
+  - Forces `public method() {}` instead of `method() {}`
   - Ensures complete explicitness
-  - Example:
-    `public method() {}`
-    ✅ (when allowImplicitPublic: false)
-
+  - Example: `public method() {}` ✅ (when allowImplicitPublic: false)
 - **Allow implicit public (true)**: Accept members without modifiers
   - TypeScript's default behavior: members without modifiers are public
-  - More concise syntax:
-    `method() {}`
-    instead of
-    `public method() {}`
-
-  - Example:
-    `method() {}`
-    ✅ (when allowImplicitPublic: true)
+  - More concise syntax: `method() {}` instead of `public method() {}`
+  - Example: `method() {}` ✅ (when allowImplicitPublic: true)
 
 **Note:** This option applies to all class members (methods and properties) except:
 
-- Constructors (controlled by
-  `allowConstructors`
-  )
-- Private fields with # syntax (controlled by
-  `allowPrivateFields`
-  )
-- Computed properties (controlled by
-  `allowComputedProperties`
-  )
+- Constructors (controlled by `allowConstructors`)
+- Private fields with # syntax (controlled by `allowPrivateFields`)
+- Computed properties (controlled by `allowComputedProperties`)
 
 **Configuration example:**
 
@@ -190,67 +139,29 @@ When
 }
 ```
 
-###
+### `allowPrivateFields`
 
-`allowPrivateFields`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`false`
+**Default:** `false`
 
 Whether to allow private fields (using # syntax) to omit accessibility modifiers.
 
-When
-`true`
-, private identifier fields (
-`#field`
-) are exempt from requiring the
-`private`
-keyword.
-When
-`false`
-, even
-`#field`
-syntax requires explicit
-`private #field`
-modifier.
+When `true`, private identifier fields (`#field`) are exempt from requiring the `private` keyword.
+When `false`, even `#field` syntax requires explicit `private #field` modifier.
 
 **Use cases:**
 
-- **Default behavior (false)**: Require
-  `private #field`
-  for consistency
+- **Default behavior (false)**: Require `private #field` for consistency
   - Ensures all private members use the same syntax pattern
-  - Example:
-    `private #field: number = 42`
-    ✅ (when allowPrivateFields: false)
-- **Allow # syntax (true)**: Accept
-  `#field`
-  without redundant
-  `private`
-  keyword
-  - The
-    `#`
-    syntax already makes privacy explicit
-  - Reduces redundancy:
-    `#field`
-    vs
-    `private #field`
+  - Example: `private #field: number = 42` ✅ (when allowPrivateFields: false)
+- **Allow # syntax (true)**: Accept `#field` without redundant `private` keyword
+  - The `#` syntax already makes privacy explicit
+  - Reduces redundancy: `#field` vs `private #field`
+  - Example: `#field: number = 42` ✅ (when allowPrivateFields: true)
 
-  - Example:
-    `#field: number = 42`
-    ✅ (when allowPrivateFields: true)
-
-**Note:** This only applies to private identifier fields (
-`#field`
-), not
-`private field`
-syntax.
-Regular
-`private field`
-syntax always requires the modifier regardless of this option.
+**Note:** This only applies to private identifier fields (`#field`), not `private field` syntax.
+Regular `private field` syntax always requires the modifier regardless of this option.
 
 **Configuration example:**
 
@@ -267,86 +178,50 @@ syntax always requires the modifier regardless of this option.
 }
 ```
 
-###
+### `allowProtectedFields`
 
-`allowProtectedFields`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`false`
+**Default:** `false`
 
 Allow protected fields to omit accessibility modifiers.
 
 **Current limitation:**
 This option has limited practical use in current TypeScript because:
 
-- Fields without modifiers are implicitly
-  `public`
-  , not
-  `protected`
-
-- `protected`
-  requires explicit declaration:
-  `protected field: number`
-
+- Fields without modifiers are implicitly `public`, not `protected`
+- `protected` requires explicit declaration: `protected field: number`
 - There's no way to have "implicit protected" fields in TypeScript
 
-**Recommendation:** Keep this option at default (
-`false`
-) unless you have a specific use case.
+**Recommendation:** Keep this option at default (`false`) unless you have a specific use case.
 
-###
+### `allowComputedProperties`
 
-`allowComputedProperties`
+**Type:** `boolean`
 
-**Type:**
-`boolean`
-
-**Default:**
-`false`
+**Default:** `false`
 
 Whether to allow computed properties (using bracket notation) to omit accessibility modifiers.
 
-When
-`true`
-, computed property names (e.g.,
-`[Symbol.iterator]`
-,
-`[getKey()]`
-) are exempt
+When `true`, computed property names (e.g., `[Symbol.iterator]`, `[getKey()]`) are exempt
 from requiring explicit accessibility modifiers.
-When
-`false`
-, computed properties must have explicit modifiers (public, private, or protected).
+When `false`, computed properties must have explicit modifiers (public, private, or protected).
 
 **Use cases:**
 
 - **Default behavior (false)**: Require explicit modifiers for computed properties
   - Ensures all members use consistent syntax pattern
-  - Example:
-    `public [Symbol.iterator]() {}`
-    ✅ (when allowComputedProperties: false)
+  - Example: `public [Symbol.iterator]() {}` ✅ (when allowComputedProperties: false)
 - **Allow computed properties (true)**: Accept computed properties without modifiers
   - Computed properties are often used for special methods (e.g., iterators, symbols)
   - The bracket notation already makes them visually distinct
-  - Reduces verbosity:
-    `[Symbol.iterator]() {}`
-    vs
-    `public [Symbol.iterator]() {}`
-
-  - Example:
-    `[Symbol.iterator]() {}`
-    ✅ (when allowComputedProperties: true)
+  - Reduces verbosity: `[Symbol.iterator]() {}` vs `public [Symbol.iterator]() {}`
+  - Example: `[Symbol.iterator]() {}` ✅ (when allowComputedProperties: true)
 
 **Note:** This applies to both computed methods and computed properties:
 
-- Computed methods:
-  `[Symbol.iterator]() {}`
-
-- Computed properties:
-  `[getKey()]: number = 42`
+- Computed methods: `[Symbol.iterator]() {}`
+- Computed properties: `[getKey()]: number = 42`
 
 **Configuration example:**
 
@@ -370,19 +245,14 @@ style guide that doesn't require explicit modifiers, you can disable this rule.
 
 ## Implementation Notes
 
-- The rule provides automatic fixes by adding
-  `public`
-  modifier where appropriate
+- The rule provides automatic fixes by adding `public` modifier where appropriate
 - Fix insertion respects existing modifiers (static, abstract, async, get, set) and maintains correct order
 - The rule handles both regular classes and abstract classes
-- Private identifier fields (
-  `#field`
-  ) and regular private fields are handled separately
+- Private identifier fields (`#field`) and regular private fields are handled separately
 
 **See:**
 
 - [Rule source](../../src/rules/ts-class-member-accessibility.ts)
-
 - [Test source](../../__tests__/rules/ts-class-member-accessibility.test.ts)
 
 ---
