@@ -1,5 +1,72 @@
 # examples/next-seed
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **i18n:** add internationalization documentation in English and Chinese ([4e3f9ac](https://github.com/qlover/fe-base/commit/4e3f9acb90e544c8db56b1974c2d2504174e148c)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced comprehensive i18n documentation for the `next-seed` project, detailing the internationalization architecture, core concepts, and usage examples for both App Router and Pages Router.
+  - Created separate markdown files for English and Chinese versions to enhance accessibility for a broader audience.
+  - Updated relevant components to utilize the new `PageI18nProvider` for improved context management in internationalization.
+
+  These changes aim to facilitate better understanding and implementation of internationalization within the project.
+
+- **request-logs:** add request_id column for enhanced API request tracking ([1b25767](https://github.com/qlover/fe-base/commit/1b25767fcaf7ba42b32070b8c5bc55baf199e2d4)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced an optional `request_id` column in the `request_logs` table to facilitate correlation of API requests.
+  - Updated relevant SQL scripts to ensure idempotent addition of the `request_id` column and its associated index.
+  - Modified the `NextApiServer` to log the `request_id` when available, improving traceability of requests.
+  - Adjusted the `RequestLogInsert` interface and related components to accommodate the new `request_id` field.
+  - Enhanced the `RequestLogsTable` component to display the `request_id`, providing better visibility in the admin interface.
+
+  These changes aim to improve the tracking and management of API requests within the application.
+
+- **request-logs:** implement paged search functionality for user request logs ([1508127](https://github.com/qlover/fe-base/commit/1508127a2c2efd273148abfed06b5d2d849803db)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Added `searchRequestLogsForCurrentUser` method in `UserController` to support paged retrieval of request logs based on search parameters.
+  - Updated `RequestLogsRepositoryInterface` and `RequestLogsRepository` to include a new search method that handles pagination and sorting.
+  - Introduced `SearchParamsValidator` for validating search criteria from URL parameters.
+  - Enhanced the `RequestLogsTable` component to support server-driven pagination.
+  - Updated API documentation to reflect changes in request log retrieval, including new query parameters for pagination and sorting.
+
+  These changes aim to improve the user experience by providing a more flexible and efficient way to access request logs.
+
+- **pagination:** refactor pagination interfaces and implementations across repositories ([08f812c](https://github.com/qlover/fe-base/commit/08f812c9240089426ba68d24d54e3d92396ecb1d)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Updated `DBBridgeInterface` to utilize `PaginationParams` for consistent pagination handling.
+  - Refactored `DBTableInterface` to define `DBTablePaginationParams`, enhancing type safety in pagination methods.
+  - Modified `LocalesRepository` and `ApiLocaleService` to adopt the new pagination structure, improving clarity and maintainability.
+  - Removed deprecated `PaginationInterface` and `PaginationSchema`, streamlining the pagination logic.
+  - Introduced `PaginationResult` type for better alignment with search result structures.
+
+  These changes aim to unify pagination handling across the application, enhancing type safety and code clarity.
+
+- **request-logs:** implement user request logging and management ([e68f3e9](https://github.com/qlover/fe-base/commit/e68f3e9193014df88d3fdd17bfbe02c4ce4c60cc)) ([#603](https://github.com/qlover/fe-base/pull/603))
+  - Introduced a new `request_logs` table with user-scoped row-level security for tracking API calls and authentication events.
+  - Enhanced `UserService` and `UserController` to log login and logout events, capturing user agent and IP address.
+  - Added API endpoint for users to retrieve their recent request logs, ensuring RLS compliance.
+  - Created a new `RequestLogsTable` component for displaying logs in the admin interface.
+  - Updated navigation and routing to include a dedicated request logs page for admin users.
+
+  These changes aim to improve audit capabilities and enhance user activity tracking within the application.
+
+#### 🐞 Bug Fixes
+
+- **logging:** update appConfig logging to stringify object for better readability ([0338c12](https://github.com/qlover/fe-base/commit/0338c1256e9a67f24747952a27886f82c9e8af67)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Modified the logging of `appConfig` in `nextApiServerBackstop` to use `JSON.stringify`, enhancing the clarity of logged output.
+  - This change improves the visibility of the configuration details during server initialization, aiding in debugging and monitoring.
+
+  These updates aim to provide clearer logging information for developers.
+
+#### ♻️ Refactors
+
+- **appApi:** reorganize AppApi imports and enhance ClientIOCRegister ([0ab88a0](https://github.com/qlover/fe-base/commit/0ab88a08191aa43761362e87ed3595f764b52d07)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Updated import paths for AppApiRequester and related components to reflect new directory structure under `appApi`.
+  - Introduced LocalStorage class for managing local storage operations, enhancing data handling capabilities.
+  - Enhanced ClientIOCRegister to bind new LocalStorage and LocalStorageEncrypt instances, improving dependency management.
+  - Added AppApiRegister class to streamline API request handling and registration within the IOC container.
+
+  These changes aim to improve code organization and facilitate better management of API interactions and local storage.
+
 ## 1.0.0
 
 ### Major Changes

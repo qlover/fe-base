@@ -1,5 +1,69 @@
 # @qlover/corekit-bridge
 
+## 3.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **store:** enhance state management with emit method and type updates ([afd3e9e](https://github.com/qlover/fe-base/commit/afd3e9eec3a6dc9b8e046d7947914647ceff3b13)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced the `emit` method in `PersistentStore` and `AsyncStore` to streamline state updates, replacing the previous `update` method for better clarity and consistency.
+  - Updated the `persist` method in `UserStore` and `PersistentStore` to accept `StoreUpdateValue` types, enhancing type safety across state management.
+  - Added new imports for `StoreUpdateValue` in relevant files to support the updated type definitions.
+  - Improved the overall structure and maintainability of state management logic within the core store implementations.
+
+  These changes aim to enhance the flexibility and robustness of state management across the application.
+
+- **resources:** implement CRUD and search functionality with async state management ([483f281](https://github.com/qlover/fe-base/commit/483f281ffac2df0278a942901c5ca4681b5a1afa)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Added new implementations for resource management, including `ResourceCRUD`, `ResourceCRUDStore`, `ResourceSearch`, `ResourceSearchStore`, and `ResourceScroll`.
+  - Updated the resource index to export the new implementations, enhancing the modularity and usability of resource operations.
+  - Introduced async state management for CRUD operations and search functionalities, improving the responsiveness and user experience in UI layers.
+  - Enhanced interfaces to support optional resource options for better flexibility in API calls.
+
+  These changes aim to provide a comprehensive and efficient approach to resource handling within the application.
+
+- **resources:** enhance resource management with new search and CRUD functionalities ([56a7ca6](https://github.com/qlover/fe-base/commit/56a7ca62283a65348d52db5df568947e707258b9)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced `ResourceSearchResult` and related validation functions to improve search result handling.
+  - Added `createResourceSearchStore` for managing search state with async capabilities.
+  - Updated `ResourceCRUD` and `ResourceScroll` classes to utilize the new `GatewayServiceName` type for better type safety.
+  - Enhanced `ResourceSearch` and `ResourceScroll` to support optional response guards for improved data validation.
+  - Refactored existing resource interfaces to streamline the integration of new functionalities.
+
+  These changes aim to provide a more robust and flexible approach to resource management within the application.
+
+- **tests:** add comprehensive test suites for resource management components ([572bd0e](https://github.com/qlover/fe-base/commit/572bd0ec6053c92c02706502de986b9bb336d8c0)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced test suites for `createResourceSearchStore`, `ResourceCRUD`, `ResourceCRUDStore`, `ResourceScroll`, `ResourceSearch`, `ResourceSearchResult`, and `ResourceSearchStore`.
+  - Each suite includes tests for constructors, state management, CRUD operations, and error handling, ensuring robust coverage of functionalities.
+  - Enhanced type-guard tests for `ResourceSearchResult` to validate response shapes and improve type safety.
+
+  These additions aim to strengthen the reliability and maintainability of resource management features through thorough testing.
+
+- **tests:** add ResourceIO test suite for import/export functionality ([6fdc4b7](https://github.com/qlover/fe-base/commit/6fdc4b71357563bdf83c3c83514c339cfb9c9a92)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced a comprehensive test suite for the `ResourceIO` class, covering key functionalities including constructor validation, import/export data handling, error propagation, and store state management.
+  - Added tests for success paths, invalid payload handling, and custom identifier usage in import/export operations.
+  - Enhanced overall test coverage for resource management components, ensuring robust validation of the `ResourceIO` implementation.
+
+  These changes aim to strengthen the reliability and maintainability of the `ResourceIO` functionality within the application.
+
+#### 📝 Documentation
+
+- refine documentation for clarity and consistency ([1192a28](https://github.com/qlover/fe-base/commit/1192a284c09c547beec71635bb986f154157789d)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Removed unnecessary line breaks and improved formatting in various documentation files to enhance readability.
+  - Updated descriptions and examples for better clarity, ensuring consistent presentation across all documentation.
+  - Added new utility documentation for `gfmSlug` and `tsSourceToOutputMdPath` modules, detailing their functionalities and parameters.
+  - Enhanced existing documentation for `GatewayService`, `UserService`, and related interfaces to provide clearer guidance on usage and behavior.
+
+  These changes aim to improve the overall quality and usability of the documentation for developers.
+
+#### ♻️ Refactors
+
+- **resources:** replace ResourceInterface and ResourceServiceInterface with new CRUD and IO interfaces ([7840ec5](https://github.com/qlover/fe-base/commit/7840ec544efd2616178ac6ed08fcd43f1b7220d5)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Removed the deprecated `ResourceInterface` and `ResourceServiceInterface` to streamline resource management.
+  - Introduced new interfaces: `ResourceCRUDInterface`, `ResourceIOInterface`, `ResourceSearchInterface`, and `ResourceScrollInterface` to enhance clarity and separation of concerns in resource operations.
+  - Updated the main resource index to export the new interfaces, improving the overall structure and maintainability of the resource management system.
+
+  These changes aim to provide a more modular and flexible approach to resource handling within the application.
+
 ## 3.0.0
 
 ### Major Changes
