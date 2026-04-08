@@ -1,6 +1,8 @@
+import type { GatewayServiceName } from '../../gateway-service/impl/GatewayService';
 import type {
   AsyncStoreOptions,
-  AsyncStoreStateInterface
+  AsyncStoreStateInterface,
+  StoreUpdateValue
 } from '../../store-state';
 import { AsyncStore, AsyncStoreState } from '../../store-state';
 import type { RefType } from '../interfaces/ResourceCRUDInterface';
@@ -44,21 +46,31 @@ export class ResourceSearchStoreState<
 > extends AsyncStoreState<ResourceSearchResult<TItem>> {
   /**
    * Last submitted search criteria; used for refresh / loadNext when no new criteria are passed.
+   *
+   * @remarks
+   * Do **not** use a class field initializer (`= null`) here: in TS/ES, subclass field initializers run
+   * after {@link AsyncStoreState}'s constructor `Object.assign(this, options)` and would wipe
+   * `options.criteria` from {@link createResourceSearchStore} / default state.
    */
-  public readonly criteria: Criteria | null = null;
+  public readonly criteria: Criteria | null;
 
   /**
    * 用于保存暂存引用
    */
-  public readonly stageRefs: RefType[] = [];
+  public readonly stageRefs: RefType[];
 
   /**
    * 用于保存暂存数据
    */
-  public readonly stageItems: TItem[] = [];
+  public readonly stageItems: TItem[];
 
-  constructor(options?: ResourceSearchStoreStateOptions<TItem, Criteria>) {
+  constructor(
+    options?: StoreUpdateValue<ResourceSearchStoreStateOptions<TItem, Criteria>>
+  ) {
     super(options);
+    this.criteria = options?.criteria ?? null;
+    this.stageRefs = options?.stageRefs ?? [];
+    this.stageItems = options?.stageItems ?? [];
   }
 }
 
@@ -68,7 +80,7 @@ export class ResourceSearchStore<
   Key = string
 > extends AsyncStore<ResourceSearchStoreState<TItem, Criteria>, Key> {
   constructor(
-    public readonly resourceName: string,
+    public readonly resourceName: GatewayServiceName,
     options?: AsyncStoreOptions<ResourceSearchStoreState<TItem, Criteria>, Key>
   ) {
     super(options);

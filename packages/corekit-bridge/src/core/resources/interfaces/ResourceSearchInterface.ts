@@ -175,6 +175,10 @@ export interface ResourceSearchResult<T> {
  * - **No scroll helpers on this port:** table refresh is `search(criteria)`. For infinite lists,
  *   {@link ResourceScrollInterface} adds {@link ResourceScrollInterface.loadNext}, {@link ResourceScrollInterface.loadFirst},
  *   and {@link ResourceScrollInterface.refresh}.
+ * - **Stateful `ResourceSearch` (wrapper, not this port):** exposes `refresh(criteriaPatch?, resourceOptions?)` with the
+ *   **same parameter shape** as {@link ResourceScrollInterface.refresh}, but a provided first argument is
+ *   **`Partial<Criteria>`** and is **shallow-merged** into the store (`patchCriteria`); {@link ResourceSearch.search}
+ *   **replaces** the snapshot. {@link ResourceScroll.refresh} uses **full** `Criteria` and **replaces** when given.
  */
 export interface ResourceSearchInterface<
   TItem,
@@ -183,7 +187,9 @@ export interface ResourceSearchInterface<
   /**
    * Run one list/search request for the given criteria (initial load, changed filters, refresh, or next page/cursor).
    *
-   * @param criteria - Full query state; defaults for omitted fields are defined by the implementation or caller, not by this type.
+   * @param criteria - **Full** query snapshot for this request. **Stateful {@link ResourceSearch}:** `search(criteria)`
+   *   **replaces** stored criteria before the gateway call; use `refresh(partial?, resourceOptions?)` for shallow-merged
+   *   updates (same argument shape as {@link ResourceScrollInterface.refresh}).
    * @param resourceOptions - Optional per-call flags (abort, tracing, etc.); implementations may ignore unknown fields.
    */
   search(

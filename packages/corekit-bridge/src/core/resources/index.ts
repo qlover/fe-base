@@ -2,6 +2,7 @@ export * from './LifecycleInterface';
 export * from './interfaces/ResourceCRUDInterface';
 export * from './interfaces/ResourceIOInterface';
 export * from './interfaces/ResourceSearchInterface';
+export * from './ResourceSearchResult';
 export * from './interfaces/ResourceScrollInterface';
 export * from './impl/ResourceCRUD';
 export * from './impl/ResourceCRUDStore';

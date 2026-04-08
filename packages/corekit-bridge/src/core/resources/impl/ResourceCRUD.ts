@@ -1,12 +1,16 @@
+import type {
+  GatewayServiceName,
+  GatewayServiceOptions
+} from '../../gateway-service/impl/GatewayService';
+import { GatewayService } from '../../gateway-service/impl/GatewayService';
 import type { AsyncStoreState, StoreInterface } from '../../store-state';
 import type {
   RefType,
   ResourceCRUDInterface,
   ResourceGatewayOptions
 } from '../interfaces/ResourceCRUDInterface';
+import type { ResourceCRUDState } from './ResourceCRUDStore';
 import { ResourceCRUDStore } from './ResourceCRUDStore';
-
-type DetailArgs<S> = [RefType | S, ResourceGatewayOptions?];
 
 type UpdateArgs<S> =
   | [RefType, S, ResourceGatewayOptions?]
@@ -19,35 +23,99 @@ type RemoveArgs<S> =
   | [readonly S[], ResourceGatewayOptions?];
 
 function createDefaultStoreFactory<T>(
-  resourceBaseName: string
+  resourceBaseName: GatewayServiceName,
+  defaultState?: () => ResourceCRUDState<T> | null
 ): (name: CRUDResourceName) => ResourceCRUDStore<T> {
-  return (name) => new ResourceCRUDStore<T>(`${resourceBaseName}.${name}`);
+  return (name) =>
+    new ResourceCRUDStore<T>(`${String(resourceBaseName)}.${name}`, {
+      defaultState
+    });
 }
-
 export type CRUDResourceName = 'create' | 'detail' | 'update' | 'remove';
+
+export type ResourceCRUDOptions<T, S = T> = Omit<
+  GatewayServiceOptions<T, ResourceCRUDInterface<T, S>>,
+  'store'
+> & {
+  createStoreFactory?: (name: CRUDResourceName) => ResourceCRUDStore<T>;
+  defaultState?: () => ResourceCRUDState<T> | null;
+
+  /**
+   * Optional guard on successful **response bodies** for {@link ResourceCRUD.create} and {@link ResourceCRUD.detail}
+   * (full resource {@link T}, not the {@link Snapshot} DTO). When set, invalid payloads reject before `store.success`.
+   */
+  isResourceResult?: (value: unknown) => value is T;
+
+  identifiers?: ResourceCRUDIdentifiers;
+};
+
+export type ResourceCRUDIdentifiers = {
+  INVALIDE_RESOURCE: string;
+};
+
+const defaultIdentifiers: ResourceCRUDIdentifiers = {
+  INVALIDE_RESOURCE: 'Invalid Resource'
+};
 
 /**
  * Wraps a {@link ResourceCRUDInterface} implementation with async store state for UI binding.
  */
-export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
+export class ResourceCRUD<T, Snapshot = T>
+  extends GatewayService<
+    T,
+    ResourceCRUDStore<T>,
+    ResourceCRUDInterface<T, Snapshot>
+  >
+  implements ResourceCRUDInterface<T, Snapshot>
+{
+  protected readonly identifiers: {
+    INVALIDE_RESOURCE: string;
+  };
   protected readonly storeMap: Record<CRUDResourceName, ResourceCRUDStore<T>>;
 
+  private readonly isResourceResult:
+    | ((value: unknown) => value is T)
+    | undefined;
+
   constructor(
-    protected readonly resourceName: string,
-    protected readonly resource: ResourceCRUDInterface<T, S>,
-    createStoreFactory?: (name: CRUDResourceName) => ResourceCRUDStore<T>
+    resource: ResourceCRUDInterface<T, Snapshot>,
+    options?: ResourceCRUDOptions<T, Snapshot>
   ) {
+    if (!resource) {
+      throw new Error(
+        'ResourceCRUD requires a resource; pass a resource to the constructor.'
+      );
+    }
+    const serviceName = options?.serviceName ?? 'resourceCRUD';
     const factory =
-      createStoreFactory ?? createDefaultStoreFactory<T>(this.resourceName);
-    this.storeMap = {
+      options?.createStoreFactory ??
+      createDefaultStoreFactory<T>(serviceName, options?.defaultState);
+    const storeMap = {
       create: factory('create'),
       detail: factory('detail'),
       update: factory('update'),
       remove: factory('remove')
     };
+
+    super({
+      serviceName: serviceName,
+      gateway: resource,
+      logger: options?.logger,
+      store: storeMap.create
+    });
+
+    this.identifiers = {
+      ...defaultIdentifiers,
+      ...options?.identifiers
+    };
+    this.storeMap = storeMap;
+    this.isResourceResult = options?.isResourceResult;
   }
 
-  public getStore(name: CRUDResourceName): ResourceCRUDStore<T> {
+  /**
+   * @override
+   */
+  public getStore(name: CRUDResourceName = 'create'): ResourceCRUDStore<T> {
     return this.storeMap[name];
   }
 
@@ -60,49 +128,38 @@ export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
     return this.getStore(name).getStore();
   }
 
-  /** For mutations that return a resource body (`create`, `detail`, `update`). */
-  protected runWithAsyncStoreResult(
-    store: ResourceCRUDStore<T>,
-    promise: Promise<T>
+  /**
+   * @override
+   */
+  public create(
+    payload: T | Snapshot,
+    options?: ResourceGatewayOptions
   ): Promise<T> {
+    const store = this.getStore('create');
+
     store.start();
 
-    return promise
+    return this.gateway!.create(payload, options)
       .then((result) => {
+        if (this.isResourceResult && !this.isResourceResult(result)) {
+          throw new Error(this.identifiers.INVALIDE_RESOURCE, {
+            cause: result
+          });
+        }
+
         store.success(result);
+        this.logger?.debug(
+          `${String(this.serviceName)} create success,`,
+          result
+        );
+
         return result;
       })
       .catch((error) => {
         store.failed(error);
+        this.logger?.debug(`${String(this.serviceName)} create failed,`, error);
         throw error;
       });
-  }
-
-  /** For `remove` (`Promise<void>`); does not treat a resolved value as missing data. */
-  protected runWithAsyncStoreVoid(
-    store: ResourceCRUDStore<T>,
-    promise: Promise<void>
-  ): Promise<void> {
-    store.start();
-
-    return promise
-      .then(() => {
-        store.success(null);
-      })
-      .catch((error) => {
-        store.failed(error);
-        throw error;
-      });
-  }
-
-  /**
-   * @override
-   */
-  public create(payload: T | S, options?: ResourceGatewayOptions): Promise<T> {
-    return this.runWithAsyncStoreResult(
-      this.getStore('create'),
-      this.resource.create(payload, options)
-    );
   }
 
   /**
@@ -112,22 +169,40 @@ export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
   /**
    * @override
    */
-  public detail(snapshot: S, options?: ResourceGatewayOptions): Promise<T>;
+  public detail(
+    snapshot: Snapshot,
+    options?: ResourceGatewayOptions
+  ): Promise<T>;
   /**
    * @override
    */
   public detail(
-    snapshotOrRef: RefType | S,
+    snapshotOrRef: RefType | Snapshot,
     options?: ResourceGatewayOptions
   ): Promise<T> {
-    const detail = this.resource.detail as (
-      ...args: DetailArgs<S>
-    ) => Promise<T>;
+    const store = this.getStore('detail');
 
-    return this.runWithAsyncStoreResult(
-      this.getStore('detail'),
-      detail.call(this.resource, snapshotOrRef, options)
-    );
+    store.start();
+
+    return this.gateway!.detail(snapshotOrRef as RefType, options)
+      .then((result) => {
+        if (this.isResourceResult && !this.isResourceResult(result)) {
+          throw new Error(this.identifiers.INVALIDE_RESOURCE, {
+            cause: result
+          });
+        }
+        store.success(result);
+        this.logger?.debug(
+          `${String(this.serviceName)} detail success,`,
+          result
+        );
+        return result;
+      })
+      .catch((error) => {
+        store.failed(error);
+        this.logger?.debug(`${String(this.serviceName)} detail failed,`, error);
+        throw error;
+      });
   }
 
   /**
@@ -135,25 +210,47 @@ export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
    */
   public update(
     ref: RefType,
-    payload: S,
+    payload: Snapshot,
     options?: ResourceGatewayOptions
   ): Promise<T>;
   /**
    * @override
    */
-  public update(snapshot: S, options?: ResourceGatewayOptions): Promise<T>;
+  public update(
+    snapshot: Snapshot,
+    options?: ResourceGatewayOptions
+  ): Promise<T>;
   /**
    * @override
    */
-  public update(...args: UpdateArgs<S>): Promise<T> {
-    const update = this.resource.update as (
-      ...a: UpdateArgs<S>
-    ) => Promise<T>;
+  public update(...args: UpdateArgs<Snapshot>): Promise<T> {
+    const store = this.getStore('update');
 
-    return this.runWithAsyncStoreResult(
-      this.getStore('update'),
-      update.call(this.resource, ...args)
-    );
+    store.start();
+
+    return this.gateway!.update(
+      args[0] as RefType,
+      args[1] as Snapshot,
+      args[2] as ResourceGatewayOptions
+    )
+      .then((result) => {
+        if (this.isResourceResult && !this.isResourceResult(result)) {
+          throw new Error(this.identifiers.INVALIDE_RESOURCE, {
+            cause: result
+          });
+        }
+        store.success(result);
+        this.logger?.debug(
+          `${String(this.serviceName)} update success,`,
+          result
+        );
+        return result;
+      })
+      .catch((error) => {
+        store.failed(error);
+        this.logger?.debug(`${String(this.serviceName)} update failed,`, error);
+        throw error;
+      });
   }
 
   /**
@@ -163,7 +260,10 @@ export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
   /**
    * @override
    */
-  public remove(snapshot: S, options?: ResourceGatewayOptions): Promise<void>;
+  public remove(
+    snapshot: Snapshot,
+    options?: ResourceGatewayOptions
+  ): Promise<void>;
   /**
    * @override
    */
@@ -175,20 +275,30 @@ export class ResourceCRUD<T, S = T> implements ResourceCRUDInterface<T, S> {
    * @override
    */
   public remove(
-    snapshots: readonly S[],
+    snapshots: readonly Snapshot[],
     options?: ResourceGatewayOptions
   ): Promise<void>;
   /**
    * @override
    */
-  public remove(...args: RemoveArgs<S>): Promise<void> {
-    const remove = this.resource.remove as (
-      ...a: RemoveArgs<S>
-    ) => Promise<void>;
+  public remove(...args: RemoveArgs<Snapshot>): Promise<void> {
+    const store = this.getStore('remove');
 
-    return this.runWithAsyncStoreVoid(
-      this.getStore('remove'),
-      remove.call(this.resource, ...args)
-    );
+    store.start();
+
+    return this.gateway!.remove(
+      args[0] as RefType,
+      args[1] as ResourceGatewayOptions
+    )
+      .then(() => {
+        store.success(null);
+        this.logger?.debug(`${String(this.serviceName)} remove success`);
+        return;
+      })
+      .catch((error) => {
+        store.failed(error);
+        this.logger?.debug(`${String(this.serviceName)} remove failed`, error);
+        throw error;
+      });
   }
 }

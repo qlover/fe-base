@@ -1,4 +1,4 @@
-import type { StoreInterface } from '../../store-state';
+import type { StoreInterface, StoreUpdateValue } from '../../store-state';
 import type {
   ResourceOptions,
   ResourceSearchParams,
@@ -6,10 +6,38 @@ import type {
 } from '../interfaces/ResourceSearchInterface';
 import type { ResourceScrollInterface } from '../interfaces/ResourceScrollInterface';
 import type { ResourceSearchStoreStateOptions } from './ResourceSearchStore';
-import {
+import type {
   ResourceSearchStore,
   ResourceSearchStoreState
 } from './ResourceSearchStore';
+import type { GatewayServiceOptions } from '../../gateway-service/impl/GatewayService';
+import { GatewayService } from '../../gateway-service/impl/GatewayService';
+import { isResourceSearchResultStrict } from '../ResourceSearchResult';
+import { createResourceSearchStore } from './createResourceSearchStore';
+
+export type ResourceScrollOptions<
+  TItem,
+  Criteria extends ResourceSearchParams
+> = Omit<
+  GatewayServiceOptions<
+    ResourceSearchResult<TItem>,
+    ResourceScrollInterface<TItem, Criteria>
+  >,
+  'store'
+> & {
+  store?:
+    | ResourceSearchStore<TItem, Criteria>
+    | StoreUpdateValue<ResourceSearchStoreStateOptions<TItem, Criteria>>;
+
+  /**
+   * Overrides the default response guard ({@link isResourceSearchResultStrict}). When omitted, every successful response
+   * is validated with `isResourceSearchResultStrict` before the store commits; failure rejects like a bad payload.
+   * Pass `isResourceSearchResult` from `ResourceSearchResult.ts` for a looser shape check, or a custom guard.
+   */
+  isResourceSearchResult?: (
+    value: unknown
+  ) => value is ResourceSearchResult<TItem>;
+};
 
 /**
  * Wraps {@link ResourceScrollInterface} with async store state: {@link ResourceSearchStoreState.result} holds the
@@ -25,42 +53,46 @@ import {
 export class ResourceScroll<
   TItem,
   Criteria extends ResourceSearchParams = ResourceSearchParams
-> implements ResourceScrollInterface<TItem, Criteria> {
-  protected readonly resourceName: string;
-  protected readonly store: ResourceSearchStore<TItem, Criteria>;
-  protected readonly resource: ResourceScrollInterface<TItem, Criteria>;
+>
+  extends GatewayService<
+    ResourceSearchResult<TItem>,
+    ResourceSearchStore<TItem, Criteria>,
+    ResourceScrollInterface<TItem, Criteria>
+  >
+  implements ResourceScrollInterface<TItem, Criteria>
+{
+  private readonly searchResultGuard: (
+    value: unknown
+  ) => value is ResourceSearchResult<TItem>;
 
   constructor(
-    resourceName: string,
     resource: ResourceScrollInterface<TItem, Criteria>,
-    store?: ResourceSearchStore<TItem, Criteria>
-  );
-
-  constructor(
-    resourceName: string,
-    resource: ResourceScrollInterface<TItem, Criteria>,
-    defaultStateOptions?: ResourceSearchStoreStateOptions<TItem, Criteria>
-  );
-
-  constructor(
-    resourceName: string,
-    resource: ResourceScrollInterface<TItem, Criteria>,
-    store?:
-      | ResourceSearchStore<TItem, Criteria>
-      | ResourceSearchStoreStateOptions<TItem, Criteria>
+    options?: ResourceScrollOptions<TItem, Criteria>
   ) {
-    this.resourceName = resourceName;
-    this.resource = resource;
-
-    if (store instanceof ResourceSearchStore) {
-      this.store = store;
-    } else {
-      this.store = new ResourceSearchStore<TItem, Criteria>(resourceName, {
-        defaultState: () => new ResourceSearchStoreState(store)
-      });
+    if (!resource) {
+      throw new Error(
+        'ResourceScroll.constructor() requires a resource; pass a resource to the constructor.'
+      );
     }
+    super({
+      serviceName: options?.serviceName ?? 'resourceScroll',
+      logger: options?.logger,
+      gateway: resource,
+      store: createResourceSearchStore(
+        options?.serviceName ?? 'resourceScroll',
+        options?.store
+      )
+    });
+    this.searchResultGuard =
+      options?.isResourceSearchResult ??
+      (isResourceSearchResultStrict as (
+        value: unknown
+      ) => value is ResourceSearchResult<TItem>);
   }
 
+  /**
+   * @override
+   */
   public getStore(): ResourceSearchStore<TItem, Criteria> {
     return this.store;
   }
@@ -83,7 +115,7 @@ export class ResourceScroll<
   ): Promise<ResourceSearchResult<TItem>> {
     const criteriaRollback = this.store.getState().criteria;
     this.store.setCriteria(criteria);
-    return this.runSearch(criteria, resourceOptions, criteriaRollback);
+    return this.runSearch(criteria, resourceOptions, criteriaRollback, 'search');
   }
 
   /**
@@ -100,7 +132,7 @@ export class ResourceScroll<
     const first = this.normalizeFirstWindowCriteria(base);
     const criteriaRollback = this.store.getState().criteria;
     this.store.setCriteria(first);
-    return this.runSearch(first, resourceOptions, criteriaRollback);
+    return this.runSearch(first, resourceOptions, criteriaRollback, 'loadFirst');
   }
 
   /**
@@ -117,13 +149,13 @@ export class ResourceScroll<
     if (criteria != null) {
       const criteriaRollback = this.store.getState().criteria;
       this.store.setCriteria(criteria);
-      return this.runSearch(criteria, resourceOptions, criteriaRollback);
+      return this.runSearch(criteria, resourceOptions, criteriaRollback, 'loadNext');
     }
     const base = this.requireStoredCriteria('loadNext');
     const last = this.store.getState().result;
     const next = this.resolveNextCriteria(base, last);
     const criteriaRollback = this.store.getState().criteria;
-    return this.runSearch(next, resourceOptions, criteriaRollback);
+    return this.runSearch(next, resourceOptions, criteriaRollback, 'loadNext');
   }
 
   /**
@@ -139,10 +171,10 @@ export class ResourceScroll<
     if (criteria != null) {
       const criteriaRollback = this.store.getState().criteria;
       this.store.setCriteria(criteria);
-      return this.runSearch(criteria, resourceOptions, criteriaRollback);
+      return this.runSearch(criteria, resourceOptions, criteriaRollback, 'refresh');
     }
     const stored = this.requireStoredCriteria('refresh');
-    return this.runSearch(stored, resourceOptions, stored);
+    return this.runSearch(stored, resourceOptions, stored, 'refresh');
   }
 
   protected requireStoredCriteria(method: string): Criteria {
@@ -202,20 +234,40 @@ export class ResourceScroll<
   protected runSearch(
     criteria: Criteria,
     resourceOptions: ResourceOptions | undefined,
-    criteriaRollback: Criteria | null
+    criteriaRollback: Criteria | null,
+    operation: 'search' | 'loadFirst' | 'loadNext' | 'refresh'
   ): Promise<ResourceSearchResult<TItem>> {
+    const gateway = this.getGateway();
+    if (gateway == null) {
+      throw new Error(
+        'ResourceScroll.runSearch() requires a gateway; pass a gateway to the constructor or search(criteria, resourceOptions).'
+      );
+    }
     this.store.start();
 
-    return this.resource
+    return gateway
       .search(criteria, resourceOptions)
       .then((result) => {
+        if (!this.searchResultGuard(result)) {
+          const msg = `${String(this.serviceName)} ResourceScroll.${operation}: invalid response (isResourceSearchResult)`;
+          this.logger?.error(msg, result);
+          throw new Error(msg);
+        }
         this.store.setCriteria(criteria);
         this.store.success(result);
+        this.logger?.debug(
+          `${String(this.serviceName)} ResourceScroll.${operation}: success`,
+          result
+        );
         return result;
       })
       .catch((error) => {
         this.store.setCriteria(criteriaRollback);
         this.store.failed(error);
+        this.logger?.debug(
+          `${String(this.serviceName)} ResourceScroll.${operation}: failed`,
+          error
+        );
         throw error;
       });
   }
