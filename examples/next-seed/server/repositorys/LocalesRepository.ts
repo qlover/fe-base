@@ -1,11 +1,12 @@
 import pLimit from 'p-limit';
 import { inject, injectable } from '@shared/container';
 import { localesSchema, type LocalesSchema } from '@schemas/LocalesSchema';
-import type { PaginationInterface } from '@interfaces/PaginationInterface';
+import type { PaginationResult } from '@schemas/SearchResultSchema';
 import type {
   BridgeOrderBy,
   DBBridgeInterface
 } from '@server/interfaces/DBBridgeInterface';
+import { DBTablePaginationParams } from '@server/interfaces/DBTableInterface';
 import { Datetime } from '@server/utils/Datetime';
 import { SupabaseBridge } from './SupabaseBridge';
 import type {
@@ -98,11 +99,9 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   /**
    * @override
    */
-  public async pagination<T = LocalesSchema>(params: {
-    page: number;
-    pageSize: number;
-    orderBy?: BridgeOrderBy;
-  }): Promise<PaginationInterface<T>> {
+  public async pagination<T = LocalesSchema>(
+    params: DBTablePaginationParams
+  ): Promise<PaginationResult<T>> {
     const result = await this.dbBridge.pagination({
       table: this.repoName,
       fields: this.safeFields,
@@ -112,7 +111,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     });
 
     return {
-      list: (result.data || []) as T[],
+      items: (result.data || []) as T[],
       total: result.count || 0,
       page: params.page,
       pageSize: params.pageSize

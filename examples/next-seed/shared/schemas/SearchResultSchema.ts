@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { ResourceSearchResult } from '@qlover/corekit-bridge';
 
 /**
  * Optional fields shared by all search-result payloads; aligns with
@@ -37,3 +38,15 @@ export const searchResultUnknownItemsSchema = z
 
 /** Inferred shape when `items` are not narrowed (unknown rows). */
 export type SearchResultSchema = z.infer<typeof searchResultUnknownItemsSchema>;
+
+export type PaginationInfo = Required<
+  Pick<SearchResultSchema, 'page' | 'pageSize'>
+>;
+
+export type PaginationParams = Required<
+  Pick<SearchResultSchema, 'total' | 'page' | 'pageSize'>
+>;
+
+export type PaginationResult<T> = Required<
+  Pick<ResourceSearchResult<T>, 'items' | 'total' | 'page' | 'pageSize'>
+>;

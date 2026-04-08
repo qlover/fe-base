@@ -5,6 +5,7 @@ import {
   REQUEST_LOGS_ORDER_BY_WHITELIST,
   type RequestLogRow
 } from '@schemas/RequestLogSchema';
+import type { PaginationInfo } from '@schemas/SearchResultSchema';
 import type {
   RequestLogInsert,
   RequestLogsRepositoryInterface,
@@ -33,10 +34,7 @@ function clampPageSize(n: number): number {
   return Math.min(Math.floor(n), MAX_PAGE_SIZE);
 }
 
-function resolvePageAndSize(criteria: ResourceSearchParams): {
-  page: number;
-  pageSize: number;
-} {
+function resolvePageAndSize(criteria: ResourceSearchParams): PaginationInfo {
   const pageSize = clampPageSize(criteria.pageSize ?? DEFAULT_PAGE_SIZE);
   if (
     criteria.page != null &&
