@@ -1,16 +1,23 @@
+import {
+  ResourceSearch,
+  type ResourceSearchParams
+} from '@qlover/corekit-bridge';
 import dynamic from 'next/dynamic';
 import { useLocale } from 'next-intl';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { RequestLogsApi } from '@/impls/appApi/RequestLogsApi';
 import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
 import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
 import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
+import { useIOC } from '@/uikit/hook/useIOC';
+import { useStore } from '@/uikit/hook/useStore';
+import { useStrictEffect } from '@/uikit/hook/useStrictEffect';
 import { defaultNavItems } from '@config/adminNavs';
-import { API_USER_REQUEST_LOGS } from '@config/apiRoutes';
+import { defaultSearchParams } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import { adminRequestLogs18n } from '@config/i18n-mapping/admin18n';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
@@ -29,42 +36,61 @@ interface AdminRequestLogsProps {
 
 const namespace = 'admin_request_logs';
 
+const requestLogsSearchDefaultCriteria: ResourceSearchParams = {
+  page: defaultSearchParams.page,
+  pageSize: defaultSearchParams.pageSize,
+  sort: [...defaultSearchParams.sort]
+};
+
 export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
   const locale = useLocale();
   const pageI18n = useMemo(() => adminRequestLogs18n, []);
+  const requestLogsApi = useIOC(RequestLogsApi);
   const seoMetadata = useI18nMapping(pageI18n);
-  const [rows, setRows] = useState<RequestLogRow[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      try {
-        const res = await fetch(API_USER_REQUEST_LOGS, {
-          credentials: 'same-origin'
-        });
-        const json: unknown = await res.json();
-        if (
-          !cancelled &&
-          typeof json === 'object' &&
-          json !== null &&
-          'success' in json &&
-          json.success === true &&
-          'data' in json &&
-          Array.isArray((json as { data: unknown }).data)
-        ) {
-          setRows((json as { data: RequestLogRow[] }).data);
+  const searchResource = useMemo(
+    () =>
+      new ResourceSearch(requestLogsApi, {
+        serviceName: 'requestLogsSearch',
+        store: {
+          criteria: requestLogsSearchDefaultCriteria
         }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      }),
+    [requestLogsApi]
+  );
+
+  const store = searchResource.getStoreInterface();
+  const rows = useStore(store, (state) => state.result?.items ?? []);
+  const loading = useStore(store, (state) => state.loading);
+  const result = useStore(store, (state) => state.result);
+  const criteria = useStore(store, (state) => state.criteria);
+
+  const currentPage = criteria?.page ?? defaultSearchParams.page;
+  const pageSize = criteria?.pageSize ?? defaultSearchParams.pageSize;
+  const total = result?.total ?? 0;
+
+  const handlePaginationChange = useCallback(
+    (page: number, nextPageSize: number) => {
+      searchResource.refresh({ page, pageSize: nextPageSize });
+    },
+    [searchResource]
+  );
+
+  const tablePagination = useMemo(
+    () => ({
+      current: currentPage,
+      pageSize,
+      total,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '15', '20', '50', '100'],
+      onChange: handlePaginationChange
+    }),
+    [currentPage, pageSize, total, handlePaginationChange]
+  );
+
+  useStrictEffect(() => {
+    searchResource.refresh();
+  }, [searchResource]);
 
   return (
     <PageI18nProvider value={seoMetadata}>
@@ -77,7 +103,12 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
             <p className="text-secondary-text mb-6">
               {seoMetadata.description}
             </p>
-            <RequestLogsTable rows={rows} locale={locale} loading={loading} />
+            <RequestLogsTable
+              rows={rows}
+              locale={locale}
+              loading={loading}
+              pagination={tablePagination}
+            />
           </div>
         </AdminLayout>
       </WithUserAuth>

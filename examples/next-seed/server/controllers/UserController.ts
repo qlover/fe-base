@@ -2,6 +2,7 @@ import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
+import { SearchParamsValidator } from '@shared/validators/SearchParamsValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
@@ -17,6 +18,10 @@ import type {
   UserLoginContext,
   UserServiceInterface
 } from '../interfaces/UserServiceInterface';
+import type {
+  ResourceSearchParams,
+  ResourceSearchResult
+} from '@qlover/corekit-bridge';
 
 @injectable()
 export class UserController {
@@ -25,6 +30,8 @@ export class UserController {
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
+    @inject(SearchParamsValidator)
+    protected searchParamsValidator: ValidatorInterface<ResourceSearchParams>,
     @inject(UserService) protected userService: UserServiceInterface,
     @inject(RequestLogsRepository)
     protected requestLogsRepository: RequestLogsRepositoryInterface,
@@ -102,11 +109,15 @@ export class UserController {
     return await this.userService.getUser();
   }
 
-  /** Recent `request_logs` for the current Supabase session (RLS). */
-  public async listRequestLogsForCurrentUser(
-    limit: number
-  ): Promise<RequestLogRow[]> {
-    await this.serverAuth.throwIfNotAuth();
-    return this.requestLogsRepository.listRecentForCurrentUser(limit);
+  /**
+   * Paged `request_logs` for the current Supabase session (RLS).
+   * Response shape matches {@link ResourceSearchResult}.
+   */
+  public async searchRequestLogsForCurrentUser(
+    query: unknown
+  ): Promise<ResourceSearchResult<RequestLogRow>> {
+    const criteria = await this.searchParamsValidator.getThrow(query);
+
+    return await this.requestLogsRepository.searchForCurrentUser(criteria);
   }
 }

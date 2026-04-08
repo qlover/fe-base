@@ -67,3 +67,9 @@ export const i18nWarnMissingTranslation = true;
  */
 export const logPrefixTemplate: string =
   '[({loggerName}) {formattedTimestamp} {level}]';
+
+export const defaultSearchParams = {
+  page: 1,
+  pageSize: 20,
+  sort: [{ orderBy: 'created_at', order: 'desc' }]
+} as const;

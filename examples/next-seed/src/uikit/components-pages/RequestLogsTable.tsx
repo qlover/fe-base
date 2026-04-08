@@ -1,6 +1,6 @@
 'use client';
 
-import { Table } from 'antd';
+import { Table, type TableProps } from 'antd';
 import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import { usePageI18nMapping } from '../context/PageI18nContext';
@@ -54,12 +54,14 @@ function formatError(row: RequestLogRow): string {
 }
 
 export function RequestLogsTable(props: {
-  rows: RequestLogRow[];
+  rows: readonly RequestLogRow[];
   locale: string;
   loading?: boolean;
+  /** Server-driven pagination; when set, `rows` should be the current page only. */
+  pagination?: TableProps<RequestLogRow>['pagination'];
 }) {
   const tt = usePageI18nMapping<AdminRequestLogsI18nInterface>();
-  const { rows, locale, loading } = props;
+  const { rows, locale, loading, pagination } = props;
   const localeTag = locale === 'zh' ? 'zh-CN' : 'en-US';
 
   const columns: ColumnsType<RequestLogRow> = [
@@ -156,7 +158,7 @@ export function RequestLogsTable(props: {
       columns={columns}
       dataSource={rows}
       loading={loading}
-      pagination={{ pageSize: 15, showSizeChanger: true }}
+      pagination={pagination ?? { pageSize: 15, showSizeChanger: true }}
       locale={{ emptyText: tt.empty }}
       scroll={{ x: true }}
     />

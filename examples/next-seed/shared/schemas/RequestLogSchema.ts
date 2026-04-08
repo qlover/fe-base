@@ -30,3 +30,19 @@ export const requestLogRowSchema = z.object({
 });
 
 export type RequestLogRow = z.infer<typeof requestLogRowSchema>;
+
+export const REQUEST_LOGS_LIST_FIELDS = [
+  'id',
+  'user_id',
+  'created_at',
+  'updated_at',
+  'event_category',
+  'event_type',
+  'success',
+  'request_id',
+  'payload'
+] as const;
+
+export const REQUEST_LOGS_ORDER_BY_WHITELIST = new Set<string>(
+  REQUEST_LOGS_LIST_FIELDS as unknown as readonly string[]
+);

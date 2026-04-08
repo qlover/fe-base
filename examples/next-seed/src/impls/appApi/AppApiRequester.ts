@@ -9,6 +9,7 @@ import type { AppApiResult } from '@interfaces/AppApiInterface';
 import { AppApiPluginOptions } from './AppApiPlugin';
 import type { DialogErrorConfig } from '../DialogErrorPlugin';
 import type {
+  AborterConfig,
   ExecutorContextInterface,
   RequestAdapterConfig,
   RequestAdapterResponse
@@ -22,7 +23,8 @@ export interface RequestTransactionInterface<Request, Response> {
 export type AppApiConfig<Request = unknown> = RequestAdapterConfig<Request> &
   RequestEncryptPluginProps<Request> &
   DialogErrorConfig &
-  AppApiPluginOptions;
+  AppApiPluginOptions &
+  AborterConfig;
 
 export interface AppApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 

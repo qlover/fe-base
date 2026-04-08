@@ -46,3 +46,11 @@ export const V_PASSWORD_SPECIAL_CHARS = 'common:v:password_special_chars';
  * @localEn Data validation error
  */
 export const V_ZOD_FAILED = 'common:v:zod_failed';
+
+/**
+ * @description Request logs list query must be URLSearchParams
+ * @localZh 请求日志查询参数格式无效
+ * @localEn Request logs query must be URL search parameters
+ */
+export const V_REQUEST_LOGS_QUERY_INVALID =
+  'common:v:request_logs_query_invalid';
