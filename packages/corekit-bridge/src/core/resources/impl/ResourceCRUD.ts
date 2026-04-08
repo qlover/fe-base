@@ -79,7 +79,7 @@ export class ResourceCRUD<T, Snapshot = T>
 
   constructor(
     resource: ResourceCRUDInterface<T, Snapshot>,
-    options?: ResourceCRUDOptions<T, Snapshot>
+    options?: Partial<ResourceCRUDOptions<T, Snapshot>>
   ) {
     if (!resource) {
       throw new Error(

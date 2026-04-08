@@ -1,6 +1,7 @@
 import type { StoreInterface, StoreUpdateValue } from '../../store-state';
 import type {
   ResourceOptions,
+  ResourceSearchInterface,
   ResourceSearchParams,
   ResourceSearchResult
 } from '../interfaces/ResourceSearchInterface';
@@ -21,7 +22,7 @@ export type ResourceScrollOptions<
 > = Omit<
   GatewayServiceOptions<
     ResourceSearchResult<TItem>,
-    ResourceScrollInterface<TItem, Criteria>
+    ResourceSearchInterface<TItem, Criteria>
   >,
   'store'
 > & {
@@ -46,8 +47,9 @@ export type ResourceScrollOptions<
  *
  * @remarks
  * This class implements {@link ResourceScrollInterface} on the outside but **only calls**
- * {@link ResourceScrollInterface.search} on the inner `resource`. Custom logic on the inner adapter’s
- * `loadNext` / `loadFirst` / `refresh` is **not** invoked; scroll semantics are driven by this wrapper’s criteria
+ * {@link ResourceSearchInterface.search} on the inner `resource` (typed as {@link ResourceSearchInterface}).
+ * Adapters that also implement {@link ResourceScrollInterface} are accepted; any custom `loadNext` / `loadFirst` /
+ * `refresh` on the inner object is **not** invoked—scroll semantics are driven by this wrapper’s criteria
  * normalization and stored state.
  */
 export class ResourceScroll<
@@ -57,7 +59,7 @@ export class ResourceScroll<
   extends GatewayService<
     ResourceSearchResult<TItem>,
     ResourceSearchStore<TItem, Criteria>,
-    ResourceScrollInterface<TItem, Criteria>
+    ResourceSearchInterface<TItem, Criteria>
   >
   implements ResourceScrollInterface<TItem, Criteria>
 {
@@ -66,8 +68,8 @@ export class ResourceScroll<
   ) => value is ResourceSearchResult<TItem>;
 
   constructor(
-    resource: ResourceScrollInterface<TItem, Criteria>,
-    options?: ResourceScrollOptions<TItem, Criteria>
+    resource: ResourceSearchInterface<TItem, Criteria>,
+    options?: Partial<ResourceScrollOptions<TItem, Criteria>>
   ) {
     if (!resource) {
       throw new Error(
@@ -115,7 +117,12 @@ export class ResourceScroll<
   ): Promise<ResourceSearchResult<TItem>> {
     const criteriaRollback = this.store.getState().criteria;
     this.store.setCriteria(criteria);
-    return this.runSearch(criteria, resourceOptions, criteriaRollback, 'search');
+    return this.runSearch(
+      criteria,
+      resourceOptions,
+      criteriaRollback,
+      'search'
+    );
   }
 
   /**
@@ -132,7 +139,12 @@ export class ResourceScroll<
     const first = this.normalizeFirstWindowCriteria(base);
     const criteriaRollback = this.store.getState().criteria;
     this.store.setCriteria(first);
-    return this.runSearch(first, resourceOptions, criteriaRollback, 'loadFirst');
+    return this.runSearch(
+      first,
+      resourceOptions,
+      criteriaRollback,
+      'loadFirst'
+    );
   }
 
   /**
@@ -149,7 +161,12 @@ export class ResourceScroll<
     if (criteria != null) {
       const criteriaRollback = this.store.getState().criteria;
       this.store.setCriteria(criteria);
-      return this.runSearch(criteria, resourceOptions, criteriaRollback, 'loadNext');
+      return this.runSearch(
+        criteria,
+        resourceOptions,
+        criteriaRollback,
+        'loadNext'
+      );
     }
     const base = this.requireStoredCriteria('loadNext');
     const last = this.store.getState().result;
@@ -171,7 +188,12 @@ export class ResourceScroll<
     if (criteria != null) {
       const criteriaRollback = this.store.getState().criteria;
       this.store.setCriteria(criteria);
-      return this.runSearch(criteria, resourceOptions, criteriaRollback, 'refresh');
+      return this.runSearch(
+        criteria,
+        resourceOptions,
+        criteriaRollback,
+        'refresh'
+      );
     }
     const stored = this.requireStoredCriteria('refresh');
     return this.runSearch(stored, resourceOptions, stored, 'refresh');

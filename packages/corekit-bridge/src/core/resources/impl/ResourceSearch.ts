@@ -61,7 +61,7 @@ export class ResourceSearch<
 
   constructor(
     resource: ResourceSearchInterface<TItem, Criteria>,
-    options?: ResourceSearchOptions<TItem, Criteria>
+    options?: Partial<ResourceSearchOptions<TItem, Criteria>>
   ) {
     if (!resource) {
       throw new Error(
@@ -135,13 +135,22 @@ export class ResourceSearch<
       const prevSize = criteriaRollback.pageSize ?? result?.pageSize;
       const nextPage =
         prevSize !== undefined && p.pageSize !== prevSize ? 1 : p.page;
-      patch = { ...patch, page: nextPage, pageSize: p.pageSize } as Partial<Criteria>;
+      patch = {
+        ...patch,
+        page: nextPage,
+        pageSize: p.pageSize
+      } as Partial<Criteria>;
     }
 
     this.store.patchCriteria(patch);
     const criteria = this.store.getState().criteria!;
 
-    return this.runSearch(criteria, resourceOptions, criteriaRollback, 'refresh');
+    return this.runSearch(
+      criteria,
+      resourceOptions,
+      criteriaRollback,
+      'refresh'
+    );
   }
 
   /**
