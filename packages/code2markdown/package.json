@@ -1,7 +1,7 @@
 {
   "name": "@qlover/code2markdown",
   "description": "A tool to convert code to markdown",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "private": false,
   "type": "module",
   "files": [

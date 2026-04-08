@@ -1,5 +1,19 @@
 # @qlover/logger
 
+## 1.2.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- refine documentation for clarity and consistency ([1192a28](https://github.com/qlover/fe-base/commit/1192a284c09c547beec71635bb986f154157789d)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Removed unnecessary line breaks and improved formatting in various documentation files to enhance readability.
+  - Updated descriptions and examples for better clarity, ensuring consistent presentation across all documentation.
+  - Added new utility documentation for `gfmSlug` and `tsSourceToOutputMdPath` modules, detailing their functionalities and parameters.
+  - Enhanced existing documentation for `GatewayService`, `UserService`, and related interfaces to provide clearer guidance on usage and behavior.
+
+  These changes aim to improve the overall quality and usability of the documentation for developers.
+
 ## 1.1.1
 
 ### Patch Changes

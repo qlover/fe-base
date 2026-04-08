@@ -1,5 +1,38 @@
 # @qlover/fe-corekit
 
+## 3.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **resources:** enhance resource management with new search and CRUD functionalities ([56a7ca6](https://github.com/qlover/fe-base/commit/56a7ca62283a65348d52db5df568947e707258b9)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Introduced `ResourceSearchResult` and related validation functions to improve search result handling.
+  - Added `createResourceSearchStore` for managing search state with async capabilities.
+  - Updated `ResourceCRUD` and `ResourceScroll` classes to utilize the new `GatewayServiceName` type for better type safety.
+  - Enhanced `ResourceSearch` and `ResourceScroll` to support optional response guards for improved data validation.
+  - Refactored existing resource interfaces to streamline the integration of new functionalities.
+
+  These changes aim to provide a more robust and flexible approach to resource management within the application.
+
+#### 🐞 Bug Fixes
+
+- **docs:** update AborterInterface documentation to reflect type change ([11cbf3b](https://github.com/qlover/fe-base/commit/11cbf3bf9b1d9251113e4e8e402047854beb6a41)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Modified the type of the `signal` property in the `AborterInterface` documentation from `AbortSignal` to `null | AbortSignal` to accurately represent its possible values.
+  - This change enhances clarity and ensures that users of the interface understand the expected types for the `signal` property.
+
+  These updates aim to improve the accuracy of the documentation for better developer guidance.
+
+#### 📝 Documentation
+
+- refine documentation for clarity and consistency ([1192a28](https://github.com/qlover/fe-base/commit/1192a284c09c547beec71635bb986f154157789d)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Removed unnecessary line breaks and improved formatting in various documentation files to enhance readability.
+  - Updated descriptions and examples for better clarity, ensuring consistent presentation across all documentation.
+  - Added new utility documentation for `gfmSlug` and `tsSourceToOutputMdPath` modules, detailing their functionalities and parameters.
+  - Enhanced existing documentation for `GatewayService`, `UserService`, and related interfaces to provide clearer guidance on usage and behavior.
+
+  These changes aim to improve the overall quality and usability of the documentation for developers.
+
 ## 3.2.1
 
 ### Patch Changes

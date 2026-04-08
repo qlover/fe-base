@@ -1,5 +1,38 @@
 # @qlover/code2markdown
 
+## 2.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **typeDocs:** enhance TypeDoc plugin with markdown rendering and link resolution ([80b4ad2](https://github.com/qlover/fe-base/commit/80b4ad2cdc45ebefcbb32e5ba3242b32b3ce12aa)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Updated the TypeDoc plugin to support rendering of comment parts as markdown, improving documentation clarity.
+  - Introduced a new `contentMarkdown` property in `FormatProjectDescription` for pre-rendered markdown content.
+  - Enhanced the `formatDescription` method to include owner source file information for better link resolution.
+  - Added utility functions for generating GitHub-flavored markdown slugs and mapping TypeScript source paths to markdown output paths.
+  - Improved handling of `@link` tags to create appropriate links between markdown files.
+
+  These changes aim to provide a more robust and user-friendly documentation experience for TypeDoc-generated outputs.
+
+#### 🐞 Bug Fixes
+
+- **tests:** update TypeDoc test mocks for improved type handling ([2e9d7cb](https://github.com/qlover/fe-base/commit/2e9d7cb98183c223917d6ce7a278e661ce72426f)) ([#607](https://github.com/qlover/fe-base/pull/607))
+  - Adjusted the TypeDoc test mocks to ensure proper type handling by casting the imported module to a Record type.
+  - This change enhances type safety and clarity in the test suite, improving the overall reliability of the tests.
+
+  These updates aim to strengthen the testing framework for TypeDoc-related functionalities.
+
+#### 📝 Documentation
+
+- refine documentation for clarity and consistency ([1192a28](https://github.com/qlover/fe-base/commit/1192a284c09c547beec71635bb986f154157789d)) ([#606](https://github.com/qlover/fe-base/pull/606))
+  - Removed unnecessary line breaks and improved formatting in various documentation files to enhance readability.
+  - Updated descriptions and examples for better clarity, ensuring consistent presentation across all documentation.
+  - Added new utility documentation for `gfmSlug` and `tsSourceToOutputMdPath` modules, detailing their functionalities and parameters.
+  - Enhanced existing documentation for `GatewayService`, `UserService`, and related interfaces to provide clearer guidance on usage and behavior.
+
+  These changes aim to improve the overall quality and usability of the documentation for developers.
+
 ## 2.0.1
 
 ### Patch Changes

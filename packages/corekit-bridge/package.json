@@ -1,7 +1,7 @@
 {
   "name": "@qlover/corekit-bridge",
   "description": "fe-corekit Abstraction tool bridge for real development environments",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "private": false,
   "type": "module",
   "sideEffects": false,
