@@ -7,53 +7,44 @@ vi.mock('fs-extra', () => ({
   }
 }));
 
-vi.mock('typedoc', () => ({
-  Application: {
-    bootstrap: vi.fn().mockResolvedValue({
-      convert: vi.fn().mockResolvedValue({
-        children: [
-          {
-            id: 1,
-            kind: 1, // ReflectionKind.Class
-            name: 'TestClass',
-            comment: {
-              summary: [{ text: 'Test class description' }],
-              blockTags: [
+vi.mock('typedoc', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('typedoc')>();
+  return {
+    ...actual,
+    Application: {
+      bootstrap: vi.fn().mockResolvedValue({
+        convert: vi.fn().mockResolvedValue({
+          children: [
+            {
+              id: 1,
+              kind: 128, // ReflectionKind.Class
+              name: 'TestClass',
+              comment: {
+                summary: [{ text: 'Test class description' }],
+                blockTags: [
+                  {
+                    tag: '@since',
+                    content: [{ text: '1.0.0' }]
+                  }
+                ]
+              },
+              sources: [
                 {
-                  tag: '@since',
-                  content: [{ text: '1.0.0' }]
+                  fileName: 'test.ts',
+                  line: 1,
+                  character: 1
                 }
               ]
-            },
-            sources: [
-              {
-                fileName: 'test.ts',
-                line: 1,
-                character: 1
-              }
-            ]
-          }
-        ]
-      }),
-      serializer: {
-        projectToObject: vi.fn().mockReturnValue({})
-      }
-    })
-  },
-  ReflectionKind: {
-    Class: 1,
-    Parameter: 32768,
-    Property: 1024
-  },
-  TSConfigReader: class TSConfigReader {
-    constructor() {}
-    public read(): void {}
-  },
-  TypeDocReader: class TypeDocReader {
-    constructor() {}
-    public read(): void {}
-  }
-}));
+            }
+          ]
+        }),
+        serializer: {
+          projectToObject: vi.fn().mockReturnValue({})
+        }
+      })
+    }
+  };
+});
 
 /**
  * TypeDocJson plugin test suite
@@ -256,7 +247,7 @@ describe('TypeDocJson', () => {
         children: [
           {
             id: 1,
-            kind: 1, // ReflectionKind.Class
+            kind: 128, // ReflectionKind.Class
             name: 'TestClass',
             comment: {
               summary: [{ text: 'Test class description' }]
@@ -277,7 +268,7 @@ describe('TypeDocJson', () => {
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchObject({
         id: 1,
-        kind: 1,
+        kind: 128,
         name: 'TestClass',
         descriptions: [
           {

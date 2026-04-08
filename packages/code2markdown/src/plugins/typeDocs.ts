@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Application,
+  Comment,
+  type CommentDisplayPart,
   type ParameterReflection,
   type ProjectReflection,
+  type Reflection,
   ReflectionKind,
   TSConfigReader,
   type TypeDocOptions,
@@ -18,6 +21,11 @@ import {
 import fsExtra from 'fs-extra';
 import { resolve } from 'path';
 import type Code2MDContext from '../implments/Code2MDContext';
+import { gfmSlug } from '../utils/gfmSlug';
+import {
+  relativeHrefBetweenOutputMdFiles,
+  tsSourcePathToOutputMdPath
+} from '../utils/tsSourceToOutputMdPath';
 
 /**
  * Configuration options for the TypeDocs plugin
@@ -106,6 +114,11 @@ export default class TypeDocJson extends ScriptPlugin<
   Code2MDContext,
   TypeDocsProps
 > {
+  /**
+   * TypeDoc reflection id → markdown path (under generatePath), for `@link` hrefs.
+   */
+  private reflectionIdToMdPath = new Map<number, string>();
+
   /**
    * Initialize the TypeDocs plugin
    *
@@ -340,6 +353,8 @@ export default class TypeDocJson extends ScriptPlugin<
    * ```
    */
   public formats(project: ProjectReflection): FormatProjectValue[] {
+    this.reflectionIdToMdPath = this.buildReflectionIdToMdPath(project);
+
     if (!project.children) {
       return [];
     }
@@ -423,8 +438,13 @@ export default class TypeDocJson extends ScriptPlugin<
     // 获取类型字符串
     const typeString = this.getTypeString(reflection);
 
+    const ownerSourceFile = this.getSourceInfo(reflection)?.fileName;
+
     // 格式化描述信息
-    const descriptions = this.formatDescription(reflection.comment);
+    const descriptions = this.formatDescription(
+      reflection.comment,
+      ownerSourceFile
+    );
 
     // 获取源文件信息
     const source = this.getSourceInfo(reflection);
@@ -433,10 +453,14 @@ export default class TypeDocJson extends ScriptPlugin<
     let parametersList: FormatProjectValue[] | undefined;
     if (reflection.signatures?.[0]?.parameters) {
       parametersList = this.formatParameters(
-        reflection.signatures[0].parameters
+        reflection.signatures[0].parameters,
+        ownerSourceFile
       );
     } else if (reflection.parameters) {
-      parametersList = this.formatParameters(reflection.parameters);
+      parametersList = this.formatParameters(
+        reflection.parameters,
+        ownerSourceFile
+      );
     }
 
     // 处理子元素
@@ -465,7 +489,10 @@ export default class TypeDocJson extends ScriptPlugin<
         // 对于构造函数，将第一个签名的参数信息直接包含在构造函数中
         const firstSignature = reflection.signatures[0];
         if (firstSignature.parameters) {
-          parametersList = this.formatParameters(firstSignature.parameters);
+          parametersList = this.formatParameters(
+            firstSignature.parameters,
+            ownerSourceFile
+          );
         }
         // 修改构造函数的名称，使其包含类名
         if (firstSignature.name && firstSignature.name.startsWith('new ')) {
@@ -997,7 +1024,10 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Only returns non-filtered tags like `@param`, `@returns`, `@example`
    * ```
    */
-  public formatDescription(comment: any): FormatProjectDescription[] {
+  public formatDescription(
+    comment: any,
+    ownerSourceFile?: string
+  ): FormatProjectDescription[] {
     if (!comment) {
       return [];
     }
@@ -1017,9 +1047,14 @@ export default class TypeDocJson extends ScriptPlugin<
 
     // Process summary
     if (comment.summary && comment.summary.length > 0) {
+      const summaryContent = comment.summary as CommentDisplayPart[];
       descriptions.push({
         tag: '@summary',
-        content: comment.summary
+        content: summaryContent,
+        contentMarkdown: this.renderDisplayPartsMarkdown(
+          summaryContent,
+          ownerSourceFile
+        )
       });
     }
 
@@ -1039,15 +1074,130 @@ export default class TypeDocJson extends ScriptPlugin<
       });
 
       sortedTags.forEach((tag: any) => {
+        const tagContent = (tag.content || []) as CommentDisplayPart[];
         descriptions.push({
           tag: tag.tag,
           name: tag.name,
-          content: tag.content || []
+          content: tagContent,
+          contentMarkdown: this.renderDisplayPartsMarkdown(
+            tagContent,
+            ownerSourceFile
+          )
         });
       });
     }
 
     return descriptions;
+  }
+
+  /**
+   * Maps every documented reflection to the relative output `.md` path (same layout as Formats).
+   */
+  private buildReflectionIdToMdPath(
+    project: ProjectReflection
+  ): Map<number, string> {
+    const map = new Map<number, string>();
+    const reflections = (project as unknown as { reflections?: Record<number, Reflection> })
+      .reflections;
+    if (!reflections) {
+      return map;
+    }
+    for (const ref of Object.values(reflections)) {
+      const source = this.getSourceInfo(ref as any);
+      if (
+        !source?.fileName ||
+        source.fileName.endsWith('.d.ts') ||
+        ref.id == null
+      ) {
+        continue;
+      }
+      map.set(ref.id as number, this.sourceTsPathToOutputMd(source.fileName));
+    }
+    return map;
+  }
+
+  private getFormatsRemovePrefix(): boolean {
+    const opts = this.context.options as {
+      formats?: { removePrefix?: boolean };
+    };
+    return opts.formats?.removePrefix === true;
+  }
+
+  private sourceTsPathToOutputMd(fileName: string): string {
+    return tsSourcePathToOutputMdPath(fileName, {
+      sourcePath: this.context.options.sourcePath,
+      removePrefix: this.getFormatsRemovePrefix()
+    });
+  }
+
+  /**
+   * `@link` href: same file `#anchor`, cross-file `./Other.md#anchor`, or empty when undocumented.
+   */
+  private resolveLinkHref(
+    ref: Reflection,
+    ownerSourceFile?: string
+  ): string {
+    const anchor = `#${this.reflectionToMarkdownAnchor(ref)}`;
+    const targetMd = this.reflectionIdToMdPath.get(ref.id as number);
+    if (!targetMd) {
+      return '';
+    }
+    if (!ownerSourceFile) {
+      return anchor;
+    }
+    const ownerMd = this.sourceTsPathToOutputMd(ownerSourceFile);
+    if (ownerMd === targetMd) {
+      return anchor;
+    }
+    return relativeHrefBetweenOutputMdFiles(ownerMd, targetMd) + anchor;
+  }
+
+  /**
+   * Normalize legacy or test fixtures missing `kind` to TypeDoc `CommentDisplayPart`.
+   */
+  private normalizeDisplayParts(
+    parts: CommentDisplayPart[] | undefined
+  ): CommentDisplayPart[] {
+    if (!parts?.length) {
+      return [];
+    }
+    return parts.map((p: any) => {
+      if (p && typeof p === 'object' && p.kind) {
+        return p as CommentDisplayPart;
+      }
+      if (p && typeof p === 'object' && typeof p.text === 'string') {
+        return { kind: 'text', text: p.text };
+      }
+      return { kind: 'text', text: '' };
+    });
+  }
+
+  /**
+   * Anchor slug for a reflection, matching Handlebars headings `` `name` (kindName) ``.
+   */
+  private reflectionToMarkdownAnchor(reflection: Reflection): string {
+    const kindName =
+      ReflectionKindName[reflection.kind as keyof typeof ReflectionKindName] ||
+      'Unknown';
+    const headingPlain = `\`${reflection.name}\` (${kindName})`;
+    return gfmSlug(headingPlain);
+  }
+
+  /**
+   * Renders TypeDoc comment parts as a single string: no broken lines between segments,
+   * and inline `@link` tags with resolved targets become same-file or cross-file links.
+   */
+  private renderDisplayPartsMarkdown(
+    parts: CommentDisplayPart[] | undefined,
+    ownerSourceFile?: string
+  ): string {
+    const normalized = this.normalizeDisplayParts(parts);
+    if (!normalized.length) {
+      return '';
+    }
+    return Comment.displayPartsToMarkdown(normalized, (ref) =>
+      this.resolveLinkHref(ref, ownerSourceFile)
+    );
   }
 
   /**
@@ -1105,7 +1255,8 @@ export default class TypeDocJson extends ScriptPlugin<
    * ```
    */
   public formatParameters(
-    parameters: ParameterReflection[]
+    parameters: ParameterReflection[],
+    ownerSourceFile?: string
   ): FormatProjectValue[] {
     if (!Array.isArray(parameters)) {
       return [];
@@ -1128,7 +1279,10 @@ export default class TypeDocJson extends ScriptPlugin<
           ] as any,
           name: param.name,
           typeString: this.getTypeString(param),
-          descriptions: this.formatDescription(param.comment),
+          descriptions: this.formatDescription(
+            param.comment,
+            ownerSourceFile
+          ),
           defaultValue: this.getDefaultValue(param),
           since: this.getSinceVersion(param),
           deprecated: this.isDeprecated(param),
@@ -1146,7 +1300,10 @@ export default class TypeDocJson extends ScriptPlugin<
             ] as any,
             name: `${param.name}.${child.name}`, // Use options.name format
             typeString: this.getTypeString(child),
-            descriptions: this.formatDescription(child.comment),
+            descriptions: this.formatDescription(
+              child.comment,
+              ownerSourceFile
+            ),
             defaultValue: this.getDefaultValue(child),
             since: this.getSinceVersion(child),
             deprecated: this.isDeprecated(child),
@@ -1163,7 +1320,10 @@ export default class TypeDocJson extends ScriptPlugin<
           ] as any,
           name: param.name,
           typeString: this.getTypeString(param),
-          descriptions: this.formatDescription(param.comment),
+          descriptions: this.formatDescription(
+            param.comment,
+            ownerSourceFile
+          ),
           defaultValue: this.getDefaultValue(param),
           since: this.getSinceVersion(param),
           deprecated: this.isDeprecated(param),

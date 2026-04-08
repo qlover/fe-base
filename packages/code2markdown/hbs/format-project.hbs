@@ -16,9 +16,7 @@
 
 {{#unless (or (eq tag "@summary") (eq tag "@description"))}}**{{formatTag tag}}:** {{name}}{{/unless}}
 
-{{#each content}}
-{{text}}
-{{/each}}
+{{{contentMarkdown}}}
 {{/each}}
 
 {{#if parametersList}}
@@ -27,7 +25,7 @@
 | Name | Type | Optional | Default | Since | Deprecated | Description |
 |------|------|----------|---------|-------|------------|-------------|
 {{#each parametersList}}
-| `{{name}}` | `{{typeString}}` | {{#if optional}}✅{{else}}❌{{/if}} | {{#if defaultValue}}`{{defaultValue}}`{{else}}-{{/if}} | {{#if since}}`{{since}}`{{else}}-{{/if}} | {{#if deprecated}}⚠️{{else}}-{{/if}} | {{#each descriptions}}{{#each content}}{{text}}{{/each}}{{/each}} |
+| `{{name}}` | `{{typeString}}` | {{#if optional}}✅{{else}}❌{{/if}} | {{#if defaultValue}}`{{defaultValue}}`{{else}}-{{/if}} | {{#if since}}`{{since}}`{{else}}-{{/if}} | {{#if deprecated}}⚠️{{else}}-{{/if}} | {{#each descriptions}}{{{contentMarkdown}}}{{/each}} |
 {{/each}}
 
 {{/if}}
