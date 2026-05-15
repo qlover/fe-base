@@ -22,7 +22,8 @@ const eslintConfig = defineConfig([
     'vitests.config.ts',
     'vitest.config.*',
     'vite.config.*',
-    'next-env.d.ts'
+    'next-env.d.ts',
+    'postcss.config.mjs'
   ]),
   ...compat.extends(
     'next/core-web-vitals',
@@ -138,6 +139,20 @@ const eslintConfig = defineConfig([
       'import/no-unresolved': 'off'
     }
   },
+  {
+    files: ['src/**/*.tsx'],
+    rules: {
+      // `{/* ... */}` 在 AST 中为 JSXExpressionContainer + JSXEmptyExpression；禁止后可用 ESLint 快速定位（无内置 --fix 自动删除）
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXExpressionContainer > JSXEmptyExpression',
+          message:
+            '禁止使用 JSX 块注释 `{/* ... */}` 与空 JSX 表达式；说明写在文件顶部 JSDoc 或表达式外的行注释。'
+        }
+      ]
+    }
+  },
   // Type checking only for ts-class-override (no recommendedTypeChecked for speed)
   {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],
@@ -172,11 +187,13 @@ const eslintConfig = defineConfig([
       'src/app/**/layout.tsx',
       'src/app/**/not-found.tsx',
       'src/i18n/request.ts',
+      'src/i18n/locales.d.ts',
       'src/middleware.ts',
       'src/pages/**/*.tsx',
       'src/app/manifest.ts',
       'src/proxy.ts',
-      '**/*.config.*'
+      '**/*.config.*',
+      "**/*.mjs"
     ],
     rules: {
       'import/no-default-export': 'off'
