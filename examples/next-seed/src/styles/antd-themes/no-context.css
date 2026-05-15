@@ -17,7 +17,7 @@
 
 .ant-notification:not(.fe-theme) {
   .ant-notification-notice-wrapper {
-    background: var(--fe-color-bg-elevated);
+    background: var(--fe-color-elevated);
   }
 
   .ant-notification-notice-wrapper .ant-notification-notice-close {

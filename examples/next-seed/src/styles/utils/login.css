@@ -1,0 +1,69 @@
+@layer base {
+  /*
+   * --fe-* 为「R G B」三通道空格分隔，供 rgb(var(--fe-...)) 与 Antd 桥接使用。
+   * 色值与 docs/v1.3/00-design-system/design-system.css 中各 [data-theme] 对齐。
+   */
+  :root,
+  html[data-theme='light'],
+  [data-theme='light'] {
+    --login-card-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+
+  html[data-theme='dark'],
+  [data-theme='dark'] {
+    --login-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+
+  html[data-theme='pink'],
+  [data-theme='pink'] {
+    --login-card-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(244, 114, 182, 0.06);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+
+  html[data-theme='amber'],
+  [data-theme='amber'] {
+    --login-card-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(232, 148, 58, 0.05);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+
+  html[data-theme='forest'],
+  [data-theme='forest'] {
+    --login-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(10 26 12);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+
+  html[data-theme='ocean'],
+  [data-theme='ocean'] {
+    --login-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: rgb(var(--fe-color-border));
+    --login-button-text: rgb(6 14 26);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: rgb(var(--fe-color-border));
+  }
+}

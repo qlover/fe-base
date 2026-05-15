@@ -13,14 +13,40 @@
  * ```
  */
 @theme {
-  --color-primary: rgba(var(--fe-color-bg-base));
-  --color-secondary: rgba(var(--fe-color-bg-secondary));
-  --color-elevated: rgba(var(--fe-color-bg-elevated));
-  --color-primary-text: rgba(var(--fe-text-primary));
-  --color-primary-text-hover: rgba(var(--fe-text-primary-hover));
-  --color-secondary-text: rgba(var(--fe-text-secondary));
-  --color-tertiary-text: rgba(var(--fe-text-tertiary));
-  --color-primary-border: rgba(var(--fe-color-border));
+  /* v1.3 原型：Inter + 中文回退（与 next/font 注入的 --font-inter 配合） */
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, 'PingFang SC',
+    'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+
+  /*
+   * fe 变量为「R G B」三通道空格分隔，必须用 rgb(var(--fe-...))。
+   * 误用 rgba(var(...)) 会生成非法/不稳定颜色，导致 bg-primary、bg-secondary/80、文字色等与主题脱节。
+   */
+  --color-primary: rgb(var(--fe-color-primary));
+  --color-secondary: rgb(var(--fe-color-secondary));
+  --color-elevated: rgb(var(--fe-color-elevated));
+  --color-primary-text: rgb(var(--fe-color-primary-text));
+  --color-primary-text-hover: rgb(var(--fe-color-primary-text-hover));
+  --color-secondary-text: rgb(var(--fe-color-secondary-text));
+  --color-tertiary-text: rgb(var(--fe-color-tertiary-text));
+  /* 与 default.css 中 --fe-color-primary-border 的「R G B 通道」配套；勿对 --fe-color-primary-border 再赋 rgb(...) */
+  --color-primary-border: rgb(var(--fe-color-primary-border));
   --color-brand: rgb(var(--fe-color-brand));
   --color-brand-hover: rgb(var(--fe-color-brand-hover));
+  --color-brand-active: rgb(var(--fe-color-brand-active));
+  /** 进度条槽：与 elevated 卡片区分，各主题下对比度稳定 */
+  --color-progress-track: rgb(var(--fe-color-primary-border) / 0.5);
+
+  /* 首页概念卡骨架：背景条 + background-position 扫光，避免与 elevated 融色 */
+  --animate-dashboard-skeleton-shimmer: dashboard-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes dashboard-skeleton-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+
+  100% {
+    background-position: -200% center;
+  }
 }

@@ -1,119 +1,212 @@
 @layer base {
-  :root {
-    --fe-color-bg-base: 255 255 255;
-    --fe-color-bg-secondary: 241 245 249;
-    --fe-color-bg-elevated: 248 250 252;
-    --fe-text-primary: 15 23 42;
-    --fe-text-primary-hover: 100 116 139;
-    --fe-text-secondary: 71 85 105;
-    --fe-text-tertiary: 100 116 139;
-    --fe-color-border: 226 232 240;
-    --fe-color-brand: 37 99 235;
-    --fe-color-brand-hover: 59 130 246;
-    --fe-color-brand-active: 25 99 235;
-    --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
+  /* 浅色主题（默认） */
+  :root,
+  html[data-theme='light'],
+  [data-theme='light'] {
+    /* 背景色 */
+    --fe-color-primary: 246 248 250;
+    --fe-color-secondary: 255 255 255;
+    --fe-color-elevated: 240 242 244;
     --fe-color-bg-container: rgb(255 255 255);
-    --fe-color-border: rgb(226 232 240);
-    --fe-color-primary: rgb(var(--fe-color-brand));
+
+    /* 文本颜色 */
+    --fe-color-primary-text: 31 35 40;
+    --fe-color-primary-text-hover: 101 109 118;
+    --fe-color-secondary-text: 101 109 118;
+    --fe-color-tertiary-text: 140 149 159;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    /* 边框 */
+    --fe-color-primary-border: 208 215 222;
+
+    /* 品牌色 */
+    --fe-color-brand: 124 58 237;
+    --fe-color-brand-hover: 109 40 217;
+    --fe-color-brand-active: 91 33 182;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
     --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
     --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.08);
 
-    /* Semantic colors for antd */
-    --fe-color-success: #52c41a;
+    /* 状态色 */
+    --fe-color-success: #1a7f37;
     --fe-color-warning: #faad14;
-    --fe-color-error: #ff4d4f;
+    --fe-color-error: #cf222e;
 
-    /* Semantic tokens for antd/common (single source of truth) */
-    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
-    --fe-color-text: rgb(var(--fe-text-primary) / 0.85);
-    --fe-color-text-heading: rgb(var(--fe-text-primary));
-    --fe-color-text-disabled: rgb(var(--fe-text-primary) / 0.25);
+    /* 其他 */
     --fe-line-height: 1.5715;
     --fe-border-radius: 6px;
-
-    --login-input-bg: var(--fe-color-bg-container);
-    --login-input-border: var(--fe-color-border);
-    --login-button-text: rgb(255 255 255);
-    --login-social-button-bg: var(--fe-color-bg-container);
-    --login-social-button-border: var(--fe-color-border);
   }
 
+  /* 深色主题 */
   html[data-theme='dark'],
   [data-theme='dark'] {
-    --fe-color-bg-base: 15 23 42;
-    --fe-color-bg-secondary: 30 41 59;
-    --fe-color-bg-elevated: 51 65 85;
-    --fe-text-primary: 255 255 255;
-    --fe-text-primary-hover: 148 163 184;
-    --fe-text-secondary: 148 163 184;
-    --fe-text-tertiary: 100 116 139;
-    --fe-color-border: 51 65 85;
-    --fe-color-brand: 147 51 234; /* #9333ea purple for dark */
-    --fe-color-brand-hover: 168 85 247; /* #a855f7 lighter purple */
-    --fe-color-brand-active: 126 34 206;
-    --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --fe-color-primary: 15 17 21;
+    --fe-color-secondary: 22 27 34;
+    --fe-color-elevated: 33 38 45;
+    --fe-color-bg-container: rgb(22 27 34);
 
-    --fe-color-bg-container: rgb(30 41 59);
-    --fe-color-border: rgb(51 65 85);
-    --fe-color-primary: rgb(var(--fe-color-brand));
+    --fe-color-primary-text: 230 237 243;
+    --fe-color-primary-text-hover: 139 148 158;
+    --fe-color-secondary-text: 139 148 158;
+    --fe-color-tertiary-text: 110 118 129;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    --fe-color-primary-border: 48 54 61;
+
+    --fe-color-brand: 139 92 246;
+    --fe-color-brand-hover: 124 58 237;
+    --fe-color-brand-active: 109 40 217;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
     --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
     --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.12);
 
-    --fe-color-success: #52c41a;
+    --fe-color-success: #3fb950;
     --fe-color-warning: #faad14;
-    --fe-color-error: #ff4d4f;
+    --fe-color-error: #f85149;
 
-    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
-    --fe-color-text: rgb(var(--fe-text-primary) / 0.85);
-    --fe-color-text-heading: rgb(var(--fe-text-primary));
-    --fe-color-text-disabled: rgb(var(--fe-text-primary) / 0.25);
     --fe-line-height: 1.5715;
     --fe-border-radius: 6px;
-
-    --login-input-bg: var(--fe-color-bg-container);
-    --login-input-border: var(--fe-color-border);
-    --login-button-text: rgb(255 255 255);
-    --login-social-button-bg: var(--fe-color-bg-container);
-    --login-social-button-border: var(--fe-color-border);
   }
 
+  /* 粉色主题 */
   html[data-theme='pink'],
   [data-theme='pink'] {
-    --fe-color-bg-base: 255 241 242;
-    --fe-color-bg-secondary: 255 228 230;
-    --fe-color-bg-elevated: 254 205 211;
-    --fe-text-primary: 190 18 60;
-    --fe-text-primary-hover: 244 63 94;
-    --fe-text-secondary: 225 29 72;
-    --fe-text-tertiary: 244 63 94;
-    --fe-color-border: 254 205 211;
-    --fe-color-brand: 225 29 72;
-    --fe-color-brand-hover: 244 63 94;
-    --fe-color-brand-active: 190 18 60;
-    --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
+    --fe-color-primary: 26 13 20;
+    --fe-color-secondary: 37 16 27;
+    --fe-color-elevated: 48 21 34;
+    --fe-color-bg-container: rgb(37 16 27);
 
-    --fe-color-border: rgb(254 205 211);
-    --fe-color-bg-container: rgb(255 241 242);
-    --fe-color-primary: rgb(var(--fe-color-brand));
+    --fe-color-primary-text: 252 232 240;
+    --fe-color-primary-text-hover: 196 144 168;
+    --fe-color-secondary-text: 196 144 168;
+    --fe-color-tertiary-text: 138 88 112;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    --fe-color-primary-border: 92 45 66;
+
+    --fe-color-brand: 244 114 182;
+    --fe-color-brand-hover: 236 72 153;
+    --fe-color-brand-active: 219 39 119;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
     --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
     --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.12);
 
-    --fe-color-success: #52c41a;
+    --fe-color-success: #34d399;
     --fe-color-warning: #faad14;
     --fe-color-error: #fb7185;
 
-    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
-    --fe-color-text: rgb(var(--fe-text-primary) / 0.85);
-    --fe-color-text-heading: rgb(var(--fe-text-primary));
-    --fe-color-text-disabled: rgb(var(--fe-text-primary) / 0.25);
+    --fe-line-height: 1.5715;
+    --fe-border-radius: 8px;
+  }
+
+  /* 琥珀色主题 */
+  html[data-theme='amber'],
+  [data-theme='amber'] {
+    --fe-color-primary: 30 18 0;
+    --fe-color-secondary: 40 26 0;
+    --fe-color-elevated: 50 31 0;
+    --fe-color-bg-container: rgb(40 26 0);
+
+    --fe-color-primary-text: 242 232 213;
+    --fe-color-primary-text-hover: 184 166 138;
+    --fe-color-secondary-text: 184 166 138;
+    --fe-color-tertiary-text: 122 106 86;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    --fe-color-primary-border: 74 56 0;
+
+    --fe-color-brand: 232 148 58;
+    --fe-color-brand-hover: 208 120 40;
+    --fe-color-brand-active: 180 100 30;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
+    --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
+    --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.12);
+
+    --fe-color-success: #5aad6e;
+    --fe-color-warning: #faad14;
+    --fe-color-error: #c85a4a;
+
     --fe-line-height: 1.5715;
     --fe-border-radius: 6px;
+  }
 
-    --login-input-bg: var(--fe-color-bg-container);
-    --login-input-border: var(--fe-color-border);
-    --login-button-text: rgb(255 255 255);
-    --login-social-button-bg: var(--fe-color-bg-container);
-    --login-social-button-border: var(--fe-color-border);
+  /* 森林主题 */
+  html[data-theme='forest'],
+  [data-theme='forest'] {
+    --fe-color-primary: 6 21 8;
+    --fe-color-secondary: 12 31 14;
+    --fe-color-elevated: 19 39 22;
+    --fe-color-bg-container: rgb(12 31 14);
+
+    --fe-color-primary-text: 216 240 220;
+    --fe-color-primary-text-hover: 136 173 142;
+    --fe-color-secondary-text: 136 173 142;
+    --fe-color-tertiary-text: 90 122 94;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    --fe-color-primary-border: 44 66 48;
+
+    --fe-color-brand: 74 222 128;
+    --fe-color-brand-hover: 34 197 94;
+    --fe-color-brand-active: 22 163 74;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
+    --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
+    --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
+
+    --fe-color-success: #86efac;
+    --fe-color-warning: #faad14;
+    --fe-color-error: #f87171;
+
+    --fe-line-height: 1.5715;
+    --fe-border-radius: 6px;
+  }
+
+  /* 海洋主题 */
+  html[data-theme='ocean'],
+  [data-theme='ocean'] {
+    --fe-color-primary: 6 14 26;
+    --fe-color-secondary: 13 26 46;
+    --fe-color-elevated: 18 36 62;
+    --fe-color-bg-container: rgb(13 26 46);
+
+    --fe-color-primary-text: 218 238 255;
+    --fe-color-primary-text-hover: 122 181 212;
+    --fe-color-secondary-text: 122 181 212;
+    --fe-color-tertiary-text: 74 126 154;
+    --fe-color-text: rgb(var(--fe-color-primary-text) / 0.85);
+    --fe-color-text-heading: rgb(var(--fe-color-primary-text));
+    --fe-color-text-disabled: rgb(var(--fe-color-primary-text) / 0.25);
+
+    --fe-color-primary-border: 30 58 92;
+
+    --fe-color-brand: 56 189 248;
+    --fe-color-brand-hover: 14 165 233;
+    --fe-color-brand-active: 2 132 199;
+    /* --fe-color-primary: rgb(var(--fe-color-brand)); */
+    --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
+    --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+    --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
+
+    --fe-color-success: #34d399;
+    --fe-color-warning: #faad14;
+    --fe-color-error: #f87171;
+
+    --fe-line-height: 1.5715;
+    --fe-border-radius: 6px;
   }
 }

@@ -1,8 +1,12 @@
 @import './tailwind.css';
 
+/* XO UI 基础组件（v1.3 原型），需在 antd 覆盖之前加载 */
+@import '../uikit/components/xo-ui/xo-ui.css';
+
 /* @import './utils/base-root-10px.css'; */
 @import './utils/zIndex.css';
 @import './utils/scrollbar.css';
+@import './utils/login.css';
 
 /* Antd variable overrides - keep last so they win over tailwind layers and any earlier CSS */
 @import './antd-themes/index.css';

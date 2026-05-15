@@ -2,8 +2,11 @@
 
 @import 'tailwindcss';
 
+/* v1.3 设计系统：--xo-theme-* / --xo-* 语义令牌（与 docs 同源） */
+@import '../../docs/v1.3/00-design-system/design-system.css' layer(base);
+
 @import './themes/default.css';
 /* @import './themes/color-scheme-default.css'; */
 
-/* custom styles */
+/* custom styles：@theme 令牌等 */
 @import './themes/custom-styles.css';

@@ -17,12 +17,12 @@ html,
     --fantd-menu-collapsed-width: 80px;
 
     /* 文字颜色 */
-    --fantd-menu-color-item-text: rgb(var(--fe-text-primary));
-    --fantd-menu-item-color: rgb(var(--fe-text-primary));
-    --fantd-menu-color-item-text-hover: rgb(var(--fe-text-primary));
-    --fantd-menu-item-hover-color: rgb(var(--fe-text-primary));
-    --fantd-menu-color-group-title: rgb(var(--fe-text-secondary));
-    --fantd-menu-group-title-color: rgb(var(--fe-text-secondary));
+    --fantd-menu-color-item-text: rgb(var(--fe-color-primary-text));
+    --fantd-menu-item-color: rgb(var(--fe-color-primary-text));
+    --fantd-menu-color-item-text-hover: rgb(var(--fe-color-primary-text));
+    --fantd-menu-item-hover-color: rgb(var(--fe-color-primary-text));
+    --fantd-menu-color-group-title: rgb(var(--fe-color-secondary-text));
+    --fantd-menu-group-title-color: rgb(var(--fe-color-secondary-text));
     --fantd-menu-color-item-text-disabled: rgb(var(--text-disabled));
     --fantd-menu-item-disabled-color: rgb(var(--text-disabled));
 
@@ -30,23 +30,21 @@ html,
     --fantd-menu-color-item-text-selected: rgb(var(--fe-color-brand));
     --fantd-menu-item-selected-color: rgb(var(--fe-color-brand));
     --fantd-menu-sub-menu-item-selected-color: rgb(var(--fe-color-brand));
-    --fantd-menu-color-item-text-selected-horizontal: rgb(
-      var(--fe-color-brand)
-    );
+    --fantd-menu-color-item-text-selected-horizontal: rgb(var(--fe-color-brand));
     --fantd-menu-horizontal-item-selected-color: rgb(var(--fe-color-brand));
 
     /* 背景颜色 */
-    --fantd-menu-color-item-bg: rgb(var(--fe-color-bg-base));
-    --fantd-menu-item-bg: rgb(var(--fe-color-bg-base));
-    --fantd-menu-color-item-bg-hover: rgba(var(--fe-text-primary), 0.06);
-    --fantd-menu-item-hover-bg: rgba(var(--fe-text-primary), 0.06);
-    --fantd-menu-color-item-bg-active: rgba(var(--fe-text-primary), 0.06);
+    --fantd-menu-color-item-bg: rgb(var(--fe-color-primary));
+    --fantd-menu-item-bg: rgb(var(--fe-color-primary));
+    --fantd-menu-color-item-bg-hover: rgba(var(--fe-color-primary-text), 0.06);
+    --fantd-menu-item-hover-bg: rgba(var(--fe-color-primary-text), 0.06);
+    --fantd-menu-color-item-bg-active: rgba(var(--fe-color-primary-text), 0.06);
     --fantd-menu-item-active-bg: rgba(var(--fe-color-brand), 0.1);
-    --fantd-menu-color-sub-item-bg: rgba(var(--fe-text-primary), 0.02);
-    --fantd-menu-sub-menu-item-bg: rgba(var(--fe-text-primary), 0.02);
+    --fantd-menu-color-sub-item-bg: rgba(var(--fe-color-primary-text), 0.02);
+    --fantd-menu-sub-menu-item-bg: rgba(var(--fe-color-primary-text), 0.02);
     --fantd-menu-color-item-bg-selected: rgba(var(--fe-color-brand), 0.1);
     --fantd-menu-item-selected-bg: rgba(var(--fe-color-brand), 0.1);
-    --fantd-menu-popup-bg: rgb(var(--fe-color-bg-base));
+    --fantd-menu-popup-bg: rgb(var(--fe-color-primary));
 
     /* 水平菜单特殊样式 */
     --fantd-menu-color-item-text-hover-horizontal: rgb(var(--fe-color-brand));
@@ -83,10 +81,7 @@ html,
     --fantd-menu-danger-item-selected-color: var(--fe-color-error);
     --fantd-menu-color-danger-item-bg-active: rgba(var(--fe-color-error), 0.1);
     --fantd-menu-danger-item-active-bg: rgba(var(--fe-color-error), 0.1);
-    --fantd-menu-color-danger-item-bg-selected: rgba(
-      var(--fe-color-error),
-      0.1
-    );
+    --fantd-menu-color-danger-item-bg-selected: rgba(var(--fe-color-error), 0.1);
     --fantd-menu-danger-item-selected-bg: rgba(var(--fe-color-error), 0.1);
 
     /* 暗色主题特殊样式 */
@@ -116,12 +111,12 @@ html,
 [data-theme='dark'] .fe-theme {
   &.ant-menu-css-var {
     /* 文字颜色 */
-    --fantd-menu-color-item-text: rgb(var(--fe-text-primary));
-    --fantd-menu-item-color: rgb(var(--fe-text-primary));
-    --fantd-menu-color-item-text-hover: rgb(var(--fe-text-primary));
-    --fantd-menu-item-hover-color: rgb(var(--fe-text-primary));
-    --fantd-menu-color-group-title: rgb(var(--fe-text-secondary));
-    --fantd-menu-group-title-color: rgb(var(--fe-text-secondary));
+    --fantd-menu-color-item-text: rgb(var(--fe-color-primary-text));
+    --fantd-menu-item-color: rgb(var(--fe-color-primary-text));
+    --fantd-menu-color-item-text-hover: rgb(var(--fe-color-primary-text));
+    --fantd-menu-item-hover-color: rgb(var(--fe-color-primary-text));
+    --fantd-menu-color-group-title: rgb(var(--fe-color-secondary-text));
+    --fantd-menu-group-title-color: rgb(var(--fe-color-secondary-text));
     --fantd-menu-color-item-text-disabled: rgb(var(--text-disabled));
     --fantd-menu-item-disabled-color: rgb(var(--text-disabled));
 
@@ -129,14 +124,12 @@ html,
     --fantd-menu-color-item-text-selected: rgb(var(--fe-color-brand));
     --fantd-menu-item-selected-color: rgb(var(--fe-color-brand));
     --fantd-menu-sub-menu-item-selected-color: rgb(var(--fe-color-brand));
-    --fantd-menu-color-item-text-selected-horizontal: rgb(
-      var(--fe-color-brand)
-    );
+    --fantd-menu-color-item-text-selected-horizontal: rgb(var(--fe-color-brand));
     --fantd-menu-horizontal-item-selected-color: rgb(var(--fe-color-brand));
 
     /* 背景颜色 */
-    --fantd-menu-color-item-bg: rgb(var(--fe-color-bg-base));
-    --fantd-menu-item-bg: rgb(var(--fe-color-bg-base));
+    --fantd-menu-color-item-bg: rgb(var(--fe-color-primary));
+    --fantd-menu-item-bg: rgb(var(--fe-color-primary));
     --fantd-menu-color-item-bg-hover: rgba(255 255 255 / 0.08);
     --fantd-menu-item-hover-bg: rgba(255 255 255 / 0.08);
     --fantd-menu-color-item-bg-active: rgba(255 255 255 / 0.08);
@@ -145,7 +138,7 @@ html,
     --fantd-menu-sub-menu-item-bg: rgba(255 255 255 / 0.04);
     --fantd-menu-color-item-bg-selected: rgba(var(--fe-color-brand), 0.2);
     --fantd-menu-item-selected-bg: rgba(var(--fe-color-brand), 0.2);
-    --fantd-menu-popup-bg: rgb(var(--fe-color-bg-base));
+    --fantd-menu-popup-bg: rgb(var(--fe-color-primary));
 
     /* 危险项样式 */
     --fantd-menu-color-danger-item-text: var(--fe-color-error);
@@ -156,10 +149,7 @@ html,
     --fantd-menu-danger-item-selected-color: var(--fe-color-error);
     --fantd-menu-color-danger-item-bg-active: rgba(var(--fe-color-error), 0.2);
     --fantd-menu-danger-item-active-bg: rgba(var(--fe-color-error), 0.2);
-    --fantd-menu-color-danger-item-bg-selected: rgba(
-      var(--fe-color-error),
-      0.2
-    );
+    --fantd-menu-color-danger-item-bg-selected: rgba(var(--fe-color-error), 0.2);
     --fantd-menu-danger-item-selected-bg: rgba(var(--fe-color-error), 0.2);
 
     /* 暗色主题特殊样式 */
