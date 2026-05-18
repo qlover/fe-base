@@ -59,7 +59,8 @@ export default defineConfig({
             '@qlover/scripts-context': resolve(
               __dirname,
               './packages/scripts-context/src'
-            )
+            ),
+            '@qlover/ui-theme': resolve(__dirname, './packages/ui-theme/src')
           }
         }
       },
