@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
   // reactStrictMode: false,
   // pages 路由需要
   transpilePackages: ['@qlover/fe-corekit', '@qlover/corekit-bridge'],
+  /** Avoid bundling Node HTTP proxy stack into Route handlers (CJS + native deps). */
+  serverExternalPackages: ['node-fetch', 'https-proxy-agent'],
   env: {
     APP_ENV: process.env.APP_ENV
   }

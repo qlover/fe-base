@@ -130,7 +130,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       noValidate
       className="space-y-4"
     >
-      {/* Social login */}
       <div className="space-y-3">
         <button
           type="button"

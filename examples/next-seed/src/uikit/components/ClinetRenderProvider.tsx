@@ -12,6 +12,7 @@ export interface ClinetRenderProviderProps {
  *
  * 当前组件仅用于需要客户端渲染的组件, 比如 adminLayout 等完全客户端渲染的组件
  *
+ * 语言切换时：在客户端挂载完成前渲染固定全屏遮罩，避免未水合内容与最终内容闪烁错位。
  *
  * @param children - The children components
  * @returns
@@ -25,7 +26,6 @@ export function ClinetRenderProvider(props: ClinetRenderProviderProps) {
     <>
       {children}
 
-      {/* 为了防止语言切换时页面闪烁, 使用一个固定定位的div, 当客户端渲染时才渲染 */}
       {!mounted && (
         <div
           role="status"

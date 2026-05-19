@@ -39,7 +39,7 @@ export function UserAuthFailed({ error }: UserAuthFailedProps) {
         data-testid="UserAuthFailedCard"
         className={clsx(
           'rounded-lg border p-6 max-w-md w-full',
-          'border-(--fe-color-border,#e5e7eb)',
+          'border-primary-border',
           'bg-(--fe-color-elevated,#fff)'
         )}
       >
