@@ -181,6 +181,9 @@ export const getDerivedTokens = (
 
 export const defaultTokenMapping: TokenMapping = {
   'color-primary': 'rgb(var(--${prefix}-color-primary))',
+  'color-primary-active': 'rgb(var(--${prefix}-color-primary-active))',
+  'color-primary-hover': 'rgb(var(--${prefix}-color-primary-hover))',
+  'color-primary-bg': 'rgb(var(--${prefix}-color-primary-bg))',
   'color-secondary': 'rgb(var(--${prefix}-color-secondary))',
   'color-elevated': 'rgb(var(--${prefix}-color-elevated))',
   'color-primary-text': 'rgb(var(--${prefix}-color-primary-text))',
@@ -192,6 +195,7 @@ export const defaultTokenMapping: TokenMapping = {
   'color-brand-hover': 'rgb(var(--${prefix}-color-brand-hover))',
   'color-brand-active': 'rgb(var(--${prefix}-color-brand-active))',
   'color-progress-track': 'rgb(var(--${prefix}-color-primary-border) / 0.5)',
+  'color-bg-container': 'rgb(var(--${prefix}-color-bg-container))',
   'font-sans':
     'var(--font-inter), ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans SC", sans-serif',
   'animate-dashboard-skeleton-shimmer':
