@@ -3,9 +3,10 @@ import { deepMerge } from './utils';
 export type RGBChannels = string; // e.g. "246 248 250"
 export type ColorValue = string;
 
-export interface ThemeTokens {
-  [key: string]: ColorValue | RGBChannels;
-}
+export type ThemeTokens = Record<string, ColorValue | RGBChannels>;
+
+/** Named themes → token sets (avoids index-signature confusion with `Record<string, ThemeTokens>`) */
+export type ThemesMap = Record<string, ThemeTokens>;
 
 /**
  * Token mapping for the theme.
@@ -37,7 +38,7 @@ export type TokenMapping = Record<string, string>;
 export interface UiThemeOptions {
   prefix?: string;
   defaultTheme?: string;
-  themes?: Record<string, ThemeTokens>;
+  themes?: ThemesMap;
   tokenMapping?: TokenMapping;
   cssSelector?: (themeName: string, root: boolean) => string;
   outputPath?: string;
@@ -54,7 +55,7 @@ const themePrimaryBgOpacity: Record<string, string> = {
   ocean: '0.1'
 };
 
-export const builtinThemes: Record<string, ThemeTokens> = {
+export const builtinThemes: ThemesMap = {
   light: {
     'color-primary': '246 248 250',
     'color-secondary': '255 255 255',

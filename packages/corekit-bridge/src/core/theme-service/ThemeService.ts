@@ -4,7 +4,11 @@ import {
   type ThemeServiceState
 } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
+import type { StoreUpdateValue } from '../store-state';
 import { SliceStoreAdapter, type StoreInterface } from '../store-state';
+import type { ThemeId, ThemeInterface } from './ThemeInterface';
+import type { ThemeTokens, TokenMapping} from '@qlover/ui-theme';
+import { builtinThemes } from '@qlover/ui-theme';
 import { clone } from '../store-state/clone';
 
 export const defaultThemeConfig: ThemeConfig = {
@@ -15,13 +19,14 @@ export const defaultThemeConfig: ThemeConfig = {
   storageKey: 'theme',
   init: true,
   prioritizeStore: true,
-  cacheTarget: true
+  cacheTarget: true,
+  themeTokens: clone(builtinThemes)
 };
 
 /**
  * Theme DOM + optional persistence; reactive state lives on {@link ThemeService.store}.
  */
-export class ThemeService {
+export class ThemeService implements ThemeInterface {
   private _target: HTMLElement | null = null;
 
   /**
@@ -38,33 +43,58 @@ export class ThemeService {
       this.bindToTheme();
     }
   }
+  /**
+   * Get the supported themes, from the store state
+   * @override
+   */
+  public getThemes(): ThemeId[] {
+    return this.state.themes;
+  }
+
+  /**
+   * This only get the supported themes from the config
+   * @deprecated use `getThemes`
+   * @returns
+   */
+  public getSupportedThemes(): string[] {
+    return this.props.supportedThemes!;
+  }
+
+  /**
+   * @override
+   */
+  public getTheme(): ThemeId {
+    return this.state.theme;
+  }
+  /**
+   * @override
+   */
+  public getThemeTokens(theme: ThemeId): ThemeTokens;
+  /**
+   * @override
+   */
+  public getThemeTokens(): Record<ThemeId, ThemeTokens>;
+  /**
+   * @override
+   */
+  public getThemeTokens(
+    theme?: ThemeId
+  ): ThemeTokens | Record<ThemeId, ThemeTokens> {
+    return theme ? this.state.themeTokens[theme] : this.state.themeTokens;
+  }
+  /**
+   * @override
+   */
+  public getTokenMapping(): TokenMapping {
+    return this.state.tokenMapping;
+  }
 
   public get state(): ThemeServiceState {
     return this.store.getState();
   }
 
-  protected cloneState(
-    patch: Partial<ThemeServiceState> = {} as Partial<ThemeServiceState>
-  ): ThemeServiceState {
-    const current = this.state;
-    if (
-      current === null ||
-      current === undefined ||
-      typeof current !== 'object'
-    ) {
-      return current;
-    }
-    const next = clone(current);
-    Object.assign(next as object, patch as object);
-    return next;
-  }
-
-  protected emit(patch: Partial<ThemeServiceState>): void {
-    this.store.update(this.cloneState(patch));
-  }
-
-  public getSupportedThemes(): string[] {
-    return this.props.supportedThemes!;
+  protected emit(patch: StoreUpdateValue<ThemeServiceState>): void {
+    this.store.update(patch);
   }
 
   public getTarget(): HTMLElement {
@@ -88,7 +118,7 @@ export class ThemeService {
     return targetElement;
   }
 
-  public bindToTheme(): void {
+  protected bindToTheme(): void {
     const { theme } = this.state;
 
     const { domAttribute } = this.props;
@@ -108,6 +138,9 @@ export class ThemeService {
     }
   }
 
+  /**
+   * @override
+   */
   public changeTheme(theme: string): void {
     if (theme === ThemeStateGetter.SYSTEM_THEME) {
       theme = ThemeStateGetter.getSystemTheme();

@@ -144,6 +144,7 @@
   "dependencies": {
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
+    "@qlover/ui-theme": "workspace:*",
     "@qlover/slice-store": "^1.2.6",
     "js-cookie": "^3.0.5",
     "tailwindcss": "^3.4.16",
