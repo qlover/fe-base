@@ -4,15 +4,19 @@ export const ThemeMap = {
   PINK: 'pink'
 } as const;
 
+/**
+ * @type {import('@qlover/corekit-bridge').ThemeConfig}
+ */
 export const themeConfig = {
-  domAttribute: 'class',
+  domAttribute: 'data-theme',
   defaultTheme: 'system',
-  themeValueTemplate: 'fe-theme theme-{{theme}}',
   target: 'html',
   supportedThemes: Object.values(ThemeMap),
   storageKey: 'fe_theme',
+  init: true,
   prioritizeStore: true
-};
+} as const;
 
 export type ThemeId = (typeof ThemeMap)[keyof typeof ThemeMap];
 export type ThemeChoice = ThemeId | 'system';
+export type SupportedTheme = (typeof themeConfig.supportedThemes)[number];

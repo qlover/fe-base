@@ -191,6 +191,9 @@ importers:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@qlover/ui-theme':
+        specifier: workspace:*
+        version: link:../../packages/ui-theme
       any-signal:
         specifier: ^4.2.0
         version: 4.2.0
@@ -595,7 +598,7 @@ importers:
         version: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
       vite-plugin-mock:
         specifier: ^3.0.2
-        version: 3.0.2(esbuild@0.27.3)(mockjs@1.1.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2))
+        version: 3.0.2(esbuild@0.19.12)(mockjs@1.1.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2))
       vite-tsconfig-paths:
         specifier: ^6.0.5
         version: 6.1.1(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2))
@@ -1062,10 +1065,10 @@ importers:
         version: 9.1.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.32.0(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))
+        version: 2.32.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-n:
         specifier: ^17.11.1
-        version: 17.24.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+        version: 17.24.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
       eslint-plugin-prettier:
         specifier: ^5.2.1
         version: 5.5.5(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.1)
@@ -21254,9 +21257,9 @@ snapshots:
       esbuild: 0.18.20
       load-tsconfig: 0.2.5
 
-  bundle-require@4.2.1(esbuild@0.27.3):
+  bundle-require@4.2.1(esbuild@0.19.12):
     dependencies:
-      esbuild: 0.27.3
+      esbuild: 0.19.12
       load-tsconfig: 0.2.5
 
   bundle-require@5.1.0(esbuild@0.27.3):
@@ -22584,16 +22587,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1)):
-    dependencies:
-      debug: 3.2.7
-    optionalDependencies:
-      '@typescript-eslint/parser': 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5)
-      eslint: 9.39.4(jiti@2.6.1)
-      eslint-import-resolver-node: 0.3.9
-    transitivePeerDependencies:
-      - supports-color
-
   eslint-module-utils@2.12.1(@typescript-eslint/parser@8.57.0(eslint@8.57.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
@@ -22704,35 +22697,6 @@ snapshots:
       tsconfig-paths: 3.15.0
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.1)(typescript@5.4.5)
-    transitivePeerDependencies:
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1)):
-    dependencies:
-      '@rtsao/scc': 1.1.0
-      array-includes: 3.1.9
-      array.prototype.findlastindex: 1.2.6
-      array.prototype.flat: 1.3.3
-      array.prototype.flatmap: 1.3.3
-      debug: 3.2.7
-      doctrine: 2.1.0
-      eslint: 9.39.4(jiti@2.6.1)
-      eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1))
-      hasown: 2.0.2
-      is-core-module: 2.16.1
-      is-glob: 4.0.3
-      minimatch: 3.1.5
-      object.fromentries: 2.0.8
-      object.groupby: 1.0.3
-      object.values: 1.2.1
-      semver: 6.3.1
-      string.prototype.trimend: 1.0.9
-      tsconfig-paths: 3.15.0
-    optionalDependencies:
-      '@typescript-eslint/parser': 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -22893,7 +22857,7 @@ snapshots:
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
 
-  eslint-plugin-n@17.24.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):
+  eslint-plugin-n@17.24.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@9.39.4(jiti@2.6.1))
       enhanced-resolve: 5.20.0
@@ -22904,7 +22868,7 @@ snapshots:
       globrex: 0.1.2
       ignore: 5.3.2
       semver: 7.7.4
-      ts-declaration-location: 1.0.7(typescript@5.9.3)
+      ts-declaration-location: 1.0.7(typescript@5.4.5)
     transitivePeerDependencies:
       - typescript
 
@@ -28670,10 +28634,10 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  ts-declaration-location@1.0.7(typescript@5.9.3):
+  ts-declaration-location@1.0.7(typescript@5.4.5):
     dependencies:
       picomatch: 4.0.3
-      typescript: 5.9.3
+      typescript: 5.4.5
 
   ts-interface-checker@0.1.13: {}
 
@@ -29128,13 +29092,13 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-mock@3.0.2(esbuild@0.27.3)(mockjs@1.1.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)):
+  vite-plugin-mock@3.0.2(esbuild@0.19.12)(mockjs@1.1.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)):
     dependencies:
-      bundle-require: 4.2.1(esbuild@0.27.3)
+      bundle-require: 4.2.1(esbuild@0.19.12)
       chokidar: 3.6.0
       connect: 3.7.0
       debug: 4.4.3
-      esbuild: 0.27.3
+      esbuild: 0.19.12
       fast-glob: 3.3.3
       mockjs: 1.1.0
       path-to-regexp: 6.3.0
