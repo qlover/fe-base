@@ -626,6 +626,9 @@ importers:
       '@qlover/slice-store-react':
         specifier: ^1.4.2
         version: 1.4.2(@types/react@19.2.13)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@qlover/ui-theme':
+        specifier: workspace:*
+        version: link:../../packages/ui-theme
       '@tarojs/components':
         specifier: 4.1.11
         version: 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.19))(@types/react@19.2.13)(postcss@8.5.8)(rollup@3.30.0)(vue@3.3.4)

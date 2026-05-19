@@ -1,9 +1,7 @@
 @layer theme, base, antd, components, utilities;
 
 @import 'tailwindcss';
+/* This is the generated theme CSS, npm run generate:theme */
+@import './themes/taro-weapp-theme.css';
 
-@import './themes/default.css';
-/* @import "./themes/color-scheme-default.css"; */
-
-/* custom styles */
-@import './themes/custom-styles.css';
+@custom-variant dark (&:where(html[data-theme='dark'], html[data-theme='dark'] *));

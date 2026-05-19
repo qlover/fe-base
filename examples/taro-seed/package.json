@@ -33,7 +33,8 @@
     "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"{src,types}/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "fix": "npm run lint:fix && npm run format"
+    "fix": "npm run lint:fix && npm run format",
+    "generate:theme": "node scripts/generate-theme-css.mjs"
   },
   "browserslist": {
     "development": [
@@ -58,6 +59,7 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
+    "@qlover/ui-theme": "workspace:*",
     "@qlover/slice-store-react": "^1.4.2",
     "@tarojs/components": "4.1.11",
     "@tarojs/helper": "4.1.11",

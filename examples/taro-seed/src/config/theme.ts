@@ -5,15 +5,17 @@ export const ThemeMap = {
 } as const;
 
 export const themeConfig = {
-  domAttribute: 'class',
+  /** H5: `Page` sets `data-theme` on root View */
+  domAttribute: 'data-theme',
   defaultTheme: 'system',
+  /** Miniprogram: class on root View (`fe-theme theme-{{theme}}`) */
   themeValueTemplate: 'fe-theme theme-{{theme}}',
-  /** 小程序无 html，实际挂在根 View 上 */
   target: 'html',
   supportedThemes: Object.values(ThemeMap),
   storageKey: 'fe_theme',
   prioritizeStore: true
-};
+} as const;
 
 export type ThemeId = (typeof ThemeMap)[keyof typeof ThemeMap];
 export type ThemeChoice = ThemeId | 'system';
+export type SupportedTheme = (typeof themeConfig.supportedThemes)[number];
