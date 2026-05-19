@@ -194,6 +194,8 @@ export const defaultTokenMapping: TokenMapping = {
   'color-brand': 'rgb(var(--${prefix}-color-brand))',
   'color-brand-hover': 'rgb(var(--${prefix}-color-brand-hover))',
   'color-brand-active': 'rgb(var(--${prefix}-color-brand-active))',
+  /** Text/icons on brand-colored surfaces (buttons, badges) */
+  'color-on-brand': '#ffffff',
   'color-progress-track': 'rgb(var(--${prefix}-color-primary-border) / 0.5)',
   'color-bg-container': 'rgb(var(--${prefix}-color-bg-container))',
   'font-sans':
