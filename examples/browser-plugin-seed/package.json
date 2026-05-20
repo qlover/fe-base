@@ -22,6 +22,7 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
+    "@qlover/tailwind-theme": "workspace:*",
     "any-signal": "^4.2.0",
     "plasmo": "0.90.5",
     "react": "18.2.0",

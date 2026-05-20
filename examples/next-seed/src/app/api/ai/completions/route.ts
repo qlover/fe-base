@@ -1,3 +1,4 @@
+import { API_AI_COMPLETIONS } from '@config/apiRoutes';
 import { NextApiServer } from '@server/NextApiServer';
 import type { NextRequest } from 'next/server';
 
@@ -50,15 +51,17 @@ import type { NextRequest } from 'next/server';
  *                   nullable: true
  */
 export async function GET(req: NextRequest) {
-  return await new NextApiServer(undefined, req).runWithJson(async () => {
-    return 'hello';
-    // const result = await IOC(OpenAiAgent).completions([
-    //   {
-    //     role: 'user',
-    //     content: 'hello'
-    //   }
-    // ]);
+  return await new NextApiServer(API_AI_COMPLETIONS, req).runWithJson(
+    async () => {
+      return 'hello';
+      // const result = await IOC(AIService).completions([
+      //   {
+      //     role: 'user',
+      //     content: 'hello'
+      //   }
+      // ]);
 
-    // return result;
-  });
+      // return result;
+    }
+  );
 }

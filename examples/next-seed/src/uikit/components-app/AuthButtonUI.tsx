@@ -30,7 +30,7 @@ import { useWarnTranslations } from '../hook/useWarnTranslations';
 const linkBase =
   'inline-flex items-center justify-center rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0';
 const linkPrimary =
-  'bg-brand text-(--login-button-text) hover:bg-brand-hover focus:ring-brand';
+  'bg-brand text-on-brand hover:bg-brand-hover focus:ring-brand';
 const linkSecondary =
   'border border-primary-border text-primary-text hover:bg-elevated focus:ring-brand';
 

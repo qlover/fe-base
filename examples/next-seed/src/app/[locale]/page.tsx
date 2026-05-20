@@ -44,7 +44,6 @@ export default async function Home({ params }: PageParamsProps) {
   return (
     <PageI18nProvider value={tt}>
       <AppRoutePage tt={tt} showAdminButton showAuthButton>
-        {/* Hero Section */}
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
@@ -55,7 +54,6 @@ export default async function Home({ params }: PageParamsProps) {
           </div>
         </section>
 
-        {/* Call to Action Section */}
         <section className="py-16 px-4 bg-elevated">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4 text-primary-text">

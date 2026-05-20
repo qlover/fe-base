@@ -59,7 +59,8 @@ export default defineConfig({
             '@qlover/scripts-context': resolve(
               __dirname,
               './packages/scripts-context/src'
-            )
+            ),
+            '@qlover/tailwind-theme': resolve(__dirname, './packages/tailwind-theme/src')
           }
         }
       },

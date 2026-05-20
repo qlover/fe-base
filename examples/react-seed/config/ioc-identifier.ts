@@ -1,3 +1,4 @@
+import type { ThemeService } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
@@ -8,7 +9,8 @@ import type * as Logger from '@qlover/logger';
 export const IOCIdentifier = Object.freeze({
   JSONSerializer: 'JSONSerializer',
   Logger: 'Logger',
-  Config: 'Config'
+  Config: 'Config',
+  ThemeService: 'ThemeService'
 });
 
 export const I = IOCIdentifier;
@@ -25,4 +27,5 @@ export interface IOCIdentifierMap {
   [I.JSONSerializer]: FeCorekit.JSONSerializer;
   [I.Logger]: Logger.LoggerInterface;
   [I.Config]: SeedConfigInterface;
+  [I.ThemeService]: ThemeService;
 }

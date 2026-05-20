@@ -7,7 +7,10 @@ export class ThemeStateGetter {
     const theme = ThemeStateGetter.getDefaultTheme(props);
 
     return {
-      theme
+      theme,
+      themes: props.supportedThemes ?? ['light', 'dark'],
+      themeTokens: props.themeTokens ?? {},
+      tokenMapping: props.tokenMapping ?? {}
     };
   }
 

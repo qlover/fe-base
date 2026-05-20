@@ -26,9 +26,10 @@ export const IOCIdentifierRegister: IOCRegisterInterface<IOCContainerInterface> 
           storage: kvStorage,
           defaultTheme: themeConfig.defaultTheme,
           prioritizeStore: themeConfig.prioritizeStore,
-          supportedThemes: themeConfig.supportedThemes,
+          supportedThemes: [...themeConfig.supportedThemes],
           target: themeConfig.target,
-          domAttribute: themeConfig.domAttribute
+          domAttribute: themeConfig.domAttribute,
+          init: themeConfig.init
         })
       );
     }

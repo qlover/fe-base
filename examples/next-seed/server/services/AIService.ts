@@ -1,14 +1,16 @@
-import OpenAI from 'openai';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import type OpenAI from 'openai';
+import type {
+  ChatCompletionCreateParamsBase,
+  ChatCompletionMessageParam
+} from 'openai/resources/chat/completions';
 
 @injectable()
 export class AIService {
   protected apiKey: string;
   protected baseUrl: string;
-  protected client: OpenAI;
 
   constructor(@inject(I.AppConfig) appConfig: SeedServerConfigInterface) {
     if (!appConfig.openaiApiKey || !appConfig.openaiBaseUrl) {
@@ -17,24 +19,20 @@ export class AIService {
 
     this.apiKey = appConfig.openaiApiKey;
     this.baseUrl = appConfig.openaiBaseUrl;
-
-    console.log(this.apiKey, this.baseUrl);
-    this.client = new OpenAI({
-      apiKey: this.apiKey,
-      baseURL: this.baseUrl
-    });
   }
 
   public async completions(
-    messages: ChatCompletionMessageParam[]
-  ): Promise<unknown> {
+    messages: ChatCompletionMessageParam[],
+    params?: Omit<ChatCompletionCreateParamsBase, 'messages'>
+  ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
     const url = `${this.baseUrl}/chat/completions`;
 
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({
-        messages: messages,
-        model: 'claude-sonnet-4-20250514'
+        model: 'claude-sonnet-4-20250514',
+        ...params,
+        messages
       }),
       headers: {
         Authorization: `token ${this.apiKey}`,
@@ -44,6 +42,13 @@ export class AIService {
       mode: 'cors'
     });
 
-    return await response.json();
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(
+        `AI completions failed: ${response.status} ${response.statusText} - ${text}`
+      );
+    }
+
+    return (await response.json()) as OpenAI.Chat.Completions.ChatCompletion;
   }
 }

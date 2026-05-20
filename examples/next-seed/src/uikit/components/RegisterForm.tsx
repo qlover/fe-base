@@ -12,7 +12,7 @@ import { ROUTE_LOGIN } from '@config/route';
 import type { RegisterSchema } from '@schemas/RegisterSchema';
 
 const inputClass =
-  'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-(--login-input-bg) px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
+  'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 
 export function RegisterForm(props: { tt: RegisterI18nInterface }) {
   const { tt } = props;
@@ -161,7 +161,6 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, username: undefined }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={disabled || loading}
           aria-invalid={!!fieldErrors.username}
           aria-describedby={
@@ -199,7 +198,6 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, email: undefined }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={disabled || loading}
           aria-invalid={!!fieldErrors.email}
           aria-describedby={
@@ -237,7 +235,6 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, password: undefined }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={disabled || loading}
           aria-invalid={!!fieldErrors.password}
           aria-describedby={
@@ -278,7 +275,6 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
               }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={disabled || loading}
           aria-invalid={!!fieldErrors.confirmPassword}
           aria-describedby={
@@ -343,7 +339,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
         type="submit"
         disabled={submitDisabled}
         title={tt.button}
-        className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-(--login-button-text) shadow-sm transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand"
+        className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-on-brand shadow-sm transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand"
       >
         {loading ? (
           <span className="inline-flex items-center justify-center gap-2">

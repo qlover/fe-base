@@ -1,0 +1,58 @@
+{
+  "name": "@qlover/tailwind-theme",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js",
+      "require": "./dist/plugin.cjs"
+    },
+    "./theme.css": "./dist/theme.css",
+    "./theme-layer-base.css": "./dist/theme-layer-base.css",
+    "./theme-block.css": "./dist/theme-block.css"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "README_EN.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "lint": "eslint src --fix",
+    "build": "tsup && node scripts/build-theme-css.mjs",
+    "type-check": "tsc --noEmit",
+    "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/tailwind-theme"
+  },
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/tailwind-theme#readme",
+  "keywords": [
+    "tailwind-theme",
+    "tailwind",
+    "theme",
+    "design-tokens"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "postcss": "^8.5.14"
+  }
+}

@@ -10,3 +10,4 @@ src/assets/locales/
 .env.*
 .env
 !.env.example
+src/styles/themes/taro-weapp-theme.css

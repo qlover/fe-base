@@ -7,7 +7,7 @@ const PageI18nContext = createContext<PageI18nInterface | null>(null);
 
 /**
  * 在服务端组件中传入 `getI18nInterface` 得到的 `tt`，包裹本页客户端子树。
- * 当前实现绑定 `page_home` / {@link homeI18n}；其他命名空间可另建 Provider 或后续泛化。
+ * 典型用法：`page_home`、`page_admin` 等命名空间对应的 i18n 映射对象。
  */
 export function PageI18nProvider({
   children,

@@ -138,6 +138,20 @@ const eslintConfig = defineConfig([
       'import/no-unresolved': 'off'
     }
   },
+  {
+    files: ['src/**/*.tsx'],
+    rules: {
+      // `{/* ... */}` is JSXExpressionContainer + JSXEmptyExpression in AST
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXExpressionContainer > JSXEmptyExpression',
+          message:
+            'Avoid JSX block comments `{/* ... */}` and empty JSX expressions; use file-top JSDoc or line comments outside JSX.'
+        }
+      ]
+    }
+  },
   // Type checking only for ts-class-override (no recommendedTypeChecked for speed)
   {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],

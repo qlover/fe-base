@@ -54,9 +54,9 @@ function IconGitHub() {
 }
 
 const inputClass =
-  'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-(--login-input-bg) px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
+  'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 const socialBtnClass =
-  'border-primary-border bg-(--login-social-button-bg) text-primary-text hover:bg-secondary focus:ring-brand inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0';
+  'border-primary-border bg-bg-container text-primary-text hover:bg-secondary focus:ring-brand inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0';
 
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
@@ -130,7 +130,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       noValidate
       className="space-y-4"
     >
-      {/* Social login */}
       <div className="space-y-3">
         <button
           type="button"
@@ -154,12 +153,12 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
       <div className="text-secondary-text my-6 flex items-center gap-4 text-xs">
         <span
-          className="h-px flex-1 bg-(--login-input-border)"
+          className="h-px flex-1 border-primary-border"
           style={{ minWidth: 0 }}
         />
         <span>{tt.continueWith}</span>
         <span
-          className="h-px flex-1 bg-(--login-input-border)"
+          className="h-px flex-1 border-primary-border"
           style={{ minWidth: 0 }}
         />
       </div>
@@ -193,7 +192,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, email: undefined }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={loading || success}
           aria-invalid={!!fieldErrors.email}
           aria-describedby={fieldErrors.email ? 'login-email-error' : undefined}
@@ -220,7 +218,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           <LocaleLink
             href="#"
             title={tt.forgotPasswordTitle}
-            className="text-secondary-text text-sm hover:text-primary-text cursor-pointer"
+            className="text-secondary-text bg-bg-container text-sm hover:text-primary-text cursor-pointer"
           >
             {tt.forgotPassword}
           </LocaleLink>
@@ -238,7 +236,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, password: undefined }));
           }}
           className={inputClass}
-          style={{ borderColor: 'var(--login-input-border)' }}
           disabled={loading || success}
           aria-invalid={!!fieldErrors.password}
           aria-describedby={
@@ -260,7 +257,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
         type="submit"
         disabled={submitDisabled}
         title={tt.buttonTitle}
-        className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-(--login-button-text) shadow-sm transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand"
+        className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-on-brand shadow-sm transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand"
       >
         {loading ? (
           <span className="inline-flex items-center justify-center gap-2">

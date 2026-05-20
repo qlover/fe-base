@@ -1,3 +1,4 @@
+import { Inter } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
@@ -7,6 +8,12 @@ import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
 import { getI18nMessages, getLocale } from '@server/render/pageRouteParams';
+
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-inter'
+});
 
 export function generateStaticParams() {
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));
@@ -47,10 +54,11 @@ export default async function RootLayout({
     <html
       data-testid="AppRoute-RootLayout"
       lang={locale}
+      className={inter.variable}
       // 暂时解决主题 hydration 问题
       suppressHydrationWarning
     >
-      <body>
+      <body className="font-sans antialiased">
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <ClientRootProvider themeConfig={themeConfig}>

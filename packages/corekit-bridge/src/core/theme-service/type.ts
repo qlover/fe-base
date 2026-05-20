@@ -1,8 +1,34 @@
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { StoreStateInterface } from '../store-state';
+import type { ThemeId } from './ThemeInterface';
+import type { ThemeTokens, TokenMapping } from '@qlover/tailwind-theme';
 
 export interface ThemeServiceState extends StoreStateInterface {
-  theme: string;
+  /**
+   * The current theme
+   * @example
+   * 'light'
+   */
+  theme: ThemeId;
+
+  /**
+   * The supported themes
+   * @example
+   * ['light', 'dark']
+   */
+  themes: ThemeId[];
+
+  /** Per-theme token sets (theme id → tokens) */
+  themeTokens: Record<ThemeId, ThemeTokens>;
+
+  /**
+   * The token mapping
+   * @example
+   * {
+   *   'color-primary': 'rgb(var(--fe-color-primary))',
+   * }
+   */
+  tokenMapping: TokenMapping;
 }
 
 export type ThemeConfig = {
@@ -56,6 +82,24 @@ export type ThemeConfig = {
    * @default `true`
    */
   cacheTarget?: boolean;
+
+  /**
+   * Per-theme token sets
+   * @example
+   * {
+   *   light: { 'color-primary': '246 248 250' },
+   * }
+   */
+  themeTokens?: Record<ThemeId, ThemeTokens>;
+
+  /**
+   * The token mapping
+   * @example
+   * {
+   *   'color-primary': 'rgb(var(--fe-color-primary))',
+   * }
+   */
+  tokenMapping?: TokenMapping;
 };
 
 export interface ThemeServiceProps extends ThemeConfig {

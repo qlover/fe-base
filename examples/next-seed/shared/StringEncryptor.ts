@@ -4,7 +4,11 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
   constructor(
     protected readonly key: string,
     protected base64Serializer: Base64Serializer
-  ) {}
+  ) {
+    if (!key) {
+      throw new Error('Key is required');
+    }
+  }
 
   protected encryptWithKey(str: string, key: string): string {
     const result = [];
