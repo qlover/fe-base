@@ -1,5 +1,30 @@
 # examples/taro-seed
 
+## 2.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **taro-seed:** enhance theming capabilities and streamline styles ([3e8f470](https://github.com/qlover/fe-base/commit/3e8f47068ac571cc3dc2ea5639ff6ca219ccb907)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Integrated the @qlover/ui-theme package for improved theming support in the taro-seed example.
+  - Added a new script to generate theme CSS, facilitating dynamic theme management.
+  - Updated theme configuration to utilize data attributes for better theme handling.
+  - Removed outdated theme CSS files and adjusted imports to streamline styling.
+  - Updated pnpm-lock.yaml to reflect the new dependency and versioning for @qlover/ui-theme.
+
+  These changes aim to enhance the theming experience and maintain consistency across the application.
+
+#### ♻️ Refactors
+
+- **theme:** rename ui-theme to tailwind-theme and update dependencies ([6eb08ac](https://github.com/qlover/fe-base/commit/6eb08ac6d7f808b900365407b24ec6fa7a033ce1)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced all instances of '@qlover/ui-theme' with '@qlover/tailwind-theme' across various files to reflect the new package name.
+  - Updated the pnpm-lock.yaml to link the new tailwind-theme package and adjust dependencies accordingly.
+  - Modified configuration files and example projects to utilize the new tailwind-theme for improved theming support.
+  - Enhanced documentation in README files to guide users on the new theme integration.
+
+  These changes aim to streamline the theming experience and ensure consistency across the application.
+
 ## 2.0.0
 
 ### Major Changes

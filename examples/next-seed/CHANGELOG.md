@@ -1,5 +1,46 @@
 # examples/next-seed
 
+## 1.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **ui-theme:** introduce @qlover/ui-theme package with theme generation capabilities ([1755f0f](https://github.com/qlover/fe-base/commit/1755f0f9d75c339975ebf1a260b5fef783727487)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Added a new package `@qlover/ui-theme` that includes configuration, core functionality, and utilities for theme management.
+  - Implemented theme generation functions to create CSS for different themes, including support for custom prefixes and token mappings.
+  - Integrated PostCSS plugin for seamless theme application in stylesheets.
+  - Added comprehensive tests to ensure functionality and reliability of theme generation and configuration.
+  - Updated `pnpm-lock.yaml` to include new dependencies and versions for the `@qlover/ui-theme` package.
+
+  These changes aim to enhance theming capabilities across the project, providing a flexible and robust solution for UI theming.
+
+- **next-seed:** update styles and integrate @qlover/ui-theme ([0987860](https://github.com/qlover/fe-base/commit/0987860acc07e73510702692b5275ea8353bb1ec)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced default theme imports with the new @qlover/ui-theme package in various CSS files, enhancing theming consistency across the application.
+  - Updated color variables in the antd themes to align with the new token mapping, improving visual coherence.
+  - Adjusted styles in LoginForm and RegisterForm components to utilize the new theme variables, ensuring a unified look and feel.
+  - Updated pnpm-lock.yaml to reflect changes in dependencies related to the new theme integration.
+
+  These changes aim to streamline the styling process and enhance the overall user interface experience.
+
+- **next-seed:** enhance ESLint configuration and improve AIService error handling ([43bd528](https://github.com/qlover/fe-base/commit/43bd528c61a6daf597c779b1bf6f721b96db20be)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Added a new ESLint rule to prevent the use of empty JSX expressions and block comments within JSX, promoting cleaner code practices.
+  - Updated the AIService class to include error handling for failed AI completions, improving robustness and user feedback.
+  - Introduced server external packages in the Next.js configuration to avoid bundling unnecessary Node dependencies, optimizing server performance.
+  - Enhanced StringEncryptor to enforce key validation during instantiation, ensuring security best practices.
+
+  These changes aim to improve code quality, error management, and application performance.
+
+#### ♻️ Refactors
+
+- **theme:** rename ui-theme to tailwind-theme and update dependencies ([6eb08ac](https://github.com/qlover/fe-base/commit/6eb08ac6d7f808b900365407b24ec6fa7a033ce1)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced all instances of '@qlover/ui-theme' with '@qlover/tailwind-theme' across various files to reflect the new package name.
+  - Updated the pnpm-lock.yaml to link the new tailwind-theme package and adjust dependencies accordingly.
+  - Modified configuration files and example projects to utilize the new tailwind-theme for improved theming support.
+  - Enhanced documentation in README files to guide users on the new theme integration.
+
+  These changes aim to streamline the theming experience and ensure consistency across the application.
+
 ## 1.1.0
 
 ### Minor Changes

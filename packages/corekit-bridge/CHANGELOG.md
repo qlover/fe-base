@@ -1,5 +1,30 @@
 # @qlover/corekit-bridge
 
+## 3.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** integrate @qlover/ui-theme and enhance theme management ([f6a1384](https://github.com/qlover/fe-base/commit/f6a1384e81f5bf3687d19f4389441df8ccec7d0f)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Added @qlover/ui-theme as a dependency in corekit-bridge for improved theming capabilities.
+  - Introduced ThemeInterface and ThemeService to manage theme states, tokens, and mappings effectively.
+  - Updated ThemeService to implement ThemeInterface, providing methods for theme retrieval and token management.
+  - Enhanced ThemeServiceState to include supported themes and token mappings, improving theme flexibility.
+  - Updated pnpm-lock.yaml to reflect the new dependency and versioning for @qlover/ui-theme.
+
+  These changes aim to streamline theme management and enhance the overall theming experience across the application.
+
+#### ♻️ Refactors
+
+- **theme:** rename ui-theme to tailwind-theme and update dependencies ([6eb08ac](https://github.com/qlover/fe-base/commit/6eb08ac6d7f808b900365407b24ec6fa7a033ce1)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced all instances of '@qlover/ui-theme' with '@qlover/tailwind-theme' across various files to reflect the new package name.
+  - Updated the pnpm-lock.yaml to link the new tailwind-theme package and adjust dependencies accordingly.
+  - Modified configuration files and example projects to utilize the new tailwind-theme for improved theming support.
+  - Enhanced documentation in README files to guide users on the new theme integration.
+
+  These changes aim to streamline the theming experience and ensure consistency across the application.
+
 ## 3.1.0
 
 ### Minor Changes
