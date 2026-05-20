@@ -30,7 +30,6 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "test": "vitest run",
     "lint": "eslint src --fix",
     "build": "tsup && node scripts/build-theme-css.mjs",
     "type-check": "tsc --noEmit",

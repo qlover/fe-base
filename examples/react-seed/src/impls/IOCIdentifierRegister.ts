@@ -1,8 +1,8 @@
 import { I } from '@config/ioc-identifier';
 import { themeConfig } from '@config/theme';
+import { ThemeService } from '@qlover/corekit-bridge/theme-service';
 import { logger, seedConfig } from '@/globals';
 import { kvStorage } from '@/impls/kvStorage';
-import { ThemeService } from '@qlover/corekit-bridge/theme-service';
 import type {
   IOCContainerInterface,
   IOCRegisterInterface
