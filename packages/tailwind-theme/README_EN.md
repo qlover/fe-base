@@ -1,13 +1,13 @@
-# @qlover/ui-theme
+# @qlover/tailwind-theme
 
 Design tokens and theme CSS generator for Tailwind CSS v4. Ships built-in multi-theme palettes, `data-theme` switching, and programmatic CSS file generation.
 
 ## Install
 
 ```bash
-pnpm add @qlover/ui-theme
+pnpm add @qlover/tailwind-theme
 # or
-npm install @qlover/ui-theme
+npm install @qlover/tailwind-theme
 ```
 
 ## Features
@@ -24,7 +24,7 @@ npm install @qlover/ui-theme
 ```css
 /* src/styles/tailwind.css */
 @import 'tailwindcss';
-@import '@qlover/ui-theme/theme.css';
+@import '@qlover/tailwind-theme/theme.css';
 ```
 
 Set theme on the document root (aligned with `ThemeService` in `@qlover/corekit-bridge`):
@@ -45,9 +45,9 @@ Use semantic Tailwind classes:
 
 | Import path | Description |
 |-------------|-------------|
-| `@qlover/ui-theme/theme.css` | Full theme (`@layer base` + `@theme`), recommended |
-| `@qlover/ui-theme/theme-layer-base.css` | Per-theme `--fe-*` channel variables only |
-| `@qlover/ui-theme/theme-block.css` | Tailwind `@theme` utility mapping only |
+| `@qlover/tailwind-theme/theme.css` | Full theme (`@layer base` + `@theme`), recommended |
+| `@qlover/tailwind-theme/theme-layer-base.css` | Per-theme `--fe-*` channel variables only |
+| `@qlover/tailwind-theme/theme-block.css` | Tailwind `@theme` utility mapping only |
 
 Run `pnpm build` in this package inside the monorepo before consuming `dist/`.
 
@@ -61,7 +61,7 @@ import {
   generateThemeFile,
   generateThemeFiles,
   builtinThemes
-} from '@qlover/ui-theme';
+} from '@qlover/tailwind-theme';
 
 const css = generateThemeCSS({ defaultTheme: 'light' });
 
@@ -89,7 +89,7 @@ See `examples/taro-seed/scripts/generate-theme-css.mjs` in the monorepo.
 ## PostCSS plugin
 
 ```javascript
-import themePlugin from '@qlover/ui-theme/plugin';
+import themePlugin from '@qlover/tailwind-theme/plugin';
 
 export default {
   plugins: [themePlugin({ defaultTheme: 'light' })]
@@ -99,7 +99,7 @@ export default {
 ## Development
 
 ```bash
-cd packages/ui-theme
+cd packages/tailwind-theme
 pnpm build
 pnpm test
 ```

@@ -1,4 +1,4 @@
-import type { ThemeTokens, TokenMapping } from '@qlover/ui-theme';
+import type { ThemeTokens, TokenMapping } from '@qlover/tailwind-theme';
 
 export type ThemeId = string;
 

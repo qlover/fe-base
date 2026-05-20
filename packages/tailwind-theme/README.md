@@ -1,13 +1,13 @@
-# @qlover/ui-theme
+# @qlover/tailwind-theme
 
 面向 Tailwind CSS v4 的设计令牌与主题 CSS 生成器。提供内置多主题色板、`data-theme` 切换、以及可编程生成 CSS 文件。
 
 ## 安装
 
 ```bash
-pnpm add @qlover/ui-theme
+pnpm add @qlover/tailwind-theme
 # 或
-npm install @qlover/ui-theme
+npm install @qlover/tailwind-theme
 ```
 
 ## 特性
@@ -26,7 +26,7 @@ npm install @qlover/ui-theme
 ```css
 /* src/styles/tailwind.css */
 @import 'tailwindcss';
-@import '@qlover/ui-theme/theme.css';
+@import '@qlover/tailwind-theme/theme.css';
 ```
 
 在根节点切换主题（与 `corekit-bridge` 的 `ThemeService` 一致）：
@@ -53,9 +53,9 @@ npm install @qlover/ui-theme
 
 | 路径 | 说明 |
 |------|------|
-| `@qlover/ui-theme/theme.css` | 完整主题（`@layer base` + `@theme`），推荐默认使用 |
-| `@qlover/ui-theme/theme-layer-base.css` | 仅各主题的 `--fe-*` 通道变量 |
-| `@qlover/ui-theme/theme-block.css` | 仅 Tailwind `@theme` 工具类映射 |
+| `@qlover/tailwind-theme/theme.css` | 完整主题（`@layer base` + `@theme`），推荐默认使用 |
+| `@qlover/tailwind-theme/theme-layer-base.css` | 仅各主题的 `--fe-*` 通道变量 |
+| `@qlover/tailwind-theme/theme-block.css` | 仅 Tailwind `@theme` 工具类映射 |
 
 安装包后直接使用上述路径；在 monorepo 中需先在本包执行 `pnpm build` 生成 `dist/`。
 
@@ -72,7 +72,7 @@ import {
   generateThemeFiles,
   builtinThemes,
   getDefaultSelector
-} from '@qlover/ui-theme';
+} from '@qlover/tailwind-theme';
 ```
 
 ### 生成字符串
@@ -154,7 +154,7 @@ generateThemeCSS({
 在 PostCSS 配置中注入主题（默认仅处理以 `/styles/index.css` 或 `/styles/tailwind.css` 结尾的文件）：
 
 ```javascript
-import themePlugin from '@qlover/ui-theme/plugin';
+import themePlugin from '@qlover/tailwind-theme/plugin';
 
 export default {
   plugins: [
@@ -171,7 +171,7 @@ export default {
 `@qlover/corekit-bridge` 的 `ThemeService` 默认使用本包的 `builtinThemes` 作为 `themeTokens`。Web 项目建议：
 
 - `domAttribute: 'data-theme'`
-- 样式入口 `@import '@qlover/ui-theme/theme.css'`
+- 样式入口 `@import '@qlover/tailwind-theme/theme.css'`
 
 ## Taro / 微信小程序
 
@@ -180,14 +180,14 @@ H5 端与普通 Web 相同，使用 `theme.css` + `data-theme`。
 小程序根节点宜使用 class（如 `fe-theme theme-dark`），可额外生成一份仅含 class 选择器的 base 层 CSS，参见 monorepo 内 `examples/taro-seed/scripts/generate-theme-css.mjs`：
 
 ```css
-@import '@qlover/ui-theme/theme.css';
+@import '@qlover/tailwind-theme/theme.css';
 @import './themes/taro-weapp-theme.css'; /* pnpm generate:theme */
 ```
 
 ## 开发（monorepo）
 
 ```bash
-cd packages/ui-theme
+cd packages/tailwind-theme
 pnpm build      # tsup + 生成 dist/*.css
 pnpm test
 pnpm type-check

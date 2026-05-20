@@ -1,6 +1,6 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateThemeFile } from '@qlover/ui-theme';
+import { generateThemeFile } from '@qlover/tailwind-theme';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

@@ -7,8 +7,8 @@ import { ThemeStateGetter } from './ThemeStateGetter';
 import type { StoreUpdateValue } from '../store-state';
 import { SliceStoreAdapter, type StoreInterface } from '../store-state';
 import type { ThemeId, ThemeInterface } from './ThemeInterface';
-import type { ThemeTokens, TokenMapping} from '@qlover/ui-theme';
-import { builtinThemes } from '@qlover/ui-theme';
+import type { ThemeTokens, TokenMapping} from '@qlover/tailwind-theme';
+import { builtinThemes } from '@qlover/tailwind-theme';
 import { clone } from '../store-state/clone';
 
 export const defaultThemeConfig: ThemeConfig = {

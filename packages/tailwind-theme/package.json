@@ -1,5 +1,5 @@
 {
-  "name": "@qlover/ui-theme",
+  "name": "@qlover/tailwind-theme",
   "version": "0.0.0",
   "type": "module",
   "private": false,
@@ -38,13 +38,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
-    "directory": "packages/ui-theme"
+    "directory": "packages/tailwind-theme"
   },
-  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/ui-theme#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/tailwind-theme#readme",
   "keywords": [
-    "ui-theme",
-    "fe-ui-theme",
-    "theme"
+    "tailwind-theme",
+    "tailwind",
+    "theme",
+    "design-tokens"
   ],
   "author": "qlover",
   "license": "ISC",

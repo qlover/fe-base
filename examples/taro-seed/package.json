@@ -59,7 +59,7 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
-    "@qlover/ui-theme": "workspace:*",
+    "@qlover/tailwind-theme": "workspace:*",
     "@qlover/slice-store-react": "^1.4.2",
     "@tarojs/components": "4.1.11",
     "@tarojs/helper": "4.1.11",

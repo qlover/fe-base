@@ -60,7 +60,7 @@ export default defineConfig({
               __dirname,
               './packages/scripts-context/src'
             ),
-            '@qlover/ui-theme': resolve(__dirname, './packages/ui-theme/src')
+            '@qlover/tailwind-theme': resolve(__dirname, './packages/tailwind-theme/src')
           }
         }
       },

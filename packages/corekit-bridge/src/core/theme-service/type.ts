@@ -1,7 +1,7 @@
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { StoreStateInterface } from '../store-state';
 import type { ThemeId } from './ThemeInterface';
-import type { ThemeTokens, TokenMapping } from '@qlover/ui-theme';
+import type { ThemeTokens, TokenMapping } from '@qlover/tailwind-theme';
 
 export interface ThemeServiceState extends StoreStateInterface {
   /**

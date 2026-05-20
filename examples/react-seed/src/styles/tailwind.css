@@ -1,6 +1,6 @@
 @layer theme, base, antd, components, utilities;
 
 @import 'tailwindcss';
-@import '@qlover/ui-theme/theme.css';
+@import '@qlover/tailwind-theme/theme.css';
 
 @custom-variant dark (&:where(html[data-theme='dark'], html[data-theme='dark'] *));
