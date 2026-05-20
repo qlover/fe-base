@@ -1,5 +1,30 @@
 # examples/browser-plugin-seed
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **browser-plugin-seed:** integrate @qlover/ui-theme and update theme management ([600a017](https://github.com/qlover/fe-base/commit/600a017a21784b356105d6b9d13879e016570723)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Added @qlover/ui-theme as a dependency in the browser-plugin-seed example for enhanced theming capabilities.
+  - Updated theme configuration to utilize data attributes for theme management, improving flexibility.
+  - Removed outdated theme CSS files and streamlined the import process for better organization.
+  - Adjusted the IOCIdentifierRegister to include new theme initialization options.
+  - Updated pnpm-lock.yaml to reflect the new dependency and versioning for @qlover/ui-theme.
+
+  These changes aim to enhance the theming experience and maintain consistency across the application.
+
+#### ♻️ Refactors
+
+- **theme:** rename ui-theme to tailwind-theme and update dependencies ([6eb08ac](https://github.com/qlover/fe-base/commit/6eb08ac6d7f808b900365407b24ec6fa7a033ce1)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced all instances of '@qlover/ui-theme' with '@qlover/tailwind-theme' across various files to reflect the new package name.
+  - Updated the pnpm-lock.yaml to link the new tailwind-theme package and adjust dependencies accordingly.
+  - Modified configuration files and example projects to utilize the new tailwind-theme for improved theming support.
+  - Enhanced documentation in README files to guide users on the new theme integration.
+
+  These changes aim to streamline the theming experience and ensure consistency across the application.
+
 ## 1.0.0
 
 ### Major Changes

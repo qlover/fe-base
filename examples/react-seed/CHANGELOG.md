@@ -1,5 +1,38 @@
 # examples/react-seed
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-seed:** integrate @qlover/ui-theme and enhance theme management ([8d8a4d8](https://github.com/qlover/fe-base/commit/8d8a4d83c0947b021f529ca6dc602ba0c0bb391c)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Added @qlover/ui-theme as a dependency in the react-seed example for improved theming capabilities.
+  - Updated theme configuration to utilize data attributes for theme management, enhancing flexibility.
+  - Introduced kvStorage for local storage management and integrated ThemeService for theme state handling.
+  - Removed outdated theme CSS files and streamlined the import process for better organization.
+  - Updated pnpm-lock.yaml to reflect the new dependency and versioning for @qlover/ui-theme.
+
+  These changes aim to enhance the theming experience and maintain consistency across the application.
+
+- **ui-theme:** update ESLint configuration and enhance theme integration ([0f47517](https://github.com/qlover/fe-base/commit/0f47517c5cbf9fec01bba632001c6b285350f3da)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Modified ESLint configuration to allow global variables in the newly added kvStorage implementation.
+  - Updated IOCIdentifierRegister to streamline imports and improve code organization.
+  - Removed the test script from package.json in ui-theme to simplify the build process.
+  - Added English and Chinese README files for the @qlover/ui-theme package, providing comprehensive documentation on installation, features, and usage.
+
+  These changes aim to improve code quality, enhance theme management, and provide better documentation for users.
+
+#### ♻️ Refactors
+
+- **theme:** rename ui-theme to tailwind-theme and update dependencies ([6eb08ac](https://github.com/qlover/fe-base/commit/6eb08ac6d7f808b900365407b24ec6fa7a033ce1)) ([#609](https://github.com/qlover/fe-base/pull/609))
+  - Replaced all instances of '@qlover/ui-theme' with '@qlover/tailwind-theme' across various files to reflect the new package name.
+  - Updated the pnpm-lock.yaml to link the new tailwind-theme package and adjust dependencies accordingly.
+  - Modified configuration files and example projects to utilize the new tailwind-theme for improved theming support.
+  - Enhanced documentation in README files to guide users on the new theme integration.
+
+  These changes aim to streamline the theming experience and ensure consistency across the application.
+
 ## 1.0.0
 
 ### Major Changes
