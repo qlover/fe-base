@@ -1,5 +1,17 @@
 # @qlover/tailwind-theme
 
+## 0.1.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **tailwind-theme:** update package.json main and require fields for module compatibility ([07d4248](https://github.com/qlover/fe-base/commit/07d424898731a122bfccb6f50cb098f3bebb9220)) ([#611](https://github.com/qlover/fe-base/pull/611))
+  - Changed the "main" field from "./dist/index.umd.js" to "./dist/index.js" for better module resolution.
+  - Updated the "require" field from "./dist/index.umd.js" to "./dist/index.cjs" to align with CommonJS standards.
+
+  These modifications aim to enhance compatibility and streamline module imports for the tailwind-theme package.
+
 ## 0.1.0
 
 ### Minor Changes
