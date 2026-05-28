@@ -1,8 +1,7 @@
 import { CookieStorage } from '@qlover/corekit-bridge';
 import { Base64Serializer, StorageExecutor } from '@qlover/fe-corekit';
-import { DemoAuthGateway } from '@/demo-oauth/DemoAuthGateway';
 import { I18nService } from '@/impls/I18nService';
-import { OAuthConsentGateway } from '@/impls/OAuthConsentGateway';
+import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
 import { ZustandCounterService } from '@/impls/ZustandCounterService';
@@ -40,8 +39,7 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.I18nServiceInterface, new I18nService());
     ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
-    ioc.bind(DemoAuthGateway, ioc.get(DemoAuthGateway));
-    ioc.bind(OAuthConsentGateway, ioc.get(OAuthConsentGateway));
+    ioc.bind(OAuthWrapperGateway, ioc.get(OAuthWrapperGateway));
     ioc.bind(I.ZustandCounterServiceInterface, new ZustandCounterService());
     ioc.bind(OAuthClientsApi, ioc.get(OAuthClientsApi));
 

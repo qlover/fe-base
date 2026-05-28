@@ -1,26 +1,30 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
+import type {
+  OAuthSessionInterface,
+  OAuthSessionPayload
+} from '@shared/oauth-wrapper';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import {
   OAUTH_APP_SESSION_COOKIE,
-  parseOAuthAppSessionCookie,
-  type OAuthAppSessionPayload
-} from './demoProxySession';
-
-export type { OAuthAppSessionPayload };
+  parseOAuthAppSessionCookie
+} from '@server/utils/OAuthWrapperProxy';
 
 /**
  * HttpOnly session cookie for authenticated users during OAuth authorize.
  */
 @injectable()
-export class OAuthAppSessionService {
+export class OAuthSessionService implements OAuthSessionInterface<OAuthSessionPayload> {
   constructor(
     @inject(I.AppConfig) protected config: SeedServerConfigInterface
   ) {}
 
-  public async setSession(payload: OAuthAppSessionPayload): Promise<void> {
+  /**
+   * @override
+   */
+  public async setSession(payload: OAuthSessionPayload): Promise<void> {
     const secret = this.requireSecret();
     const token = jwt.sign(payload, secret, { expiresIn: '7d' });
     const cookieStore = await cookies();
@@ -33,16 +37,25 @@ export class OAuthAppSessionService {
     });
   }
 
+  /**
+   * @override
+   */
   public async hasSession(): Promise<boolean> {
     return (await this.getSession()) != null;
   }
 
-  public async getSession(): Promise<OAuthAppSessionPayload | null> {
+  /**
+   * @override
+   */
+  public async getSession(): Promise<OAuthSessionPayload | null> {
     const cookieStore = await cookies();
     const raw = cookieStore.get(OAUTH_APP_SESSION_COOKIE)?.value;
     return parseOAuthAppSessionCookie(raw, this.requireSecret());
   }
 
+  /**
+   * @override
+   */
   public async clearSession(): Promise<void> {
     const cookieStore = await cookies();
     cookieStore.delete(OAUTH_APP_SESSION_COOKIE);

@@ -6,10 +6,10 @@ import type {
   OAuthClientDetail,
   OAuthClientListItem,
   OAuthClientSecretRotateResponse,
-  OAuthClientUpdate,
-  OAuthClientsRepositoryInterface
+  OAuthClientUpdate
 } from '@shared/oauth-wrapper';
-import { DemoOAuthRepository } from '@server/demo-oauth';
+import { I } from '@config/ioc-identifiter';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
 import { ServerAuth } from '@server/services/ServerAuth';
 
@@ -24,10 +24,10 @@ export class OAuthClientsController {
 
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
-    @inject(DemoOAuthRepository)
-    protected oauthRepo: OAuthClientsRepositoryInterface
+    @inject(I.OAuthWrapperProviderInterface)
+    oauthProvider: OAuthWrapperProviderInterface
   ) {
-    this.clientsService = new OAuthClientsService(oauthRepo);
+    this.clientsService = new OAuthClientsService(oauthProvider.getOAuthRepo());
   }
 
   /**

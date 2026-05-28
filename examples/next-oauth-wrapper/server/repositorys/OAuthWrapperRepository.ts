@@ -19,7 +19,7 @@ import {
 import { createAdminClient } from '@shared/supabase/admin';
 
 @injectable()
-export class DemoOAuthRepository implements OAuthWrapperRepositoryInterface {
+export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   /**
    * @override
    */

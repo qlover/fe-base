@@ -4,6 +4,7 @@ import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
@@ -36,7 +37,10 @@ export const IOCIdentifier = Object.freeze({
    * - sqllite
    */
   DBBridgeInterface: 'DBBridgeInterface',
-  OAuthUserAdapterInterface: 'OAuthUserAdapterInterface'
+  /**
+   * OAuth 包装服务提供接口
+   */
+  OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface'
 });
 
 export const I = IOCIdentifier;
@@ -75,4 +79,5 @@ export interface IOCIdentifierMapServer {
   [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
+  [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
 }

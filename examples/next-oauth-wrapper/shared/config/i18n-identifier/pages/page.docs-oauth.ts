@@ -7,8 +7,8 @@ export const PAGE_DOCS_OAUTH_TITLE = 'page_docs_oauth:title';
 
 /**
  * @description OAuth docs meta description
- * @localZh Next OAuth Wrapper 授权码流程、端点参数与 PKCE 说明
- * @localEn Authorization code flow, endpoint parameters, and PKCE for Next OAuth Wrapper
+ * @localZh 通用 OAuth 包装层集成指南：授权码流程、端点与可插拔登录 Provider
+ * @localEn Integration guide for the universal OAuth wrapper: flows, endpoints, and pluggable providers
  */
 export const PAGE_DOCS_OAUTH_DESCRIPTION = 'page_docs_oauth:description';
 
@@ -28,23 +28,53 @@ export const PAGE_DOCS_OAUTH_KEYWORDS = 'page_docs_oauth:keywords';
 
 /**
  * @description Page intro
- * @localZh 本文说明第三方应用如何接入 Next OAuth Wrapper 2.0 授权服务器：注册客户端、引导用户授权、用授权码换取访问令牌并调用用户信息接口。
- * @localEn How third-party apps integrate with the Next OAuth Wrapper 2.0 server: register a client, obtain user consent, exchange an authorization code for tokens, and call userinfo.
+ * @localZh 本文说明第三方应用如何接入本项目的通用 OAuth 2.0 授权包装层，以及本仓库示例中 demo-oauth（Brain User 登录）的部署方式。
+ * @localEn How third-party apps integrate with this universal OAuth 2.0 wrapper, and how the demo-oauth reference deployment (Brain User login) is wired in this repo.
  */
 export const PAGE_DOCS_OAUTH_INTRO = 'page_docs_oauth:intro';
 
 /**
+ * @description Architecture section title
+ * @localZh 架构：通用内核与示例装配
+ * @localEn Architecture: core vs example wiring
+ */
+export const PAGE_DOCS_OAUTH_SECTION_ARCHITECTURE =
+  'page_docs_oauth:section__architecture';
+
+/**
+ * @description Architecture body
+ * @localZh shared/oauth-wrapper 提供与上游登录 API 无关的 OAuth 2.0 服务（authorize、consent、token、PKCE、userinfo）。oauth-wrapper 负责会话、登录编排与持久化；通过实现 OAuthUserAdapterInterface 接入任意上游。本站点运行的是 demo-oauth 中的一种实现（BrainUserAdapter），并非协议本身的限制。
+ * @localEn shared/oauth-wrapper is provider-agnostic OAuth 2.0 logic. oauth-wrapper handles sessions, login orchestration, and storage; you integrate upstream systems via OAuthUserAdapterInterface. This site runs one reference adapter (BrainUserAdapter)—that is not a protocol limitation.
+ */
+export const PAGE_DOCS_OAUTH_ARCHITECTURE_BODY =
+  'page_docs_oauth:architecture__body';
+
+/**
+ * @description Demo provider section title
+ * @localZh 本示例：demo-oauth + Brain User
+ * @localEn This example: demo-oauth + Brain User
+ */
+export const PAGE_DOCS_OAUTH_SECTION_DEMO = 'page_docs_oauth:section__demo';
+
+/**
+ * @description Demo provider body
+ * @localZh 终端用户通过 POST /api/oauth/verify 使用邮箱密码登录（由 DemoAuthService 调用 BrainUserAdapter）。授权页与换票流程与 Provider 无关。配置 OAUTH_WRAPPER_API_BASE、SESSION_SECRET、ENCRYPTION_KEY 等见 .env.template。替换 Provider 时修改 oauth-wrapper 与 serverIoc 绑定即可。
+ * @localEn End users sign in with email/password via POST /api/oauth/verify (DemoAuthService → BrainUserAdapter). Authorize and token endpoints are provider-agnostic. See .env.template for OAUTH_WRAPPER_API_BASE and secrets. To swap providers, change oauth-wrapper and IOC bindings.
+ */
+export const PAGE_DOCS_OAUTH_DEMO_BODY = 'page_docs_oauth:demo__body';
+
+/**
  * @description Overview section title
- * @localZh 概览
- * @localEn Overview
+ * @localZh 协议概览
+ * @localEn Protocol overview
  */
 export const PAGE_DOCS_OAUTH_SECTION_OVERVIEW =
   'page_docs_oauth:section__overview';
 
 /**
  * @description Overview body
- * @localZh 本服务实现标准 OAuth 2.0 授权码模式（RFC 6749），支持机密客户端与公共客户端（须使用 PKCE）。访问令牌由上游身份提供方签发，本服务作为中间层完成授权、换票与 userinfo 代理。
- * @localEn This server implements the OAuth 2.0 authorization code grant (RFC 6749) for confidential and public clients (PKCE required for public). Access tokens are issued by the upstream provider; this service handles authorization, token exchange, and userinfo proxying.
+ * @localZh 对外暴露标准 OAuth 2.0 授权码模式（RFC 6749），支持机密客户端与公共客户端（公共客户端须 PKCE）。返回给第三方的 access_token 来自上游 Provider（示例为 Brain 签发的 JWT）；本包装层还维护独立的 wrapper refresh_token 用于第三方客户端刷新。
+ * @localEn Exposes the OAuth 2.0 authorization code grant (RFC 6749) for confidential and public clients (PKCE for public). access_token returned to clients comes from the upstream provider (Brain JWT in the demo); the wrapper also issues its own refresh_token for third-party refresh grants.
  */
 export const PAGE_DOCS_OAUTH_OVERVIEW_BODY = 'page_docs_oauth:overview__body';
 
@@ -71,8 +101,8 @@ export const PAGE_DOCS_OAUTH_FLOW_STEP2 = 'page_docs_oauth:flow__step2';
 
 /**
  * @description Flow step 3
- * @localZh 用户登录并同意后，浏览器携带 ?code=...&state=... 回到 redirect_uri。
- * @localEn After sign-in and consent, the browser returns to redirect_uri with ?code=...&state=....
+ * @localZh 终端用户先在站点登录（本示例：POST /api/oauth/verify），再在授权页同意；浏览器携带 ?code=...&state=... 回到 redirect_uri。
+ * @localEn The end user signs in on this site (this demo: POST /api/oauth/verify), grants consent, then the browser returns to redirect_uri with ?code=...&state=....
  */
 export const PAGE_DOCS_OAUTH_FLOW_STEP3 = 'page_docs_oauth:flow__step3';
 
@@ -136,6 +166,22 @@ export const PAGE_DOCS_OAUTH_ENDPOINT_TOKEN_DESC =
  */
 export const PAGE_DOCS_OAUTH_ENDPOINT_USERINFO =
   'page_docs_oauth:endpoint__userinfo';
+
+/**
+ * @description Login verify endpoint row
+ * @localZh 终端用户登录（服务端）
+ * @localEn End-user sign-in (server)
+ */
+export const PAGE_DOCS_OAUTH_ENDPOINT_VERIFY =
+  'page_docs_oauth:endpoint__verify';
+
+/**
+ * @description Login verify endpoint description
+ * @localZh 邮箱/密码登录，建立授权页所需会话；由 demo-oauth 编排，非 OAuth 客户端调用。
+ * @localEn Email/password sign-in for the consent UI session; demo-oauth orchestration—not for OAuth clients.
+ */
+export const PAGE_DOCS_OAUTH_ENDPOINT_VERIFY_DESC =
+  'page_docs_oauth:endpoint__verify__desc';
 
 /**
  * @description Userinfo endpoint description

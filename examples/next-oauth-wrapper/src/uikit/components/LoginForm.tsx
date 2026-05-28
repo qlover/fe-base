@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { type FormEvent, useMemo, useState } from 'react';
-import { DemoAuthGateway } from '@/demo-oauth/DemoAuthGateway';
+import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
@@ -20,7 +20,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const t = useWarnTranslations();
   const searchParams = useSearchParams();
-  const demoAuth = useIOC(DemoAuthGateway);
+  const oauthGateway = useIOC(OAuthWrapperGateway);
   const appConfig = useIOC(I.AppConfig) as SeedSrcConfigInterface;
   const formValidator = useMemo(() => new LoginValidator(), []);
 
@@ -67,7 +67,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
     setLoading(true);
     try {
-      await demoAuth.verify(payload);
+      await oauthGateway.verify(payload);
       setSuccess(true);
 
       const redirectTarget =

@@ -1,12 +1,17 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
 import { loginI18n, NS_PAGE_LOGIN } from '@config/i18n-mapping/loginI18n';
-import { ROUTE_LOGIN } from '@config/route';
+import {
+  ROUTE_DOCS_OAUTH,
+  ROUTE_LOGIN,
+  ROUTE_OAUTH_PLAYGROUND
+} from '@config/route';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';
 import {
   AppPageRouteParams,
@@ -64,30 +69,67 @@ export default async function LoginPage(props: PageParamsProps) {
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
     >
-      <div className="hidden lg:flex bg-secondary lg:w-1/2 p-12 flex-col">
-        <h1 className="text-4xl font-bold text-primary-text mb-4">
+      <div className="hidden lg:flex bg-secondary lg:w-1/2 flex-col p-12">
+        <span className="border-primary-border text-brand mb-4 inline-flex w-fit items-center rounded-full border bg-bg-container px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+          OAuth 2.0
+        </span>
+        <p className="text-secondary-text mb-6 text-sm font-medium">
+          {tt.badge}
+        </p>
+        <h1 className="text-primary-text mb-4 text-4xl font-bold">
           {tt.welcome}
         </h1>
-        <p className="text-secondary-text text-lg mb-8">{tt.subtitle}</p>
+        <p className="text-secondary-text mb-8 text-lg leading-relaxed">
+          {tt.subtitle}
+        </p>
         <div className="space-y-4">
-          <FeatureItem icon="🎯" text={tt.feature_ai_paths} />
-          <FeatureItem icon="🎯" text={tt.feature_smart_recommendations} />
-          <FeatureItem icon="📊" text={tt.feature_progress_tracking} />
+          <FeatureItem icon="🔐" text={tt.feature_ai_paths} />
+          <FeatureItem icon="🔌" text={tt.feature_smart_recommendations} />
+          <FeatureItem icon="🧪" text={tt.feature_progress_tracking} />
         </div>
+        <p className="text-tertiary-text mt-10 text-sm leading-relaxed">
+          {tt.demoNote}
+        </p>
       </div>
 
-      <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
+      <div className="flex w-full items-center justify-center p-8 sm:p-12 lg:w-1/2">
         <div className="w-full max-w-[420px]">
-          <h2 className="text-2xl font-semibold mb-2 text-primary-text">
+          <div className="mb-8 lg:hidden">
+            <span className="border-primary-border text-brand mb-3 inline-flex items-center rounded-full border bg-bg-container px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+              OAuth 2.0
+            </span>
+            <p className="text-secondary-text text-sm">{tt.badge}</p>
+          </div>
+          <h2 className="text-primary-text mb-2 text-2xl font-semibold">
             {tt.title}
           </h2>
-          <p className="text-secondary-text mb-8">{tt.subtitle}</p>
+          <p className="text-secondary-text mb-6 text-sm leading-relaxed">
+            {tt.formSubtitle}
+          </p>
 
           <Suspense
-            fallback={<p className="text-secondary-text">{tt.subtitle}</p>}
+            fallback={
+              <p className="text-secondary-text text-sm">{tt.formSubtitle}</p>
+            }
           >
             <LoginForm tt={tt} />
           </Suspense>
+
+          <p className="text-tertiary-text mt-8 text-center text-xs leading-relaxed">
+            <LocaleLink
+              href={ROUTE_DOCS_OAUTH}
+              className="text-brand hover:underline"
+            >
+              {tt.linkDocs}
+            </LocaleLink>
+            {' · '}
+            <LocaleLink
+              href={ROUTE_OAUTH_PLAYGROUND}
+              className="text-brand hover:underline"
+            >
+              {tt.linkPlayground}
+            </LocaleLink>
+          </p>
         </div>
       </div>
     </AppRoutePage>

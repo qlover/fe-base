@@ -42,13 +42,38 @@ const AUTH_CODE_TTL_MS = 5 * 60 * 1000;
 
 export class OAuthWrapperService<
   SessionPayload extends OAuthSessionPayload = OAuthSessionPayload
-> implements OAuthServiceInterface {
+> implements OAuthServiceInterface<SessionPayload> {
   constructor(
     protected oauthSession: OAuthSessionInterface<SessionPayload>,
     protected userAdapter: OAuthUserAdapterInterface,
     protected tokenService: OAuthTokenServiceInterface,
     protected oauthRepo: OAuthWrapperRepositoryInterface
   ) {}
+
+  /**
+   * @override
+   */
+  public getOAuthSession(): OAuthSessionInterface<SessionPayload> {
+    return this.oauthSession;
+  }
+  /**
+   * @override
+   */
+  public getOAuthAdapter(): OAuthUserAdapterInterface {
+    return this.userAdapter;
+  }
+  /**
+   * @override
+   */
+  public getOAuthTokenService(): OAuthTokenServiceInterface {
+    return this.tokenService;
+  }
+  /**
+   * @override
+   */
+  public getOAuthRepo(): OAuthWrapperRepositoryInterface {
+    return this.oauthRepo;
+  }
 
   protected isQuery(query: unknown): query is OAuthAuthorizeQuery {
     return OAuthAuthorizeQuerySchema.safeParse(query).success;

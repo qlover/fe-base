@@ -4,72 +4,38 @@ import type {
   OAuthAuthorizePageData,
   OAuthAuthorizeValidationError,
   OAuthConsentResult,
-  OAuthServiceInterface,
-  OAuthSessionInterface,
-  OAuthTokenRequest,
-  OAuthUserAdapterInterface,
-  OAuthWrapperRepositoryInterface
+  OAuthTokenRequest
 } from '@shared/oauth-wrapper';
 import {
-  OAuthWrapperService,
-  OAuthTokenService,
   OAuthTokenResponse,
   OAuthUserInfoResponse
 } from '@shared/oauth-wrapper';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
-import { I } from '@config/ioc-identifiter';
 import { LoginSchema } from '@schemas/LoginSchema';
-import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import {
-  DemoAuthService,
-  DemoOAuthRepository,
-  OAuthAppSessionPayload,
-  OAuthAppSessionService,
-  type DemoAuthServiceInterface,
-  type DemoVerifyLoginResult
-} from '@server/demo-oauth';
-import { TokenEncryption } from '@server/utils/TokenEncryption';
+  OAuthControllerService,
+  VerifyLoginResult
+} from '@server/services/OAuthControllerService';
+import { I } from '@config/ioc-identifiter';
 
 @injectable()
 export class OAuthWrapperController {
-  protected oauthService: OAuthServiceInterface;
   constructor(
-    @inject(I.AppConfig) config: SeedServerConfigInterface,
-    @inject(I.OAuthUserAdapterInterface)
-    userAdapter: OAuthUserAdapterInterface,
-    @inject(OAuthAppSessionService)
-    appSession: OAuthSessionInterface<OAuthAppSessionPayload>,
-    @inject(DemoOAuthRepository)
-    oauthRepo: OAuthWrapperRepositoryInterface,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
-    @inject(DemoAuthService)
-    protected demoAuthService: DemoAuthServiceInterface
-  ) {
-    this.oauthService = new OAuthWrapperService(
-      appSession,
-      userAdapter,
-      new OAuthTokenService(
-        new TokenEncryption(config.encryptionKey),
-        userAdapter,
-        oauthRepo
-      ),
-      oauthRepo
-    );
-  }
-
-  public getService(): OAuthServiceInterface {
-    return this.oauthService;
-  }
+    @inject(I.OAuthWrapperProviderInterface)
+    protected oauthProvider: OAuthWrapperProviderInterface,
+    @inject(OAuthControllerService)
+    protected demoAuthService: OAuthControllerService
+  ) {}
 
   /**
    * Validates credentials and performs demo provider login via service layer.
    */
-  public async verifyLogin(
-    requestBody: unknown
-  ): Promise<DemoVerifyLoginResult> {
+  public async verifyLogin(requestBody: unknown): Promise<VerifyLoginResult> {
     const body = await this.loginValidator.getThrow(requestBody);
 
     try {
@@ -91,24 +57,24 @@ export class OAuthWrapperController {
     | { ok: true; data: OAuthAuthorizePageData }
     | { ok: false; error: OAuthAuthorizeValidationError }
   > {
-    return this.oauthService.resolveAuthorizePage(rawQuery);
+    return this.oauthProvider.resolveAuthorizePage(rawQuery);
   }
 
   public async submitConsent(
     requestBody: unknown
   ): Promise<OAuthConsentResult> {
-    return await this.oauthService.processConsent(requestBody);
+    return await this.oauthProvider.processConsent(requestBody);
   }
 
   public async exchangeToken(
     fields: Record<string, string> | OAuthTokenRequest
   ): Promise<OAuthTokenResponse> {
-    return await this.oauthService.exchangeToken(fields);
+    return await this.oauthProvider.exchangeToken(fields);
   }
 
   public async getUserInfo(
     accessToken: string
   ): Promise<OAuthUserInfoResponse> {
-    return await this.oauthService.getUserInfo(accessToken);
+    return await this.oauthProvider.getUserInfo(accessToken);
   }
 }

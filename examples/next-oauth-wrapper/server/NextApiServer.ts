@@ -6,7 +6,6 @@ import type {
   AppApiSuccessInterface
 } from '@interfaces/AppApiInterface';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { resolveDemoOAuthRequestLogRecordType } from '@server/demo-oauth';
 import { RequestLogsRepository } from '@server/repositorys/RequestLogsRepository';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ApiResultFactory } from './utils/ApiResultFactory';
@@ -29,6 +28,8 @@ export type NextApiServerContext = {
    * @default 'http.request'
    */
   event_type: string;
+
+  record_type?: string;
 };
 
 function isNextApiServerContext(
@@ -104,7 +105,7 @@ export class NextApiServer extends BootstrapServer {
       event_type: this.context.event_type,
       success,
       request_id: correlationId?.trim() ? correlationId : null,
-      record_type: resolveDemoOAuthRequestLogRecordType(req.nextUrl.pathname),
+      record_type: req.nextUrl.pathname,
       payload: {
         http_method: req.method,
         http_path: req.nextUrl.pathname,

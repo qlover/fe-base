@@ -1,4 +1,10 @@
+import type {
+  OAuthSessionInterface,
+  OAuthSessionPayload
+} from './OAuthSessionInterface';
 import type { OAuthTokenRequest } from '../schema';
+import type { OAuthUserAdapterInterface } from './OAuthUserAdapterInterface';
+import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryInterface';
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
 import type { OAuthUserInfoResponse } from '../schema/OAuthUserInfoSchema';
 
@@ -42,7 +48,9 @@ export interface OAuthTokenServiceInterface {
   ): Promise<OAuthTokenResponse>;
 }
 
-export interface OAuthServiceInterface extends OAuthTokenServiceInterface {
+export interface OAuthServiceInterface<
+  SessionPayload extends OAuthSessionPayload
+> extends OAuthTokenServiceInterface {
   resolveAuthorizePage(
     rawQuery: Record<string, string | string[] | undefined>
   ): Promise<
@@ -53,4 +61,9 @@ export interface OAuthServiceInterface extends OAuthTokenServiceInterface {
   processConsent(requestBody: unknown): Promise<OAuthConsentResult>;
 
   getUserInfo(accessToken: string): Promise<OAuthUserInfoResponse>;
+
+  getOAuthSession(): OAuthSessionInterface<SessionPayload>;
+  getOAuthAdapter(): OAuthUserAdapterInterface;
+  getOAuthTokenService(): OAuthTokenServiceInterface;
+  getOAuthRepo(): OAuthWrapperRepositoryInterface;
 }

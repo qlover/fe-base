@@ -6,15 +6,6 @@
  */
 
 /**
- * API path: `/api/oauth/verify`
- *
- * @see [src/app/api/oauth/verify/route.ts](../../src/app/api/oauth/verify/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/oauth/verify/route.ts`
- */
-export const API_OAUTH_VERIFY = '/api/oauth/verify' as const;
-
-/**
  * API path: `/api/callback`
  *
  * @see [src/app/api/callback/route.ts](../../src/app/api/callback/route.ts)
@@ -80,6 +71,15 @@ export const API_OAUTH_PLAYGROUND_VALIDATE =
   '/api/oauth/playground/validate' as const;
 
 /**
+ * API path: `/api/oauth/verify`
+ *
+ * @see [src/app/api/oauth/verify/route.ts](../../src/app/api/oauth/verify/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/oauth/verify/route.ts`
+ */
+export const API_OAUTH_VERIFY = '/api/oauth/verify' as const;
+
+/**
  * API path: `/api/reference`
  *
  * @see [src/app/api/reference/route.ts](../../src/app/api/reference/route.ts)
@@ -134,7 +134,6 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
-  | typeof API_OAUTH_VERIFY
   | typeof API_CALLBACK
   | typeof API_CLIENTS
   | typeof API_CLIENTS_2
@@ -142,6 +141,7 @@ export type ApiRoutePath =
   | typeof API_LOCALES_JSON
   | typeof API_OAUTH_CONSENT
   | typeof API_OAUTH_PLAYGROUND_VALIDATE
+  | typeof API_OAUTH_VERIFY
   | typeof API_REFERENCE
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGOUT

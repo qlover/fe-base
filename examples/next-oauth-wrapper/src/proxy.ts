@@ -2,7 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { isOAuthMachinePath } from '@config/route';
-import { updateOAuthAppSession } from '@server/demo-oauth';
+import { oauthWrapperProxySession } from '@server/utils/OAuthWrapperProxy';
 import { routing } from './i18n/routing';
 
 export default async function proxy(request: NextRequest) {
@@ -12,8 +12,11 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
-  // Supabase auth: await updateSession(request);
-  const sessionResponse = await updateOAuthAppSession(request);
+  // Supabase auth:
+  // await supabaseProxySession(request);
+
+  // OAuth wrapper auth:
+  const sessionResponse = await oauthWrapperProxySession(request);
   if (sessionResponse.headers.get('Location')) {
     return sessionResponse;
   }

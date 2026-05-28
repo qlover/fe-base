@@ -1,6 +1,7 @@
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import {
   HomeApiSnippet,
+  HomeArchitecture,
   HomeCta,
   HomeFeatures,
   HomeFooter,
@@ -45,8 +46,9 @@ export default async function Home({ params }: PageParamsProps) {
         authButtonShowLogoutLabel
       >
         <HomeHero tt={tt} />
+        <HomeArchitecture tt={tt} />
         <HomeFeatures tt={tt} />
-        <HomeApiSnippet />
+        <HomeApiSnippet tt={tt} />
         <HomeCta tt={tt} />
         <HomeFooter tt={tt} />
       </AppRoutePage>

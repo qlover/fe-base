@@ -8,7 +8,7 @@ import {
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
-import { API_REFERENCE } from '@config/apiRoutes';
+import { API_OAUTH_VERIFY, API_REFERENCE } from '@config/apiRoutes';
 import type { OAuthDocsI18nInterface } from '@config/i18n-mapping/oauthDocsI18n';
 import {
   ROUTE_DEVELOPER_APPS,
@@ -139,6 +139,14 @@ export function OAuthDocsContent() {
         </div>
       </header>
 
+      <DocSection id="architecture" title={tt.sectionArchitecture}>
+        <p className={proseClass}>{tt.architectureBody}</p>
+      </DocSection>
+
+      <DocSection id="demo" title={tt.sectionDemo}>
+        <p className={proseClass}>{tt.demoBody}</p>
+      </DocSection>
+
       <DocSection id="overview" title={tt.sectionOverview}>
         <p className={proseClass}>{tt.overviewBody}</p>
       </DocSection>
@@ -160,6 +168,12 @@ export function OAuthDocsContent() {
       <DocSection id="endpoints" title={tt.sectionEndpoints}>
         <EndpointTable
           rows={[
+            {
+              method: 'POST',
+              path: API_OAUTH_VERIFY,
+              label: tt.endpointVerify,
+              desc: tt.endpointVerifyDesc
+            },
             {
               method: 'GET',
               path: ROUTE_OAUTH_AUTHORIZE,

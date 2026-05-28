@@ -19,7 +19,7 @@ import {
   type ReactNode
 } from 'react';
 import { Link } from '@/i18n/routing';
-import { OAuthConsentGateway } from '@/impls/OAuthConsentGateway';
+import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
 import { readAppApiJson } from '@/uikit/components-app/developer/apps/readAppApiJson';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -147,7 +147,7 @@ export function OAuthPlayground() {
   const tt = usePageI18nMapping<OAuthPlaygroundI18nInterface>();
   const locale = useLocale();
   const { success, loading: authLoading, user } = useUserAuth();
-  const consentGateway = useIOC(OAuthConsentGateway);
+  const consentGateway = useIOC(OAuthWrapperGateway);
 
   const [clients, setClients] = useState<OAuthClientListItem[]>([]);
   const [clientsLoading, setClientsLoading] = useState(true);
@@ -500,6 +500,12 @@ export function OAuthPlayground() {
                   {tt.intro}
                 </p>
               </div>
+            </div>
+
+            <div className="mt-4">
+              <PlaygroundAlert variant="info">
+                <span>{tt.demoNote}</span>
+              </PlaygroundAlert>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">

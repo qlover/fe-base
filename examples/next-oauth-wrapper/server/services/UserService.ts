@@ -3,13 +3,8 @@ import { inject, injectable } from '@shared/container';
 import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
-import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import {
-  DemoAuthService,
-  OAuthAppSessionService,
-  oauthAppSessionToUserSchema,
-  type DemoAuthServiceInterface
-} from '@server/demo-oauth';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import { OAuthControllerService } from './OAuthControllerService';
 import { ServerAuth } from './ServerAuth';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
@@ -28,16 +23,13 @@ export class UserService implements UserServiceInterface {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
-  @inject(I.AppConfig)
-  protected appConfig!: SeedServerConfigInterface;
-
   constructor(
     @inject(ServerAuth)
     protected userAuth: ServerAuthInterface,
-    @inject(DemoAuthService)
-    protected demoAuthService: DemoAuthServiceInterface,
-    @inject(OAuthAppSessionService)
-    protected appSession: OAuthAppSessionService,
+    @inject(OAuthControllerService)
+    protected demoAuthService: OAuthControllerService,
+    @inject(I.OAuthWrapperProviderInterface)
+    protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
     @inject(RequestLogsRepository)
@@ -79,7 +71,7 @@ export class UserService implements UserServiceInterface {
       }
     });
 
-    const session = await this.appSession.getSession();
+    const session = await this.oauthProvider.getOAuthSession().getSession();
     if (!session) {
       throw new ExecutorError(
         API_USER_NOT_FOUND,
@@ -87,7 +79,7 @@ export class UserService implements UserServiceInterface {
       );
     }
 
-    return oauthAppSessionToUserSchema(session, this.appConfig.adminUserIds);
+    return this.oauthProvider.getUserSchema(session);
   }
 
   /**

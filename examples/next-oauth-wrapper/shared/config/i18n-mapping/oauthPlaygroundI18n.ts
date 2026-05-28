@@ -11,6 +11,7 @@ export const oauthPlaygroundI18n = Object.freeze({
   content: i18nKeys.PAGE_OAUTH_PLAYGROUND_CONTENT,
   keywords: i18nKeys.PAGE_OAUTH_PLAYGROUND_KEYWORDS,
   intro: i18nKeys.PAGE_OAUTH_PLAYGROUND_INTRO,
+  demoNote: i18nKeys.PAGE_OAUTH_PLAYGROUND_DEMO_NOTE,
   stepSession: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_SESSION,
   stepClient: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_CLIENT,
   stepAuthorize: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_AUTHORIZE,

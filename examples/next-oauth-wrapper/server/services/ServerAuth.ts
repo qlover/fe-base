@@ -5,17 +5,14 @@ import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import {
-  OAuthAppSessionService,
-  oauthAppSessionToUserSchema
-} from '@server/demo-oauth';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 
 @injectable()
 export class ServerAuth implements ServerAuthInterface {
   constructor(
-    @inject(OAuthAppSessionService)
-    protected appSession: OAuthAppSessionService,
+    @inject(I.OAuthWrapperProviderInterface)
+    protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(I.AppConfig) protected config: SeedServerConfigInterface
   ) {}
 
@@ -31,14 +28,14 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async hasAuth(): Promise<boolean> {
-    return this.appSession.hasSession();
+    return this.oauthProvider.getOAuthSession().hasSession();
   }
 
   /**
    * @override
    */
   public async getAuth(): Promise<string> {
-    const session = await this.appSession.getSession();
+    const session = await this.oauthProvider.getOAuthSession().getSession();
     return session?.providerSessionToken ?? '';
   }
 
@@ -46,7 +43,7 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async clear(): Promise<void> {
-    await this.appSession.clearSession();
+    await this.oauthProvider.getOAuthSession().clearSession();
 
     const legacyKey = this.config.userTokenKey;
     if (legacyKey) {
@@ -68,11 +65,11 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async getUser(): Promise<UserSchema | null> {
-    const session = await this.appSession.getSession();
+    const session = await this.oauthProvider.getOAuthSession().getSession();
     if (!session) {
       return null;
     }
 
-    return oauthAppSessionToUserSchema(session, this.config.adminUserIds);
+    return this.oauthProvider.getUserSchema(session);
   }
 }

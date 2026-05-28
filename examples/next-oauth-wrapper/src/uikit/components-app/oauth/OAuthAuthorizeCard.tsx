@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
-import { OAuthConsentGateway } from '@/impls/OAuthConsentGateway';
+import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { OAuthAuthorizePageData } from '@shared/oauth-wrapper';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
@@ -27,7 +27,7 @@ export function OAuthAuthorizeCard({
   tt,
   authorizeData
 }: OAuthAuthorizeCardProps) {
-  const consentGateway = useIOC(OAuthConsentGateway);
+  const consentGateway = useIOC(OAuthWrapperGateway);
   const [extraOpen, setExtraOpen] = useState(false);
   const [trust, setTrust] = useState(false);
   const [loading, setLoading] = useState(false);

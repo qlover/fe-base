@@ -4,9 +4,10 @@ import {
   type IOCContainerInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
+import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { BrainUserAdapter } from './demo-oauth';
+import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
 import { SupabaseBridge } from './repositorys/SupabaseBridge';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -24,7 +25,9 @@ export function createServerIoc(
   logger: LoggerInterface,
   config: SeedServerConfigInterface
 ) {
-  const ioc = createIOCFunction(new ReflectionIOCContainer());
+  const ioc = createIOCFunction<IOCIdentifierMapServer>(
+    new ReflectionIOCContainer()
+  );
 
   ServerIocRegister.register(ioc.implemention!, ioc, {
     logger,
@@ -47,6 +50,7 @@ const ServerIocRegister: IOCRegisterInterface<
     ioc.bind(I.AppConfig, serverConfig);
 
     ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
-    ioc.bind(I.OAuthUserAdapterInterface, ioc.get(BrainUserAdapter));
+
+    ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(BrainUserOAuthProvider));
   }
 };

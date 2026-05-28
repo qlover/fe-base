@@ -7,8 +7,8 @@ export const PAGE_OAUTH_PLAYGROUND_TITLE = 'page_oauth_playground:title';
 
 /**
  * @description OAuth playground meta description
- * @localZh 在站内模拟授权码登录与 token / userinfo 调用
- * @localEn Simulate authorization code flow and token / userinfo calls in-app
+ * @localZh 在站内调试通用 OAuth 包装层完整流程（本示例使用 Brain User 登录）
+ * @localEn Debug the full universal OAuth wrapper flow in-app (this demo uses Brain User login)
  */
 export const PAGE_OAUTH_PLAYGROUND_DESCRIPTION =
   'page_oauth_playground:description';
@@ -29,10 +29,18 @@ export const PAGE_OAUTH_PLAYGROUND_KEYWORDS = 'page_oauth_playground:keywords';
 
 /**
  * @description Page intro
- * @localZh 使用已注册客户端的真实参数，在站内完成授权、换票与 userinfo，不会跳转到外部 redirect_uri。
- * @localEn Use real parameters from registered clients to authorize, exchange tokens, and call userinfo without leaving the site.
+ * @localZh 使用已注册客户端的真实参数，在站内完成授权、换票与 userinfo（不跳转到外部 redirect_uri）。步骤 1 需先用本示例的登录页或 POST /api/oauth/verify 建立会话（demo-oauth 接 Brain User）；OAuth 协议步骤本身与上游 Provider 无关。
+ * @localEn Use real registered-client parameters to authorize, exchange tokens, and call userinfo without an external redirect. Step 1 requires a session via the login page or POST /api/oauth/verify (demo-oauth + Brain User in this repo); the OAuth steps themselves are provider-agnostic.
  */
 export const PAGE_OAUTH_PLAYGROUND_INTRO = 'page_oauth_playground:intro';
+
+/**
+ * @description Demo provider note banner
+ * @localZh 提示：当前站点示例在 oauth-wrapper 中使用 Brain User 作为上游登录 API；你 fork 时可替换为任意 Provider。
+ * @localEn Note: this deployment uses Brain User under oauth-wrapper as the upstream login API—you can swap any provider in your fork.
+ */
+export const PAGE_OAUTH_PLAYGROUND_DEMO_NOTE =
+  'page_oauth_playground:demo__note';
 
 /**
  * @description Step: session
@@ -84,8 +92,8 @@ export const PAGE_OAUTH_PLAYGROUND_SIGNED_IN_AS =
 
 /**
  * @description Login required
- * @localZh 请先登录后再模拟授权。
- * @localEn Sign in before simulating authorization.
+ * @localZh 请先登录（/auth/login 或 /api/oauth/verify）后再模拟授权。
+ * @localEn Sign in first (/auth/login or /api/oauth/verify) before simulating authorization.
  */
 export const PAGE_OAUTH_PLAYGROUND_LOGIN_REQUIRED =
   'page_oauth_playground:login__required';

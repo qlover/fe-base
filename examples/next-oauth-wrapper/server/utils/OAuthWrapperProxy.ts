@@ -1,14 +1,28 @@
+import jwt from 'jsonwebtoken';
 import { NextResponse, type NextRequest } from 'next/server';
+import type { OAuthSessionPayload } from '@shared/oauth-wrapper';
 import { isPublicPath, ROUTE_LOGIN } from '@config/route';
-import {
-  OAUTH_APP_SESSION_COOKIE,
-  parseOAuthAppSessionCookie
-} from '@server/demo-oauth/session/demoProxySession';
+
+export const OAUTH_APP_SESSION_COOKIE = 'n_oauth_wrapper__session';
+
+export function parseOAuthAppSessionCookie(
+  raw: string | undefined,
+  secret: string | undefined
+): OAuthSessionPayload | null {
+  if (!raw || !secret) {
+    return null;
+  }
+  try {
+    return jwt.verify(raw, secret) as OAuthSessionPayload;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Next OAuth Wrapper session gate: validates signed session cookie and redirects unauthenticated users.
  */
-export async function updateOAuthAppSession(request: NextRequest) {
+export async function oauthWrapperProxySession(request: NextRequest) {
   const response = NextResponse.next({
     request
   });

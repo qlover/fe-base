@@ -46,7 +46,7 @@ export type OAuthUserCredentials = {
  * @example
  * return { access_token: token.access_token, expires_in: token.expires_in };
  */
-export type OAuthProviderAccessToken = {
+export type OAuthUserAccessToken = {
   access_token: string;
   expires_in: number;
   refresh_token?: string | null;
@@ -83,7 +83,7 @@ export interface OAuthUserAdapterInterface {
   exchangeAccessToken(params: {
     token: string;
     lang?: string;
-  }): Promise<OAuthProviderAccessToken>;
+  }): Promise<OAuthUserAccessToken>;
 
   /**
    * Loads profile information using a provider session token.

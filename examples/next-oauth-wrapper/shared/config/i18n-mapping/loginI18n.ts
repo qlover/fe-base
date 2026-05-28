@@ -24,8 +24,13 @@ export const loginI18n = Object.freeze({
   keywords: i18nKeys.PAGE_LOGIN_KEYWORDS,
 
   // login page
+  badge: i18nKeys.PAGE_LOGIN_BADGE,
   welcome: i18nKeys.PAGE_LOGIN_WELCOME,
   subtitle: i18nKeys.PAGE_LOGIN_SUBTITLE,
+  formSubtitle: i18nKeys.PAGE_LOGIN_FORM_SUBTITLE,
+  demoNote: i18nKeys.PAGE_LOGIN_DEMO_NOTE,
+  linkDocs: i18nKeys.PAGE_LOGIN_LINK_DOCS,
+  linkPlayground: i18nKeys.PAGE_LOGIN_LINK_PLAYGROUND,
   feature_ai_paths: i18nKeys.PAGE_LOGIN_FEATURE_AI_PATHS,
   feature_smart_recommendations: i18nKeys.PAGE_LOGIN_FEATURE_SMART,
   feature_progress_tracking: i18nKeys.PAGE_LOGIN_TRACKING,

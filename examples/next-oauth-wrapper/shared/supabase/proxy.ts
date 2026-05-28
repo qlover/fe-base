@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { ROUTE_LOGIN, isPublicPath } from '@config/route';
 import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
-export async function updateSession(request: NextRequest) {
+export async function supabaseProxySession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request
   });
