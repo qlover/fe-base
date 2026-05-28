@@ -17,9 +17,7 @@ import type {
 } from '@qlover/corekit-bridge';
 import type { SerializerIneterface } from '@qlover/fe-corekit';
 
-export class AppApiRegister
-  implements IOCRegisterInterface<IOCContainerInterface>
-{
+export class AppApiRegister implements IOCRegisterInterface<IOCContainerInterface> {
   constructor(protected serializer: SerializerIneterface) {}
 
   /**

@@ -6,7 +6,6 @@ import type {
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { TokenEncryption } from '@server/utils/TokenEncryption';
-import type { LoggerInterface } from '@qlover/logger';
 import { DemoOAuthRepository } from '../repository/DemoOAuthRepository';
 import { OAuthAppSessionService } from '../session/OAuthAppSessionService';
 import type {
@@ -14,6 +13,7 @@ import type {
   DemoVerifyLoginParams,
   DemoVerifyLoginResult
 } from './DemoAuthServiceInterface';
+import type { LoggerInterface } from '@qlover/logger';
 
 /**
  * Demo app login: provider credentials → session cookie → persisted provider tokens.
@@ -26,7 +26,8 @@ export class DemoAuthService implements DemoAuthServiceInterface {
   protected logger!: LoggerInterface;
 
   constructor(
-    @inject(OAuthAppSessionService) protected appSession: OAuthAppSessionService,
+    @inject(OAuthAppSessionService)
+    protected appSession: OAuthAppSessionService,
     @inject(I.OAuthUserAdapterInterface)
     protected userAdapter: OAuthUserAdapterInterface,
     @inject(DemoOAuthRepository)
@@ -36,6 +37,9 @@ export class DemoAuthService implements DemoAuthServiceInterface {
     this.tokenEncryption = new TokenEncryption(config.encryptionKey);
   }
 
+  /**
+   * @override
+   */
   public async verifyLogin(
     params: DemoVerifyLoginParams
   ): Promise<DemoVerifyLoginResult> {

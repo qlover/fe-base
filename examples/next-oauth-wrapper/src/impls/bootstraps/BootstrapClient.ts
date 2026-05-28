@@ -15,9 +15,7 @@ import type {
   BootstrapInterface
 } from '@qlover/corekit-bridge/bootstrap';
 
-export class BootstrapClient
-  implements BootstrapInterface<BootstrapExecutorPlugin>
-{
+export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlugin> {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}

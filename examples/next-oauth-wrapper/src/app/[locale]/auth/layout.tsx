@@ -1,8 +1,8 @@
 import { redirect } from '@/i18n/routing';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { AppPageRouteParams } from '@server/render/AppPageRouteParams';
 import { OAuthAppSessionService } from '@server/demo-oauth';
+import { AppPageRouteParams } from '@server/render/AppPageRouteParams';
 
 export default async function AuthLayout(props: PageLayoutProps) {
   const pageParams = new AppPageRouteParams(await props.params!);

@@ -50,7 +50,9 @@ export class OAuthAppSessionService {
 
   protected requireSecret(): string {
     if (!this.config.sessionSecret) {
-      throw new Error('SESSION_SECRET is required for Next OAuth Wrapper session');
+      throw new Error(
+        'SESSION_SECRET is required for Next OAuth Wrapper session'
+      );
     }
     return this.config.sessionSecret;
   }

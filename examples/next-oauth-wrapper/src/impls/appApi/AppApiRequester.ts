@@ -26,8 +26,7 @@ export type AppApiConfig<Request = unknown> = RequestAdapterConfig<Request> &
   AppApiPluginOptions &
   AborterConfig;
 
-export interface AppApiRequesterContext
-  extends ExecutorContextInterface<AppApiConfig> {}
+export interface AppApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 
 /**
  * UserApiResponse
@@ -46,11 +45,13 @@ export type AppApiResponse<
 /**
  * UserApi common transaction
  */
-export interface AppApiTransaction<Request = unknown, Response = unknown>
-  extends RequestTransactionInterface<
-    AppApiConfig<Request>,
-    AppApiResponse<Request, Response>
-  > {
+export interface AppApiTransaction<
+  Request = unknown,
+  Response = unknown
+> extends RequestTransactionInterface<
+  AppApiConfig<Request>,
+  AppApiResponse<Request, Response>
+> {
   data: AppApiConfig<Request>['data'];
 }
 

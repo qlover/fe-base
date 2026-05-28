@@ -23,8 +23,7 @@ export type CreateOAuthRefreshTokenInput = {
   expires_at: string;
 };
 
-export interface OAuthWrapperRepositoryInterface
-  extends OAuthClientsRepositoryInterface {
+export interface OAuthWrapperRepositoryInterface extends OAuthClientsRepositoryInterface {
   create(input: CreateAuthorizationCodeInput): Promise<void>;
   consumeCode(code: string): Promise<OAuthAuthorizationCodeRow | null>;
 

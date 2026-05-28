@@ -4,13 +4,13 @@ import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { ServerAuth } from './ServerAuth';
 import {
   DemoAuthService,
   OAuthAppSessionService,
   oauthAppSessionToUserSchema,
   type DemoAuthServiceInterface
 } from '@server/demo-oauth';
+import { ServerAuth } from './ServerAuth';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';

@@ -16,10 +16,9 @@ export type DialogErrorConfig = {
   disabledDialogError?: boolean;
 };
 @injectable()
-export class DialogErrorPlugin
-  implements
-    LifecyclePluginInterface<ExecutorContextInterface<DialogErrorConfig>>
-{
+export class DialogErrorPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<DialogErrorConfig>
+> {
   public readonly pluginName = 'DialogErrorPlugin';
 
   constructor(

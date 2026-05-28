@@ -18,9 +18,9 @@ export interface PageParamsType {
 /**
  * 用于 src/app/page 路由的参数管理工具
  */
-export class AppPageRouteParams<T extends PageParamsType>
-  implements RouteParamsnHandlerInterface
-{
+export class AppPageRouteParams<
+  T extends PageParamsType
+> implements RouteParamsnHandlerInterface {
   private locale: string | null;
 
   constructor(protected readonly params: T) {

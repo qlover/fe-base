@@ -144,13 +144,15 @@ export class DemoOAuthRepository implements OAuthWrapperRepositoryInterface {
     expires_at: string;
   }): Promise<void> {
     const supabase = createAdminClient();
-    const { error } = await supabase.from('n_oauth_wrapper__refresh_tokens').upsert(
-      {
-        ...input,
-        revoked: false
-      },
-      { onConflict: 'refresh_token' }
-    );
+    const { error } = await supabase
+      .from('n_oauth_wrapper__refresh_tokens')
+      .upsert(
+        {
+          ...input,
+          revoked: false
+        },
+        { onConflict: 'refresh_token' }
+      );
 
     if (error) {
       throw new Error(error.message);
@@ -199,13 +201,15 @@ export class DemoOAuthRepository implements OAuthWrapperRepositoryInterface {
     input: CreateOAuthRefreshTokenInput
   ): Promise<void> {
     const supabase = createAdminClient();
-    const { error } = await supabase.from('n_oauth_wrapper__refresh_tokens').insert({
-      refresh_token: input.refresh_token,
-      client_id: input.client_id,
-      user_id: input.user_id,
-      expires_at: input.expires_at,
-      revoked: false
-    });
+    const { error } = await supabase
+      .from('n_oauth_wrapper__refresh_tokens')
+      .insert({
+        refresh_token: input.refresh_token,
+        client_id: input.client_id,
+        user_id: input.user_id,
+        expires_at: input.expires_at,
+        revoked: false
+      });
 
     if (error) {
       throw new Error(error.message);

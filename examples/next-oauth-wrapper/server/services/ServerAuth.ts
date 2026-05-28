@@ -14,7 +14,8 @@ import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 @injectable()
 export class ServerAuth implements ServerAuthInterface {
   constructor(
-    @inject(OAuthAppSessionService) protected appSession: OAuthAppSessionService,
+    @inject(OAuthAppSessionService)
+    protected appSession: OAuthAppSessionService,
     @inject(I.AppConfig) protected config: SeedServerConfigInterface
   ) {}
 

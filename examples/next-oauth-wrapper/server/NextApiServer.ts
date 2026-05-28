@@ -6,8 +6,8 @@ import type {
   AppApiSuccessInterface
 } from '@interfaces/AppApiInterface';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { RequestLogsRepository } from '@server/repositorys/RequestLogsRepository';
 import { resolveDemoOAuthRequestLogRecordType } from '@server/demo-oauth';
+import { RequestLogsRepository } from '@server/repositorys/RequestLogsRepository';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ApiResultFactory } from './utils/ApiResultFactory';
 import type {

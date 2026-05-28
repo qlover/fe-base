@@ -10,7 +10,8 @@ const DEFAULT_OAUTH_WRAPPER_API_BASE =
 @injectable()
 export class OAuthWrapperConfig {
   public readonly oauthWrapperApiBase: string =
-    process.env.OAUTH_WRAPPER_API_BASE?.trim() || DEFAULT_OAUTH_WRAPPER_API_BASE;
+    process.env.OAUTH_WRAPPER_API_BASE?.trim() ||
+    DEFAULT_OAUTH_WRAPPER_API_BASE;
 
   public readonly oauthWrapperApiTimeout: number = Number(
     process.env.OAUTH_WRAPPER_API_TIMEOUT ?? 10000

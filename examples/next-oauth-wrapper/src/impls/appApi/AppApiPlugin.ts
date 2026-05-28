@@ -11,9 +11,9 @@ export type AppApiPluginOptions = {
   disabledLoggerError?: boolean;
 };
 
-export class AppApiPlugin
-  implements LifecyclePluginInterface<ExecutorContextInterface<AppApiConfig>>
-{
+export class AppApiPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<AppApiConfig>
+> {
   public readonly pluginName = 'AppApiPlugin';
 
   constructor(protected logger: LoggerInterface) {}

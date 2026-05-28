@@ -4,8 +4,10 @@ import type {
   UserServiceGateway
 } from '@qlover/corekit-bridge';
 
-export interface UserServiceInterface
-  extends CorekitBridgeUserServiceInterface<UserSchema, UserCredential> {
+export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
+  UserSchema,
+  UserCredential
+> {
   // You can add your own methods here
 
   /**
@@ -16,5 +18,8 @@ export interface UserServiceInterface
   getToken(): string;
 }
 
-export interface UserServiceGatewayInterface
-  extends UserServiceGateway<UserSchema, UserCredential, {}> {}
+export interface UserServiceGatewayInterface extends UserServiceGateway<
+  UserSchema,
+  UserCredential,
+  {}
+> {}

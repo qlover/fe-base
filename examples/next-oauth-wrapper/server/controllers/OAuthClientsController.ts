@@ -9,8 +9,8 @@ import type {
   OAuthClientUpdate,
   OAuthClientsRepositoryInterface
 } from '@shared/oauth-wrapper';
-import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
 import { DemoOAuthRepository } from '@server/demo-oauth';
+import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
 import { ServerAuth } from '@server/services/ServerAuth';
 
 /**

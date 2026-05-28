@@ -1,11 +1,11 @@
 import { HttpMethods } from '@qlover/fe-corekit';
-import { inject, injectable } from '@shared/container';
-import { API_OAUTH_VERIFY } from '@config/apiRoutes';
 import {
   AppApiRequester,
   type AppApiConfig,
   type AppApiRequesterContext
 } from '@/impls/appApi/AppApiRequester';
+import { inject, injectable } from '@shared/container';
+import { API_OAUTH_VERIFY } from '@config/apiRoutes';
 import type { RequestExecutor } from '@qlover/fe-corekit';
 
 export type DemoVerifyResult = {

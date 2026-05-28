@@ -11,8 +11,8 @@ import type {
   OAuthUserCredentials,
   OAuthUserProfile
 } from '@shared/oauth-wrapper';
-import { ProxyFetchAdapter } from '../adapters/ProxyFetchAdapter';
 import { OAuthWrapperConfig } from './oauthWrapperConfig';
+import { ProxyFetchAdapter } from '../adapters/ProxyFetchAdapter';
 import {
   extractBrainSessionToken,
   formatBrainLoginError
@@ -25,7 +25,9 @@ import {
 export class BrainUserAdapter implements OAuthUserAdapterInterface {
   protected gateway: BrainUserGateway;
 
-  constructor(@inject(OAuthWrapperConfig) oauthWrapperConfig: OAuthWrapperConfig) {
+  constructor(
+    @inject(OAuthWrapperConfig) oauthWrapperConfig: OAuthWrapperConfig
+  ) {
     const { endpoints: _defaultEndpoints, ...providerFetchDefaults } =
       defaultBrainUserOptions;
 
@@ -47,6 +49,9 @@ export class BrainUserAdapter implements OAuthUserAdapterInterface {
     this.gateway = new BrainUserGateway(adapter);
   }
 
+  /**
+   * @override
+   */
   public async login(
     email: string,
     password: string
@@ -59,6 +64,9 @@ export class BrainUserAdapter implements OAuthUserAdapterInterface {
     return { ...result, token };
   }
 
+  /**
+   * @override
+   */
   public async exchangeAccessToken(params: {
     token: string;
     lang?: string;
@@ -70,11 +78,17 @@ export class BrainUserAdapter implements OAuthUserAdapterInterface {
     return { ...access };
   }
 
+  /**
+   * @override
+   */
   public async getUserInfo(token: string): Promise<OAuthUserProfile> {
     const profile = await this.gateway.getUserInfo({ token });
     return { ...profile };
   }
 
+  /**
+   * @override
+   */
   public async getUserInfoByAccessToken(
     accessToken: string
   ): Promise<OAuthUserProfile> {

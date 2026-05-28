@@ -42,8 +42,7 @@ const AUTH_CODE_TTL_MS = 5 * 60 * 1000;
 
 export class OAuthWrapperService<
   SessionPayload extends OAuthSessionPayload = OAuthSessionPayload
-> implements OAuthServiceInterface
-{
+> implements OAuthServiceInterface {
   constructor(
     protected oauthSession: OAuthSessionInterface<SessionPayload>,
     protected userAdapter: OAuthUserAdapterInterface,
