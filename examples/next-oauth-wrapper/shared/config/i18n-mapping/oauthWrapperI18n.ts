@@ -1,0 +1,23 @@
+import type { OAuthRfcCodeType } from '@shared/oauth-wrapper';
+import { OAuthRfcCodes } from '@shared/oauth-wrapper';
+import * as apikeys from '@config/i18n-identifier/api';
+
+/**
+ * OAuth wrapper 的 rfc code 对应的 i18n key
+ */
+export const oauthWrapperI18n: Record<OAuthRfcCodeType, string> = Object.freeze(
+  {
+    [OAuthRfcCodes.INVALID_REQUEST]: apikeys.API_OAUTH_INVALID_REQUEST,
+    [OAuthRfcCodes.INVALID_CLIENT]: apikeys.API_OAUTH_INVALID_CLIENT,
+    [OAuthRfcCodes.INVALID_GRANT]: apikeys.API_OAUTH_INVALID_GRANT,
+    [OAuthRfcCodes.INVALID_TOKEN]: apikeys.API_OAUTH_INVALID_TOKEN,
+    [OAuthRfcCodes.UNAUTHORIZED_CLIENT]: apikeys.API_OAUTH_UNAUTHORIZED_CLIENT,
+    [OAuthRfcCodes.INVALID_SCOPE]: apikeys.API_OAUTH_INVALID_SCOPE,
+    [OAuthRfcCodes.ACCESS_DENIED]: apikeys.API_OAUTH_ACCESS_DENIED,
+    [OAuthRfcCodes.UNSUPPORTED_RESPONSE_TYPE]:
+      apikeys.API_OAUTH_UNSUPPORTED_RESPONSE_TYPE,
+    [OAuthRfcCodes.UNSUPPORTED_GRANT_TYPE]:
+      apikeys.API_OAUTH_UNSUPPORTED_GRANT_TYPE,
+    [OAuthRfcCodes.OAUTH_ERROR]: apikeys.API_OAUTH_SERVER_ERROR
+  }
+);

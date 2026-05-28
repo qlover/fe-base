@@ -1,0 +1,102 @@
+/* custom variables - for antd and custom css */
+html,
+.fe-theme .ant-pagination-css-var,
+.fe-theme.ant-pagination {
+  /* Antd Pagination 组件变量 */
+  .ant-pagination-css-var {
+    --fantd-pagination-item-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-item-size: 32px;
+    --fantd-pagination-item-size-sm: 24px;
+    --fantd-pagination-item-active-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-item-link-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-item-active-color-disabled: rgb(var(--fe-color-tertiary-text));
+    --fantd-pagination-item-active-bg-disabled: rgba(var(--fe-color-primary-text), 0.15);
+    --fantd-pagination-item-input-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-mini-options-size-changer-top: 0px;
+    --fantd-pagination-padding-block: 4px;
+    --fantd-pagination-padding-block-sm: 0px;
+    --fantd-pagination-padding-block-lg: 7px;
+    --fantd-pagination-padding-inline: 11px;
+    --fantd-pagination-padding-inline-sm: 7px;
+    --fantd-pagination-padding-inline-lg: 11px;
+    --fantd-pagination-addon-bg: rgba(var(--fe-color-primary-text), 0.02);
+    --fantd-pagination-active-border-color: rgb(var(--fe-color-brand));
+    --fantd-pagination-hover-border-color: rgb(var(--fe-color-brand-hover));
+    --fantd-pagination-active-shadow: 0 0 0 2px rgba(var(--fe-color-brand), 0.1);
+    --fantd-pagination-error-active-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+    --fantd-pagination-warning-active-shadow: 0 0 0 2px rgba(234, 179, 8, 0.1);
+    --fantd-pagination-hover-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-active-bg: rgb(var(--fe-color-primary));
+    --fantd-pagination-input-font-size: 14px;
+    --fantd-pagination-input-font-size-lg: 16px;
+    --fantd-pagination-input-font-size-sm: 14px;
+  }
+}
+
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme .ant-pagination-css-var,
+[data-theme='dark'] .fe-theme.ant-pagination {
+  /* Antd Pagination 组件变量 */
+  --fantd-pagination-item-bg: rgb(var(--fe-color-secondary));
+  --fantd-pagination-item-size: 32px;
+  --fantd-pagination-item-size-sm: 24px;
+  --fantd-pagination-item-active-bg: rgb(var(--fe-color-secondary));
+  --fantd-pagination-item-link-bg: rgb(var(--fe-color-secondary));
+  --fantd-pagination-item-active-color-disabled: rgb(var(--fe-color-tertiary-text));
+  --fantd-pagination-item-active-bg-disabled: rgba(var(--fe-color-primary-text), 0.15);
+  --fantd-pagination-item-input-bg: rgb(var(--fe-color-secondary));
+  --fantd-pagination-mini-options-size-changer-top: 0px;
+  --fantd-pagination-padding-block: 4px;
+  --fantd-pagination-padding-block-sm: 0px;
+  --fantd-pagination-padding-block-lg: 7px;
+  --fantd-pagination-padding-inline: 11px;
+  --fantd-pagination-padding-inline-sm: 7px;
+  --fantd-pagination-padding-inline-lg: 11px;
+  --fantd-pagination-addon-bg: rgba(var(--fe-color-primary-text), 0.02);
+  --fantd-pagination-active-border-color: rgb(var(--fe-color-brand));
+  --fantd-pagination-hover-border-color: rgb(var(--fe-color-brand-hover));
+  --fantd-pagination-active-shadow: 0 0 0 2px rgba(var(--fe-color-brand), 0.2);
+  --fantd-pagination-error-active-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  --fantd-pagination-warning-active-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  --fantd-pagination-hover-bg: rgb(var(--fe-color-elevated));
+  --fantd-pagination-active-bg: rgb(var(--fe-color-elevated));
+  --fantd-pagination-input-font-size: 14px;
+  --fantd-pagination-input-font-size-lg: 16px;
+  --fantd-pagination-input-font-size-sm: 14px;
+}
+
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme .ant-pagination-css-var,
+[data-theme='pink'] .fe-theme.ant-pagination {
+  /* Antd Pagination 组件变量 */
+  .ant-pagination-css-var {
+    --fantd-pagination-item-bg: var(--ant-color-bg-container);
+    --fantd-pagination-item-size: 32px;
+    --fantd-pagination-item-size-sm: 24px;
+    --fantd-pagination-item-active-bg: var(--ant-color-bg-container);
+    --fantd-pagination-item-link-bg: var(--ant-color-bg-container);
+    --fantd-pagination-item-active-color-disabled: var(
+      --ant-color-text-quaternary
+    );
+    --fantd-pagination-item-active-bg-disabled: var(--ant-color-text-quaternary);
+    --fantd-pagination-item-input-bg: var(--ant-color-bg-container);
+    --fantd-pagination-mini-options-size-changer-top: 0px;
+    --fantd-pagination-padding-block: 4px;
+    --fantd-pagination-padding-block-sm: 0px;
+    --fantd-pagination-padding-block-lg: 7px;
+    --fantd-pagination-padding-inline: 11px;
+    --fantd-pagination-padding-inline-sm: 7px;
+    --fantd-pagination-padding-inline-lg: 11px;
+    --fantd-pagination-addon-bg: rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-pagination-active-border-color: rgb(var(--fe-color-brand));
+    --fantd-pagination-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-pagination-active-shadow: 0 0 0 2px var(--fe-color-primary-bg);
+    --fantd-pagination-error-active-shadow: 0 0 0 2px rgba(40, 22, 24, 0.1);
+    --fantd-pagination-warning-active-shadow: 0 0 0 2px var(--fantd-color-warning-bg);
+    --fantd-pagination-hover-bg: var(--ant-color-bg-elevated);
+    --fantd-pagination-active-bg: var(--ant-color-bg-elevated);
+    --fantd-pagination-input-font-size: 14px;
+    --fantd-pagination-input-font-size-lg: 16px;
+    --fantd-pagination-input-font-size-sm: 14px;
+  }
+}
