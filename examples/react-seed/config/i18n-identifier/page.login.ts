@@ -113,6 +113,20 @@ export const PAGE_LOGIN_GOOGLE = 'page_login:google';
 export const PAGE_LOGIN_GITHUB = 'page_login:github';
 
 /**
+ * @description Login page - sign in via next-oauth-wrapper (PKCE)
+ * @localZh 使用 next-oauth-wrapper 登录
+ * @localEn Sign in with next-oauth-wrapper
+ */
+export const PAGE_LOGIN_OAUTH_WRAPPER = 'page_login:oauth_wrapper';
+
+/**
+ * @description Login page - OAuth submit loading
+ * @localZh 跳转中…
+ * @localEn Redirecting…
+ */
+export const PAGE_LOGIN_OAUTH_LOADING = 'page_login:oauth_loading';
+
+/**
  * @description Login left panel - hero title
  * @localZh 欢迎回来
  * @localEn Welcome back

@@ -21,8 +21,7 @@ export const pageHomeI18n = {
   link404: i18nKeys.PAGE_HOME_LINK_404,
   link500: i18nKeys.PAGE_HOME_LINK_500,
   linkEn: i18nKeys.PAGE_HOME_LINK_EN,
-  linkZh: i18nKeys.PAGE_HOME_LINK_ZH,
-  linkLogin: i18nKeys.PAGE_HOME_LINK_LOGIN
+  linkZh: i18nKeys.PAGE_HOME_LINK_ZH
 } as const;
 
 export type HomeI18nMapping = typeof pageHomeI18n;
