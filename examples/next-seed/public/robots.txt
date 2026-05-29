@@ -4,7 +4,7 @@ Allow: /
 Disallow: /api
 
 # Host
-Host: http://localhost:3100
+Host: http://localhost:3110
 
 # Sitemaps
-Sitemap: http://localhost:3100/sitemap.xml
+Sitemap: http://localhost:3110/sitemap.xml
