@@ -167,7 +167,10 @@ export default function LoginPage(_props: RouterRenderProps) {
               type="button"
               disabled={!isConfigured || isStarting}
               onClick={() => void startLogin()}
-              className={socialBtnClass + ' disabled:cursor-not-allowed disabled:opacity-60'}
+              className={
+                socialBtnClass +
+                ' disabled:cursor-not-allowed disabled:opacity-60'
+              }
               aria-label={text.oauthWrapper}
             >
               <span>{isStarting ? text.oauthLoading : text.oauthWrapper}</span>

@@ -118,4 +118,3 @@ export const PAGE_HOME_LINK_EN = 'page_home:link.en';
  * @localEn Home (ZH)
  */
 export const PAGE_HOME_LINK_ZH = 'page_home:link.zh';
-

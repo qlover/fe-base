@@ -1,5 +1,5 @@
-import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
 import { i18nConfig } from '@config/i18n';
+import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LocaleLink } from '@/components/LocaleLink';
@@ -8,8 +8,8 @@ import { useIOC } from '@/hooks/useIOC';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import { completeOAuthCallback, parseOAuthCallbackSearchParams } from '@/oauth';
-import type { UserSchema } from '@/interfaces/schema/UserSchema';
 import type { RouterRenderProps } from '@/components/RouterRenderComponent';
+import type { UserSchema } from '@/interfaces/schema/UserSchema';
 
 export default function OAuthCallbackPage(_props: RouterRenderProps) {
   const text = useI18nMapping(pageOAuthCallbackI18n);
@@ -33,7 +33,10 @@ export default function OAuthCallbackPage(_props: RouterRenderProps) {
     (async () => {
       try {
         const params = parseOAuthCallbackSearchParams(search);
-        const { user, credential } = await completeOAuthCallback(params, locale);
+        const { user, credential } = await completeOAuthCallback(
+          params,
+          locale
+        );
         if (cancelled) {
           return;
         }

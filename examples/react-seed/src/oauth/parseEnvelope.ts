@@ -67,6 +67,9 @@ export function parseOAuthUserInfoResponse(json: unknown): OAuthUserInfo {
   }
 
   throw new Error(
-    formatAppApiError(json, 'Invalid userinfo response from authorization server')
+    formatAppApiError(
+      json,
+      'Invalid userinfo response from authorization server'
+    )
   );
 }

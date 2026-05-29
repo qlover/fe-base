@@ -10,7 +10,8 @@ export const PAGE_OAUTH_CALLBACK_TITLE = 'page_oauth_callback:title';
  * @localZh 正在处理授权回调
  * @localEn Processing authorization callback
  */
-export const PAGE_OAUTH_CALLBACK_DESCRIPTION = 'page_oauth_callback:description';
+export const PAGE_OAUTH_CALLBACK_DESCRIPTION =
+  'page_oauth_callback:description';
 
 /**
  * @description OAuth callback processing message

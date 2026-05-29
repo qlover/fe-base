@@ -13,13 +13,13 @@ import {
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import { LoginSchema } from '@schemas/LoginSchema';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import {
   OAuthControllerService,
   VerifyLoginResult
 } from '@server/services/OAuthControllerService';
-import { I } from '@config/ioc-identifiter';
 
 @injectable()
 export class OAuthWrapperController {

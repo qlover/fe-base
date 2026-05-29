@@ -1,24 +1,28 @@
+import { buildAuthorizeUrl } from './authorize';
 import {
   buildRedirectUri,
   getOAuthConfig,
   oauthTokenUrl,
   oauthUserinfoUrl
 } from './config';
-import { buildAuthorizeUrl } from './authorize';
 import { mapOAuthUserToSeed } from './mapUser';
-import { computePkceS256Challenge, generatePkceVerifier, randomOAuthState } from './pkce';
-import {
-  clearOAuthPkceSession,
-  loadOAuthPkceSession,
-  saveOAuthPkceSession
-} from './session';
 import {
   parseOAuthTokenError,
   parseOAuthTokenResponse,
   parseOAuthUserInfoResponse
 } from './parseEnvelope';
-import type { OAuthCallbackParams } from './types';
+import {
+  computePkceS256Challenge,
+  generatePkceVerifier,
+  randomOAuthState
+} from './pkce';
+import {
+  clearOAuthPkceSession,
+  loadOAuthPkceSession,
+  saveOAuthPkceSession
+} from './session';
 import type { OAuthSeedUser } from './mapUser';
+import type { OAuthCallbackParams } from './types';
 import type { UserCredential } from '@/interfaces/schema/UserSchema';
 
 export type OAuthLoginResult = {
@@ -38,7 +42,9 @@ function callbackDedupeKey(params: OAuthCallbackParams): string | null {
 export async function startOAuthLogin(locale: string): Promise<void> {
   const config = getOAuthConfig();
   if (!config) {
-    throw new Error('OAuth is not configured (VITE_OAUTH_SITE_URL, VITE_OAUTH_CLIENT_ID)');
+    throw new Error(
+      'OAuth is not configured (VITE_OAUTH_SITE_URL, VITE_OAUTH_CLIENT_ID)'
+    );
   }
 
   const verifier = generatePkceVerifier();

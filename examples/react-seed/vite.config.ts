@@ -17,7 +17,7 @@ const relativePath = (path: string) => resolve(__dirname, path);
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    port: 3100,
+    port: 3100
   },
   base: routerPrefix,
   define: {

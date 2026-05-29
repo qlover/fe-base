@@ -11,7 +11,10 @@ const DEFAULT_SCOPE = 'openid profile email';
 const DEFAULT_REDIRECT_PATH = 'oauth/callback';
 
 export function getOAuthConfig(): OAuthClientConfig | null {
-  const siteUrl = import.meta.env.VITE_OAUTH_SITE_URL?.trim().replace(/\/$/, '');
+  const siteUrl = import.meta.env.VITE_OAUTH_SITE_URL?.trim().replace(
+    /\/$/,
+    ''
+  );
   const clientId = import.meta.env.VITE_OAUTH_CLIENT_ID?.trim();
   if (!siteUrl || !clientId) {
     return null;

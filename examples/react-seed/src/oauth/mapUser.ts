@@ -1,4 +1,8 @@
-import { UserRole, type UserCredential, type UserSchema } from '@/interfaces/schema/UserSchema';
+import {
+  UserRole,
+  type UserCredential,
+  type UserSchema
+} from '@/interfaces/schema/UserSchema';
 import type { OAuthUserInfo } from './types';
 
 export type OAuthSeedUser = Omit<UserSchema, 'password'>;
