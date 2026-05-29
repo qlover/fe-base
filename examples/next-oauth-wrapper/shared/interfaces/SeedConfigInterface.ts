@@ -23,7 +23,12 @@ export interface SeedServerConfigInterface extends SeedConfigInterface {
   readonly sessionSecret: string;
   /** AES-256-GCM key for encrypted provider tokens in DB. */
   readonly encryptionKey: string;
-  readonly adminUserIds: number[];
+
+  /** Allowed CORS origins from `API_CORS_ALLOWED_ORIGINS`; empty disables CORS. */
+  readonly apiCorsAllowedOrigins: readonly string[];
+
+  /** Allowed CORS methods from `API_CORS_ALLOWED_METHODS`. */
+  readonly apiCorsAllowedMethods: readonly string[];
 }
 export interface SeedSrcConfigInterface extends SeedConfigInterface {
   readonly stringEncryptorKey: string;

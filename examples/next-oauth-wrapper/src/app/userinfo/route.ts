@@ -3,7 +3,14 @@ import { OAuthWrapperError } from '@shared/oauth-wrapper';
 import { ROUTE_USERINFO } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
+import { ServerConfig } from '@server/ServerConfig';
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@server/utils/apiCors';
 import type { NextRequest } from 'next/server';
+
+const corsConfig = new ServerConfig();
 
 export function parseBearerAuthorization(
   header: string | null
@@ -18,11 +25,20 @@ export function parseBearerAuthorization(
 }
 
 /**
+ * CORS preflight for cross-origin userinfo requests.
+ */
+export async function OPTIONS(req: NextRequest) {
+  return apiCorsPreflightResponse(req, corsConfig);
+}
+
+/**
  * OAuth 2.0 / OIDC userinfo endpoint.
  *
  * Requires `Authorization: Bearer <access_token>` from `POST /oauth/token`.
  */
 export async function GET(req: NextRequest) {
+  const corsHeaders = buildApiCorsHeaders(req, corsConfig);
+
   return await new NextApiServer({
     name: ROUTE_USERINFO,
     nextRequest: req,
@@ -44,7 +60,12 @@ export async function GET(req: NextRequest) {
       return await IOC(OAuthWrapperController).getUserInfo(accessToken!);
     },
     {
-      successHeaders: { 'Cache-Control': 'no-store', Pragma: 'no-cache' }
+      successHeaders: {
+        'Cache-Control': 'no-store',
+        Pragma: 'no-cache',
+        ...corsHeaders
+      },
+      errorHeaders: corsHeaders
     }
   );
 }

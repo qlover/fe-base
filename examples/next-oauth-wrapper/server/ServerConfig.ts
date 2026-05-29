@@ -3,6 +3,22 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import { name, version } from '../package.json';
 import type { StringValue } from 'ms';
 
+function parseCsvEnv(
+  value: string | undefined,
+  fallback?: string
+): readonly string[] {
+  const raw = value?.trim() ? value : fallback;
+  if (!raw?.trim()) {
+    return [];
+  }
+  return Object.freeze(
+    raw
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+  );
+}
+
 export class ServerConfig implements SeedServerConfigInterface {
   public readonly env: string = process.env.APP_ENV ?? 'development';
   public readonly name: string = name;
@@ -33,12 +49,14 @@ export class ServerConfig implements SeedServerConfigInterface {
 
   public readonly encryptionKey: string = process.env.ENCRYPTION_KEY ?? '';
 
-  public readonly adminUserIds: number[] = (process.env.ADMIN_USER_IDS ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .map(Number)
-    .filter((n) => Number.isFinite(n));
+  public readonly apiCorsAllowedOrigins: readonly string[] = parseCsvEnv(
+    process.env.API_CORS_ALLOWED_ORIGINS
+  );
+
+  public readonly apiCorsAllowedMethods: readonly string[] = parseCsvEnv(
+    process.env.API_CORS_ALLOWED_METHODS,
+    'GET,POST,OPTIONS'
+  );
 
   public readonly logPrefixTemplate: string =
     process.env.LOG_PREFIX_TEMPLATE ?? logPrefixTemplate;

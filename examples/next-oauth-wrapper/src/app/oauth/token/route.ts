@@ -1,7 +1,14 @@
 import { ROUTE_OAUTH_TOKEN } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
+import { ServerConfig } from '@server/ServerConfig';
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@server/utils/apiCors';
 import type { NextRequest } from 'next/server';
+
+const corsConfig = new ServerConfig();
 
 /**
  * Parses OAuth token POST body (application/x-www-form-urlencoded or multipart).
@@ -72,17 +79,32 @@ function parseBasicAuth(header: string | null): {
 }
 
 /**
+ * CORS preflight for cross-origin OAuth token requests.
+ */
+export async function OPTIONS(req: NextRequest) {
+  return apiCorsPreflightResponse(req, corsConfig);
+}
+
+/**
  * OAuth 2.0 token endpoint (RFC 6749).
  *
  * Supports `grant_type=authorization_code` and `grant_type=refresh_token`.
  * Client authentication via HTTP Basic or form body parameters.
  */
 export async function POST(req: NextRequest) {
+  const corsHeaders = buildApiCorsHeaders(req, corsConfig);
+
   return await new NextApiServer({
     name: ROUTE_OAUTH_TOKEN,
     nextRequest: req,
     event_category: 'oauth-wrapper'
-  }).runWithJson(async ({ parameters: { IOC } }) =>
-    IOC(OAuthWrapperController).exchangeToken(await parseOAuthTokenRequest(req))
+  }).runWithJson(
+    async ({ parameters: { IOC } }) =>
+      IOC(OAuthWrapperController).exchangeToken(
+        await parseOAuthTokenRequest(req)
+      ),
+    corsHeaders
+      ? { successHeaders: corsHeaders, errorHeaders: corsHeaders }
+      : undefined
   );
 }
