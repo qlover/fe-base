@@ -58,9 +58,14 @@ npx @qlover/create-app@latest --dry-run --verbose
 
 ## Available Templates
 
-The template list comes from GitHub and may change over time. Common examples include:
+The template list is fetched from `examples/` in the GitHub repo `qlover/fe-base` and may change over time. Common templates:
 
-- `react-seed`
-- `next-seed`
-- `taro-seed`
-- `browser-plugin-seed`
+| Template              | Description                                                                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `react-seed`          | **Vite + React** SPA with qlover core libraries, IOC, routing, i18n, Tailwind CSS 4, and dev Mock API.                                                            |
+| `next-seed`           | **Next.js full-stack** app with layered architecture, Supabase, Ant Design, and IOC for typical web apps.                                                         |
+| `next-oauth-wrapper`  | **Next.js OAuth 2.0 authorization server** example: reusable `shared/oauth-wrapper` protocol kernel plus Supabase persistence; upstream user system is swappable. |
+| `taro-seed`           | **Taro + React multi-platform** template (WeChat mini program, H5, etc.) with IOC, i18n, theme, and auth.                                                         |
+| `browser-plugin-seed` | **Plasmo + React browser extension** (Manifest V3): popup, content scripts, routing, i18n, and auth.                                                              |
+
+See each template’s `README.md` for full details.

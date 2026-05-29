@@ -58,9 +58,14 @@ npx @qlover/create-app@latest --dry-run --verbose
 
 ## 可用模板
 
-模板列表来自 GitHub，随仓库内容变化。通常会包含类似：
+模板列表来自 GitHub `qlover/fe-base` 的 `examples/`，随仓库内容变化。当前常见模板如下：
 
-- `react-seed`
-- `next-seed`
-- `taro-seed`
-- `browser-plugin-seed`
+| 模板                  | 简介                                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `react-seed`          | **Vite + React** 单页应用：集成 qlover 核心库、IOC、路由、i18n、Tailwind CSS 4 与开发态 Mock API。             |
+| `next-seed`           | **Next.js 全栈** 应用：分层架构、Supabase、Ant Design、IOC，适合常规 Web 业务。                                |
+| `next-oauth-wrapper`  | **Next.js OAuth 2.0 授权服务器** 示例：`shared/oauth-wrapper` 协议内核 + Supabase 持久化，可替换上游用户系统。 |
+| `taro-seed`           | **Taro + React 多端** 模板：微信小程序、H5 等，含 IOC、i18n、主题与鉴权。                                      |
+| `browser-plugin-seed` | **Plasmo + React 浏览器扩展**（Manifest V3）：Popup、Content Script，含路由、i18n 与鉴权。                     |
+
+各模板详细说明见对应目录下的 `README.md`。
