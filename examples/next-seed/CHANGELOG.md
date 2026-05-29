@@ -1,5 +1,18 @@
 # examples/next-seed
 
+## 1.2.2
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **next-oauth-wrapper, next-seed:** update local server ports in configuration files ([9192149](https://github.com/qlover/fe-base/commit/91921496c5dc6c61256a0d67cab500eeec45f6ae)) ([#613](https://github.com/qlover/fe-base/pull/613))
+  - Changed default local server ports from 3100 to 3120 in `next-sitemap.config.js`, `package.json`, and `robots.txt` for the next-oauth-wrapper example.
+  - Updated local server ports from 3100 to 3110 in `next-sitemap.config.js` and `robots.txt` for the next-seed example.
+  - Adjusted API documentation URLs in `route.ts` to reflect the new local server port for the next-seed example.
+
+  These changes ensure consistency in local development environments across examples.
+
 ## 1.2.0
 
 ### Minor Changes

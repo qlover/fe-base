@@ -1,5 +1,39 @@
 # examples/react-seed
 
+## 1.1.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-oauth-wrapper:** implement OAuth login flow and callback handling ([a539bb2](https://github.com/qlover/fe-base/commit/a539bb215187748c48d2e3cc9d159514945401d5)) ([#613](https://github.com/qlover/fe-base/pull/613))
+  - Added a new `.env.template` file for OAuth configuration variables.
+  - Introduced OAuth login functionality with `useOAuthLogin` hook for initiating login and handling errors.
+  - Created `OAuthCallback` page to process OAuth responses and manage user sessions.
+  - Updated internationalization mappings for OAuth-related texts in multiple languages.
+  - Refactored login page to integrate OAuth login button and display loading/error states.
+
+  These changes enhance the authentication process by integrating OAuth support, improving user experience during login.
+
+#### 🐞 Bug Fixes
+
+- **next-oauth-wrapper, next-seed:** update local server ports in configuration files ([9192149](https://github.com/qlover/fe-base/commit/91921496c5dc6c61256a0d67cab500eeec45f6ae)) ([#613](https://github.com/qlover/fe-base/pull/613))
+  - Changed default local server ports from 3100 to 3120 in `next-sitemap.config.js`, `package.json`, and `robots.txt` for the next-oauth-wrapper example.
+  - Updated local server ports from 3100 to 3110 in `next-sitemap.config.js` and `robots.txt` for the next-seed example.
+  - Adjusted API documentation URLs in `route.ts` to reflect the new local server port for the next-seed example.
+
+  These changes ensure consistency in local development environments across examples.
+
+#### ♻️ Refactors
+
+- **next-oauth-wrapper:** clean up and organize OAuth-related code ([c363be5](https://github.com/qlover/fe-base/commit/c363be56850fe6aa97d3e68ac02d9049727c3684)) ([#613](https://github.com/qlover/fe-base/pull/613))
+  - Refactored import statements in various files for improved clarity and organization.
+  - Updated ESLint configuration to include additional OAuth-related files.
+  - Made minor formatting adjustments in several files for consistency.
+  - Removed unnecessary trailing whitespace in localization files.
+
+  These changes enhance the maintainability and readability of the OAuth wrapper codebase.
+
 ## 1.1.0
 
 ### Minor Changes

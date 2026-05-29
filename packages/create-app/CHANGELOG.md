@@ -1,5 +1,18 @@
 # @qlover/create-app
 
+## 3.1.2
+
+### Patch Changes
+
+#### 📝 Documentation
+
+- **create-app:** update README files with detailed template descriptions ([bb03081](https://github.com/qlover/fe-base/commit/bb0308158d8803d1a747d7edc6829f6e32c5eea4)) ([#613](https://github.com/qlover/fe-base/pull/613))
+  - Enhanced the English and Chinese README files to specify that the template list is sourced from the `examples/` directory of the `qlover/fe-base` GitHub repository.
+  - Added a structured table format for common templates, including descriptions for `react-seed`, `next-seed`, `next-oauth-wrapper`, `taro-seed`, and `browser-plugin-seed`.
+  - Improved clarity and accessibility of information regarding available templates for users.
+
+  These updates aim to provide clearer guidance on the available templates and their functionalities.
+
 ## 3.1.0
 
 ### Minor Changes
