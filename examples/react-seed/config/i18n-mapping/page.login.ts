@@ -19,6 +19,8 @@ export const pageLoginI18n = {
   orContinue: i18nKeys.PAGE_LOGIN_OR_CONTINUE,
   google: i18nKeys.PAGE_LOGIN_GOOGLE,
   github: i18nKeys.PAGE_LOGIN_GITHUB,
+  oauthWrapper: i18nKeys.PAGE_LOGIN_OAUTH_WRAPPER,
+  oauthLoading: i18nKeys.PAGE_LOGIN_OAUTH_LOADING,
   heroTitle: i18nKeys.PAGE_LOGIN_HERO_TITLE,
   heroSubtitle: i18nKeys.PAGE_LOGIN_HERO_SUBTITLE,
   feature1: i18nKeys.PAGE_LOGIN_FEATURE_1,

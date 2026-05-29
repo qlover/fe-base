@@ -277,6 +277,202 @@ importers:
         specifier: ^8.56.1
         version: 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.3.3)
 
+  examples/next-oauth-wrapper:
+    dependencies:
+      '@ant-design/icons':
+        specifier: ^6.0.0
+        version: 6.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@ant-design/nextjs-registry':
+        specifier: ^1.3.0
+        version: 1.3.0(@ant-design/cssinjs@1.24.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(antd@5.29.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@ant-design/v5-patch-for-react-19':
+        specifier: ^1.0.3
+        version: 1.0.3(antd@5.29.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@brain-toolkit/antd-blocks':
+        specifier: ^0.1.2
+        version: 0.1.2(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.2)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+      '@brain-toolkit/antd-theme-override':
+        specifier: ^0.0.3
+        version: 0.0.3
+      '@brain-toolkit/brain-user':
+        specifier: ^0.2.4
+        version: 0.2.4(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)(zustand@5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
+      '@brain-toolkit/react-kit':
+        specifier: ^0.2.2
+        version: 0.2.2(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.2)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+      '@qlover/corekit-bridge':
+        specifier: 3.2.0
+        version: 3.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)(zustand@5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
+      '@qlover/fe-corekit':
+        specifier: 3.3.0
+        version: 3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
+      '@qlover/logger':
+        specifier: 1.2.0
+        version: 1.2.0
+      '@qlover/slice-store-react':
+        specifier: ^1.4.2
+        version: 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@qlover/tailwind-theme':
+        specifier: 0.1.1
+        version: 0.1.1
+      '@scalar/nextjs-api-reference':
+        specifier: ^0.9.24
+        version: 0.9.26(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0))(react@19.2.4)
+      '@supabase/postgrest-js':
+        specifier: ^2.87.1
+        version: 2.99.0
+      '@supabase/ssr':
+        specifier: ^0.7.0
+        version: 0.7.0(@supabase/supabase-js@2.99.0)
+      '@supabase/supabase-js':
+        specifier: ^2.57.2
+        version: 2.99.0
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
+      antd:
+        specifier: ^5.27.1
+        version: 5.29.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.19
+      https-proxy-agent:
+        specifier: ^5.0.1
+        version: 5.0.1
+      inversify:
+        specifier: ^7.8.1
+        version: 7.11.0(reflect-metadata@0.2.2)
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.3
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.23
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0)
+      next-intl:
+        specifier: ^4.8.2
+        version: 4.8.3(@swc/helpers@0.5.19)(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0))(react@19.2.4)(typescript@5.4.5)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      node-fetch:
+        specifier: ^2.7.0
+        version: 2.7.0
+      openai:
+        specifier: ^6.21.0
+        version: 6.27.0(ws@8.19.0)(zod@4.3.6)
+      p-limit:
+        specifier: ^7.3.0
+        version: 7.3.0
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+      zustand:
+        specifier: ^5.0.12
+        version: 5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+    devDependencies:
+      '@brain-toolkit/ts2locales':
+        specifier: ^0.4.0
+        version: 0.4.0
+      '@eslint/eslintrc':
+        specifier: ^3
+        version: 3.3.5
+      '@next/eslint-plugin-next':
+        specifier: 15.5.0
+        version: 15.5.0
+      '@qlover/env-loader':
+        specifier: ^0.3.0
+        version: 0.3.3
+      '@qlover/eslint-plugin':
+        specifier: 2.1.0
+        version: 2.1.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/lodash':
+        specifier: ^4.17.20
+        version: 4.17.24
+      '@types/ms':
+        specifier: ^2.1.0
+        version: 2.1.0
+      '@types/node':
+        specifier: ^20
+        version: 20.11.5
+      '@types/node-fetch':
+        specifier: ^2.6.13
+        version: 2.6.13
+      '@types/react':
+        specifier: 19.2.13
+        version: 19.2.13
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      dotenv-expand:
+        specifier: ^12.0.3
+        version: 12.0.3
+      eslint:
+        specifier: ^9
+        version: 9.39.4(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 15.5.0
+        version: 15.5.0(eslint-plugin-import-x@4.16.1(@typescript-eslint/utils@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
+      eslint-config-prettier:
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@9.39.4(jiti@2.6.1))
+      eslint-import-resolver-typescript:
+        specifier: ^4.4.4
+        version: 4.4.4(eslint-plugin-import-x@4.16.1(@typescript-eslint/utils@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1)))(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import:
+        specifier: ^2.32.0
+        version: 2.32.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-prettier:
+        specifier: ^5.5.4
+        version: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.1)
+      eslint-plugin-unused-imports:
+        specifier: ^4.2.0
+        version: 4.4.1(@typescript-eslint/eslint-plugin@8.57.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))
+      next-sitemap:
+        specifier: ^4.2.3
+        version: 4.2.3(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0))
+      next-swagger-doc:
+        specifier: ^0.4.1
+        version: 0.4.1(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.98.0))(openapi-types@12.1.3)
+      prettier:
+        specifier: ^3.6.2
+        version: 3.8.1
+      swagger-ui-react:
+        specifier: ^5.31.2
+        version: 5.32.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.4.5
+      typescript-eslint:
+        specifier: ^8.15.0
+        version: 8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
+
   examples/next-seed:
     dependencies:
       '@ant-design/icons':
@@ -1868,6 +2064,9 @@ packages:
 
   '@brain-toolkit/brain-user@0.2.2':
     resolution: {integrity: sha512-osv42If7dDVCPwXdqX4HE2jCfnhfwMe3Ql+FKkNy3zYYADNQyiaumJL1fv/1hmcUjqgR0HYKn7ardy51HwRYTQ==}
+
+  '@brain-toolkit/brain-user@0.2.4':
+    resolution: {integrity: sha512-FeH+naiHnYcfFFurAbBY42/GBsn16A2RZVeN+Vy1xB9f2SGkEFkbTJdyNuXEU6QG+XBKA6VZZGjpu8IXE3Sp4Q==}
 
   '@brain-toolkit/react-kit@0.2.2':
     resolution: {integrity: sha512-KFdkTQ996itx7DV7s86AVUwJr0wuNi4eQjHio+MLYo9oNcq7yxuVIQJqRjp+B0qdE7iSoLj/CSia6wJ9NX2aQg==}
@@ -4682,6 +4881,17 @@ packages:
   '@qlover/corekit-bridge@2.2.0':
     resolution: {integrity: sha512-EyYCoLFoN4VF4bevK2zWsPOcIk1B+7ljKFUdjrcSr1SVsjK8y21LwXQ2fI6PpLkbpQCiUCA9yFAot2aJqiR0Vw==}
 
+  '@qlover/corekit-bridge@3.2.0':
+    resolution: {integrity: sha512-hVlyuP5eR1r1+cYCHypBCreX2XEmiXrnRnmAj+hmBo9VSUG2vprSqQQLwtBTz5NnZ+hwyGTEG/I16w4fumjVIw==}
+    peerDependencies:
+      reflect-metadata: '>=0.1.0'
+      zustand: '>=5.0.12'
+    peerDependenciesMeta:
+      reflect-metadata:
+        optional: true
+      zustand:
+        optional: true
+
   '@qlover/env-loader@0.3.3':
     resolution: {integrity: sha512-m5qeZMSKtpsXXNu+zam6UC8ynn0qKhoruOUPoOWqNrFyFi3i5D0k4aL7A6LUv69klwNG8FQiKxBqm8ENjW5ERg==}
 
@@ -4693,14 +4903,28 @@ packages:
       eslint: '>=8.0.0'
       typescript: '>=4.0.0'
 
+  '@qlover/eslint-plugin@2.1.0':
+    resolution: {integrity: sha512-hvVRsZm7400WHarP9KHeTX/qoptbypt1PUaD3kMyHtdSTcVwZLjoqRvGp4WypLLVV46vrGYZZPtPET5fK7HIZA==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      '@typescript-eslint/parser': '>=6.0.0'
+      eslint: '>=10.0.0'
+      typescript: '>=4.0.0'
+
   '@qlover/fe-corekit@3.2.0':
     resolution: {integrity: sha512-rIhfkF+BLkuoLr2AUF/KMBA5ysO0DC0IigCjtzOc43aAnkU1/L9g7kQltDDytAl8uUKOFvpd5U6HkOyr9kzUzw==}
+
+  '@qlover/fe-corekit@3.3.0':
+    resolution: {integrity: sha512-6G40onZHnR8nTp3AJ4cWEezeqzRy5huNPQAzxNpURhYkhOAQjmd0qPZ9WLWEzFx3ENvZfYEzGIoLY8b6rkcsPw==}
 
   '@qlover/logger@1.0.0':
     resolution: {integrity: sha512-XpZcg+Xe9pK5uqil9E/oEBBXTrgTgrS7X6xDSF9VbJX0fMKVCpr6mLQbs+927r2qCNLbCopQmd0SxV9CqbYQ/A==}
 
   '@qlover/logger@1.1.0':
     resolution: {integrity: sha512-JpqQiL3SQtBnWbvHRIP7EyIt3L+Gfpjn8eOHyrJYZWKlI245zrvsnBGvEzCTSLmLoBi81TMOdZQmG/pBxeFkxw==}
+
+  '@qlover/logger@1.2.0':
+    resolution: {integrity: sha512-oPLtsR6Hhp/+jFA8Lcbo+y4Ou9q4RHTupTx08fSqn2Ty/LzuaiXg4io17pdAu0kQ4AZxZlAsHNeexcrBN4DegQ==}
 
   '@qlover/slice-store-react@1.4.2':
     resolution: {integrity: sha512-yhYoWhQDdUCeXJlwiZHoA7i1ujEYcz9Gv9ZBDtu5y/yVG45uQLneXfB8GvcjFu8l3nLTrRebUg5DVVUi+IGCJw==}
@@ -4716,6 +4940,12 @@ packages:
 
   '@qlover/slice-store@1.4.1':
     resolution: {integrity: sha512-HkczkS+pEQ4x6YbQoq78hlOlAfkWyMdHHvWOpgNxXWFfpS/y1fS1E7pR7NRp7dt+1Ypad4jOhQS6ZkXiPW8fZQ==}
+
+  '@qlover/tailwind-theme@0.1.0':
+    resolution: {integrity: sha512-Fk5CyqwhnNxSqEW06t6eFiaADUkHmLWYZblvua9m5c4VFumPHinN/vqrQDGBy0O837I/GW0HZA9UzuLMtBFVrg==}
+
+  '@qlover/tailwind-theme@0.1.1':
+    resolution: {integrity: sha512-UQUCo5DgZsorfR4Fuz/NlnXja9KKhgk43rB5taigtEIXM+b+/aIIqfE4dThd8iXrT8g5WWt5Gt2LIuWb1DU3RA==}
 
   '@rc-component/async-validator@5.1.0':
     resolution: {integrity: sha512-n4HcR5siNUXRX23nDizbZBQPO0ZM/5oTtmKZ6/eqL0L2bo747cklFdZGRN2f+c9qWGICwDzrhW0H7tE9PptdcA==}
@@ -14612,7 +14842,7 @@ snapshots:
     dependencies:
       '@ant-design/icons': 6.1.0(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
-      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
+      '@qlover/fe-corekit': 3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/slice-store-react': 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       antd: 5.29.3(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       react: 18.3.1
@@ -14655,10 +14885,31 @@ snapshots:
       - tsx
       - yaml
 
+  '@brain-toolkit/brain-user@0.2.4(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)(zustand@5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))':
+    dependencies:
+      '@qlover/corekit-bridge': 3.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)(zustand@5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
+      '@qlover/fe-corekit': 3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
+      '@qlover/logger': 1.2.0
+      lodash-es: 4.17.23
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - reflect-metadata
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - yaml
+      - zustand
+
   '@brain-toolkit/react-kit@0.2.2(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.2)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
-      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
+      '@qlover/fe-corekit': 3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/slice-store-react': 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       react: 18.3.1
     transitivePeerDependencies:
@@ -17894,6 +18145,31 @@ snapshots:
       - tsx
       - yaml
 
+  '@qlover/corekit-bridge@3.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)(zustand@5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))':
+    dependencies:
+      '@qlover/fe-corekit': 3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
+      '@qlover/logger': 1.2.0
+      '@qlover/slice-store': 1.4.1
+      '@qlover/tailwind-theme': 0.1.0
+      js-cookie: 3.0.5
+      tailwindcss: 3.4.19(yaml@2.8.2)
+      vite: 5.4.21(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)
+    optionalDependencies:
+      reflect-metadata: 0.2.2
+      zustand: 5.0.12(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - yaml
+
   '@qlover/env-loader@0.3.3':
     dependencies:
       dotenv: 16.6.1
@@ -17910,7 +18186,22 @@ snapshots:
       eslint: 9.39.4(jiti@2.6.1)
       typescript: 5.9.3
 
+  '@qlover/eslint-plugin@2.1.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)':
+    dependencies:
+      '@typescript-eslint/parser': 8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
+      eslint: 9.39.4(jiti@2.6.1)
+      typescript: 5.4.5
+
   '@qlover/fe-corekit@3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)':
+    dependencies:
+      any-signal: 4.2.0
+      axios: 1.13.6
+      lodash-es: 4.17.23
+      p-retry: 7.1.1
+    transitivePeerDependencies:
+      - debug
+
+  '@qlover/fe-corekit@3.3.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)':
     dependencies:
       any-signal: 4.2.0
       axios: 1.13.6
@@ -17922,6 +18213,8 @@ snapshots:
   '@qlover/logger@1.0.0': {}
 
   '@qlover/logger@1.1.0': {}
+
+  '@qlover/logger@1.2.0': {}
 
   '@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -17948,6 +18241,14 @@ snapshots:
       react: 19.2.4
 
   '@qlover/slice-store@1.4.1': {}
+
+  '@qlover/tailwind-theme@0.1.0':
+    dependencies:
+      postcss: 8.5.14
+
+  '@qlover/tailwind-theme@0.1.1':
+    dependencies:
+      postcss: 8.5.14
 
   '@rc-component/async-validator@5.1.0':
     dependencies:

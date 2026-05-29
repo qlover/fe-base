@@ -57,6 +57,14 @@ export const authRoutes: RouteConfigValue[] = [
       icon: 'userPlus',
       localNamespace: 'common'
     }
+  },
+  {
+    path: 'oauth/callback',
+    element: 'auth/OAuthCallback',
+    category: 'auth',
+    meta: {
+      localNamespace: 'common'
+    }
   }
 ];
 

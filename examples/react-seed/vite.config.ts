@@ -16,6 +16,9 @@ const relativePath = (path: string) => resolve(__dirname, path);
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 3100
+  },
   base: routerPrefix,
   define: {
     'import.meta.env.VITE_APP_NAME': JSON.stringify(name),

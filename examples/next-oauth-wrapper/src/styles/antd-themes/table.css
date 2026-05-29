@@ -1,0 +1,134 @@
+/* custom variables - for antd and custom css */
+html,
+.fe-theme {
+  /* Antd Table 组件变量 */
+  .ant-table-css-var {
+    --fantd-table-header-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-header-color: rgb(var(--fe-color-primary-text));
+    --fantd-table-header-sort-active-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-header-sort-hover-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-body-sort-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-row-hover-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-row-selected-bg: rgba(var(--fe-color-brand), 0.1);
+    --fantd-table-row-selected-hover-bg: rgba(var(--fe-color-brand-hover), 0.2);
+    --fantd-table-row-expanded-bg: rgba(var(--fe-color-primary-text), 0.02);
+    --fantd-table-cell-padding-block: 16px;
+    --fantd-table-cell-padding-inline: 16px;
+    --fantd-table-cell-padding-block-md: 12px;
+    --fantd-table-cell-padding-inline-md: 8px;
+    --fantd-table-cell-padding-block-sm: 8px;
+    --fantd-table-cell-padding-inline-sm: 8px;
+    --fantd-table-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-table-header-border-radius: 8px;
+    --fantd-table-footer-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-footer-color: rgb(var(--fe-color-primary-text));
+    --fantd-table-cell-font-size: 14px;
+    --fantd-table-cell-font-size-md: 14px;
+    --fantd-table-cell-font-size-sm: 14px;
+    --fantd-table-header-split-color: rgb(var(--fe-color-primary-border));
+    --fantd-table-fixed-header-sort-active-bg: rgb(
+      var(--fe-color-secondary)
+    );
+    --fantd-table-header-filter-hover-bg: rgba(var(--fe-color-primary-text), 0.06);
+    --fantd-table-filter-dropdown-menu-bg: rgb(var(--fe-color-primary));
+    --fantd-table-filter-dropdown-bg: rgb(var(--fe-color-primary));
+    --fantd-table-expand-icon-bg: rgb(var(--fe-color-primary));
+    --fantd-table-selection-column-width: 32px;
+    --fantd-table-sticky-scroll-bar-bg: rgba(var(--fe-color-primary-text), 0.25);
+    --fantd-table-sticky-scroll-bar-border-radius: 100px;
+    --fantd-table-expand-icon-margin-top: 2.5px;
+    --fantd-table-header-icon-color: rgb(var(--fe-color-tertiary-text));
+    --fantd-table-header-icon-hover-color: rgb(var(--fe-color-secondary-text));
+    --fantd-table-expand-icon-half-inner: 7px;
+    --fantd-table-expand-icon-size: 17px;
+    --fantd-table-expand-icon-scale: 0.9411764705882353;
+  }
+}
+
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme {
+  /* Antd Table 组件变量 */
+  .ant-table-css-var {
+    --fantd-table-header-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-header-color: rgb(var(--fe-color-primary-text));
+    --fantd-table-header-sort-active-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-header-sort-hover-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-body-sort-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-row-hover-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-row-selected-bg: rgba(var(--fe-color-brand), 0.2);
+    --fantd-table-row-selected-hover-bg: rgba(var(--fe-color-brand-hover), 0.3);
+    --fantd-table-row-expanded-bg: rgba(var(--fe-color-primary-text), 0.02);
+    --fantd-table-cell-padding-block: 16px;
+    --fantd-table-cell-padding-inline: 16px;
+    --fantd-table-cell-padding-block-md: 12px;
+    --fantd-table-cell-padding-inline-md: 8px;
+    --fantd-table-cell-padding-block-sm: 8px;
+    --fantd-table-cell-padding-inline-sm: 8px;
+    --fantd-table-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-table-header-border-radius: 8px;
+    --fantd-table-footer-bg: rgb(var(--fe-color-secondary));
+    --fantd-table-footer-color: rgb(var(--fe-color-primary-text));
+    --fantd-table-cell-font-size: 14px;
+    --fantd-table-cell-font-size-md: 14px;
+    --fantd-table-cell-font-size-sm: 14px;
+    --fantd-table-header-split-color: rgb(var(--fe-color-primary-border));
+    --fantd-table-fixed-header-sort-active-bg: rgb(var(--fe-color-elevated));
+    --fantd-table-header-filter-hover-bg: rgba(var(--fe-color-primary-text), 0.06);
+    --fantd-table-filter-dropdown-menu-bg: rgb(var(--fe-color-primary));
+    --fantd-table-filter-dropdown-bg: rgb(var(--fe-color-primary));
+    --fantd-table-expand-icon-bg: rgb(var(--fe-color-primary));
+    --fantd-table-selection-column-width: 32px;
+    --fantd-table-sticky-scroll-bar-bg: rgba(var(--fe-color-primary-text), 0.25);
+    --fantd-table-sticky-scroll-bar-border-radius: 100px;
+    --fantd-table-expand-icon-margin-top: 2.5px;
+    --fantd-table-header-icon-color: rgb(var(--fe-color-tertiary-text));
+    --fantd-table-header-icon-hover-color: rgb(var(--fe-color-secondary-text));
+    --fantd-table-expand-icon-half-inner: 7px;
+    --fantd-table-expand-icon-size: 17px;
+    --fantd-table-expand-icon-scale: 0.9411764705882353;
+  }
+}
+
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme {
+  /* Antd Table 组件变量 */
+  .ant-table-css-var {
+    --fantd-table-header-bg: var(--ant-color-bg-container);
+    --fantd-table-header-color: var(--ant-color-text);
+    --fantd-table-header-sort-active-bg: var(--ant-color-bg-elevated);
+    --fantd-table-header-sort-hover-bg: var(--ant-color-bg-elevated);
+    --fantd-table-body-sort-bg: var(--ant-color-bg-container);
+    --fantd-table-row-hover-bg: var(--ant-color-bg-elevated);
+    --fantd-table-row-selected-bg: var(--fe-color-primary-bg);
+    --fantd-table-row-selected-hover-bg: rgb(var(--fe-color-brand) / 0.2);
+    --fantd-table-row-expanded-bg: rgba(var(--ant-color-text), 0.02);
+    --fantd-table-cell-padding-block: 16px;
+    --fantd-table-cell-padding-inline: 16px;
+    --fantd-table-cell-padding-block-md: 12px;
+    --fantd-table-cell-padding-inline-md: 8px;
+    --fantd-table-cell-padding-block-sm: 8px;
+    --fantd-table-cell-padding-inline-sm: 8px;
+    --fantd-table-border-color: var(--ant-color-border);
+    --fantd-table-header-border-radius: 8px;
+    --fantd-table-footer-bg: var(--ant-color-bg-container);
+    --fantd-table-footer-color: var(--ant-color-text);
+    --fantd-table-cell-font-size: 14px;
+    --fantd-table-cell-font-size-md: 14px;
+    --fantd-table-cell-font-size-sm: 14px;
+    --fantd-table-header-split-color: var(--ant-color-border);
+    --fantd-table-fixed-header-sort-active-bg: var(--ant-color-bg-elevated);
+    --fantd-table-header-filter-hover-bg: rgba(var(--ant-color-text), 0.06);
+    --fantd-table-filter-dropdown-menu-bg: var(--ant-color-bg-container);
+    --fantd-table-filter-dropdown-bg: var(--ant-color-bg-container);
+    --fantd-table-expand-icon-bg: var(--ant-color-bg-container);
+    --fantd-table-selection-column-width: 32px;
+    --fantd-table-sticky-scroll-bar-bg: rgba(var(--ant-color-text), 0.25);
+    --fantd-table-sticky-scroll-bar-border-radius: 100px;
+    --fantd-table-expand-icon-margin-top: 2.5px;
+    --fantd-table-header-icon-color: rgb(var(--fe-color-primary-text) / 0.45);
+    --fantd-table-header-icon-hover-color: rgb(var(--fe-color-primary-text) / 0.85);
+    --fantd-table-expand-icon-half-inner: 7px;
+    --fantd-table-expand-icon-size: 17px;
+    --fantd-table-expand-icon-scale: 0.9411764705882353;
+  }
+}

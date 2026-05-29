@@ -19,3 +19,14 @@ declare module '@qlover/corekit-bridge/bootstrap' {
     readonly userCredentialKey: string;
   }
 }
+
+interface ImportMetaEnv {
+  readonly VITE_OAUTH_SITE_URL?: string;
+  readonly VITE_OAUTH_CLIENT_ID?: string;
+  readonly VITE_OAUTH_SCOPE?: string;
+  readonly VITE_OAUTH_REDIRECT_PATH?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

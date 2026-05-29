@@ -176,7 +176,15 @@ export default defineConfig([
   ),
   // 为特定文件允许使用全局变量
   {
-    files: ['src/main.tsx', 'src/core/globals.ts', 'src/impls/kvStorage.ts'],
+    files: [
+      'src/main.tsx',
+      'src/core/globals.ts',
+      'src/impls/kvStorage.ts',
+      // TODO: 当 oauth sdk 后，这里需要去掉
+      'src/oauth/client.ts',
+      'src/oauth/config.ts',
+      'src/oauth/session.ts'
+    ],
     rules: {
       'no-restricted-globals': 'off'
     }
