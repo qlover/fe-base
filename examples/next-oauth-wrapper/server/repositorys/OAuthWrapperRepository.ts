@@ -1,4 +1,4 @@
-import { injectable } from '@shared/container';
+import { inject, injectable } from '@shared/container';
 import type {
   OAuthClientRow,
   OAuthClientListItem,
@@ -17,12 +17,20 @@ import {
   hashClientSecret
 } from '@shared/oauth-wrapper/utils/clientSecretHash';
 import { BaseRepo } from './BaseRepo';
+import { SupabaseBridge } from './SupabaseBridge';
+import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
 
 @injectable()
 export class OAuthWrapperRepository
   extends BaseRepo
   implements OAuthWrapperRepositoryInterface
 {
+  constructor(
+    @inject(SupabaseServiceRoleBridge)
+    protected supabaseBridge: SupabaseBridge
+  ) {
+    super(supabaseBridge, '');
+  }
   /**
    * @override
    */

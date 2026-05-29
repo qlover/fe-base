@@ -5,9 +5,6 @@ import type { LoggerInterface } from '@qlover/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export class BaseRepo {
-  @inject(SupabaseBridge)
-  protected supabaseBridge!: SupabaseBridge;
-
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
@@ -16,6 +13,7 @@ export class BaseRepo {
   }
 
   constructor(
+    protected supabaseBridge: SupabaseBridge,
     /**
      * 仓库名称
      *

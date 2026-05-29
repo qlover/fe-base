@@ -12,6 +12,7 @@ import type {
   RequestLogsSearchForUserParams
 } from '@server/interfaces/RequestLogsRepositoryInterface';
 import { BaseRepo } from './BaseRepo';
+import { SupabaseBridge } from './SupabaseBridge';
 import type {
   ResourceSearchParams,
   ResourceSearchResult
@@ -73,8 +74,11 @@ export class RequestLogsRepository
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
-  constructor() {
-    super(TABLE);
+  constructor(
+    @inject(SupabaseBridge)
+    protected supabaseBridge: SupabaseBridge
+  ) {
+    super(supabaseBridge, TABLE);
   }
 
   /**
