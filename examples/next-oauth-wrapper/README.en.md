@@ -1,300 +1,233 @@
-# Next Seed
+# Next OAuth Wrapper (`examples/next-oauth-wrapper`)
 
 > 中文: [README.md](./README.md)
 
-**TL;DR**: `npm install` → copy `.env.template` to `.env` → `npm run dev` (default port **3100**, `APP_ENV=localhost`) → production: `npm run build` then `npm start` (default port **3101**).
+**TL;DR**: `npm install` → copy `.env.template` to `.env` (OAuth variables below) → run `makes/sql/` on Supabase → `npm run dev` (port **3102**, `APP_ENV=localhost`) → production: `npm run build` then `npm start` (port **3101**).
 
-A full-stack Next.js seed with clear layering, front–back separation, and interface-oriented design.
+**Docs**: In-app OAuth guide at `/[locale]/docs/oauth` (e.g. `http://localhost:3102/en/docs/oauth`); i18n conventions in [docs/i18n.en.md](./docs/i18n.en.md).
+
+A Next.js OAuth 2.0 authorization server example. **`shared/oauth-wrapper`** holds provider-agnostic protocol logic; this repo wires sessions, storage, adapters, and routes under `server/` and `src/`.
 
 ---
 
 ## Tech Stack
 
-| Category            | Technologies                                  |
-| ------------------- | --------------------------------------------- |
-| **Framework**       | Next.js 16, App Router, React 19              |
-| **Validation**      | Zod (schemas and request/response validation) |
-| **Data & Auth**     | Supabase (DB, SSR auth, PostgREST)            |
-| **UI**              | Ant Design 5, Tailwind CSS 4                  |
-| **i18n**            | next-intl                                     |
-| **Theme**           | next-themes                                   |
-| **DI**              | Container (Inversify, SimpleIOCContainer)     |
-| **Utils**           | dayjs, lodash, clsx                           |
-| **AI**              | OpenAI SDK (optional)                         |
-| **Language & Lint** | TypeScript 5, ESLint, Prettier                |
+| Category        | Technologies |
+| --------------- | ------------ |
+| **Framework**   | Next.js 16, App Router, React 19 |
+| **OAuth**       | `shared/oauth-wrapper` (authorization code, PKCE, token, userinfo) |
+| **Validation**  | Zod |
+| **Data**        | Supabase |
+| **Reference upstream** | `@brain-toolkit/brain-user` (`BrainUserAdapter`, swappable) |
+| **UI**          | Ant Design 5, Tailwind CSS 4 |
+| **i18n**        | next-intl |
+| **DI**          | Inversify, SimpleIOCContainer |
+| **Quality**     | TypeScript 5, ESLint, Prettier, Vitest |
 
-**Runtime:** Node.js ^20.17.0 or >=22.9.0.
-
----
-
-## 1. Project Layered Structure
-
-The repo is split into three top-level directories: **server**, **src**, and **shared**.
-
-### Directory structure
-
-```mermaid
-flowchart TB
-  subgraph root["brain-oauth root"]
-    direction TB
-    subgraph server["server/ — Backend"]
-      S_CTL["controllers/"]
-      S_SVC["services/"]
-      S_REP["repositorys/"]
-      S_PORT["port/ server interfaces"]
-      S_VAL["validators/"]
-      S_ROOT["serverIoc, ServerAuth, SupabaseBridge, etc."]
-    end
-    subgraph src["src/ — Frontend & App"]
-      A_APP["app/ App Router + api routes"]
-      A_PAGES["pages/"]
-      A_UI["uikit/ components & Hooks"]
-      A_IMPL["impls/ client interface impls"]
-      A_I18N["i18n/"]
-    end
-    subgraph shared["shared/ — Shared contracts & config"]
-      SH_IF["interfaces/"]
-      SH_SC["schemas/"]
-      SH_VAL["validators/"]
-      SH_CFG["config/ IOC identifiers, etc."]
-      SH_CTN["container/ IOC container"]
-    end
-  end
-  shared --> server
-  shared --> src
-  server --> A_APP
-```
-
-### `server/` — Backend (API & business logic)
-
-Runs in Node/Next server context. Holds all server-side API and business logic.
-
-| Path                  | Description                                                                        |
-| --------------------- | ---------------------------------------------------------------------------------- |
-| `server/controllers/` | HTTP/API handlers that delegate to services                                        |
-| `server/services/`    | Business logic (e.g. `UserService`, `ApiLocaleService`, `AIService`)               |
-| `server/repositorys/` | Data access (e.g. `LocalesRepository`)                                             |
-| `server/port/`        | **Server-side interfaces** (controllers, services, DB, auth)                       |
-| `server/validators/`  | Request/input validation for controllers                                           |
-| `server/` (root)      | Server bootstrap, IOC registration (`serverIoc.ts`), auth, config, Supabase bridge |
-
-Controllers depend on **interfaces** in `server/port/` (e.g. `UserServiceInterface`, `ServerAuthInterface`); implementations live in `server/services/` and related modules.
-
-### `src/` — Frontend & Next app
-
-User-facing app and Next.js structure.
-
-| Path         | Description                                                                                                                                                            |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`   | Next.js App Router: pages, layouts, and **API routes** (`app/api/`)                                                                                                    |
-| `src/pages/` | Page components (e.g. admin, auth, about)                                                                                                                              |
-| `src/uikit/` | Shared UI: components, Hooks, context (e.g. `useIOC`, `useI18nMapping`, `AdminLayout`)                                                                                 |
-| `src/impls/` | **Client implementations** of shared interfaces: Gateways (e.g. `AppUserGateway`), services (`UserService`, `RouterService`, `I18nService`), bootstraps, API requester |
-| `src/i18n/`  | i18n routing and message loading                                                                                                                                       |
-
-`src/impls/` implements interfaces from `shared/interfaces/` (e.g. `UserServiceGatewayInterface`, `AppUserApiInterface`), wired via IOC so callers depend on interfaces, not concrete classes.
-
-### `shared/` — Shared contracts & config
-
-Shared by **server** and **src** for a single source of truth.
-
-| Path                 | Description                                                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `shared/interfaces/` | **Shared interfaces**: API contracts (`AppUserApiInterface`), service interfaces (`UserServiceInterface`, `RouterInterface`), etc. |
-| `shared/schemas/`    | Shared data shapes (`UserSchema`, `LoginSchema`, `LocalesSchema`, `PaginationSchema`)                                              |
-| `shared/validators/` | Validators and validator interface, used by both client and server                                                                 |
-| `shared/config/`     | App config: routes, i18n identifiers/mappings, theme, cookies, nav, IOC identifiers                                                |
-| `shared/container/`  | IOC container and DI utilities (e.g. Inversify bindings)                                                                           |
-
-Both sides import from `shared/` to keep contracts and types aligned.
-
-### Summary
-
-- **server**: Backend API, controllers, services, repositories, and server-only ports/implementations.
-- **src**: Next app, pages, UI kit, and **client implementations** of shared interfaces; talks to backend via `/api`.
-- **shared**: Interfaces, schemas, validators, config, and container — single source of truth for contracts and shared types.
+**Runtime:** Node.js ^20.17.0 or >=22.9.0, npm >=10.0.0.
 
 ---
 
-## 2. Front–back separation
+## OAuth Wrapper: Architecture
 
-Same repo and Next app; frontend and backend are separated by responsibility and call flow.
+### Two layers
 
-### Front–back flow
+| Layer | Path | Role |
+| ----- | ---- | ---- |
+| **Reusable core** | `shared/oauth-wrapper/` | RFC 6749 flows, PKCE, consent, token exchange, userinfo — **no** dependency on a specific login API |
+| **This example** | `server/providers`, `server/adapters`, `server/repositorys`, `src/app` | HttpOnly session cookie, Supabase persistence, adapter, Next routes and UI |
 
-```mermaid
-sequenceDiagram
-  participant Page as Page / Component
-  participant useIOC as useIOC (IOC)
-  participant Gateway as AppUserGateway etc.
-  participant Requester as AppApiRequester
-  participant API as Next API /api/*
-  participant Controller as UserController
-  participant Service as UserService
+To change the user system, replace the **adapter + Provider class + IOC binding**; keep `OAuthWrapperService` stable when possible.
 
-  Page->>useIOC: get UserServiceInterface
-  useIOC->>Gateway: return impl (e.g. UserService → Gateway)
-  Page->>Gateway: login / register / refresh
-  Gateway->>Requester: request({ url: '/api/user/...' })
-  Requester->>API: HTTP GET/POST (baseURL: /api)
-  API->>Controller: NextApiServer.runWithJson(IOC(UserController).login)
-  Controller->>Service: userService.login(body)
-  Service-->>Controller: UserSchema
-  Controller-->>API: AppApiResult
-  API-->>Requester: JSON
-  Requester-->>Gateway: parse result
-  Gateway-->>Page: data or error
+### Core modules (`shared/oauth-wrapper/`)
+
+| Path | Description |
+| ---- | ----------- |
+| `interfaces/OAuthUserAdapterInterface.ts` | Upstream port: `login`, `exchangeAccessToken`, `getUserInfo`, `getUserInfoByAccessToken` |
+| `interfaces/OAuthWrapperRepositoryInterface.ts` | Auth codes, refresh tokens, clients, stored credentials |
+| `interfaces/OAuthSessionInterface.ts` | Logged-in session for the authorize page (JWT cookie in this demo) |
+| `services/OAuthWrapperService.ts` | Authorize validation, consent, token delegation, userinfo |
+| `services/OAuthTokenService.ts` | `authorization_code` / `refresh_token` grants |
+| `schema/`, `utils/` | Zod schemas, PKCE, redirect helpers |
+
+```ts
+import {
+  OAuthWrapperService,
+  OAuthTokenService,
+  OAuthUserAdapterInterface
+} from '@shared/oauth-wrapper';
 ```
 
-### How it runs
+### Wiring in this repo
 
-- **Backend**: Implemented as **Next.js API routes** under `src/app/api/` (e.g. `app/api/user/login/route.ts`, `app/api/user/session/route.ts`). Each route uses `NextApiServer` and server IOC to run the corresponding Controller/Service.
-- **Frontend**: UI in `src/app/` and `src/pages/` talks to the backend only over HTTP. The client uses `AppApiRequester` (and Gateways on top) with `baseURL: '/api'`; all requests go to same-origin `/api/*`.
-- **Deploy**: `next start` serves both app and API; no separate backend process. Local dev: `npm run dev` on one port (e.g. 3100).
+- **Provider**: `server/providers/BrainUserOAuthProvider.ts` — `extends OAuthWrapperService`, injects session, `BrainUserAdapter`, `OAuthWrapperRepository`, `OAuthTokenService`.
+- **IOC**: `server/serverIoc.ts` binds `I.OAuthWrapperProviderInterface` → `BrainUserOAuthProvider`.
+- **Login orchestration**: `server/services/OAuthControllerService.ts` — session + `upsertUserCredentials` after `adapter.login`.
+- **HTTP**: `server/controllers/OAuthWrapperController.ts`.
 
-### Environments
+Machine endpoints (no locale, skip session middleware in `src/proxy.ts`):
 
-Scripts switch environment (e.g. for different backends or config):
-
-- `dev` — local (`APP_ENV=localhost`)
-- `dev:staging` — staging
-- `dev:prod` — production-like
-
-Frontend and backend share types and contracts in `shared/` so API and DTOs stay in sync.
+- `POST /oauth/token`
+- `GET /userinfo`
 
 ---
 
-## 3. Interface-oriented programming
+## Quick Start
 
-The codebase is organized around **interfaces as contracts** and **dependency injection (IOC)** so both server and client depend on abstractions, not concrete implementations.
-
-### Interface vs implementation
-
-```mermaid
-flowchart LR
-  subgraph shared["shared/"]
-    IF["interfaces/"]
-    SC["schemas/"]
-  end
-  subgraph server_impl["server impl"]
-    PORT["port/"]
-    SVC["services/"]
-    REP["repositorys/"]
-    CTL["controllers/"]
-  end
-  subgraph client_impl["src impl"]
-    IMPL["impls/ Gateway, Service"]
-  end
-  IF --> PORT
-  IF --> IMPL
-  SC --> server_impl
-  SC --> client_impl
-  PORT --> SVC
-  PORT --> CTL
-  SVC --> REP
-  CTL --> SVC
-  IMPL --> Requester["AppApiRequester → /api"]
+```bash
+cd examples/next-oauth-wrapper
+npm install
+cp .env.template .env
 ```
 
-### Interfaces as contracts
+**OAuth-related env** (see `.env.template`):
 
-**All behavior should be understandable from the interface layer**: callers see what can be done and the in/out types without opening implementations.
+| Variable | Purpose |
+| -------- | ------- |
+| `SITE_URL` | Public site URL |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | Supabase connection (OAuth table access) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Optional** — only when OAuth tables use RLS without policies that allow your server role |
+| `SESSION_SECRET` | Signs HttpOnly OAuth authorize session cookie |
+| `ENCRYPTION_KEY` | Encrypts upstream refresh tokens at rest |
+| `OAUTH_WRAPPER_API_BASE` | Upstream user API base (Brain User in the default adapter) |
+| `OAUTH_WRAPPER_API_TIMEOUT` | Upstream timeout ms (default `10000`) |
 
-Example — user-related capabilities:
+**Database:** run `makes/sql/001-base-tables.sql` then `002-oauth-clients.sql` in Supabase. If OAuth tables have **no RLS**, `SUPABASE_ANON_KEY` is enough; `SUPABASE_SERVICE_ROLE_KEY` is only needed when RLS blocks anon writes (the bundled `002` script enables RLS by default—skip or adjust if that does not match your deployment). `createAdminClient()` prefers service role, then falls back to anon.
+
+**Run:** `npm run dev` → `http://localhost:3102`.
+
+**Suggested first run:**
+
+1. Sign in at `/auth/login` or `POST /api/oauth/verify`.
+2. Create a client at `/{locale}/developer/apps`.
+3. Try `/{locale}/oauth/playground` or a real redirect to `/{locale}/oauth/authorize`.
+
+---
+
+## Using OAuth Wrapper End-to-End
+
+### Supported today
+
+- `response_type=code`, **PKCE S256** (required for public clients)
+- `grant_type=authorization_code`, `grant_type=refresh_token`
+- `GET /userinfo` with Bearer token
+
+### Endpoints
+
+| Endpoint | Method | Notes |
+| -------- | ------ | ----- |
+| `/[locale]/oauth/authorize` | GET | Consent UI (requires session) |
+| `/api/oauth/verify` | POST | Email/password login → session + stored upstream tokens |
+| `/api/oauth/consent` | POST | Approve/deny → `redirectUrl` with `code` or OAuth error |
+| `/oauth/token` | POST | Token endpoint (form body, optional HTTP Basic) |
+| `/userinfo` | GET | Bearer access token |
+| `/api/clients` | GET/POST | Manage clients (authenticated) |
+
+Constants: `shared/config/route.ts`, `shared/config/apiRoutes.ts`.
+
+---
+
+## Integrate OAuth login in your app
+
+Use this deployment as the **authorization server**. End users sign in on **this site** (`/auth/login`), not by posting passwords to your app. Your app redirects, receives `code` on `redirect_uri`, and exchanges it for tokens **on your backend** (recommended).
+
+### Prerequisites
+
+1. Set `SITE_URL` (e.g. `http://localhost:3102`).
+2. Sign in, create a client at `/{locale}/developer/apps`: `client_id`, `redirect_uri`, scopes, and `client_secret` (confidential clients only).
+3. Public clients (SPA/native): **PKCE required**, no `client_secret` at token endpoint.
+
+| Step | URL |
+| ---- | --- |
+| Authorize (browser) | `{SITE_URL}/{locale}/oauth/authorize` |
+| Token | `POST {SITE_URL}/oauth/token` |
+| Userinfo | `GET {SITE_URL}/userinfo` |
+
+### Minimal Express client (see Chinese [README.md](./README.md) for full listing)
+
+1. `GET /login` — generate `state` + PKCE, redirect to `{SITE_URL}/zh/oauth/authorize?...`
+2. `GET /oauth/callback` — verify `state`, `POST /oauth/token` with `code` + `code_verifier`
+3. `GET /userinfo` with `Bearer access_token`, then create **your** session
+
+Store `code_verifier` server-side; never expose `client_secret` to the browser. Unauthenticated authorize visits redirect to `/auth/login?redirect=...` and return after login.
+
+Helpers in-repo: `src/uikit/utils/oauthPlaygroundUtils.ts` (`buildAuthorizeUrl`, `parseOAuthCallbackUrl`). In-app tester: `/{locale}/oauth/playground`.
+
+### Authorization code + PKCE (protocol detail)
+
+1. Register a client in the developer console; note `client_id`, `redirect_uri`, and `client_secret` (confidential clients).
+2. Redirect the user to authorize, e.g.:
+
+   ```
+   GET {SITE_URL}/en/oauth/authorize?client_id=...&redirect_uri=...&response_type=code&scope=openid%20profile%20email&state=...&code_challenge=...&code_challenge_method=S256
+   ```
+
+3. Ensure the user has a site session (`/auth/login` or `POST /api/oauth/verify`).
+4. User consents → browser returns to `redirect_uri?code=...&state=...`.
+5. Backend exchanges the code:
+
+   ```bash
+   curl -X POST http://localhost:3102/oauth/token \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=authorization_code&code=CODE&redirect_uri=URI&client_id=ID&code_verifier=VERIFIER"
+   ```
+
+6. Call userinfo:
+
+   ```bash
+   curl http://localhost:3102/userinfo -H "Authorization: Bearer ACCESS_TOKEN"
+   ```
+
+PKCE helpers: `@shared/oauth-wrapper/utils/pkce`. In-app testing: `OAuthPlayground` at `/{locale}/oauth/playground`.
+
+### Swap the upstream user API (minimal diff)
+
+OAuth routes stay unchanged. Smallest integration: **one Adapter file**, **one Provider file** (copy of `BrainUserOAuthProvider` with your adapter type), **one IOC line**.
+
+| Step | File |
+| ---- | ---- |
+| 1 | `server/adapters/AcmeUserAdapter.ts` — implement `OAuthUserAdapterInterface` (`login`, `exchangeAccessToken`, `getUserInfo`, `getUserInfoByAccessToken`) |
+| 2 | `server/providers/AcmeOAuthProvider.ts` — copy `BrainUserOAuthProvider.ts`, inject `AcmeUserAdapter` instead of `BrainUserAdapter` |
+| 3 | `server/serverIoc.ts` — `ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(AcmeOAuthProvider))` |
+
+Adapter contract (used by `OAuthControllerService.verifyLogin`):
+
+- `login` → `{ token: string }` (upstream session token)
+- `exchangeAccessToken` → `{ access_token, expires_in, refresh_token? }`
+- Profiles need a numeric `id` and non-empty `email`
+
+Example stub (see Chinese [README.md](./README.md) for the full `AcmeUserAdapter` listing):
 
 ```ts
-// shared/interfaces/AppUserApiInterface.ts (client API contract)
-interface AppUserApiInterface {
-  login(params: LoginSchema): Promise<UserSchema>;
-  register(params: LoginSchema): Promise<UserSchema>;
-  logout(params?: unknown): Promise<void>;
+@injectable()
+export class AcmeUserAdapter implements OAuthUserAdapterInterface {
+  async login(email, password) {
+    const data = await fetch(`${process.env.ACME_API_BASE}/login`, { /* … */ }).then((r) => r.json());
+    return { token: data.session_token };
+  }
+  // exchangeAccessToken, getUserInfo, getUserInfoByAccessToken — call your API, map to OAuthUserProfile
 }
-
-// server/port/UserServiceInterface.ts (server user contract)
-interface UserServiceInterface {
-  login(params: { email: string; password: string }): Promise<UserSchema>;
-  register(params: UserServiceRegisterParams): Promise<UserSchema>;
-  logout(): Promise<void>;
-  refresh(): Promise<UserSchema>;
-  getUser(): Promise<UserSchema>;
-}
 ```
 
-Implementations live in `server/` (Controller, UserService) and `src/impls/` (e.g. `AppUserGateway` calling `/api/user/*`); callers depend only on the interfaces above.
+Do **not** change `shared/oauth-wrapper`, repositories, controllers, or routes unless your login flow differs from the default `OAuthControllerService`.
 
-### How to follow project flow via interfaces (SeedBootstrapInterface example)
+---
 
-**1. Read the interface** → Flow is “get plugins → startup”:
+## Project Layers (summary)
 
-```ts
-// shared/interfaces/SeedBootstrapInterface.ts
-export interface SeedBootstrapInterface<Plugin> {
-  startup(): void;
-  startup(): Promise<unknown>;
-  getPlugins(seedConfig: SeedConfigInterface): Plugin[];
-}
-```
+- **`shared/oauth-wrapper/`** — OAuth protocol core (portable).
+- **`server/`** — Controllers, `OAuthWrapperRepository`, `OAuthSessionService`, providers, adapters, `serverIoc.ts`.
+- **`src/`** — App Router pages, machine routes, `OAuthWrapperGateway`, UI under `uikit/components-app/oauth/`.
+- **`shared/`** (elsewhere) — App-wide interfaces, schemas, config, IOC identifiers.
 
-**2. Find implementors** → Search for `implements SeedBootstrapInterface` → `BootstrapClient` (frontend), `BootstrapServer` (server). Frontend calls it from layout via `BootstrapsProvider`:
+### Front–back in one Next process
 
-```ts
-// src/uikit/components/BootstrapsProvider.tsx
-const [bootstrap] = useState(() => new BootstrapClient(IOC));
-useStrictEffect(() => {
-  bootstrap.startup(window).then(() => setIocMounted(true));
-}, []);
-```
+Pages and Gateways call `/api/*`; third parties call `/oauth/token` and `/userinfo` on the same origin. `npm run dev` serves everything on port **3102**.
 
-**3. Read the plugin list** → Open `BootstrapClient#getPlugins` to see the startup steps in order:
+### Interface-first
 
-```ts
-// src/impls/bootstraps/BootstrapClient.ts (excerpt)
-public getPlugins(appConfig: SeedConfigInterface, pathname?: string): BootstrapExecutorPlugin[] {
-  const i18nService = this.IOC(I.I18nServiceInterface);
-  i18nService.setPathname(pathname ?? '');
-  const bootstrapList: BootstrapExecutorPlugin[] = [
-    i18nService,                    // 1. i18n
-    new AppUserApiBootstrap(...),   // 2. register User API
-    restoreUserService             // 3. restore session
-  ];
-  if (!appConfig.isProduction) bootstrapList.push(printBootstrap);
-  bootstrapList.push(IocIdentifierTest);
-  return bootstrapList;
-}
-```
+Read `OAuthServiceInterface` and `OAuthUserAdapterInterface` in `@shared/oauth-wrapper` before opening implementations. API routes resolve `OAuthWrapperController` via `NextApiServer` + server IOC; the browser uses `OAuthWrapperGateway` for verify/consent.
 
-Inside `startup()`, the code runs `bootstrap.initialize()`, then `bootstrap.use(plugins)` and `bootstrap.start()`, so plugins run in the order above. **Use the interface to see the flow, then open implementations for details.**
+---
 
-### Dependency injection (IOC)
-
-Server **strictly** resolves dependencies via IOC; frontend uses IOC **sparingly** for performance and bundle size, preferring plain objects/functions and using `useIOC` only for a few capabilities (e.g. user, router, i18n).
-
-**Server example** (API route; no direct `new` of concrete classes):
-
-```ts
-// src/app/api/user/login/route.ts
-export async function POST(req: NextRequest) {
-  const requestBody = await req.json();
-  return await new NextApiServer().runWithJson(
-    async ({ parameters: { IOC } }) => IOC(UserController).login(requestBody)
-  );
-}
-```
-
-**Frontend example** (resolve user capability via `useIOC`; use plain functions elsewhere):
-
-```ts
-// Inside a component or Hook
-const userService = useIOC(I.UserServiceInterface);
-await userService.login({ email, password });
-```
-
-Identifier `I` comes from `shared/config/ioc-identifiter.ts`. After the root provides the client IOC via `IOCContext.Provider`, the tree can call `useIOC(I.xxx)`.
-
-### Benefits
-
-- **Testability**: Any interface can be replaced with a mock/stub in tests.
-- **Swappable implementations**: e.g. different UserService or DB bridge per environment without changing call sites.
-- **Clear boundaries**: Frontend and backend agree on `shared/` interfaces and schemas; contract changes are explicit and centralized.
-
-**Summary:** Define interfaces and schemas in **shared/**; implement them in **server** (API) and **src/impls** (client); wire with **IOC** so both sides program against the same contracts.
+**Summary:** **`shared/oauth-wrapper`** is the reusable OAuth server core; this example wires **Brain User** via `BrainUserAdapter` and Supabase. Use **`npm run dev`** on port **3102** to exercise the full flow including Playground and machine endpoints.

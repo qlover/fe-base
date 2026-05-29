@@ -1,6 +1,6 @@
 -- Next OAuth Wrapper middleware schema (full recreate — safe to re-run in dev)
 -- Drops existing n_oauth_wrapper__* tables (and legacy oauth_* names) then creates fresh objects.
--- Server writes use Supabase service role; RLS enabled with no public policies by default.
+-- OAuth tables below optionally enable RLS (see end of file). Without RLS, server can use SUPABASE_ANON_KEY; with RLS and no anon policies, use service role or add policies.
 
 -- ---------------------------------------------------------------------------
 -- Drop (children first, then clients; includes legacy unprefixed table names)
