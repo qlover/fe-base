@@ -1,7 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit';
+import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { first } from 'lodash';
 import { ZodError } from 'zod';
-import { OAuthWrapperError } from '@shared/oauth-wrapper';
 import { API_SERVER_ERROR } from '@config/i18n-identifier/api';
 import { V_ZOD_FAILED } from '@config/i18n-identifier/common/validators';
 import {
@@ -26,7 +26,7 @@ export type CreateOptions<T> = {
 /**
  * 创建 ApiResult 的工厂类
  *
- * 内部自动处理了 ZodError 和 ExecutorError 的错误
+ * 内部自动处理 ZodError ExecutorError 的错误
  */
 export class ApiResultFactory {
   public static isAppApiResult<T>(result: unknown): result is AppApiResult<T> {
@@ -63,7 +63,7 @@ export class ApiResultFactory {
     error: Error,
     options: CreateOptions<T>
   ): AppApiErrorInterface {
-    // 如果是 OAuthWrapperError 的错误，将错误转成 i18n 错误
+    // 如果 OAuthWrapperError 的错误，将错误转换为 i18n 错误
     if (error instanceof OAuthWrapperError) {
       options.httpStatus = error.status;
       error = toI18nOAuthError(error);
@@ -88,7 +88,7 @@ export class ApiResultFactory {
     error: ExecutorError,
     options: CreateOptions<unknown>
   ): AppApiErrorInterface {
-    // 如果配置为生产环境，则返回空消息的错误
+    // 如果配置为生产环境，则返回空消息的错
     if (options.config.isProduction) {
       return ApiResultFactory.createApiError(error.id, '', options);
     }

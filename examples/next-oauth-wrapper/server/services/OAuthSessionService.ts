@@ -4,7 +4,7 @@ import { inject, injectable } from '@shared/container';
 import type {
   OAuthSessionInterface,
   OAuthSessionPayload
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import {

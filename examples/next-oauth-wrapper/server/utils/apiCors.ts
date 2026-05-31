@@ -28,7 +28,8 @@ export function isApiCorsEnabled(config: ApiCorsConfig): boolean {
 
 export function buildApiCorsHeaders(
   req: NextRequest,
-  config: ApiCorsConfig
+  config: ApiCorsConfig,
+  options?: { credentials?: boolean }
 ): HeadersInit | undefined {
   if (!isApiCorsEnabled(config)) {
     return undefined;
@@ -43,15 +44,19 @@ export function buildApiCorsHeaders(
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': config.apiCorsAllowedMethods.join(', '),
     'Access-Control-Allow-Headers': DEFAULT_ALLOWED_HEADERS,
+    ...(options?.credentials
+      ? { 'Access-Control-Allow-Credentials': 'true' }
+      : {}),
     Vary: 'Origin'
   };
 }
 
 export function apiCorsPreflightResponse(
   req: NextRequest,
-  config: ApiCorsConfig
+  config: ApiCorsConfig,
+  options?: { credentials?: boolean }
 ): NextResponse {
-  const headers = buildApiCorsHeaders(req, config);
+  const headers = buildApiCorsHeaders(req, config, options);
   if (!headers) {
     return new NextResponse(null, { status: 204 });
   }

@@ -5,11 +5,11 @@ import type {
   OAuthAuthorizeValidationError,
   OAuthConsentResult,
   OAuthTokenRequest
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import {
   OAuthTokenResponse,
   OAuthUserInfoResponse
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
@@ -70,6 +70,12 @@ export class OAuthWrapperController {
     fields: Record<string, string> | OAuthTokenRequest
   ): Promise<OAuthTokenResponse> {
     return await this.oauthProvider.exchangeToken(fields);
+  }
+
+  public async revokeToken(
+    fields: Record<string, string>
+  ): Promise<void> {
+    return await this.oauthProvider.revokeToken(fields);
   }
 
   public async getUserInfo(

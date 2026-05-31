@@ -6,7 +6,7 @@ import type {
   OAuthClientUpdate,
   OAuthClientCreateResponse,
   OAuthClientSecretRotateResponse
-} from '@shared/oauth-wrapper/schema/OAuthAuthorizeSchema';
+} from '@qlover/oauth-wrapper';
 import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 import { AppApiRequester } from './AppApiRequester';
 

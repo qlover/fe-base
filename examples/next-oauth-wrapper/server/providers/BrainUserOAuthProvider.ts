@@ -4,8 +4,8 @@ import type {
   OAuthSessionInterface,
   OAuthWrapperRepositoryInterface,
   OAuthUserAdapterInterface
-} from '@shared/oauth-wrapper';
-import { OAuthTokenService, OAuthWrapperService } from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
+import { OAuthTokenService, OAuthWrapperService } from '@qlover/oauth-wrapper';
 import { I } from '@config/ioc-identifiter';
 import { UserRole, UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';

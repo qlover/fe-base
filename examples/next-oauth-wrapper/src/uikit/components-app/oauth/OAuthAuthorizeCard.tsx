@@ -14,7 +14,7 @@ import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
 import { useIOC } from '@/uikit/hook/useIOC';
-import type { OAuthAuthorizePageData } from '@shared/oauth-wrapper';
+import type { OAuthAuthorizePageData } from '@qlover/oauth-wrapper';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 

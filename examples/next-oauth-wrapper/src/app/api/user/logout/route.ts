@@ -1,7 +1,14 @@
 import { API_USER_LOGOUT } from '@config/apiRoutes';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
+import { ServerConfig } from '@server/ServerConfig';
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@server/utils/apiCors';
 import type { NextRequest } from 'next/server';
+
+const corsConfig = new ServerConfig();
 
 /**
  * @swagger
@@ -46,8 +53,19 @@ import type { NextRequest } from 'next/server';
  *                   type: string
  *                   nullable: true
  */
+export async function OPTIONS(req: NextRequest) {
+  return apiCorsPreflightResponse(req, corsConfig, { credentials: true });
+}
+
 export async function POST(req: NextRequest) {
+  const corsHeaders = buildApiCorsHeaders(req, corsConfig, {
+    credentials: true
+  });
+
   return await new NextApiServer(API_USER_LOGOUT, req).runWithJson(
-    async ({ parameters: { IOC, ctx } }) => IOC(UserController).logout(ctx)
+    async ({ parameters: { IOC, ctx } }) => IOC(UserController).logout(ctx),
+    corsHeaders
+      ? { successHeaders: corsHeaders, errorHeaders: corsHeaders }
+      : undefined
   );
 }

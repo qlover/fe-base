@@ -11,11 +11,11 @@ import type {
   OAuthWrapperRepositoryInterface,
   OAuthRefreshTokenRow,
   OAuthUserCredentialsRow
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import {
   verifyClientSecret,
   hashClientSecret
-} from '@shared/oauth-wrapper/utils/clientSecretHash';
+} from '@qlover/oauth-wrapper';
 import { BaseRepo } from './BaseRepo';
 import { SupabaseBridge } from './SupabaseBridge';
 import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
@@ -236,6 +236,22 @@ export class OAuthWrapperRepository
       .from('n_oauth_wrapper__refresh_tokens')
       .update({ revoked: true })
       .eq('refresh_token', tokenHash);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * @override
+   */
+  public async revokeRefreshTokensByUserId(userId: number): Promise<void> {
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
+      .from('n_oauth_wrapper__refresh_tokens')
+      .update({ revoked: true })
+      .eq('user_id', userId)
+      .eq('revoked', false);
 
     if (error) {
       throw new Error(error.message);

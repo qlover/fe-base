@@ -31,6 +31,7 @@
     "@qlover/corekit-bridge": "3.2.0",
     "@qlover/fe-corekit": "3.3.0",
     "@qlover/logger": "1.2.0",
+    "@qlover/oauth-wrapper": "workspace:*",
     "@qlover/tailwind-theme": "0.1.1",
     "@qlover/slice-store-react": "^1.4.2",
     "@scalar/nextjs-api-reference": "^0.9.24",

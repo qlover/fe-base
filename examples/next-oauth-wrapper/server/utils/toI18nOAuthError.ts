@@ -1,9 +1,9 @@
-import type { OAuthRfcCodeType } from '@shared/oauth-wrapper';
-import { OAuthWrapperError } from '@shared/oauth-wrapper';
+import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { oauthWrapperI18n } from '@config/i18n-mapping/oauthWrapperI18n';
+import type { OAuthRfcCodeType } from '@qlover/oauth-wrapper';
 
 /**
- * 将 OAuthWrapperError 转换为 i18n 错误
+ * OAuthWrapperError 转换 i18n 错误
  * @param error
  * @returns
  */

@@ -1,5 +1,5 @@
 import { inject, injectable } from '@shared/container';
-import { OAuthClientsService } from '@shared/oauth-wrapper';
+import { OAuthClientsService } from '@qlover/oauth-wrapper';
 import type {
   OAuthClientCreate,
   OAuthClientCreateResponse,
@@ -7,7 +7,7 @@ import type {
   OAuthClientListItem,
   OAuthClientSecretRotateResponse,
   OAuthClientUpdate
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import { I } from '@config/ioc-identifiter';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';

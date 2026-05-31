@@ -86,6 +86,8 @@ export class UserService implements UserServiceInterface {
    * @override
    */
   public async logout(context?: UserLoginContext): Promise<void> {
+    const session = await this.oauthProvider.getOAuthSession().getSession();
+
     await this.requestLogsRepository.insertEvent({
       event_category: 'auth',
       event_type: 'logout',
@@ -93,9 +95,15 @@ export class UserService implements UserServiceInterface {
       payload: {
         auth_provider: 'oauth-wrapper',
         user_agent: context?.userAgent ?? null,
-        ip_address: context?.ipAddress ?? null
+        ip_address: context?.ipAddress ?? null,
+        user_id: session?.userId ?? null
       }
     });
+
+    if (session?.userId != null) {
+      await this.oauthProvider.logoutUser(session.userId);
+      return;
+    }
 
     await this.userAuth.clear();
   }

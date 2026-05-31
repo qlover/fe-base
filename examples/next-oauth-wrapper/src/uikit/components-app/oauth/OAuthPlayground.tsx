@@ -34,11 +34,11 @@ import type {
   OAuthClientDetail,
   OAuthClientListItem,
   OAuthAuthorizePageData
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 import {
   computePkceS256Challenge,
   generatePkceVerifier
-} from '@shared/oauth-wrapper/utils/pkce';
+} from '@qlover/oauth-wrapper';
 import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
 import { ROUTE_LOGIN, ROUTE_OAUTH_TOKEN, ROUTE_USERINFO } from '@config/route';
 
@@ -98,8 +98,7 @@ function PlaygroundAlert(props: {
           className="text-secondary-text hover:text-primary-text shrink-0"
           aria-label="Close"
         >
-          ï¿½
-        </button>
+          ï¿?        </button>
       )}
     </div>
   );
@@ -933,7 +932,7 @@ export function OAuthPlayground() {
       </div>
 
       <footer className="text-center text-sm text-secondary-text py-6 border-t border-primary-border bg-primary">
-        <p>ï¿½ 2026 {tt.title}</p>
+        <p>ï¿?2026 {tt.title}</p>
       </footer>
     </div>
   );

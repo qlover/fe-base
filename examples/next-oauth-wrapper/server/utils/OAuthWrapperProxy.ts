@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { OAuthSessionPayload } from '@shared/oauth-wrapper';
+import type { OAuthSessionPayload } from '@qlover/oauth-wrapper';
 import { isPublicPath, ROUTE_LOGIN } from '@config/route';
 
 export const OAUTH_APP_SESSION_COOKIE = 'n_oauth_wrapper__session';

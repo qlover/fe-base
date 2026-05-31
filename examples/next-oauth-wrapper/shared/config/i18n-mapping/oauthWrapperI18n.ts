@@ -1,9 +1,9 @@
-import type { OAuthRfcCodeType } from '@shared/oauth-wrapper';
-import { OAuthRfcCodes } from '@shared/oauth-wrapper';
+import { OAuthRfcCodes } from '@qlover/oauth-wrapper';
 import * as apikeys from '@config/i18n-identifier/api';
+import type { OAuthRfcCodeType } from '@qlover/oauth-wrapper';
 
 /**
- * OAuth wrapper 的 rfc code 对应的 i18n key
+ * OAuth wrapper rfc code 对应i18n key
  */
 export const oauthWrapperI18n: Record<OAuthRfcCodeType, string> = Object.freeze(
   {

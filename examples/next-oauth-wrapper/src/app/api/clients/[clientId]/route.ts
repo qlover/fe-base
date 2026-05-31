@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { OAuthClientUpdateSchema } from '@shared/oauth-wrapper/schema/OAuthAuthorizeSchema';
+import { OAuthClientUpdateSchema } from '@qlover/oauth-wrapper';
 import { OAuthClientsController } from '@server/controllers/OAuthClientsController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';

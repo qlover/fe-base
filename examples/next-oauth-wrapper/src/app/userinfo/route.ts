@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { OAuthWrapperError } from '@shared/oauth-wrapper';
+import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { ROUTE_USERINFO } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
