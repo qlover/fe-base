@@ -1,0 +1,72 @@
+{
+  "name": "@qlover/oauth-wrapper",
+  "description": "Provider-agnostic OAuth 2.0 authorization server core (authorization code, PKCE, token exchange, userinfo)",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "README_EN.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "lint": "eslint src --fix",
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/oauth-wrapper"
+  },
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/oauth-wrapper#readme",
+  "keywords": [
+    "oauth",
+    "oauth2",
+    "oauth-wrapper",
+    "pkce",
+    "authorization-code"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/corekit-bridge": "workspace:*",
+    "@qlover/logger": "workspace:*"
+  },
+  "peerDependencies": {
+    "zod": "^3.0.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "zod": "^4.3.6"
+  }
+}
