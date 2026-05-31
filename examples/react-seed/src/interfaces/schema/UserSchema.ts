@@ -22,7 +22,9 @@ export const userSchema = z.object({
 });
 
 export const userCredentialSchema = z.object({
-  token: z.string()
+  token: z.string(),
+  /** OAuth middleware refresh token issued by oauth-wrapper */
+  refresh_token: z.string().optional()
 });
 
 export type UserSchema = z.infer<typeof userSchema>;

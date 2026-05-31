@@ -2,6 +2,7 @@ import { prefixEndpointWithMock } from '@config/endpoints/_endpoint';
 import {
   EP_USER_INFO,
   EP_USER_LOGIN,
+  EP_USER_LOGOUT,
   EP_USER_REGISTER
 } from '@config/endpoints/user';
 
@@ -46,6 +47,13 @@ export default [
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+    }
+  },
+  {
+    ...prefixEndpointWithMock(EP_USER_LOGOUT),
+    timeout: 200,
+    response() {
+      return null;
     }
   }
 ];

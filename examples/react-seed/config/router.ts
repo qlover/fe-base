@@ -30,6 +30,16 @@ const staticRoutes: RouteConfigValue[] = [
 
 export const pathLocalRoutePrefix = ':' + routePathLocaleParamKey;
 
+/** Always registered (main, auth, and bootstrap initial general-only routes). */
+export const oauthCallbackRoute: RouteConfigValue = {
+  path: 'oauth/callback',
+  element: 'auth/OAuthCallback',
+  category: 'general',
+  meta: {
+    localNamespace: 'common'
+  }
+};
+
 export const authRoutes: RouteConfigValue[] = [
   {
     index: true,
@@ -55,14 +65,6 @@ export const authRoutes: RouteConfigValue[] = [
       title: 'identifier.PAGE_REGISTER_TITLE',
       description: 'identifier.PAGE_REGISTER_DESCRIPTION',
       icon: 'userPlus',
-      localNamespace: 'common'
-    }
-  },
-  {
-    path: 'oauth/callback',
-    element: 'auth/OAuthCallback',
-    category: 'auth',
-    meta: {
       localNamespace: 'common'
     }
   }
@@ -98,6 +100,7 @@ export const baseRoutes: RouteConfigValue[] = [
   },
 
   ...authRoutes,
+  oauthCallbackRoute,
 
   ...staticRoutes,
   noMatchRoute
@@ -135,6 +138,7 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
         element: 'base/RedirectToHome',
         category: 'main'
       },
+      oauthCallbackRoute,
       ...staticRoutes
     ]
   },

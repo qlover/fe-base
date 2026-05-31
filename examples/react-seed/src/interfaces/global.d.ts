@@ -17,14 +17,16 @@ declare module 'i18next' {
 declare module '@qlover/corekit-bridge/bootstrap' {
   interface SeedConfigInterface {
     readonly userCredentialKey: string;
+    readonly oauthRevokeOnLogout?: boolean;
   }
 }
 
 interface ImportMetaEnv {
-  readonly VITE_OAUTH_SITE_URL?: string;
+  readonly VITE_OAUTH_URL?: string;
   readonly VITE_OAUTH_CLIENT_ID?: string;
   readonly VITE_OAUTH_SCOPE?: string;
   readonly VITE_OAUTH_REDIRECT_PATH?: string;
+  readonly VITE_OAUTH_REVOKE_ON_LOGOUT?: string;
 }
 
 interface ImportMeta {

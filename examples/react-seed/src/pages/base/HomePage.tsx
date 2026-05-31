@@ -1,9 +1,36 @@
+import {
+  AUTH_LOGOUT_DIALOG_CONTENT,
+  AUTH_LOGOUT_DIALOG_TITLE
+} from '@config/i18n-identifier/common';
 import { pageHomeI18n } from '@config/i18n-mapping/page.home';
+import { useCallback, useState } from 'react';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
+import { useIOC } from '@/hooks/useIOC';
+import { useTranslation } from '@/hooks/useTranslation';
+import { RouteService } from '@/impls/RouteService';
+import { UserService } from '@/impls/UserService';
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const text = useI18nMapping(pageHomeI18n);
+  const userService = useIOC(UserService as never) as UserService;
+  const routeService = useIOC(RouteService);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = useCallback(async () => {
+    if (!window.confirm(t(AUTH_LOGOUT_DIALOG_CONTENT))) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+    try {
+      await userService.logout();
+      routeService.useAuthRoutes();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }, [t, userService, routeService]);
 
   return (
     <div
@@ -50,6 +77,15 @@ export default function HomePage() {
           >
             {text.linkZh}
           </LocaleLink>
+          <button
+            type="button"
+            data-testid="logout-button"
+            disabled={isLoggingOut}
+            onClick={handleLogout}
+            className="rounded-md border border-red-500/40 bg-elevated px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t(AUTH_LOGOUT_DIALOG_TITLE)}
+          </button>
         </nav>
       </div>
     </div>
