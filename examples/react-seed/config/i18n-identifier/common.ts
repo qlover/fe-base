@@ -20,6 +20,13 @@ export const HEADER_THEME_DARK = 'common:theme.dark';
 export const HEADER_THEME_PINK = 'common:theme.pink';
 
 /**
+ * @description Cancel
+ * @localZh 取消
+ * @localEn Cancel
+ */
+export const COMMON_CANCEL = 'common:cancel';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout

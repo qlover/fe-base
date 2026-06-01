@@ -11,10 +11,10 @@ import {
 } from '@/interfaces/schema/UserSchema';
 import { inject } from './Container';
 import { RouteService } from './RouteService';
-import { UserGateway } from './UserGateway';
 import { SeedOAuthClient } from './SeedOAuthClient';
-import type { OAuthLoginResult } from './SeedOAuthClient';
+import { UserGateway } from './UserGateway';
 import type { ReactSeedConfig } from './ReactSeedConfig';
+import type { OAuthLoginResult } from './SeedOAuthClient';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
