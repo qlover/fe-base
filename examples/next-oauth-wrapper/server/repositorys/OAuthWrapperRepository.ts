@@ -1,4 +1,8 @@
+import { verifyClientSecret, hashClientSecret } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
+import { BaseRepo } from './BaseRepo';
+import { SupabaseBridge } from './SupabaseBridge';
+import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
 import type {
   OAuthClientRow,
   OAuthClientListItem,
@@ -12,13 +16,6 @@ import type {
   OAuthRefreshTokenRow,
   OAuthUserCredentialsRow
 } from '@qlover/oauth-wrapper';
-import {
-  verifyClientSecret,
-  hashClientSecret
-} from '@qlover/oauth-wrapper';
-import { BaseRepo } from './BaseRepo';
-import { SupabaseBridge } from './SupabaseBridge';
-import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
 
 @injectable()
 export class OAuthWrapperRepository

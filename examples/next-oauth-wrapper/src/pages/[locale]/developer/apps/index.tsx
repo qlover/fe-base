@@ -6,12 +6,12 @@ import { AppRoutePagePages } from '@/uikit/components-app/AppRoutePagePages';
 import type { DeveloperAppsPageProps } from '@/uikit/components-app/developer/apps/DeveloperAppsPage';
 import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
-import type { OAuthClientListItem } from '@qlover/oauth-wrapper';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
 import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
+import type { OAuthClientListItem } from '@qlover/oauth-wrapper';
 import type { GetStaticPropsContext } from 'next';
 
 const DeveloperAppsPageComponent = dynamic<DeveloperAppsPageProps>(

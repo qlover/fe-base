@@ -1,5 +1,9 @@
-import { inject, injectable } from '@shared/container';
 import { OAuthClientsService } from '@qlover/oauth-wrapper';
+import { inject, injectable } from '@shared/container';
+import { I } from '@config/ioc-identifiter';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
+import { ServerAuth } from '@server/services/ServerAuth';
 import type {
   OAuthClientCreate,
   OAuthClientCreateResponse,
@@ -8,10 +12,6 @@ import type {
   OAuthClientSecretRotateResponse,
   OAuthClientUpdate
 } from '@qlover/oauth-wrapper';
-import { I } from '@config/ioc-identifiter';
-import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
-import { ServerAuth } from '@server/services/ServerAuth';
 
 /**
  * Developer console OAuth clients API controller.
