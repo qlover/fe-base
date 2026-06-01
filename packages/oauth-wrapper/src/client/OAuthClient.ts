@@ -127,6 +127,10 @@ export class OAuthClient<
       });
   }
 
+  public patchConfig(config: Partial<OAuthClientConfig>): void {
+    Object.assign(this.config, config);
+  }
+
   protected get authorizationConfig(): OAuthAuthorizationConfig | null {
     const serverUrl = this.config.serverUrl?.trim();
     const clientId = this.config.clientId?.trim();
@@ -226,20 +230,21 @@ export class OAuthClient<
   ): Promise<T> {
     const session = this.pkceStore.loadPkceSession();
     const callbackState =
-      params instanceof URLSearchParams
-        ? params.get('state')
-        : params?.state;
+      params instanceof URLSearchParams ? params.get('state') : params?.state;
 
-    this.logger?.debug?.(`[${String(this.serviceName)}] completeOAuthCallback`, {
-      hasPkceSession: session != null,
-      callbackStatePreview: callbackState
-        ? `${callbackState.slice(0, 8)}…`
-        : null,
-      sessionStatePreview: session?.state
-        ? `${session.state.slice(0, 8)}…`
-        : null,
-      locale: this.config.locale
-    });
+    this.logger?.debug?.(
+      `[${String(this.serviceName)}] completeOAuthCallback`,
+      {
+        hasPkceSession: session != null,
+        callbackStatePreview: callbackState
+          ? `${callbackState.slice(0, 8)}…`
+          : null,
+        sessionStatePreview: session?.state
+          ? `${session.state.slice(0, 8)}…`
+          : null,
+        locale: this.config.locale
+      }
+    );
 
     try {
       const result = await this.gateway.oAuthWrapperCallback(params);
