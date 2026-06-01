@@ -8,7 +8,7 @@ import type {
   OAuthUserAdapterInterface,
   OAuthUserCredentials,
   OAuthUserProfile
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
 
 type BrainLoginLike = Record<string, unknown>;
 

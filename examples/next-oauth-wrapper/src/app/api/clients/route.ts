@@ -1,4 +1,4 @@
-import { OAuthClientCreateSchema } from '@shared/oauth-wrapper/schema/OAuthAuthorizeSchema';
+import { OAuthClientCreateSchema } from '@qlover/oauth-wrapper';
 import { OAuthClientsController } from '@server/controllers/OAuthClientsController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';

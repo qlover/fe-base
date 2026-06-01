@@ -1,4 +1,6 @@
 import { inject } from '@shared/container';
+import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
+import { AppApiRequester } from './AppApiRequester';
 import type {
   OAuthClientListItem,
   OAuthClientDetail,
@@ -6,9 +8,7 @@ import type {
   OAuthClientUpdate,
   OAuthClientCreateResponse,
   OAuthClientSecretRotateResponse
-} from '@shared/oauth-wrapper/schema/OAuthAuthorizeSchema';
-import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
-import { AppApiRequester } from './AppApiRequester';
+} from '@qlover/oauth-wrapper';
 
 export class OAuthClientsApi {
   constructor(

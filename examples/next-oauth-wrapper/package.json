@@ -31,6 +31,7 @@
     "@qlover/corekit-bridge": "3.2.0",
     "@qlover/fe-corekit": "3.3.0",
     "@qlover/logger": "1.2.0",
+    "@qlover/oauth-wrapper": "workspace:*",
     "@qlover/tailwind-theme": "0.1.1",
     "@qlover/slice-store-react": "^1.4.2",
     "@scalar/nextjs-api-reference": "^0.9.24",
@@ -71,6 +72,7 @@
     "@types/node": "^20",
     "@types/node-fetch": "^2.6.13",
     "@types/react": "^19",
+    "@types/react-dom": "^19.2.3",
     "cross-env": "^7.0.3",
     "dotenv-expand": "^12.0.3",
     "eslint": "^9",
@@ -86,7 +88,10 @@
     "swagger-ui-react": "^5.31.2",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "typescript-eslint": "^8.15.0"
+    "typescript-eslint": "^8.15.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "jsdom": "^28.0.0",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": "^20.17.0 || >=22.9.0",

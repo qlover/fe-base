@@ -1,15 +1,9 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { injectable, inject } from '@shared/container';
-import type {
-  OAuthAuthorizePageData,
-  OAuthAuthorizeValidationError,
-  OAuthConsentResult,
-  OAuthTokenRequest
-} from '@shared/oauth-wrapper';
 import {
   OAuthTokenResponse,
   OAuthUserInfoResponse
-} from '@shared/oauth-wrapper';
+} from '@qlover/oauth-wrapper';
+import { injectable, inject } from '@shared/container';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
@@ -20,6 +14,12 @@ import {
   OAuthControllerService,
   VerifyLoginResult
 } from '@server/services/OAuthControllerService';
+import type {
+  OAuthAuthorizePageData,
+  OAuthAuthorizeValidationError,
+  OAuthConsentResult,
+  OAuthTokenRequest
+} from '@qlover/oauth-wrapper';
 
 @injectable()
 export class OAuthWrapperController {
@@ -70,6 +70,10 @@ export class OAuthWrapperController {
     fields: Record<string, string> | OAuthTokenRequest
   ): Promise<OAuthTokenResponse> {
     return await this.oauthProvider.exchangeToken(fields);
+  }
+
+  public async revokeToken(fields: Record<string, string>): Promise<void> {
+    return await this.oauthProvider.revokeToken(fields);
   }
 
   public async getUserInfo(

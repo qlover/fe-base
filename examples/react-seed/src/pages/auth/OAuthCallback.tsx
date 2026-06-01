@@ -1,66 +1,81 @@
 import { i18nConfig } from '@config/i18n';
 import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
+import { routerPrefix } from '@config/seed.config';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
-import { RouteService } from '@/impls/RouteService';
+import { SeedOAuthClient } from '@/impls/SeedOAuthClient';
 import { UserService } from '@/impls/UserService';
-import { completeOAuthCallback, parseOAuthCallbackSearchParams } from '@/oauth';
 import type { RouterRenderProps } from '@/components/RouterRenderComponent';
+import type { OAuthLoginResult } from '@/impls/SeedOAuthClient';
 import type { UserSchema } from '@/interfaces/schema/UserSchema';
+
+/** Survives StrictMode remounts and router rebuilds for the same authorization code. */
+const completedOAuthCallbacks = new Set<string>();
+
+function buildCallbackKey(search: URLSearchParams): string {
+  const code = search.get('code');
+  const state = search.get('state');
+  if (code && state) {
+    return `${code}:${state}`;
+  }
+  return search.toString();
+}
+
+function buildLocaleHomePath(locale: string): string {
+  const prefix = routerPrefix.replace(/\/$/, '');
+  const segments = [prefix, locale].filter(Boolean);
+  return `/${segments.join('/')}`.replace(/\/+/g, '/');
+}
 
 export default function OAuthCallbackPage(_props: RouterRenderProps) {
   const text = useI18nMapping(pageOAuthCallbackI18n);
   const { lng } = useParams<{ lng: string }>();
   const locale = lng ?? i18nConfig.defaultLocale;
+  const oauthClient = useIOC(SeedOAuthClient);
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const userService = useIOC(UserService as never) as UserService;
-  const routeService = useIOC(RouteService);
   const [error, setError] = useState<string | null>(null);
   const callbackQuery = searchParams.toString();
+  const homePath = buildLocaleHomePath(locale);
 
   useEffect(() => {
     if (!callbackQuery) {
       return;
     }
 
-    let cancelled = false;
     const search = new URLSearchParams(callbackQuery);
+    const callbackKey = buildCallbackKey(search);
+
+    if (completedOAuthCallbacks.has(callbackKey)) {
+      globalThis.location.replace(homePath);
+      return;
+    }
 
     (async () => {
       try {
-        const params = parseOAuthCallbackSearchParams(search);
-        const { user, credential } = await completeOAuthCallback(
-          params,
-          locale
-        );
-        if (cancelled) {
+        const params = oauthClient.parseOAuthCallbackSearchParams(search);
+        const result = (await oauthClient.completeOAuthCallback(
+          params
+        )) as unknown as OAuthLoginResult;
+
+        if (completedOAuthCallbacks.has(callbackKey)) {
+          globalThis.location.replace(homePath);
           return;
         }
-        userService.getStore().success(user as UserSchema, credential);
-        routeService.useMainRoutes();
-        navigate(`/${locale}`, { replace: true });
+        completedOAuthCallbacks.add(callbackKey);
+
+        userService
+          .getStore()
+          .success(result.user as UserSchema, result.credential);
+        globalThis.location.replace(homePath);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : text.errorGeneric);
-        }
+        setError(err instanceof Error ? err.message : text.errorGeneric);
       }
     })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    callbackQuery,
-    locale,
-    navigate,
-    routeService,
-    text.errorGeneric,
-    userService
-  ]);
+  }, [callbackQuery, homePath, oauthClient, text.errorGeneric, userService]);
 
   if (error) {
     return (

@@ -117,6 +117,7 @@ export default async function LoginPage(props: PageParamsProps) {
 
           <p className="text-tertiary-text mt-8 text-center text-xs leading-relaxed">
             <LocaleLink
+              title={tt.linkDocs}
               href={ROUTE_DOCS_OAUTH}
               className="text-brand hover:underline"
             >
@@ -124,6 +125,7 @@ export default async function LoginPage(props: PageParamsProps) {
             </LocaleLink>
             {' · '}
             <LocaleLink
+              title={tt.linkPlayground}
               href={ROUTE_OAUTH_PLAYGROUND}
               className="text-brand hover:underline"
             >

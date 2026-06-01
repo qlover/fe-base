@@ -9,6 +9,10 @@ import {
   LoadingOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
+import {
+  computePkceS256Challenge,
+  generatePkceVerifier
+} from '@qlover/oauth-wrapper';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import {
@@ -30,17 +34,13 @@ import {
   randomStateValue,
   type OAuthCallbackParams
 } from '@/uikit/utils/oauthPlaygroundUtils';
+import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
+import { ROUTE_LOGIN, ROUTE_OAUTH_TOKEN, ROUTE_USERINFO } from '@config/route';
 import type {
   OAuthClientDetail,
   OAuthClientListItem,
   OAuthAuthorizePageData
-} from '@shared/oauth-wrapper';
-import {
-  computePkceS256Challenge,
-  generatePkceVerifier
-} from '@shared/oauth-wrapper/utils/pkce';
-import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
-import { ROUTE_LOGIN, ROUTE_OAUTH_TOKEN, ROUTE_USERINFO } from '@config/route';
+} from '@qlover/oauth-wrapper';
 
 const labelClass =
   'text-secondary-text mb-1.5 block text-xs font-medium uppercase tracking-wide';
@@ -98,7 +98,7 @@ function PlaygroundAlert(props: {
           className="text-secondary-text hover:text-primary-text shrink-0"
           aria-label="Close"
         >
-          �
+          �?{' '}
         </button>
       )}
     </div>
@@ -933,7 +933,7 @@ export function OAuthPlayground() {
       </div>
 
       <footer className="text-center text-sm text-secondary-text py-6 border-t border-primary-border bg-primary">
-        <p>� 2026 {tt.title}</p>
+        <p>�?2026 {tt.title}</p>
       </footer>
     </div>
   );

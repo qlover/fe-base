@@ -1,4 +1,8 @@
+import { verifyClientSecret, hashClientSecret } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
+import { BaseRepo } from './BaseRepo';
+import { SupabaseBridge } from './SupabaseBridge';
+import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
 import type {
   OAuthClientRow,
   OAuthClientListItem,
@@ -11,14 +15,7 @@ import type {
   OAuthWrapperRepositoryInterface,
   OAuthRefreshTokenRow,
   OAuthUserCredentialsRow
-} from '@shared/oauth-wrapper';
-import {
-  verifyClientSecret,
-  hashClientSecret
-} from '@shared/oauth-wrapper/utils/clientSecretHash';
-import { BaseRepo } from './BaseRepo';
-import { SupabaseBridge } from './SupabaseBridge';
-import { SupabaseServiceRoleBridge } from './SupabaseServiceRoleBridge';
+} from '@qlover/oauth-wrapper';
 
 @injectable()
 export class OAuthWrapperRepository
@@ -236,6 +233,22 @@ export class OAuthWrapperRepository
       .from('n_oauth_wrapper__refresh_tokens')
       .update({ revoked: true })
       .eq('refresh_token', tokenHash);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * @override
+   */
+  public async revokeRefreshTokensByUserId(userId: number): Promise<void> {
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
+      .from('n_oauth_wrapper__refresh_tokens')
+      .update({ revoked: true })
+      .eq('user_id', userId)
+      .eq('revoked', false);
 
     if (error) {
       throw new Error(error.message);

@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
-import type {
-  OAuthSessionInterface,
-  OAuthSessionPayload
-} from '@shared/oauth-wrapper';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import {
   OAUTH_APP_SESSION_COOKIE,
   parseOAuthAppSessionCookie
 } from '@server/utils/OAuthWrapperProxy';
+import type {
+  OAuthSessionInterface,
+  OAuthSessionPayload
+} from '@qlover/oauth-wrapper';
 
 /**
  * HttpOnly session cookie for authenticated users during OAuth authorize.

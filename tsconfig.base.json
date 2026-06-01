@@ -32,6 +32,9 @@
       "@qlover/fe-release": ["packages/fe-release/src"],
       "@qlover/fe-scripts": ["packages/fe-scripts/src"],
       "@qlover/logger": ["packages/logger/src"],
+      "@qlover/oauth-wrapper": ["packages/oauth-wrapper/src/server"],
+      "@qlover/oauth-wrapper/client": ["packages/oauth-wrapper/src/client"],
+      "@qlover/oauth-wrapper/core": ["packages/oauth-wrapper/src/core"],
       "@qlover/scripts-context": ["packages/scripts-context/src"]
     }
   },

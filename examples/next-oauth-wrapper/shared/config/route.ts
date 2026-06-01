@@ -32,12 +32,16 @@ export const ROUTE_DOCS_OAUTH = '/docs/oauth' as const;
 /** OAuth 2.0 token endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_OAUTH_TOKEN = '/oauth/token' as const;
 
+/** RFC 7009 token revocation endpoint (machine-to-machine, no locale prefix). */
+export const ROUTE_OAUTH_REVOKE = '/oauth/revoke' as const;
+
 /** OAuth 2.0 / OIDC userinfo endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_USERINFO = '/userinfo' as const;
 
 /** OAuth machine endpoints that skip session and locale middleware. */
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
+  ROUTE_OAUTH_REVOKE,
   ROUTE_USERINFO
 ] as const;
 
