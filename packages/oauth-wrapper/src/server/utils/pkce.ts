@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual, subtle } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 
 /** RFC 7636 code_verifier length bounds (inclusive). */
 const PKCE_VERIFIER_MIN = 43;
@@ -28,26 +28,6 @@ export function isValidCodeChallenge(challenge: string): boolean {
     return false;
   }
   return UNRESERVED.test(challenge);
-}
-
-function base64UrlEncode(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-  return btoa(binary)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
-export async function computePkceS256Challenge(
-  verifier: string
-): Promise<string> {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await subtle.digest('SHA-256', data);
-  return base64UrlEncode(digest);
 }
 
 /**

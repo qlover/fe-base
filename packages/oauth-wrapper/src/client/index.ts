@@ -5,6 +5,5 @@ export * from './OAuthClient';
 export * from './OAuthGateway';
 export * from './oauthUrlUtils';
 export * from './parseEnvelope';
-export * from './pkce';
 export * from './PKCESessionStore';
 export * from './types';

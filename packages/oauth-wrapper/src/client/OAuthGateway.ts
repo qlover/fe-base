@@ -23,7 +23,6 @@ import {
   parseOAuthTokenResponse,
   parseOAuthUserInfoResponse
 } from './parseEnvelope';
-import { computePkceS256Challenge } from './pkce';
 import type { OAuthUserMapper } from './types';
 import type { PKCESessionStore } from './PKCESessionStore';
 import type {
@@ -34,6 +33,7 @@ import type {
   OAuthGatewayUserinfoResult,
   OAuthGatwayInterface
 } from './interface/OAuthGatwayInterface';
+import { computePkceS256Challenge } from '../core';
 
 export type OAuthGatewayRequestConfig = RequestAdapterConfig<string>;
 

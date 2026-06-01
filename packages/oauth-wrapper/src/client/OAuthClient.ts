@@ -18,16 +18,12 @@ import {
   buildOAuthRedirectUri,
   mergeOAuthAuthorizationConfig
 } from './oauthUrlUtils';
-import {
-  computePkceS256Challenge,
-  generatePkceVerifier,
-  randomOAuthState
-} from './pkce';
 import type { OAuthUserInfo, OAuthUserMapper } from './types';
 import type { OAuthClientInterface } from './interface/OAuthClientInterface';
 import type { OAuthClientStoreOptions } from './PKCESessionStore';
 import { PKCESessionStore } from './PKCESessionStore';
 import type { OAuthGatewayAuthorizeParams } from './interface/OAuthGatwayInterface';
+import { computePkceS256Challenge, generatePkceVerifier, randomOAuthState } from '../core';
 
 type OAuthClientInfrastructureOptions<T extends OAuthUserInfo> = {
   serviceName?: string | symbol;
