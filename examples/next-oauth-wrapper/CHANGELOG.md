@@ -1,5 +1,25 @@
 # examples/next-oauth-wrapper
 
+## 0.1.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **next-oauth-wrapper:** update local server ports in configuration files ([4fbb447](https://github.com/qlover/fe-base/commit/4fbb447e2a333435ae2824327b2d066eb3355972)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Changed the default local server ports in `robots.txt` and various files from 3120 to 3102 for consistency across the next-oauth-wrapper example. Additionally, added titles to `LocaleLink` components in the login page for better accessibility and user experience. This update ensures a smoother development environment and improves the clarity of navigation links.
+
+#### ♻️ Refactors
+
+- **next-oauth-wrapper:** migrate to @qlover/oauth-wrapper package ([644835d](https://github.com/qlover/fe-base/commit/644835d4d9ad9f6b213311fcf9b96414def9700f)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Replace inlined shared/oauth-wrapper with the workspace package, add OAuth token revoke endpoint, and improve CORS handling for logout/revoke routes.
+
+- **next-oauth-wrapper:** reorganize import statements and enhance code clarity ([9db1702](https://github.com/qlover/fe-base/commit/9db1702e0a9787d4fa99905496d07b0e8abdc4c3)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Refactored import statements across multiple files for improved organization and consistency. This includes reordering imports and removing unused ones, which enhances code readability. Additionally, minor formatting adjustments were made to ensure uniformity throughout the codebase.
+
 ## 0.0.3
 
 ### Patch Changes

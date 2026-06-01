@@ -1,5 +1,27 @@
 # examples/react-seed
 
+## 1.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-seed:** add useLocale hook for locale management ([9fcd9f8](https://github.com/qlover/fe-base/commit/9fcd9f8645d5454e516fe0fdd4e75fca00598f76)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Introduced a new `useLocale` hook to manage locale settings within the application. This hook retrieves the current locale from route parameters or defaults to the configured locale, and provides a method to change the locale, updating the navigation accordingly. Additionally, updated `useOAuthLogin` to utilize the new `useLocale` hook for locale configuration during OAuth login processes.
+
+  Also, added a `patchConfig` method in the `OAuthClient` class to allow dynamic updates to the client configuration, including locale settings.
+
+- **react-seed:** add cancel button to logout dialog and update i18n identifiers ([27aa415](https://github.com/qlover/fe-base/commit/27aa415ab8d812704299bd53a536203022fe8eb0)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Introduced a new `COMMON_CANCEL` identifier for localization and integrated it into the logout dialog in the `HomePage` component. The dialog now includes a cancel button that allows users to close the dialog without logging out, enhancing user experience and accessibility. Additionally, refactored import statements in `UserService.ts` for improved organization.
+
+#### ♻️ Refactors
+
+- **react-seed:** migrate OAuth client to @qlover/oauth-wrapper ([61c0ddc](https://github.com/qlover/fe-base/commit/61c0ddc7a39fbb4c5effadd08a1c1c0d84084b31)) ([#616](https://github.com/qlover/fe-base/pull/616))
+
+  Replace local src/oauth helpers with SeedOAuthClient, persist refresh tokens for session restore, and add optional token revocation on logout.
+
 ## 1.1.2
 
 ### Patch Changes

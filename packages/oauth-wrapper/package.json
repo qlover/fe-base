@@ -1,7 +1,7 @@
 {
   "name": "@qlover/oauth-wrapper",
   "description": "Provider-agnostic OAuth 2.0 authorization server core (authorization code, PKCE, token exchange, userinfo)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "sideEffects": false,
