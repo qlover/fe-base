@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const OAuthUserCredentialsSchema = z.object({
-  user_id: z.number(),
+  user_id: z.string(),
   provider_refresh_token: z.string().nullable().optional(),
   provider_session_token: z.string().nullable().optional(),
   updated_at: z.string()
@@ -12,10 +12,10 @@ export type OAuthUserCredentialsRow = z.infer<
 >;
 
 export const OAuthRefreshTokenSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   refresh_token: z.string(),
   client_id: z.string(),
-  user_id: z.number(),
+  user_id: z.string(),
   expires_at: z.string(),
   revoked: z.boolean(),
   created_at: z.string()

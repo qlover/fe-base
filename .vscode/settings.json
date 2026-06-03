@@ -66,5 +66,13 @@
   // The files.watcherExclude above should prevent the extension from watching template directories
 
   "typescript.tsdk": "./node_modules/typescript/lib",
-  "typescript.tsserver.maxTsServerMemory": 4096
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "todohighlight.keywords": [
+    {
+      "text": "IMPORTANT:",
+      "color": "#fff",
+      "backgroundColor": "#e00",
+      "overviewRulerColor": "grey"
+    }
+  ]
 }

@@ -22,7 +22,7 @@ const oauthRedirectUriSchema = z
   .refine(isOAuthRedirectUri, { message: 'Invalid redirect URI' });
 
 export const OAuthClientRowSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   client_id: z.string(),
   client_secret_hash: z.string().nullable().optional(),
   client_name: z.string(),
@@ -32,7 +32,7 @@ export const OAuthClientRowSchema = z.object({
   grant_types: z.array(z.string()),
   scopes: z.array(z.string()),
   confidential: z.boolean(),
-  owner_user_id: z.number(),
+  owner_user_id: z.string(),
   created_at: z.string(),
   updated_at: z.string()
 });
@@ -137,7 +137,7 @@ export type OAuthConsentBody = z.infer<typeof OAuthConsentBodySchema>;
 export const OAuthAuthorizationCodeRowSchema = z.object({
   code: z.string(),
   client_id: z.string(),
-  user_id: z.number(),
+  user_id: z.string(),
   redirect_uri: z.string(),
   scope: z.string().nullable().optional(),
   code_challenge: z.string().nullable().optional(),

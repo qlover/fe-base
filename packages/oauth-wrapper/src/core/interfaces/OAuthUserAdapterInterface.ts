@@ -1,3 +1,5 @@
+import type { LoginParams } from '@qlover/corekit-bridge/core';
+
 /**
  * OAuth user adapter profile shape.
  *
@@ -72,7 +74,7 @@ export interface OAuthUserAdapterInterface {
    * @param password - Plain credential submitted by the login form.
    * @returns Provider credentials containing a session token.
    */
-  login(email: string, password: string): Promise<OAuthUserCredentials>;
+  login(params: LoginParams): Promise<OAuthUserCredentials>;
 
   /**
    * Exchanges a provider session token for a provider access token.
