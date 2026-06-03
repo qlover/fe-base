@@ -73,3 +73,23 @@ export const defaultSearchParams = {
   pageSize: 20,
   sort: [{ orderBy: 'created_at', order: 'desc' }]
 } as const;
+
+/**
+ * 地址栏参数key
+ */
+export const URLParamsKeys = {
+  /**
+   * 需要返回到指定 url 的参数 key
+   */
+  returnTo: ['return_to', 'redirect', 'returnUrl'],
+
+  /**
+   * supabase 回调授权 id 的参数 key
+   */
+  oAuthQueryAuthId: 'authorization_id'
+} as const;
+
+/**
+ * 查询参数中的语言参数 key
+ */
+export const localeQueryParam = 'locale' as const;

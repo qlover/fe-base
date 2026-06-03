@@ -1,6 +1,7 @@
 import type { AppApiTransaction } from '@/impls/appApi/AppApiRequester';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { OAuthConsentPayload } from './UserServiceInterface';
 
 export type UserApiLoginTransaction = AppApiTransaction<
   LoginSchema,
@@ -10,6 +11,11 @@ export type UserApiLoginTransaction = AppApiTransaction<
 export type UserApiRegisterTransaction = AppApiTransaction<
   LoginSchema,
   UserSchema
+>;
+
+export type UserSubmitOAuthConsentTransaction = AppApiTransaction<
+  OAuthConsentPayload,
+  { redirectUrl: string }
 >;
 
 export type UserApiLogoutTransaction = AppApiTransaction<unknown, void>;

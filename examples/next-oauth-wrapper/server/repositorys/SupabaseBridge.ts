@@ -1,5 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { AuthError } from '@supabase/supabase-js';
+import { AuthApiError, AuthError } from '@supabase/supabase-js';
 import { injectable } from '@shared/container';
 import { createClient } from '@shared/supabase/server';
 import { isPGRSTSchema } from '@schemas/PGRSTSchema';
@@ -112,6 +112,12 @@ export class SupabaseBridge implements DBBridgeInterface {
     const { error } = response;
 
     if (error) {
+      if (error instanceof AuthApiError) {
+        // TODO:
+        // 当 email_not_confirmed 时应该重新验证邮箱
+        throw new ExecutorError(error.code ?? 'SupabaseAuthApiError', error);
+      }
+
       if (error instanceof AuthError || error instanceof Error) {
         throw new ExecutorError('SupabaseAuthError', response);
       }

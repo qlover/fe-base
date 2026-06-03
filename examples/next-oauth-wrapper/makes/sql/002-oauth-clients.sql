@@ -26,7 +26,7 @@ create table public.n_oauth_wrapper__clients (
   grant_types text[] not null default '{authorization_code,refresh_token}',
   scopes text[] not null default '{openid,profile,email}',
   confidential boolean not null default true,
-  owner_user_id integer not null,
+  owner_user_id text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -44,7 +44,7 @@ alter table public.n_oauth_wrapper__clients enable row level security;
 create table public.n_oauth_wrapper__authorization_codes (
   code text primary key,
   client_id text not null references public.n_oauth_wrapper__clients (client_id) on delete cascade,
-  user_id integer not null,
+  user_id text not null,
   redirect_uri text not null,
   scope text,
   code_challenge text,
@@ -71,7 +71,7 @@ create table public.n_oauth_wrapper__refresh_tokens (
   id serial primary key,
   refresh_token text not null unique,
   client_id text not null references public.n_oauth_wrapper__clients (client_id) on delete cascade,
-  user_id integer not null,
+  user_id text not null,
   expires_at timestamptz not null,
   revoked boolean not null default false,
   created_at timestamptz not null default now()
@@ -88,7 +88,7 @@ alter table public.n_oauth_wrapper__refresh_tokens enable row level security;
 -- ---------------------------------------------------------------------------
 
 create table public.n_oauth_wrapper__user_credentials (
-  user_id integer primary key,
+  user_id text primary key,
   provider_refresh_token text,
   provider_session_token text,
   updated_at timestamptz not null default now()

@@ -42,6 +42,12 @@ export class BrainUserOAuthProvider
   /**
    * @override
    */
+  public getSession(): Promise<OAuthSessionPayload | null> {
+    return this.oauthSession.getSession();
+  }
+  /**
+   * @override
+   */
   public getUserSchema(session: OAuthSessionPayload): Promise<UserSchema> {
     // TODO: 补上真实的用户角色信息，重置role
     return Promise.resolve({
@@ -53,5 +59,12 @@ export class BrainUserOAuthProvider
       created_at: new Date().toISOString(),
       updated_at: null
     } as UserSchema);
+  }
+
+  /**
+   * @override
+   */
+  public hasNeedLogged(): boolean {
+    return true;
   }
 }

@@ -6,7 +6,7 @@ import {
   API_OAUTH_INVALID_SCOPE,
   API_OAUTH_INVALID_TOKEN,
   API_OAUTH_SERVER_ERROR,
-  API_OAUTH_UNAUTHORIZED_CLIENT,
+  API_REDIRECT_URL,
   API_OAUTH_UNSUPPORTED_GRANT_TYPE,
   API_OAUTH_UNSUPPORTED_RESPONSE_TYPE
 } from './i18n-identifier/api';
@@ -31,7 +31,7 @@ const OAUTH_I18N_TO_RFC: Record<string, OAuthRfcErrorCode> = {
   [API_OAUTH_INVALID_CLIENT]: 'invalid_client',
   [API_OAUTH_INVALID_GRANT]: 'invalid_grant',
   [API_OAUTH_INVALID_TOKEN]: 'invalid_token',
-  [API_OAUTH_UNAUTHORIZED_CLIENT]: 'unauthorized_client',
+  [API_REDIRECT_URL]: 'unauthorized_client',
   [API_OAUTH_INVALID_SCOPE]: 'invalid_scope',
   [API_OAUTH_ACCESS_DENIED]: 'access_denied',
   [API_OAUTH_UNSUPPORTED_RESPONSE_TYPE]: 'unsupported_response_type',
@@ -44,7 +44,7 @@ const OAUTH_RFC_TO_I18N: Record<OAuthRfcErrorCode, string> = {
   invalid_client: API_OAUTH_INVALID_CLIENT,
   invalid_grant: API_OAUTH_INVALID_GRANT,
   invalid_token: API_OAUTH_INVALID_TOKEN,
-  unauthorized_client: API_OAUTH_UNAUTHORIZED_CLIENT,
+  unauthorized_client: API_REDIRECT_URL,
   invalid_scope: API_OAUTH_INVALID_SCOPE,
   access_denied: API_OAUTH_ACCESS_DENIED,
   unsupported_response_type: API_OAUTH_UNSUPPORTED_RESPONSE_TYPE,

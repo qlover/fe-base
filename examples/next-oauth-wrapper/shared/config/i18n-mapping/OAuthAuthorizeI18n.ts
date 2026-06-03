@@ -1,7 +1,7 @@
 import {
   API_OAUTH_INVALID_REQUEST,
   API_OAUTH_INVALID_SCOPE,
-  API_OAUTH_UNAUTHORIZED_CLIENT,
+  API_REDIRECT_URL,
   API_OAUTH_UNSUPPORTED_RESPONSE_TYPE
 } from '../i18n-identifier/api';
 import { COMMON_ADMIN_TITLE } from '../i18n-identifier/common/common';
@@ -51,7 +51,7 @@ export function resolveAuthorizeErrorMessage(
   fallback: string
 ): string {
   switch (errorKey) {
-    case API_OAUTH_UNAUTHORIZED_CLIENT:
+    case API_REDIRECT_URL:
       return fallback.includes('redirect_uri')
         ? tt.errorRedirect
         : tt.errorClient;

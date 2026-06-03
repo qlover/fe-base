@@ -81,7 +81,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async getUserCredentials(
-    userId: number
+    userId: string
   ): Promise<OAuthUserCredentialsRow | null> {
     const supabase = await this.getSupabase();
     const { data, error } = await supabase
@@ -100,7 +100,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async upsertUserCredentials(
-    userId: number,
+    userId: string,
     fields: {
       provider_refresh_token?: string | null;
       provider_session_token?: string | null;
@@ -148,7 +148,7 @@ export class OAuthWrapperRepository
   public async upsertRefreshToken(input: {
     refresh_token: string;
     client_id: string;
-    user_id: number;
+    user_id: string;
     expires_at: string;
   }): Promise<void> {
     const supabase = await this.getSupabase();
@@ -242,7 +242,7 @@ export class OAuthWrapperRepository
   /**
    * @override
    */
-  public async revokeRefreshTokensByUserId(userId: number): Promise<void> {
+  public async revokeRefreshTokensByUserId(userId: string): Promise<void> {
     const supabase = await this.getSupabase();
     const { error } = await supabase
       .from('n_oauth_wrapper__refresh_tokens')
@@ -279,7 +279,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async listClientByOwner(
-    ownerUserId: number
+    ownerUserId: string
   ): Promise<OAuthClientListItem[]> {
     const supabase = await this.getSupabase();
     const { data, error } = await supabase
@@ -301,7 +301,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async createClient(
-    ownerUserId: number,
+    ownerUserId: string,
     input: OAuthClientCreate
   ): Promise<{ client: OAuthClientRow; clientSecret?: string }> {
     const supabase = await this.getSupabase();
@@ -349,7 +349,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async updateClient(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string,
     input: OAuthClientUpdate
   ): Promise<OAuthClientDetail> {
@@ -383,7 +383,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async rotateClientSecret(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<{ clientSecret: string }> {
     const existing = await this.findClientById(clientId);
@@ -419,7 +419,7 @@ export class OAuthWrapperRepository
    * @override
    */
   public async deleteClient(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<void> {
     const supabase = await this.getSupabase();

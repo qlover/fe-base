@@ -92,6 +92,13 @@ export const API_OAUTH_INVALID_TOKEN = 'api:oauth_invalid_token';
 export const API_OAUTH_UNAUTHORIZED_CLIENT = 'api:oauth_unauthorized_client';
 
 /**
+ * @description OAuth client not authorized for this request
+ * @localZh 重定向错误
+ * @localEn Redirect error
+ */
+export const API_REDIRECT_URL = 'api:redirect_url';
+
+/**
  * @description OAuth scope not allowed
  * @localZh 请求的权限范围无效
  * @localEn Invalid OAuth scope

@@ -7,9 +7,10 @@ import {
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
+import { SupabaseOAuthProvider } from './providers/SupabaseOAuthProvider';
 import { SupabaseBridge } from './repositorys/SupabaseBridge';
 import type { LoggerInterface } from '@qlover/logger';
+// import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
 
 type ServerIocOptions = {
   logger: LoggerInterface;
@@ -51,6 +52,7 @@ const ServerIocRegister: IOCRegisterInterface<
 
     ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
 
-    ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(BrainUserOAuthProvider));
+    // ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(BrainUserOAuthProvider));
+    ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(SupabaseOAuthProvider));
   }
 };
