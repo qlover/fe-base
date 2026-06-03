@@ -1,6 +1,8 @@
 import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
 import {
+  API_OAUTH_CONSENT,
+  API_OAUTH_VERIFY,
   API_USER_LOGIN,
   API_USER_LOGOUT,
   API_USER_REGISTER,
@@ -10,7 +12,8 @@ import { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
-  UserApiRegisterTransaction
+  UserApiRegisterTransaction,
+  UserSubmitOAuthConsentTransaction
 } from '@interfaces/AppUserApiInterface';
 import { UserServiceGatewayInterface } from '@interfaces/UserServiceInterface';
 import {
@@ -70,13 +73,14 @@ export class AppUserGateway implements UserServiceGatewayInterface {
    * @override
    */
   public async login(
-    params: UserApiLoginTransaction['data'] & LoginParams
+    params: UserApiLoginTransaction['data'] & LoginParams,
+    url?: string
   ): Promise<UserCredential> {
     const response = await this.client.request<
       UserApiLoginTransaction['response'],
       UserApiLoginTransaction['request']
     >({
-      url: API_USER_LOGIN,
+      url: url ?? API_USER_LOGIN,
       method: HttpMethods.POST,
       data: params,
       encryptProps: 'password'
@@ -125,5 +129,36 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     });
 
     return undefined as R;
+  }
+
+  /**
+   * @override
+   */
+  public async verify(
+    params: UserApiLoginTransaction['data'] & LoginParams
+  ): Promise<UserCredential> {
+    return this.login(params, API_OAUTH_VERIFY);
+  }
+
+  /**
+   * @override
+   */
+  public async submitOAuthConsent(
+    payload: UserSubmitOAuthConsentTransaction['request']
+  ): Promise<string> {
+    const response = await this.client.request<
+      UserSubmitOAuthConsentTransaction['response'],
+      UserSubmitOAuthConsentTransaction['request']
+    >({
+      url: API_OAUTH_CONSENT,
+      method: HttpMethods.POST,
+      data: payload
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message ?? 'Consent submission failed');
+    }
+
+    return response.data.data!.redirectUrl;
   }
 }

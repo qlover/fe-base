@@ -1,17 +1,18 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { type FormEvent, useMemo, useState } from 'react';
-import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
+import { AppUserGateway } from '@/impls/AppUserGateway';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { LoginValidator } from '@shared/validators/LoginValidator';
+import { URLParamsKeys } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_DEVELOPER_APPS, ROUTE_REGISTER } from '@config/route';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
+import { useReturnTo } from '../hook/useReturnTo';
 
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
@@ -19,15 +20,15 @@ const inputClass =
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const t = useWarnTranslations();
-  const searchParams = useSearchParams();
-  const oauthGateway = useIOC(OAuthWrapperGateway);
+  const userGateway = useIOC(AppUserGateway);
   const appConfig = useIOC(I.AppConfig) as SeedSrcConfigInterface;
   const formValidator = useMemo(() => new LoginValidator(), []);
+  const { returnTo } = useReturnTo({ returnToKey: URLParamsKeys.returnTo });
 
   const [email, setEmail] = useState(appConfig.testLoginEmail);
   const [password, setPassword] = useState(appConfig.testLoginPassword);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success, _setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<LoginSchema>>({});
 
@@ -67,20 +68,9 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
     setLoading(true);
     try {
-      await oauthGateway.verify(payload);
-      setSuccess(true);
-
-      const redirectTarget =
-        searchParams?.get('redirect') ??
-        searchParams?.get('returnUrl') ??
-        ROUTE_DEVELOPER_APPS;
-
-      if (redirectTarget.startsWith('http')) {
-        window.location.href = redirectTarget;
-        return;
-      }
-
-      window.location.assign(redirectTarget);
+      await userGateway.verify(payload);
+      returnTo(ROUTE_DEVELOPER_APPS);
+      // setSuccess(true);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Login failed');
     } finally {

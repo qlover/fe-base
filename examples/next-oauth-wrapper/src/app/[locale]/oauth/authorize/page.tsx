@@ -47,9 +47,9 @@ export default async function OAuthAuthorizePage(
 
   const rawSearchParams = (await props.searchParams) ?? {};
   const IOC = new BootstrapServer('OAuthAuthorizePage').getIOC();
-  const authorizeResult = await IOC(
-    OAuthWrapperController
-  ).resolveAuthorizePage(rawSearchParams);
+  const oauthContoller = IOC(OAuthWrapperController);
+  const authorizeResult =
+    await oauthContoller.resolveAuthorizePage(rawSearchParams);
 
   return (
     <PageI18nProvider value={tt}>

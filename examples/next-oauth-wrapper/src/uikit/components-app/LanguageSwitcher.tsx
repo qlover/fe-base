@@ -2,10 +2,12 @@
 
 import { TranslationOutlined } from '@ant-design/icons';
 import { useMountedClient } from '@brain-toolkit/react-kit';
+import { LocaleRouter } from '@qlover/corekit-bridge';
 import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
+import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import { headerActionButtonClassName } from './headerStyles';
@@ -17,6 +19,18 @@ export function LanguageSwitcher() {
   const currentLocale = useLocale() as LocaleType;
   const [isPending, startTransition] = useTransition();
   const mounted = useMountedClient();
+
+  const localeRouter = useMemo(
+    () =>
+      useLocaleRoutes
+        ? null
+        : new LocaleRouter({
+            supportedLocales: i18nConfig.supportedLngs,
+            mode: 'query',
+            localeQueryParam: localeQueryParam
+          }),
+    []
+  );
 
   const options: ItemType[] = useMemo(() => {
     return i18nConfig.supportedLngs.map(
@@ -35,10 +49,20 @@ export function LanguageSwitcher() {
       if (!mounted || isPending || value === currentLocale) return;
 
       startTransition(() => {
-        router.replace(pathname, { locale: value });
+        const currentPath =
+          pathname + window.location.search + window.location.hash;
+
+        if (useLocaleRoutes) {
+          router.replace(currentPath as '/', { locale: value });
+          return;
+        }
+
+        router.replace(
+          localeRouter!.switchLocale(currentPath, currentLocale, value) as '/'
+        );
       });
     },
-    [pathname, router, isPending, currentLocale, mounted]
+    [mounted, isPending, pathname, currentLocale, localeRouter, router]
   );
 
   const nextLocale = useMemo(() => {

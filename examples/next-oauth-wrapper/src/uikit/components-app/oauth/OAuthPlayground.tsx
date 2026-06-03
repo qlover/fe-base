@@ -23,7 +23,7 @@ import {
   type ReactNode
 } from 'react';
 import { Link } from '@/i18n/routing';
-import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
+import { AppUserGateway } from '@/impls/AppUserGateway';
 import { readAppApiJson } from '@/uikit/components-app/developer/apps/readAppApiJson';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -147,7 +147,7 @@ export function OAuthPlayground() {
   const tt = usePageI18nMapping<OAuthPlaygroundI18nInterface>();
   const locale = useLocale();
   const { success, loading: authLoading, user } = useUserAuth();
-  const consentGateway = useIOC(OAuthWrapperGateway);
+  const userGateway = useIOC(AppUserGateway);
 
   const [clients, setClients] = useState<OAuthClientListItem[]>([]);
   const [clientsLoading, setClientsLoading] = useState(true);
@@ -339,7 +339,7 @@ export function OAuthPlayground() {
       setUserinfoResponse(null);
 
       try {
-        const redirectUrl = await consentGateway.submit({
+        const redirectUrl = await userGateway.submitOAuthConsent({
           action,
           client_id: clientId,
           redirect_uri: redirectUri,
@@ -367,7 +367,7 @@ export function OAuthPlayground() {
       redirectUri,
       scopeParam,
       state,
-      consentGateway,
+      userGateway,
       pkceActive,
       pkceChallenge
     ]
