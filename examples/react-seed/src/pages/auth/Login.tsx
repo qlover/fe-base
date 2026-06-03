@@ -12,7 +12,7 @@ import type { FormEvent } from 'react';
 
 export default function LoginPage(_props: RouterRenderProps) {
   const text = useI18nMapping(pageLoginI18n);
-  const userService = useIOC(UserService as never) as UserService;
+  const userService = useIOC(UserService)
   const routeService = useIOC(RouteService);
   const { startLogin, isStarting, startError, isConfigured } = useOAuthLogin();
   const [email, setEmail] = useState('');
