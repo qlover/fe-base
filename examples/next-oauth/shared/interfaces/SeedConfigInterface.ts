@@ -37,6 +37,9 @@ export interface SeedServerConfigInterface extends SharedConfigInterface {
 
   /** OAuth session key. */
   readonly oauthSessionKey: string;
+
+  /** OAuth origin key. */
+  readonly oauthOriginKey: string;
 }
 export interface SeedSrcConfigInterface extends SharedConfigInterface {
   readonly stringEncryptorKey: string;

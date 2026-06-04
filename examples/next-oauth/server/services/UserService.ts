@@ -1,4 +1,5 @@
 import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
+import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
 import {
@@ -150,8 +151,9 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
   /**
    * @override
    */
-  public hasAuth(): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  public async hasAuth(): Promise<boolean> {
+    const user = await this.oauthService.getUser();
+    return !isEmpty(user);
   }
   /**
    * @override

@@ -57,8 +57,12 @@ export default async function OAuthConsentPage(props: OAuthConsentPageProps) {
 
   if (consentResult.success) {
     // if no authorization_id returned, user has previously consented, redirect them
-    if (!('authorization_id' in consentResult.data!)) {
-      return redirect(consentResult.data!['redirect_url']);
+    if (
+      consentResult.data &&
+      Object.keys(consentResult.data).length === 1 &&
+      'redirect_url' in consentResult.data
+    ) {
+      return redirect(consentResult.data.redirect_url);
     }
   }
 
@@ -70,16 +74,18 @@ export default async function OAuthConsentPage(props: OAuthConsentPageProps) {
         showAuthButton={false}
       >
         <div className="flex flex-1 flex-col">
-          <div className="flex flex-1 items-center justify-center px-4 py-12"></div>
-
-          {!consentResult.success ? (
-            <OAuthAuthorizeErrorCard
-              heading={consentResult.id}
-              message={consentResult.message}
-            />
-          ) : (
-            <div className="text-primary-text">授权按钮</div>
-          )}
+          <div className="flex flex-1 items-center justify-center px-4 py-12">
+            {!consentResult.success ? (
+              <OAuthAuthorizeErrorCard
+                heading={consentResult.id}
+                message={consentResult.message}
+              />
+            ) : (
+              <div className="text-primary-text">
+                <pre>{JSON.stringify(consentResult.data, null, 2)}</pre>
+              </div>
+            )}
+          </div>
 
           <footer className="text-center text-sm text-secondary-text py-6 border-t border-primary-border">
             <p>

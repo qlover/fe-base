@@ -64,4 +64,6 @@ export class ServerConfig implements SeedServerConfigInterface {
 
   public readonly oauthSessionKey: string =
     process.env.OAUTH_SESSION_KEY ?? 'next_oauth_wrapper_session';
+
+  public readonly oauthOriginKey: string = 'next_oauth_origin';
 }

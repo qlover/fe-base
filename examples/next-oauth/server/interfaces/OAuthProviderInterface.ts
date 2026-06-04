@@ -1,5 +1,6 @@
 import type { UserSchema } from '@schemas/UserSchema';
 import type { VerifyLoginParams } from '@server/services/OAuthService';
+import type { OAuthGatewayCallbackParams } from '@qlover/oauth-wrapper/client';
 import type {
   OAuthAuthorizationDetails,
   OAuthRedirect
@@ -14,7 +15,10 @@ import type {
  */
 export type OAuthAuthorizationCallbackResult =
   | OAuthAuthorizationDetails
-  | OAuthRedirect;
+  /**
+   * 其中 OAuthGatewayCallbackParams.code是next-oauth生成，用于给源地址访问 /oauth/token 交互
+   */
+  | (OAuthRedirect & OAuthGatewayCallbackParams);
 
 export interface OAuthProviderInterface {
   getUser(): Promise<UserSchema | null>;

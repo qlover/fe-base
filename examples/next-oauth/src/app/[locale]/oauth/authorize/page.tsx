@@ -1,5 +1,6 @@
 import { redirect, RedirectType } from 'next/navigation';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
+import { OAuthAuthorizeErrorCard } from '@/uikit/components-app/oauth/OAuthAuthorizeErrorCard';
 import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import { oauthAuthorizeI18n } from '@config/i18n-mapping/OAuthAuthorizeI18n';
@@ -62,8 +63,15 @@ export default async function OAuthAuthorizePage(
         showAuthButton={false}
       >
         <div className="flex flex-1 flex-col">
-          <div className="flex flex-1 items-center justify-center px-4 py-12"></div>
-          <pre>{JSON.stringify(authorizeData)}</pre>
+          <div className="flex flex-1 items-center justify-center px-4 py-12">
+            {!authorizeData.success ? (
+              <OAuthAuthorizeErrorCard
+                heading={authorizeData.id}
+                message={authorizeData.message}
+              />
+            ) : null}
+          </div>
+
           <footer className="text-center text-sm text-secondary-text py-6 border-t border-primary-border">
             <p>
               © 2026 {tt.title} · {tt.footerTagline}

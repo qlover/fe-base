@@ -1,5 +1,9 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { AuthApiError, AuthError } from '@supabase/supabase-js';
+import {
+  AuthApiError,
+  AuthError,
+  AuthPKCECodeVerifierMissingError
+} from '@supabase/supabase-js';
 import { injectable } from '@shared/container';
 import { SUPABASE_URL } from '@shared/supabase/conts';
 import { createClient } from '@shared/supabase/server';
@@ -121,6 +125,13 @@ export class SupabaseBridge implements DBBridgeInterface {
         // TODO:
         // 当 email_not_confirmed 时应该重新验证邮箱
         throw new ExecutorError(error.code ?? 'SupabaseAuthApiError', error);
+      }
+
+      if (error instanceof AuthPKCECodeVerifierMissingError) {
+        throw new ExecutorError(
+          error.code ?? 'AuthPKCECodeVerifierMissingError',
+          error
+        );
       }
 
       if (error instanceof AuthError || error instanceof Error) {

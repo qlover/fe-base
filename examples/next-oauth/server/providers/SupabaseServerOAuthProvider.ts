@@ -1,9 +1,13 @@
-import { OAuthAuthorizeQuerySchema } from '@qlover/oauth-wrapper';
+import {
+  generatePkceVerifier,
+  OAuthAuthorizeQuerySchema
+} from '@qlover/oauth-wrapper';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { inject, injectable } from '@shared/container';
 import { URLParamsKeys } from '@config/common';
 import { I } from '@config/ioc-identifiter';
-import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_OAUTH_CONSENT } from '@config/route';
+import { ROUTE_LOGIN, ROUTE_OAUTH_CONSENT } from '@config/route';
 import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import {
@@ -43,6 +47,25 @@ export type AuthorizationCodeCallbackQueryType = z.infer<
   typeof authorizationCodeCallbackQuerySchema
 >;
 
+class OauthOriginStorage {
+  constructor(protected key: string) {}
+
+  public async set(value: string): Promise<void> {
+    const cookieStore = await cookies();
+    cookieStore.set(this.key, value);
+  }
+
+  public async get(): Promise<string | null> {
+    const cookieStore = await cookies();
+    return cookieStore.get(this.key)?.value ?? null;
+  }
+
+  public async remove(): Promise<void> {
+    const cookieStore = await cookies();
+    cookieStore.delete(this.key);
+  }
+}
+
 /**
  * Supabase server oauth2.0 服务提供者
  *
@@ -54,13 +77,19 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
-  @inject(ServerConfig)
-  protected config!: SeedServerConfigInterface;
-
   @inject(SupabaseBridge)
   protected supabaseBridge!: SupabaseBridge;
 
   protected authorizeEndpoint = '/auth/v1/oauth/authorize';
+
+  protected oauthOriginStorage: OauthOriginStorage;
+
+  constructor(
+    @inject(ServerConfig)
+    protected config: SeedServerConfigInterface
+  ) {
+    this.oauthOriginStorage = new OauthOriginStorage(config.oauthOriginKey);
+  }
 
   /**
    * @override
@@ -107,6 +136,8 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
     const query = parseResult.data;
 
     // IMPORTANT: 保存原始重定向url，然后修改为自己的
+    // await this.oauthOriginStorage.set(query.redirect_uri);
+
     query.redirect_uri = new URL(
       ROUTE_OAUTH_CONSENT,
       this.config.siteUrl
@@ -153,36 +184,33 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
     query: AuthorizationCodeCallbackQueryType
   ): Promise<OAuthAuthorizationCallbackResult> {
     const { code } = query;
-    // // 2. 【关键】验证 state 防 CSRF 攻击
-    // const savedState = req.session.oauthState; // 从用户 session 中获取保存的 state
-    // if (!savedState || savedState !== callbackState) {
-    //   console.error('State mismatch: potential CSRF attack');
-    //   return res.status(400).send('Invalid state parameter');
-    // }
-
     const supabase = await this.supabaseBridge.getSupabase();
-    // const codeVerifier = req.session.codeVerifier; // 从 session 中获取保存的 code_verifier
 
-    // 4. 交换 token
     const sessionResult = await supabase.auth.exchangeCodeForSession(code);
-    // 或直接使用 fetch 方案
-    // const tokenResponse = await fetch('...', { method: 'POST', ... })
 
     this.supabaseBridge.throwIfError(sessionResult);
-
-    // 5. 获取用户信息（可选，可通过 data.user 直接获得）
     const session = sessionResult.data.session!;
 
     const userResult = await supabase.auth.getUser(session.access_token);
 
     this.supabaseBridge.throwIfError(userResult);
 
-    // 6. 处理成功，设置服务器 session，重定向到应用主页等
     const user = userResult.data.user!;
     this.logger.debug('pkce callback with authorization code user is', user);
 
+    const origin = await this.oauthOriginStorage.get();
+
+    if (!origin) {
+      throw new Error('Origin not found.');
+    }
+
+    // IMPORTANT: 生成一个next-oauth 的一次性码，让源地址用该码来交换token
+    const serverCode = generatePkceVerifier(32);
+
     return {
-      redirect_url: ROUTE_HOME
+      code: serverCode,
+      state: query.state,
+      redirect_url: origin
     };
   }
 
