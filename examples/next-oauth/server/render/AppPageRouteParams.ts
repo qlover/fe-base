@@ -73,10 +73,17 @@ export class AppPageRouteParams<
    */
   public async getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
+    /**
+     * @deprecated Use i18nInterface.ns instead.
+     */
     _namespace?: string
   ): Promise<T> {
     const locale = this.getLocale();
-    return await getI18nInterface(locale, i18nInterface, _namespace);
+    return await getI18nInterface(
+      locale,
+      i18nInterface,
+      i18nInterface.ns ?? _namespace
+    );
   }
 
   /**

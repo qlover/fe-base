@@ -1,7 +1,7 @@
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { isEmpty } from 'lodash';
 import { ROUTE_USERINFO } from '@config/route';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
 import {
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      return await IOC(OAuthWrapperController).getUserInfo(accessToken!);
+      return await IOC(OAuthController).getUserInfo(accessToken!);
     },
     {
       successHeaders: {

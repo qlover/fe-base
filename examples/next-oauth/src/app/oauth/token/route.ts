@@ -1,5 +1,5 @@
 import { ROUTE_OAUTH_TOKEN } from '@config/route';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
 import {
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     event_category: 'oauth-wrapper'
   }).runWithJson(
     async ({ parameters: { IOC } }) =>
-      IOC(OAuthWrapperController).exchangeToken(
+      IOC(OAuthController).exchangeToken(
         await parseOAuthTokenRequest(req)
       ),
     corsHeaders

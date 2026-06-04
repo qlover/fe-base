@@ -4,7 +4,7 @@ import {
   API_OAUTH_WRAPPER_AUTH_FAILED,
   API_OAUTH_INVALID_REQUEST
 } from '@config/i18n-identifier/api';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import { NextApiServer } from '@server/NextApiServer';
 
 /**
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   const server = new NextApiServer(API_OAUTH_VERIFY, req);
   const result = await server.run(async ({ parameters: { IOC } }) =>
-    IOC(OAuthWrapperController).verifyLogin(requestBody)
+    IOC(OAuthController).verifyLogin(requestBody)
   );
 
   if (!result.success) {

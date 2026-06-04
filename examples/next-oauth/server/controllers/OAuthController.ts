@@ -14,9 +14,9 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import {
-  OAuthControllerService,
+  OAuthService,
   VerifyLoginResult
-} from '@server/services/OAuthControllerService';
+} from '@server/services/OAuthService';
 import type {
   OAuthAuthorizePageData,
   OAuthAuthorizeValidationError,
@@ -25,7 +25,7 @@ import type {
 } from '@qlover/oauth-wrapper';
 
 @injectable()
-export class OAuthWrapperController {
+export class OAuthController {
   protected stringEncryptor: StringEncryptor;
 
   constructor(
@@ -33,8 +33,8 @@ export class OAuthWrapperController {
     protected loginValidator: ValidatorInterface<LoginSchema>,
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
-    @inject(OAuthControllerService)
-    protected oauthService: OAuthControllerService,
+    @inject(OAuthService)
+    protected oauthService: OAuthService,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer
   ) {

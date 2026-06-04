@@ -15,6 +15,7 @@ export type OAuthAuthorizeI18nInterface = typeof oauthAuthorizeI18n;
 export const oauthAuthorizeI18nNamespace = 'page_oauth_authorize';
 
 export const oauthAuthorizeI18n = Object.freeze({
+  ns: oauthAuthorizeI18nNamespace,
   title: i18nKeys.PAGE_OAUTH_AUTHORIZE_TITLE,
   description: i18nKeys.PAGE_OAUTH_AUTHORIZE_DESCRIPTION,
   content: i18nKeys.PAGE_OAUTH_AUTHORIZE_CONTENT,

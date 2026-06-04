@@ -1,5 +1,5 @@
 import { API_OAUTH_PLAYGROUND_VALIDATE } from '@config/apiRoutes';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import { NextApiServer } from '@server/NextApiServer';
 import type { NextRequest } from 'next/server';
 
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     API_OAUTH_PLAYGROUND_VALIDATE,
     req
   ).runWithJson(async ({ parameters: { IOC } }) => {
-    const resolved = await IOC(OAuthWrapperController).resolveAuthorizePage(
+    const resolved = await IOC(OAuthController).resolveAuthorizePage(
       rawQuery
     );
     if (!resolved.ok) {

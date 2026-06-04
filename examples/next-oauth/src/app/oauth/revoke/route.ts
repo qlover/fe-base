@@ -1,5 +1,5 @@
 import { ROUTE_OAUTH_REVOKE } from '@config/route';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
 import {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     event_category: 'oauth-wrapper'
   }).runWithJson(
     async ({ parameters: { IOC } }) =>
-      IOC(OAuthWrapperController).revokeToken(
+      IOC(OAuthController).revokeToken(
         await parseOAuthTokenRequest(req)
       ),
     corsHeaders

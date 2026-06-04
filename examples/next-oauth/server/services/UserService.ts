@@ -4,7 +4,7 @@ import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import { OAuthControllerService } from './OAuthControllerService';
+import { OAuthService } from './OAuthService';
 import { ServerAuth } from './ServerAuth';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
@@ -26,8 +26,8 @@ export class UserService implements UserServiceInterface {
   constructor(
     @inject(ServerAuth)
     protected userAuth: ServerAuthInterface,
-    @inject(OAuthControllerService)
-    protected oauthService: OAuthControllerService,
+    @inject(OAuthService)
+    protected oauthService: OAuthService,
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(PasswordEncrypt)

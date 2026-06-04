@@ -23,7 +23,11 @@ import type { OAuthClientInterface } from './interface/OAuthClientInterface';
 import type { OAuthClientStoreOptions } from './PKCESessionStore';
 import { PKCESessionStore } from './PKCESessionStore';
 import type { OAuthGatewayAuthorizeParams } from './interface/OAuthGatwayInterface';
-import { computePkceS256Challenge, generatePkceVerifier, randomOAuthState } from '../core';
+import {
+  computePkceS256Challenge,
+  generatePkceVerifier,
+  randomOAuthState
+} from '../core';
 
 type OAuthClientInfrastructureOptions<T extends OAuthUserInfo> = {
   serviceName?: string | symbol;
@@ -171,7 +175,7 @@ export class OAuthClient<
    * @override
    */
   public async startOAuthLogin(
-    params?: OAuthGatewayAuthorizeParams
+    params?: Partial<OAuthGatewayAuthorizeParams>
   ): Promise<void> {
     const config = mergeOAuthAuthorizationConfig(
       params,
@@ -211,7 +215,8 @@ export class OAuthClient<
       locale: this.config.locale,
       redirectUri,
       statePreview: `${state.slice(0, 8)}…`,
-      pkceSaved: this.pkceStore.loadPkceSession() != null
+      pkceSaved: this.pkceStore.loadPkceSession() != null,
+      authorizeUrl: url
     });
 
     if (params?.target === '_blank') {

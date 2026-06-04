@@ -4,19 +4,26 @@ import createMiddleware from 'next-intl/middleware';
 import { isOAuthMachinePath } from '@config/route';
 import { oauthWrapperProxySession } from '@server/utils/OAuthWrapperProxy';
 import { routing } from './i18n/routing';
+import { supabaseProxySession } from '@shared/supabase/proxy';
 
-export default async function proxy(request: NextRequest) {
+/**
+ * Check if the request should be skipped by the proxy.
+ * @param request - The request to check.
+ * @returns True if the request should be skipped by the proxy, false otherwise.
+ */
+function hasSkipProxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (isOAuthMachinePath(pathname)) {
+  return isOAuthMachinePath(pathname);
+}
+
+export default async function proxy(request: NextRequest) {
+  if (hasSkipProxy(request)) {
+    console.log('Proxy(skip) request', request.nextUrl.pathname);
     return NextResponse.next({ request });
   }
 
-  // OAuth wrapper auth:
-  const sessionResponse = await oauthWrapperProxySession(request);
-  if (sessionResponse.headers.get('Location')) {
-    return sessionResponse;
-  }
+  await supabaseProxySession(request);
 
   return createMiddleware(routing)(request);
 }

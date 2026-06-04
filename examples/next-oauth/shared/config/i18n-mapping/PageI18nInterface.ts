@@ -12,6 +12,12 @@ export interface PageI18nInterface {
   description: string;
   content: string;
   keywords: string;
+  /**
+   * The namespace of the page.
+   * 
+   * @example 'page_oauth_authorize'
+   */
+  ns?: string;
 
   // Canonical URL
   canonical?: string;

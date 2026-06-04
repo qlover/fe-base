@@ -11,7 +11,7 @@ import {
 } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
+import { OAuthController } from '@server/controllers/OAuthController';
 import {
   AppPageRouteParams,
   type PageParamsType
@@ -40,14 +40,11 @@ export default async function OAuthAuthorizePage(
 ) {
   const params = await props.params!;
   const pageParams = new AppPageRouteParams(params);
-  const tt = await pageParams.getI18nInterface(
-    oauthAuthorizeI18n,
-    oauthAuthorizeI18nNamespace
-  );
+  const tt = await pageParams.getI18nInterface(oauthAuthorizeI18n);
 
   const rawSearchParams = (await props.searchParams) ?? {};
   const IOC = new BootstrapServer('OAuthAuthorizePage').getIOC();
-  const oauthContoller = IOC(OAuthWrapperController);
+  const oauthContoller = IOC(OAuthController);
   const authorizeResult =
     await oauthContoller.resolveAuthorizePage(rawSearchParams);
 
@@ -60,23 +57,7 @@ export default async function OAuthAuthorizePage(
       >
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 items-center justify-center px-4 py-12">
-            {authorizeResult.ok ? (
-              <Suspense>
-                <OAuthAuthorizeCard
-                  tt={tt}
-                  authorizeData={authorizeResult.data}
-                />
-              </Suspense>
-            ) : (
-              <OAuthAuthorizeErrorCard
-                tt={tt}
-                message={resolveAuthorizeErrorMessage(
-                  tt,
-                  authorizeResult.error.errorKey,
-                  authorizeResult.error.message
-                )}
-              />
-            )}
+            
           </div>
 
           <footer className="text-center text-sm text-secondary-text py-6 border-t border-primary-border">
