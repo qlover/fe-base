@@ -3,7 +3,7 @@ import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import type { OAuthProviderInterface } from '@server/interfaces/OAuthProviderInterface';
 import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
-import { ServerAuth } from '@server/services/ServerAuth';
+import { UserService } from '@server/services/UserService';
 import type {
   OAuthClientCreate,
   OAuthClientCreateResponse,
@@ -23,7 +23,7 @@ export class OAuthClientsController {
   protected clientsService: OAuthClientsService;
 
   constructor(
-    @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
+    @inject(UserService) protected userService: ServerAuthInterface,
     @inject(I.OAuthProviderInterface)
     oauthProvider: OAuthProviderInterface
   ) {
@@ -89,8 +89,8 @@ export class OAuthClientsController {
    * Resolves owner id from the authenticated session user.
    */
   protected async requireOwnerUserId(): Promise<string> {
-    await this.serverAuth.throwIfNotAuth();
-    const user = await this.serverAuth.getUser();
+    await this.userService.throwIfNotAuth();
+    const user = await this.userService.getUser();
 
     if (!user?.id) {
       throw new Error('User not authenticated');

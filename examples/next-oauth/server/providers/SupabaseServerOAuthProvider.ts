@@ -98,7 +98,6 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
   public async authorizePKCE(
     rawQuery: Record<string, string | string[] | undefined>
   ): Promise<{ redirectAuthorizeUrl: string | URL }> {
-    console.log(rawQuery);
     const parseResult = OAuthAuthorizeQuerySchema.safeParse(rawQuery);
 
     if (!parseResult.success) {
@@ -107,6 +106,7 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
 
     const query = parseResult.data;
 
+    // IMPORTANT: 保存原始重定向url，然后修改为自己的
     query.redirect_uri = new URL(
       ROUTE_OAUTH_CONSENT,
       this.config.siteUrl

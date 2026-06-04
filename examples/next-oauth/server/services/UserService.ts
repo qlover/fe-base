@@ -1,10 +1,14 @@
 import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
+import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
-import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
+import {
+  API_NOT_AUTHORIZED,
+  API_USER_NOT_FOUND
+} from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { OAuthService } from './OAuthService';
-import { ServerAuth } from './ServerAuth';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
@@ -18,13 +22,14 @@ import type {
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class UserService implements UserServiceInterface {
+export class UserService implements UserServiceInterface, ServerAuthInterface {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
+  @inject(I.AppConfig)
+  protected config!: SeedServerConfigInterface;
+
   constructor(
-    @inject(ServerAuth)
-    protected userAuth: ServerAuthInterface,
     @inject(OAuthService)
     protected oauthService: OAuthService,
     @inject(PasswordEncrypt)
@@ -94,7 +99,7 @@ export class UserService implements UserServiceInterface {
       }
     });
 
-    await this.userAuth.clear();
+    await this.clear();
   }
 
   /**
@@ -108,12 +113,52 @@ export class UserService implements UserServiceInterface {
    * @override
    */
   public async getUser(): Promise<UserSchema> {
-    const user = await this.userAuth.getUser();
+    const user = await this.oauthService.getUser();
 
     if (!user) {
       throw new ExecutorError(API_USER_NOT_FOUND);
     }
 
     return user;
+  }
+
+  /**
+   * @override
+   */
+  public setAuth(_credential_token: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  /**
+   * @override
+   */
+  public async getCredential(): Promise<string> {
+    const user = await this.oauthService.getUser();
+    return user?.credential_token ?? '';
+  }
+  /**
+   * @override
+   */
+  public async clear(): Promise<void> {
+    await this.oauthService.clearSession();
+
+    const legacyKey = this.config.userTokenKey;
+    if (legacyKey) {
+      const cookieStore = await cookies();
+      cookieStore.delete(legacyKey);
+    }
+  }
+  /**
+   * @override
+   */
+  public hasAuth(): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+  /**
+   * @override
+   */
+  public async throwIfNotAuth(): Promise<void> {
+    if (!(await this.hasAuth())) {
+      throw new ExecutorError(API_NOT_AUTHORIZED, 'Not authorized');
+    }
   }
 }

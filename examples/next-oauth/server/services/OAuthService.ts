@@ -33,6 +33,11 @@ export class OAuthService {
   public async getUser(): Promise<UserSchema | null> {
     return this.oauthProvider.getUser();
   }
+
+  public async clearSession(): Promise<void> {
+    return this.oauthProvider.clearSession();
+  }
+
   public async verifyLogin(params: VerifyLoginParams): Promise<UserSchema> {
     return this.oauthProvider.verifyLogin(params);
   }
