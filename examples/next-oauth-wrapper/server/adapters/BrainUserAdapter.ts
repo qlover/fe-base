@@ -2,6 +2,7 @@ import {
   BrainUserGateway,
   createBrainUserOptions
 } from '@brain-toolkit/brain-user';
+import { LoginParams } from '@qlover/corekit-bridge';
 import { injectable } from '@shared/container';
 import type {
   OAuthUserAccessToken,
@@ -77,11 +78,11 @@ export class BrainUserAdapter implements OAuthUserAdapterInterface {
   /**
    * @override
    */
-  public async login(
-    email: string,
-    password: string
-  ): Promise<OAuthUserCredentials> {
-    const result = await this.gateway.login({ email, password });
+  public async login(params: LoginParams): Promise<OAuthUserCredentials> {
+    const result = await this.gateway.login({
+      email: params.email!,
+      password: params.password!
+    });
     const token = extractBrainSessionToken(result);
     if (!token) {
       throw new Error(formatBrainLoginError(result));

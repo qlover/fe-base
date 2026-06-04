@@ -27,7 +27,7 @@ export class UserService implements UserServiceInterface {
     @inject(ServerAuth)
     protected userAuth: ServerAuthInterface,
     @inject(OAuthControllerService)
-    protected demoAuthService: OAuthControllerService,
+    protected oauthService: OAuthControllerService,
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(PasswordEncrypt)
@@ -52,7 +52,7 @@ export class UserService implements UserServiceInterface {
    * @override
    */
   public async login(params: UserLoginParams): Promise<UserSchema> {
-    await this.demoAuthService.verifyLogin({
+    await this.oauthService.verifyLogin({
       email: params.email,
       password: params.password
     });

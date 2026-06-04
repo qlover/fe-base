@@ -17,7 +17,7 @@ export async function GET() {
       },
       servers: [
         { url: 'http://localhost:3110', description: 'Local dev' },
-        { url: 'http://localhost:3102', description: 'Production start' }
+        { url: 'http://localhost:3012', description: 'Production start' }
       ]
     }
   });

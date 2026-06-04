@@ -1,6 +1,6 @@
 'use client';
 
-import { oauthInputClass, oauthLabelClass } from '@/uikit/styles/oauthUiStyles';
+import { oauthInputClass, oauthLabelClass } from '@config/component';
 import type { FormEvent, ReactNode } from 'react';
 
 export type OAuthClientFormValues = {

@@ -65,7 +65,7 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async getUser(): Promise<UserSchema | null> {
-    const session = await this.oauthProvider.getOAuthSession().getSession();
+    const session = await this.oauthProvider.getSession();
     if (!session) {
       return null;
     }

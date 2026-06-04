@@ -39,7 +39,9 @@ export default function DeveloperApps({ initialApps }: DeveloperAppsProps) {
   const seoMetadata = useI18nMapping(i18nInterface);
 
   return (
-    <WithUserAuth failedElement={<UserAuthFailed />}>
+    <WithUserAuth
+      failedElement={({ error }) => <UserAuthFailed error={error} />}
+    >
       <AppRoutePagePages
         tt={{
           title: seoMetadata.consoleSubtitle,

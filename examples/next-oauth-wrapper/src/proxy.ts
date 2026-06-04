@@ -12,9 +12,6 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
-  // Supabase auth:
-  // await supabaseProxySession(request);
-
   // OAuth wrapper auth:
   const sessionResponse = await oauthWrapperProxySession(request);
   if (sessionResponse.headers.get('Location')) {

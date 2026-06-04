@@ -1,10 +1,7 @@
 'use client';
 
 import { DeveloperOverlayModal } from '@/uikit/components-app/developer/DeveloperOverlayModal';
-import {
-  oauthLabelClass,
-  oauthPrimaryButtonClass
-} from '@/uikit/styles/oauthUiStyles';
+import { oauthLabelClass, oauthPrimaryButtonClass } from '@config/component';
 import { CopyableCredential } from './CopyableCredential';
 
 export interface OAuthCredentials {

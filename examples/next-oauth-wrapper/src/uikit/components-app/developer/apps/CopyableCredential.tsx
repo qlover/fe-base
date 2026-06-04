@@ -2,7 +2,7 @@
 
 import { CopyOutlined } from '@ant-design/icons';
 import { clsx } from 'clsx';
-import { oauthGhostActionClass } from '@/uikit/styles/oauthUiStyles';
+import { oauthGhostActionClass } from '@config/component';
 
 export function CopyableCredential(props: {
   value: string;

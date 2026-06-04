@@ -20,6 +20,7 @@ function parseCsvEnv(
 }
 
 export class ServerConfig implements SeedServerConfigInterface {
+  public readonly siteUrl: string = process.env.SITE_URL ?? '';
   public readonly env: string = process.env.APP_ENV ?? 'development';
   public readonly name: string = name;
   public readonly version: string = version;
@@ -60,4 +61,7 @@ export class ServerConfig implements SeedServerConfigInterface {
 
   public readonly logPrefixTemplate: string =
     process.env.LOG_PREFIX_TEMPLATE ?? logPrefixTemplate;
+
+  public readonly oauthSessionKey: string =
+    process.env.OAUTH_SESSION_KEY ?? 'next_oauth_wrapper_session';
 }

@@ -2,12 +2,12 @@
 
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
+import { headerActionButtonClassName } from '@config/component';
 import {
   COMMON_AUTH_NAV_SIGN_UP,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
 } from '@config/i18n-identifier/common/common';
 import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
-import { headerActionButtonClassName } from './headerStyles';
 import { LogoutButton } from './LogoutButton';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 

@@ -258,7 +258,7 @@ export class OAuthWrapperService<
   /**
    * @override
    */
-  public async logoutUser(userId: number): Promise<void> {
+  public async logoutUser(userId: string): Promise<void> {
     await this.oauthRepo.revokeRefreshTokensByUserId(userId);
     await this.oauthRepo.upsertUserCredentials(userId, {
       provider_refresh_token: null,

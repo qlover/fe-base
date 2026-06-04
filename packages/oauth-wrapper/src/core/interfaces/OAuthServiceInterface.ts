@@ -77,5 +77,5 @@ export interface OAuthServiceInterface<
    * Application logout: revoke issued refresh tokens, clear stored provider
    * credentials, and clear the authorization-server session cookie.
    */
-  logoutUser(userId: number): Promise<void>;
+  logoutUser(userId: string): Promise<void>;
 }

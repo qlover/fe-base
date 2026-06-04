@@ -15,6 +15,7 @@ import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
 import { useEffect, useMemo } from 'react';
+import { headerActionButtonClassName } from '@config/component';
 import {
   COMMON_THEME_DARK,
   COMMON_THEME_DEFAULT,
@@ -23,7 +24,6 @@ import {
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
 import { type SupportedTheme, themeConfig } from '@config/theme';
-import { headerActionButtonClassName } from './headerStyles';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 import type { ItemType } from 'antd/es/menu/interface';

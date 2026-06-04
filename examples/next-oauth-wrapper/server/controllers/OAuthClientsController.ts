@@ -88,7 +88,7 @@ export class OAuthClientsController {
   /**
    * Resolves owner id from the authenticated session user.
    */
-  protected async requireOwnerUserId(): Promise<number> {
+  protected async requireOwnerUserId(): Promise<string> {
     await this.serverAuth.throwIfNotAuth();
     const user = await this.serverAuth.getUser();
 
@@ -96,8 +96,8 @@ export class OAuthClientsController {
       throw new Error('User not authenticated');
     }
 
-    const ownerId = Number(user.id);
-    if (!Number.isFinite(ownerId)) {
+    const ownerId = String(user.id).trim();
+    if (!ownerId) {
       throw new Error('User not authenticated');
     }
 

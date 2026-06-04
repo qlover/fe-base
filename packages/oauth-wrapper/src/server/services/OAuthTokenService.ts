@@ -1,5 +1,9 @@
 import { createHash, randomBytes } from 'crypto';
-import { OAuthRfcCodes, OAuthTokenRequestSchema, OAuthTokenRevokeSchema } from '../../core';
+import {
+  OAuthRfcCodes,
+  OAuthTokenRequestSchema,
+  OAuthTokenRevokeSchema
+} from '../../core';
 import type {
   OAuthTokenRequest,
   OAuthTokenServiceInterface,
@@ -200,7 +204,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
     };
   }
 
-  protected async fetchProviderAccessToken(userId: number): Promise<{
+  protected async fetchProviderAccessToken(userId: string): Promise<{
     access_token: string;
     expires_in: number;
   }> {
@@ -243,7 +247,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
 
   protected async issueMiddlewareRefreshToken(
     clientId: string,
-    userId: number
+    userId: string
   ): Promise<string> {
     const plain = randomBytes(32).toString('base64url');
     const expiresAt = new Date(

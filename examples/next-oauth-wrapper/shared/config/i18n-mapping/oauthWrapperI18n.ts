@@ -11,7 +11,7 @@ export const oauthWrapperI18n: Record<OAuthRfcCodeType, string> = Object.freeze(
     [OAuthRfcCodes.INVALID_CLIENT]: apikeys.API_OAUTH_INVALID_CLIENT,
     [OAuthRfcCodes.INVALID_GRANT]: apikeys.API_OAUTH_INVALID_GRANT,
     [OAuthRfcCodes.INVALID_TOKEN]: apikeys.API_OAUTH_INVALID_TOKEN,
-    [OAuthRfcCodes.UNAUTHORIZED_CLIENT]: apikeys.API_OAUTH_UNAUTHORIZED_CLIENT,
+    [OAuthRfcCodes.UNAUTHORIZED_CLIENT]: apikeys.API_REDIRECT_URL,
     [OAuthRfcCodes.INVALID_SCOPE]: apikeys.API_OAUTH_INVALID_SCOPE,
     [OAuthRfcCodes.ACCESS_DENIED]: apikeys.API_OAUTH_ACCESS_DENIED,
     [OAuthRfcCodes.UNSUPPORTED_RESPONSE_TYPE]:

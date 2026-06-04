@@ -8,7 +8,7 @@ import type {
 export type CreateAuthorizationCodeInput = {
   code: string;
   client_id: string;
-  user_id: number;
+  user_id: string;
   redirect_uri: string;
   scope: string | null;
   code_challenge: string | null;
@@ -19,7 +19,7 @@ export type CreateAuthorizationCodeInput = {
 export type CreateOAuthRefreshTokenInput = {
   refresh_token: string;
   client_id: string;
-  user_id: number;
+  user_id: string;
   expires_at: string;
 };
 
@@ -27,9 +27,9 @@ export interface OAuthWrapperRepositoryInterface extends OAuthClientsRepositoryI
   create(input: CreateAuthorizationCodeInput): Promise<void>;
   consumeCode(code: string): Promise<OAuthAuthorizationCodeRow | null>;
 
-  getUserCredentials(userId: number): Promise<OAuthUserCredentialsRow | null>;
+  getUserCredentials(userId: string): Promise<OAuthUserCredentialsRow | null>;
   upsertUserCredentials(
-    userId: number,
+    userId: string,
     fields: {
       provider_refresh_token?: string | null;
       provider_session_token?: string | null;
@@ -40,7 +40,7 @@ export interface OAuthWrapperRepositoryInterface extends OAuthClientsRepositoryI
   upsertRefreshToken(input: {
     refresh_token: string;
     client_id: string;
-    user_id: number;
+    user_id: string;
     expires_at: string;
   }): Promise<void>;
 
@@ -53,5 +53,5 @@ export interface OAuthWrapperRepositoryInterface extends OAuthClientsRepositoryI
   revokeByTokenHash(tokenHash: string): Promise<void>;
 
   /** Revoke all active refresh tokens issued for the given user. */
-  revokeRefreshTokensByUserId(userId: number): Promise<void>;
+  revokeRefreshTokensByUserId(userId: string): Promise<void>;
 }

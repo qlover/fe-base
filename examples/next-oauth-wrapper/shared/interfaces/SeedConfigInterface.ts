@@ -1,7 +1,12 @@
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StringValue } from 'ms';
 
-export interface SeedServerConfigInterface extends SeedConfigInterface {
+export interface SharedConfigInterface extends SeedConfigInterface {
+  // 需要扩展前后端通用配置
+}
+
+export interface SeedServerConfigInterface extends SharedConfigInterface {
+  readonly siteUrl: string;
   readonly logPrefixTemplate: string;
   readonly userTokenKey: string;
   readonly jwtSecret: string;
@@ -29,8 +34,11 @@ export interface SeedServerConfigInterface extends SeedConfigInterface {
 
   /** Allowed CORS methods from `API_CORS_ALLOWED_METHODS`. */
   readonly apiCorsAllowedMethods: readonly string[];
+
+  /** OAuth session key. */
+  readonly oauthSessionKey: string;
 }
-export interface SeedSrcConfigInterface extends SeedConfigInterface {
+export interface SeedSrcConfigInterface extends SharedConfigInterface {
   readonly stringEncryptorKey: string;
 
   readonly testLoginEmail: string;

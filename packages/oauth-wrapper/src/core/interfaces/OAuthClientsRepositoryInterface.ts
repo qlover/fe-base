@@ -12,25 +12,25 @@ import type {
 export interface OAuthClientsRepositoryInterface {
   findClientById(clientId: string): Promise<OAuthClientRow | null>;
 
-  listClientByOwner(ownerUserId: number): Promise<OAuthClientListItem[]>;
+  listClientByOwner(ownerUserId: string): Promise<OAuthClientListItem[]>;
 
   createClient(
-    ownerUserId: number,
+    ownerUserId: string,
     input: OAuthClientCreate
   ): Promise<{ client: OAuthClientRow; clientSecret?: string }>;
 
   updateClient(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string,
     input: OAuthClientUpdate
   ): Promise<OAuthClientDetail>;
 
   rotateClientSecret(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<{ clientSecret: string }>;
 
-  deleteClient(ownerUserId: number, clientId: string): Promise<void>;
+  deleteClient(ownerUserId: string, clientId: string): Promise<void>;
 
   verifyClientCredentials(
     clientId: string,

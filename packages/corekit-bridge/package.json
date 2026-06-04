@@ -98,6 +98,12 @@
       "require": "./dist/gateway-service/index.cjs",
       "default": "./dist/gateway-service/index.js"
     },
+    "./url-helper": {
+      "types": "./dist/url-helper/index.d.ts",
+      "import": "./dist/url-helper/index.js",
+      "require": "./dist/url-helper/index.cjs",
+      "default": "./dist/url-helper/index.js"
+    },
     "./build/tw-root10px": {
       "types": "./dist/build/tw-root10px/index.d.ts",
       "import": "./dist/build/tw-root10px/index.js",

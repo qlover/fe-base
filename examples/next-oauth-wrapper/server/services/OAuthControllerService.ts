@@ -11,7 +11,7 @@ export type VerifyLoginParams = {
 };
 
 export type VerifyLoginResult = {
-  userId: number;
+  userId: string;
   email: string;
   name: string;
 };
@@ -38,7 +38,7 @@ export class OAuthControllerService {
     params: VerifyLoginParams
   ): Promise<VerifyLoginResult> {
     const adapter = this.oauthProvider.getOAuthAdapter();
-    const credentials = await adapter.login(params.email, params.password);
+    const credentials = await adapter.login(params);
 
     this.logger.debug('User provider login successful', credentials);
 
@@ -47,16 +47,8 @@ export class OAuthControllerService {
       throw new Error('User provider login did not return a session token');
     }
 
-    const access = await adapter.exchangeAccessToken({
-      token: sessionToken
-    });
-
     const userInfo = await adapter.getUserInfo(sessionToken);
-    const userId = Number(userInfo.id);
-    if (!Number.isFinite(userId)) {
-      throw new Error('User provider id is missing from profile');
-    }
-
+    const userId = String(userInfo.id);
     const profileEmail = userInfo.email ?? params.email;
     const nameFromParts = [userInfo.first_name, userInfo.last_name]
       .filter(Boolean)
@@ -64,18 +56,23 @@ export class OAuthControllerService {
     const profileName = userInfo.name ?? (nameFromParts || profileEmail);
 
     await this.oauthProvider.getOAuthSession().setSession({
-      userId,
+      userId: userId,
       email: profileEmail,
       name: profileName,
       providerSessionToken: sessionToken
     });
 
-    await this.oauthProvider.getOAuthRepo().upsertUserCredentials(userId, {
-      provider_session_token: sessionToken,
-      provider_refresh_token: access.refresh_token
-        ? this.tokenEncryption.encrypt(access.refresh_token)
-        : null
-    });
+    const access = await adapter.exchangeAccessToken(credentials);
+
+    const oauthrepo = this.oauthProvider.getOAuthRepo();
+    if (oauthrepo) {
+      await oauthrepo.upsertUserCredentials(userId, {
+        provider_session_token: sessionToken,
+        provider_refresh_token: access.refresh_token
+          ? this.tokenEncryption.encrypt(access.refresh_token)
+          : null
+      });
+    }
 
     return { userId, email: profileEmail, name: profileName };
   }

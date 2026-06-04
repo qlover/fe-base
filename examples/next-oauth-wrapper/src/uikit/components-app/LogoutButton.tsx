@@ -4,12 +4,12 @@ import { LogoutOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { clsx } from 'clsx';
 import { useCallback } from 'react';
+import { headerActionButtonClassName } from '@config/component';
 import {
   COMMON_LOGOUT_DIALOG_CONTENT,
   COMMON_LOGOUT_DIALOG_TITLE
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { headerActionButtonClassName } from './headerStyles';
 import { useI18nMapping } from '../hook/useI18nMapping';
 import { useIOC } from '../hook/useIOC';
 

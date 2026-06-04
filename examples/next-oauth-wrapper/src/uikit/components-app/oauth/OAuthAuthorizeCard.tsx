@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
-import { OAuthWrapperGateway } from '@/impls/OAuthWrapperGateway';
+import { AppUserGateway } from '@/impls/AppUserGateway';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';
@@ -27,7 +27,7 @@ export function OAuthAuthorizeCard({
   tt,
   authorizeData
 }: OAuthAuthorizeCardProps) {
-  const consentGateway = useIOC(OAuthWrapperGateway);
+  const userGateway = useIOC(AppUserGateway);
   const [extraOpen, setExtraOpen] = useState(false);
   const [trust, setTrust] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,7 +50,7 @@ export function OAuthAuthorizeCard({
       setErrorMessage(null);
 
       try {
-        const redirectUrl = await consentGateway.submit({
+        const redirectUrl = await userGateway.submitOAuthConsent({
           action,
           client_id: authorizeData.clientId,
           redirect_uri: authorizeData.redirectUri,
@@ -67,7 +67,7 @@ export function OAuthAuthorizeCard({
         setLoading(false);
       }
     },
-    [authorizeData, consentGateway, scopeParam, trust, tt.errorConsent]
+    [authorizeData, userGateway, scopeParam, trust, tt.errorConsent]
   );
 
   const handleAllow = () => {

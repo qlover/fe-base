@@ -1,5 +1,5 @@
 export type OAuthSessionPayload = {
-  userId: number;
+  userId: string;
   email: string;
   name: string;
   providerSessionToken: string;

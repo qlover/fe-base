@@ -8,26 +8,26 @@ import type {
 } from '../schema/OAuthAuthorizeSchema';
 
 export interface OAuthClientsInterface {
-  listForOwner(ownerUserId: number): Promise<OAuthClientListItem[]>;
+  listForOwner(ownerUserId: string): Promise<OAuthClientListItem[]>;
   getByClientId(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<OAuthClientDetail>;
   create(
-    ownerUserId: number,
+    ownerUserId: string,
     input: OAuthClientCreate
   ): Promise<OAuthClientCreateResponse>;
 
   update(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string,
     input: OAuthClientUpdate
   ): Promise<OAuthClientDetail>;
 
   rotateSecret(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<OAuthClientSecretRotateResponse>;
 
-  delete(ownerUserId: number, clientId: string): Promise<void>;
+  delete(ownerUserId: string, clientId: string): Promise<void>;
 }

@@ -3,8 +3,8 @@
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
+import { headerActionButtonClassName } from '@config/component';
 import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
-import { headerActionButtonClassName } from './headerStyles';
 import type { ReactNode } from 'react';
 
 export interface AppHeaderNavTT {

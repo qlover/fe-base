@@ -21,7 +21,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * @override
    */
   public async listForOwner(
-    ownerUserId: number
+    ownerUserId: string
   ): Promise<OAuthClientListItem[]> {
     return this.clientsRepo.listClientByOwner(ownerUserId);
   }
@@ -31,7 +31,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * @override
    */
   public async getByClientId(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<OAuthClientDetail> {
     const client = await this.clientsRepo.findClientById(clientId);
@@ -52,7 +52,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * @override
    */
   public async create(
-    ownerUserId: number,
+    ownerUserId: string,
     input: OAuthClientCreate
   ): Promise<OAuthClientCreateResponse> {
     const result = await this.clientsRepo.createClient(ownerUserId, input);
@@ -73,7 +73,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * @override
    */
   public async update(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string,
     input: OAuthClientUpdate
   ): Promise<OAuthClientDetail> {
@@ -94,7 +94,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * @override
    */
   public async rotateSecret(
-    ownerUserId: number,
+    ownerUserId: string,
     clientId: string
   ): Promise<OAuthClientSecretRotateResponse> {
     // Verify ownership first
@@ -124,7 +124,7 @@ export class OAuthClientsService implements OAuthClientsInterface {
    * Delete an OAuth client
    * @override
    */
-  public async delete(ownerUserId: number, clientId: string): Promise<void> {
+  public async delete(ownerUserId: string, clientId: string): Promise<void> {
     // Verify ownership first
     const existing = await this.clientsRepo.findClientById(clientId);
     if (!existing) {
