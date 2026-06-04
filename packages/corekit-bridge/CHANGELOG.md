@@ -1,5 +1,17 @@
 # @qlover/corekit-bridge
 
+## 3.2.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** add LocaleRouter for locale management in URLs ([3cf201c](https://github.com/qlover/fe-base/commit/3cf201c52cef59fb6597b093ff23a89491737ce5)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Introduced the `LocaleRouter` class to handle locale switching in URLs, supporting both path and query modes.
+  - Added comprehensive unit tests for the `LocaleRouter` to cover various edge cases and ensure robust functionality.
+  - Updated `package.json` to include new URL helper module and exported it from the core index.
+  - Created a new test file for `LocaleRouter` to validate its behavior across different scenarios.
+
 ## 3.2.0
 
 ### Minor Changes

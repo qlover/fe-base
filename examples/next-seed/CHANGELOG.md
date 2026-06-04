@@ -1,5 +1,9 @@
 # examples/next-seed
 
+## 1.2.3
+
+### Patch Changes
+
 ## 1.2.2
 
 ### Patch Changes

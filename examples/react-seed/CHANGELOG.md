@@ -1,5 +1,23 @@
 # examples/react-seed
 
+## 1.2.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-oauth-wrapper:** add shared Tailwind styles and refactor imports ([41236fd](https://github.com/qlover/fe-base/commit/41236fddd553f68177d918e13d84763241a32cee)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Introduced a new `component.ts` file containing shared Tailwind class strings for the OAuth UI, enhancing consistency in styling across components.
+  - Refactored various components to import the new shared styles from `@config/component`, replacing previous local imports for improved organization.
+  - Removed the now redundant `headerStyles.ts` file, streamlining the codebase.
+  - Updated type definitions in `AppRoutePage` to enhance clarity and maintainability.
+
+#### 🐞 Bug Fixes
+
+- **react-seed:** update OAuth URL and refactor user service usage ([6ebf0bf](https://github.com/qlover/fe-base/commit/6ebf0bfaf8baecfcd903dbac37dd772b3f8c05f8)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Changed the OAuth URL in `.env.template` from `http://localhost:3120` to `http://localhost:3200` for updated local server configuration.
+  - Refactored the `Login.tsx` file to remove unnecessary type casting when using the `UserService`, improving code clarity and type safety.
+
 ## 1.2.0
 
 ### Minor Changes
