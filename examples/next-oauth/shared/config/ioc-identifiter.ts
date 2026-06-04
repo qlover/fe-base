@@ -9,6 +9,7 @@ import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
+import { OAuthProviderInterface } from '@server/interfaces/OAuthProviderInterface';
 
 /**
  * IOC identifier
@@ -39,8 +40,10 @@ export const IOCIdentifier = Object.freeze({
   DBBridgeInterface: 'DBBridgeInterface',
   /**
    * OAuth 包装服务提供接口
+   * @deprecated
    */
-  OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface'
+  OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface',
+  OAuthProviderInterface: 'OAuthProviderInterface'
 });
 
 export const I = IOCIdentifier;
@@ -80,4 +83,5 @@ export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
   [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
+  [IOCIdentifier.OAuthProviderInterface]: OAuthProviderInterface;
 }

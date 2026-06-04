@@ -1,9 +1,13 @@
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { LoggerInterface } from '@qlover/logger';
-import { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type {
+  OAuthAuthorizationCallbackResult,
+  OAuthProviderInterface
+} from '@server/interfaces/OAuthProviderInterface';
+import { ResultCotnext } from '@server/utils/NextApiHandler';
+import type { LoggerInterface } from '@qlover/logger';
 
 export type VerifyLoginParams = {
   email: string;
@@ -21,21 +25,30 @@ export class OAuthService {
   @inject(I.AppConfig)
   protected config!: SeedServerConfigInterface;
 
-  @inject(SupabaseBridge)
-  protected supabaseBridge!: SupabaseBridge;
-
-  constructor() {}
+  constructor(
+    @inject(I.OAuthProviderInterface)
+    protected oauthProvider: OAuthProviderInterface
+  ) {}
 
   public async verifyLogin(params: VerifyLoginParams): Promise<UserSchema> {
-    const supabase = await this.supabaseBridge.getSupabase();
+    return this.oauthProvider.verifyLogin(params);
+  }
 
-    const result = await supabase.auth.signInWithPassword({
-      email: params.email,
-      password: params.password
-    });
+  public async resolveAuthorizePage(
+    rawQuery: Record<string, string | string[] | undefined>
+  ): Promise<ResultCotnext> {
+    const result = await this.oauthProvider.authorizePKCE(rawQuery);
 
-    this.supabaseBridge.throwIfError(result);
+    return {
+      redirectUrl: result.redirectAuthorizeUrl
+    };
+  }
 
-    return this.supabaseBridge.toUserSchema(result.data.user!);
+  public async authorizePKCECallback(
+    rawQuery: Record<string, string | string[] | undefined>
+  ): Promise<OAuthAuthorizationCallbackResult> {
+    const result = await this.oauthProvider.authorizePKCECallback(rawQuery);
+
+    return result;
   }
 }

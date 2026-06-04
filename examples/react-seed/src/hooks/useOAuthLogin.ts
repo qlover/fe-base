@@ -22,9 +22,7 @@ export function useOAuthLogin() {
 
     setIsStarting(true);
     try {
-      await oauthClient.startOAuthLogin({
-        target: '_blank'
-      });
+      await oauthClient.startOAuthLogin();
     } catch (err) {
       setIsStarting(false);
       setStartError(err instanceof Error ? err.message : 'OAuth login failed');

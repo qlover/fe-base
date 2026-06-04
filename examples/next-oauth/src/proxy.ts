@@ -1,26 +1,28 @@
 // Import your routing configuration which contains all locales, defaultLocale, and pathnames
-import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
-import { isOAuthMachinePath } from '@config/route';
-import { oauthWrapperProxySession } from '@server/utils/OAuthWrapperProxy';
-import { routing } from './i18n/routing';
 import { supabaseProxySession } from '@shared/supabase/proxy';
+import { isOAuthMachinePath } from '@config/route';
+import { routing } from './i18n/routing';
+import type { NextRequest } from 'next/server';
 
 /**
  * Check if the request should be skipped by the proxy.
  * @param request - The request to check.
  * @returns True if the request should be skipped by the proxy, false otherwise.
  */
-function hasSkipProxy(request: NextRequest) {
+function hasSkipProxySession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   return isOAuthMachinePath(pathname);
 }
 
 export default async function proxy(request: NextRequest) {
-  if (hasSkipProxy(request)) {
+  /**
+   * 当跳过session检查的时候，直接返回createMiddleware(routing)(request)
+   */
+  if (hasSkipProxySession(request)) {
     console.log('Proxy(skip) request', request.nextUrl.pathname);
-    return NextResponse.next({ request });
+    return createMiddleware(routing)(request);
   }
 
   await supabaseProxySession(request);

@@ -1,6 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { AuthApiError, AuthError } from '@supabase/supabase-js';
 import { injectable } from '@shared/container';
+import { SUPABASE_URL } from '@shared/supabase/conts';
 import { createClient } from '@shared/supabase/server';
 import { isPGRSTSchema } from '@schemas/PGRSTSchema';
 import { UserRole, UserSchema } from '@schemas/UserSchema';
@@ -37,6 +38,10 @@ export type SupabaseBridgeResponse<T> = DBBridgeResponse<T> &
 export class SupabaseBridge implements DBBridgeInterface {
   public async getSupabase(): Promise<SupabaseClient> {
     return await createClient();
+  }
+
+  public getBaseURL(): string {
+    return SUPABASE_URL!;
   }
 
   public async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {

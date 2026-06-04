@@ -35,7 +35,16 @@ export const ROUTE_OAUTH_TOKEN = '/oauth/token' as const;
 /** RFC 7009 token revocation endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_OAUTH_REVOKE = '/oauth/revoke' as const;
 
-export const ROUTE_OAUTH_CALLBACK = '/oauth/callback' as const;
+/**
+ * OAuth consent page.
+ *
+ * 该页面是 supabase 配置的 oauth app 回调页面，他会带有 authorization_id 参数，用于后续的授权流程
+ *
+ * 该页面有单独逻辑, 可能不需要中中间件统一鉴权
+ *
+ * @see https://supabase.com/docs/guides/auth/oauth-server/getting-started#example-authorization-ui
+ */
+export const ROUTE_OAUTH_CONSENT = '/oauth/consent' as const;
 
 /** OAuth 2.0 / OIDC userinfo endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_USERINFO = '/userinfo' as const;
@@ -44,8 +53,8 @@ export const ROUTE_USERINFO = '/userinfo' as const;
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_REVOKE,
-  ROUTE_USERINFO
-  // ROUTE_OAUTH_CALLBACK
+  ROUTE_USERINFO,
+  ROUTE_OAUTH_CONSENT
 ] as const;
 
 /** Routes that are allowed without authentication (public routes). */

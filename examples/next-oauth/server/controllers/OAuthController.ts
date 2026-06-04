@@ -7,19 +7,18 @@ import { injectable, inject } from '@shared/container';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
-import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { LoginSchema } from '@schemas/LoginSchema';
+import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import { ServerConfig } from '@server/ServerConfig';
-import {
-  OAuthService,
-  VerifyLoginResult
-} from '@server/services/OAuthService';
 import type {
-  OAuthAuthorizePageData,
-  OAuthAuthorizeValidationError,
+  OAuthAuthorizationCallbackResult,
+  OAuthProviderInterface
+} from '@server/interfaces/OAuthProviderInterface';
+import { ServerConfig } from '@server/ServerConfig';
+import { OAuthService } from '@server/services/OAuthService';
+import { ResultCotnext } from '@server/utils/NextApiHandler';
+import type {
   OAuthConsentResult,
   OAuthTokenRequest
 } from '@qlover/oauth-wrapper';
@@ -31,8 +30,8 @@ export class OAuthController {
   constructor(
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
-    @inject(I.OAuthWrapperProviderInterface)
-    protected oauthProvider: OAuthWrapperProviderInterface,
+    @inject(I.OAuthProviderInterface)
+    protected oauthProvider: OAuthProviderInterface,
     @inject(OAuthService)
     protected oauthService: OAuthService,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
@@ -47,7 +46,7 @@ export class OAuthController {
   /**
    * Validates credentials and performs demo provider login via service layer.
    */
-  public async verifyLogin(requestBody: unknown): Promise<VerifyLoginResult> {
+  public async verifyLogin(requestBody: unknown): Promise<UserSchema> {
     try {
       if ((requestBody as LoginSchema).password) {
         (requestBody as LoginSchema).password = this.stringEncryptor.decrypt(
@@ -62,27 +61,19 @@ export class OAuthController {
     }
     const body = await this.loginValidator.getThrow(requestBody);
 
-    try {
-      return await this.oauthService.verifyLogin({
-        email: body.email,
-        password: body.password
-      });
-    } catch (err) {
-      if (err instanceof ExecutorError) {
-        throw err;
-      }
-
-      throw new ExecutorError(API_OAUTH_WRAPPER_AUTH_FAILED, err);
-    }
+    return await this.oauthService.verifyLogin(body);
   }
 
   public resolveAuthorizePage(
     rawQuery: Record<string, string | string[] | undefined>
-  ): Promise<
-    | { ok: true; data: OAuthAuthorizePageData }
-    | { ok: false; error: OAuthAuthorizeValidationError; redirectUrl?: string }
-  > {
-    return this.oauthProvider.resolveAuthorizePage(rawQuery);
+  ): Promise<ResultCotnext> {
+    return this.oauthService.resolveAuthorizePage(rawQuery);
+  }
+
+  public async authorizePKCECallback(
+    rawQuery: Record<string, string | string[] | undefined>
+  ): Promise<OAuthAuthorizationCallbackResult> {
+    return this.oauthService.authorizePKCECallback(rawQuery);
   }
 
   public async submitConsent(
