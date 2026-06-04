@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **oauth-wrapper:** change userId type from number to string across interfaces and schemas ([bfe85fa](https://github.com/qlover/fe-base/commit/bfe85fa6e82561164a936dca7e8a9d8e1ca6b7e3)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Updated the `ownerUserId` and `userId` parameters in various interfaces and schemas to use `string` instead of `number` for better compatibility with string-based identifiers.
+  - Adjusted related service methods to reflect the new type, ensuring consistency across the OAuth wrapper implementation.
+  - Enhanced the `OAuthClientRowSchema` and other schemas to align with the updated user ID type, improving data validation and integrity.
+
 ## 0.2.0
 
 ### Minor Changes

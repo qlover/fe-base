@@ -1,5 +1,34 @@
 # examples/next-oauth-wrapper
 
+## 0.1.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-oauth-wrapper:** implement Supabase OAuth adapter and provider ([97b0ebd](https://github.com/qlover/fe-base/commit/97b0ebdee2f2ce4be0d1c821e6f08112f27824f9)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Added `SupabaseOAuthAdapter` and `SupabaseOAuthProvider` to handle OAuth authentication with Supabase, including user login and session management.
+  - Updated `.env.template` to include a new `OAUTH_SESSION_KEY` for session management.
+  - Refactored the `LoginForm` and other components to utilize the new `AppUserGateway` for user authentication, replacing the previous `OAuthWrapperGateway`.
+  - Adjusted local server ports in `package.json` and related files from 3120 to 3200 for consistency across the development environment.
+  - Enhanced error handling and user feedback in the authentication process, improving overall user experience.
+  - Cleaned up unused imports and refactored code for better organization and clarity.
+
+- **next-oauth-wrapper:** add shared Tailwind styles and refactor imports ([41236fd](https://github.com/qlover/fe-base/commit/41236fddd553f68177d918e13d84763241a32cee)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Introduced a new `component.ts` file containing shared Tailwind class strings for the OAuth UI, enhancing consistency in styling across components.
+  - Refactored various components to import the new shared styles from `@config/component`, replacing previous local imports for improved organization.
+  - Removed the now redundant `headerStyles.ts` file, streamlining the codebase.
+  - Updated type definitions in `AppRoutePage` to enhance clarity and maintainability.
+
+#### ♻️ Refactors
+
+- **oauth-wrapper:** change userId and ownerUserId types to string in database schemas and related services ([e1cccd9](https://github.com/qlover/fe-base/commit/e1cccd9925690c81a42670af0d5fcbe45be1d0fc)) ([#618](https://github.com/qlover/fe-base/pull/618))
+  - Updated the `userId` and `ownerUserId` fields in the SQL schemas to use `text` instead of `integer` for better compatibility with string-based identifiers.
+  - Adjusted related service methods and interfaces to reflect the new string type, ensuring consistency across the OAuth wrapper implementation.
+  - Introduced a new `NextApiHandler` class for improved result handling in API responses, replacing the deprecated `ApiResultFactory`.
+  - Enhanced the `NextApiServer` class to utilize the new result handler for processing API results and managing response contexts.
+  - Refactored various controllers and services to align with the updated user ID type and new result handling approach, improving code clarity and maintainability.
+
 ## 0.1.0
 
 ### Minor Changes
