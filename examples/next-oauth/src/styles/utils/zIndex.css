@@ -1,0 +1,9 @@
+/**
+ * This file is used to define the z-index values for the app.
+ */
+:root {
+  /* antd select popup zindex */
+  --zi-select: 1050;
+  /* antd message zindex */
+  --zi-message: 2010;
+}

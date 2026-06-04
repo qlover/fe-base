@@ -1,0 +1,164 @@
+import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { inject, injectable } from '@shared/container';
+import {
+  API_OAUTH_CONSENT,
+  API_OAUTH_VERIFY,
+  API_USER_LOGIN,
+  API_USER_LOGOUT,
+  API_USER_REGISTER,
+  API_USER_SESSION
+} from '@config/apiRoutes';
+import { UserCredential, UserSchema } from '@schemas/UserSchema';
+import type {
+  UserApiLoginTransaction,
+  UserApiLogoutTransaction,
+  UserApiRegisterTransaction,
+  UserSubmitOAuthConsentTransaction
+} from '@interfaces/AppUserApiInterface';
+import { UserServiceGatewayInterface } from '@interfaces/UserServiceInterface';
+import {
+  AppApiConfig,
+  AppApiRequester,
+  AppApiRequesterContext
+} from './appApi/AppApiRequester';
+import type { LoginParams } from '@qlover/corekit-bridge';
+
+/**
+ * UserApi
+ *
+ * @description
+ * UserApi is a client for the user API.
+ *
+ */
+@injectable()
+export class AppUserGateway implements UserServiceGatewayInterface {
+  constructor(
+    @inject(AppApiRequester)
+    protected client: RequestExecutor<AppApiConfig, AppApiRequesterContext>
+  ) {}
+
+  /**
+   * @override
+   */
+  public getUserInfo(
+    _params?: unknown,
+    _config?: unknown
+  ): Promise<UserSchema> {
+    throw new Error('Method not implemented.');
+  }
+  /**
+   * @override
+   */
+  public async refreshUserInfo(
+    _params?: unknown,
+    _config?: {} | undefined
+  ): Promise<UserSchema> {
+    const response = await this.client.request<
+      UserApiLoginTransaction['response'],
+      UserApiLoginTransaction['request']
+    >({
+      ..._config,
+      url: API_USER_SESSION,
+      method: HttpMethods.GET
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data.data as UserSchema;
+  }
+
+  /**
+   * @override
+   */
+  public async login(
+    params: UserApiLoginTransaction['data'] & LoginParams,
+    url?: string
+  ): Promise<UserCredential> {
+    const response = await this.client.request<
+      UserApiLoginTransaction['response'],
+      UserApiLoginTransaction['request']
+    >({
+      url: url ?? API_USER_LOGIN,
+      method: HttpMethods.POST,
+      data: params,
+      encryptProps: 'password'
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data.data as UserCredential;
+  }
+
+  /**
+   * @override
+   */
+  public async register(
+    params: UserApiRegisterTransaction['data']
+  ): Promise<UserSchema> {
+    const response = await this.client.request<
+      UserApiRegisterTransaction['response'],
+      UserApiRegisterTransaction['request']
+    >({
+      url: API_USER_REGISTER,
+      method: HttpMethods.POST,
+      data: params,
+      encryptProps: 'password'
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data.data as UserSchema;
+  }
+
+  /**
+   * @override
+   */
+  public async logout<R = void>(_params?: unknown): Promise<R> {
+    await this.client.request<
+      UserApiLogoutTransaction['response'],
+      UserApiLogoutTransaction['request']
+    >({
+      url: API_USER_LOGOUT,
+      method: HttpMethods.POST
+    });
+
+    return undefined as R;
+  }
+
+  /**
+   * @override
+   */
+  public async verify(
+    params: UserApiLoginTransaction['data'] & LoginParams
+  ): Promise<UserCredential> {
+    return this.login(params, API_OAUTH_VERIFY);
+  }
+
+  /**
+   * @override
+   */
+  public async submitOAuthConsent(
+    payload: UserSubmitOAuthConsentTransaction['request']
+  ): Promise<string> {
+    const response = await this.client.request<
+      UserSubmitOAuthConsentTransaction['response'],
+      UserSubmitOAuthConsentTransaction['request']
+    >({
+      url: API_OAUTH_CONSENT,
+      method: HttpMethods.POST,
+      data: payload
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message ?? 'Consent submission failed');
+    }
+
+    return response.data.data!.redirectUrl;
+  }
+}
