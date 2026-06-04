@@ -1,7 +1,7 @@
 import { OAuthClientsService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { OAuthProviderInterface } from '@server/interfaces/OAuthProviderInterface';
 import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
 import { ServerAuth } from '@server/services/ServerAuth';
 import type {
@@ -24,8 +24,8 @@ export class OAuthClientsController {
 
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
-    @inject(I.OAuthWrapperProviderInterface)
-    oauthProvider: OAuthWrapperProviderInterface
+    @inject(I.OAuthProviderInterface)
+    oauthProvider: OAuthProviderInterface
   ) {
     this.clientsService = new OAuthClientsService(oauthProvider.getOAuthRepo());
   }

@@ -17,6 +17,10 @@ export type OAuthAuthorizationCallbackResult =
   | OAuthRedirect;
 
 export interface OAuthProviderInterface {
+  getUser(): Promise<UserSchema | null>;
+
+  clearSession(): Promise<void>;
+
   verifyLogin(params: VerifyLoginParams): Promise<UserSchema>;
 
   authorizePKCE(

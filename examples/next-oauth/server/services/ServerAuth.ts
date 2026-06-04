@@ -5,14 +5,14 @@ import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { OAuthProviderInterface } from '@server/interfaces/OAuthProviderInterface';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 
 @injectable()
 export class ServerAuth implements ServerAuthInterface {
   constructor(
-    @inject(I.OAuthWrapperProviderInterface)
-    protected oauthProvider: OAuthWrapperProviderInterface,
+    @inject(I.OAuthProviderInterface)
+    protected oauthProvider: OAuthProviderInterface,
     @inject(I.AppConfig) protected config: SeedServerConfigInterface
   ) {}
 
@@ -28,22 +28,22 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async hasAuth(): Promise<boolean> {
-    return this.oauthProvider.getOAuthSession().hasSession();
+    return !!(await this.getUser());
   }
 
   /**
    * @override
    */
   public async getAuth(): Promise<string> {
-    const session = await this.oauthProvider.getOAuthSession().getSession();
-    return session?.providerSessionToken ?? '';
+    const user = await this.oauthProvider.getUser();
+    return user?.credential_token ?? '';
   }
 
   /**
    * @override
    */
   public async clear(): Promise<void> {
-    await this.oauthProvider.getOAuthSession().clearSession();
+    await this.oauthProvider.clearSession();
 
     const legacyKey = this.config.userTokenKey;
     if (legacyKey) {
@@ -65,11 +65,11 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async getUser(): Promise<UserSchema | null> {
-    const session = await this.oauthProvider.getSession();
-    if (!session) {
+    const user = await this.oauthProvider.getUser();
+    if (!user) {
       return null;
     }
 
-    return this.oauthProvider.getUserSchema(session);
+    return user;
   }
 }

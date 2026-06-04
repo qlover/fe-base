@@ -98,7 +98,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  public toUserSchema(user: User): UserSchema {
+  public toUserSchema(user: User, credential_token?: string): UserSchema {
     return {
       id: user.id,
       email: user.email!,
@@ -107,7 +107,7 @@ export class SupabaseBridge implements DBBridgeInterface {
       role: user.role === 'admin' ? UserRole.ADMIN : UserRole.USER,
       // 始终为空
       password: '',
-      credential_token: ''
+      credential_token: credential_token ?? ''
     };
   }
 

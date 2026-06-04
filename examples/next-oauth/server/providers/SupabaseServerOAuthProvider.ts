@@ -65,6 +65,23 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
   /**
    * @override
    */
+  public async getUser(): Promise<UserSchema | null> {
+    const supabase = await this.supabaseBridge.getSupabase();
+    const result = await supabase.auth.getSession();
+
+    if (!result.data || !result.data.session) {
+      return null;
+    }
+
+    const session = result.data.session;
+    const user = session!.user;
+
+    return this.supabaseBridge.toUserSchema(user, session?.access_token);
+  }
+
+  /**
+   * @override
+   */
   public async verifyLogin(params: VerifyLoginParams): Promise<UserSchema> {
     const supabase = await this.supabaseBridge.getSupabase();
 
@@ -211,5 +228,13 @@ export class SupabaseServerOAuthProvider implements OAuthProviderInterface {
     }
 
     return result.data;
+  }
+
+  /**
+   * @override
+   */
+  public async clearSession(): Promise<void> {
+    const supabase = await this.supabaseBridge.getSupabase();
+    await supabase.auth.signOut();
   }
 }

@@ -30,6 +30,9 @@ export class OAuthService {
     protected oauthProvider: OAuthProviderInterface
   ) {}
 
+  public async getUser(): Promise<UserSchema | null> {
+    return this.oauthProvider.getUser();
+  }
   public async verifyLogin(params: VerifyLoginParams): Promise<UserSchema> {
     return this.oauthProvider.verifyLogin(params);
   }
