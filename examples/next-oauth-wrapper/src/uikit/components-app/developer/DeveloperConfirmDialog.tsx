@@ -6,7 +6,7 @@ import {
   oauthDangerButtonClass,
   oauthPrimaryButtonClass,
   oauthSecondaryButtonClass
-} from '@/uikit/styles/oauthUiStyles';
+} from '@config/component';
 import { DeveloperOverlayModal } from './DeveloperOverlayModal';
 
 export type DeveloperConfirmOptions = {

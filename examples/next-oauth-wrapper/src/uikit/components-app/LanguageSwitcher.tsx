@@ -2,15 +2,15 @@
 
 import { TranslationOutlined } from '@ant-design/icons';
 import { useMountedClient } from '@brain-toolkit/react-kit';
-import { LocaleRouter } from '@qlover/corekit-bridge';
+import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
 import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
+import { headerActionButtonClassName } from '@config/component';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import { headerActionButtonClassName } from './headerStyles';
 import type { ItemType } from 'antd/es/menu/interface';
 
 export function LanguageSwitcher() {

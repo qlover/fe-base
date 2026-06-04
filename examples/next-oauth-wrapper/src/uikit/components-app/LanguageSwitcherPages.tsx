@@ -1,16 +1,16 @@
 'use client';
 
 import { TranslationOutlined } from '@ant-design/icons';
+import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
 import { Dropdown } from 'antd';
 import { useRouter } from 'next/router';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
+import { headerActionButtonClassName } from '@config/component';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import { headerActionButtonClassName } from './headerStyles';
 import type { ItemType } from 'antd/es/menu/interface';
-import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
 
 /**
  * Language switcher for Pages Router routes (uses `next/router`).

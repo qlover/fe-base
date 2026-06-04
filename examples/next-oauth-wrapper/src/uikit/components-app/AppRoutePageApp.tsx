@@ -9,7 +9,7 @@ import { AuthButton } from './AuthButton';
 import { DeveloperButton } from './DeveloperButton';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { RoutePageLayout } from './RoutePageLayout';
-import type { AppRoutePageProps } from './AppRoutePage.types';
+import type { AppRoutePageProps } from './AppRoutePage';
 
 /**
  * App Router variant — may use `next-intl/navigation` via LanguageSwitcher / AppBridge.

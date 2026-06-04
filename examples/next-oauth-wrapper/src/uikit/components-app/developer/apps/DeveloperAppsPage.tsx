@@ -33,7 +33,7 @@ import {
   oauthPrimaryButtonClass,
   oauthSecondaryButtonClass,
   oauthWarningButtonClass
-} from '@/uikit/styles/oauthUiStyles';
+} from '@config/component';
 import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
 import { ROUTE_OAUTH_PLAYGROUND } from '@config/route';
 import {

@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { LocaleLink } from '../components/LocaleLink';
-import type { AppRoutePageTT } from './AppRoutePage.types';
+import type { AppRoutePageTT } from './AppRoutePage';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 export interface RoutePageLayoutProps extends HTMLAttributes<HTMLDivElement> {

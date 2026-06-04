@@ -8,7 +8,7 @@ import { DeveloperButton } from './DeveloperButton';
 import { LanguageSwitcherPages } from './LanguageSwitcherPages';
 import { LogoutButton } from './LogoutButton';
 import { RoutePageLayout } from './RoutePageLayout';
-import type { AppRoutePageProps } from './AppRoutePage.types';
+import type { AppRoutePageProps } from './AppRoutePage';
 
 /**
  * Pages Router variant — no imports from `next-intl/navigation` or `@/i18n/routing`.
