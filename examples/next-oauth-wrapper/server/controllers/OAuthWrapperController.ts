@@ -104,7 +104,7 @@ export class OAuthWrapperController {
   public async getUserInfo(
     accessToken: string
   ): Promise<OAuthUserInfoResponse> {
-    return await this.oauthProvider.getUserInfo(accessToken);
+    return await this.oauthProvider.getUserInfoWithAccessToken(accessToken);
   }
 
   public hasNeedLogged(): boolean {
