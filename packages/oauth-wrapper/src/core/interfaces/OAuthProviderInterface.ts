@@ -1,12 +1,9 @@
-import type {
-  OAuthSessionInterface,
-  OAuthSessionPayload
-} from './OAuthSessionInterface';
+import type { OAuthSessionPayload } from './OAuthSessionInterface';
 import type { OAuthTokenRequest } from '../schema/OAuthTokenSchema';
-import type { OAuthUserAdapterInterface } from './OAuthUserAdapterInterface';
 import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryInterface';
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
 import type { OAuthUserInfoResponse } from '../schema/OAuthUserInfoSchema';
+import type { LoginParams } from '@qlover/corekit-bridge/core';
 
 /**
  * OAuth authorize page data shared by server rendering and client UI.
@@ -54,28 +51,48 @@ export interface OAuthTokenServiceInterface {
   revokeToken(rawFields: Record<string, string>): Promise<void>;
 }
 
-export interface OAuthServiceInterface<
+export type ResolveAuthorizePageResult =
+  | { ok: true; data: OAuthAuthorizePageData }
+  | { ok: false; error: OAuthAuthorizeValidationError };
+
+export interface OAuthProviderInterface<
   SessionPayload extends OAuthSessionPayload
 > extends OAuthTokenServiceInterface {
-  resolveAuthorizePage(
-    rawQuery: Record<string, string | string[] | undefined>
-  ): Promise<
-    | { ok: true; data: OAuthAuthorizePageData }
-    | { ok: false; error: OAuthAuthorizeValidationError }
-  >;
+  login(params: LoginParams): Promise<SessionPayload>;
 
-  processConsent(requestBody: unknown): Promise<OAuthConsentResult>;
-
-  getUserInfo(accessToken: string): Promise<OAuthUserInfoResponse>;
-
-  getOAuthSession(): OAuthSessionInterface<SessionPayload>;
-  getOAuthAdapter(): OAuthUserAdapterInterface;
-  getOAuthTokenService(): OAuthTokenServiceInterface;
+  /**
+   * Get the OAuth repository
+   */
   getOAuthRepo(): OAuthWrapperRepositoryInterface;
 
   /**
-   * Application logout: revoke issued refresh tokens, clear stored provider
-   * credentials, and clear the authorization-server session cookie.
+   * Clear the session
    */
-  logoutUser(userId: string): Promise<void>;
+  clearSession(): Promise<void>;
+
+  /**
+   * Get the session
+   */
+  getSession(): Promise<SessionPayload | null>;
+
+  /**
+   * Logout the user
+   */
+  logout(userId: string): Promise<void>;
+
+  /**
+   * Resolve the authorize page
+   */
+  resolveAuthorizePage(
+    rawQuery: Record<string, string | string[] | undefined>
+  ): Promise<ResolveAuthorizePageResult>;
+
+  /**
+   * Process the consent
+   */
+  processConsent(requestBody: unknown): Promise<OAuthConsentResult>;
+
+  getUserInfoWithAccessToken(
+    accessToken: string
+  ): Promise<OAuthUserInfoResponse>;
 }

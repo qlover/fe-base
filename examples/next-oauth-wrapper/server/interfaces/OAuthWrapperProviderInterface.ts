@@ -1,10 +1,10 @@
 import type { UserSchema } from '@schemas/UserSchema';
 import type {
-  OAuthServiceInterface,
+  OAuthProviderInterface,
   OAuthSessionPayload
 } from '@qlover/oauth-wrapper';
 
-export interface OAuthWrapperProviderInterface extends OAuthServiceInterface<OAuthSessionPayload> {
+export interface OAuthWrapperProviderInterface extends OAuthProviderInterface<OAuthSessionPayload> {
   /**
    * OAuthWrapper 用户信息交换
    *
@@ -12,9 +12,7 @@ export interface OAuthWrapperProviderInterface extends OAuthServiceInterface<OAu
    *
    * @param session
    */
-  getUserSchema(session?: OAuthSessionPayload): Promise<UserSchema>;
-
-  getSession(): Promise<OAuthSessionPayload | null>;
+  getUserSchema(session?: OAuthSessionPayload): Promise<UserSchema | null>;
 
   /**
    * /oauth/authorize 页面是否需要登录
@@ -23,4 +21,6 @@ export interface OAuthWrapperProviderInterface extends OAuthServiceInterface<OAu
    * - 如果使用supabase这样有auth server则返回false
    */
   hasNeedLogged(): boolean;
+
+  clearSession(): Promise<void>;
 }

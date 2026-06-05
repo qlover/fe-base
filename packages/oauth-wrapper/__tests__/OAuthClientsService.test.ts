@@ -18,7 +18,7 @@ class MockClientsRepo implements OAuthClientsRepositoryInterface {
   });
 
   public listClientByOwner = vi.fn(
-    async (_ownerUserId: number): Promise<OAuthClientListItem[]> => {
+    async (_ownerUserId: string): Promise<OAuthClientListItem[]> => {
       return Array.from(this.clients.values()).map((client) => ({
         client_id: client.client_id,
         client_name: client.client_name,
@@ -33,7 +33,7 @@ class MockClientsRepo implements OAuthClientsRepositoryInterface {
   );
 
   public createClient = vi.fn(
-    async (ownerUserId: number, input: OAuthClientCreate) => {
+    async (ownerUserId: string, input: OAuthClientCreate) => {
       const client = createMockOAuthClient({
         client_id: 'new-client',
         owner_user_id: ownerUserId,
@@ -48,7 +48,7 @@ class MockClientsRepo implements OAuthClientsRepositoryInterface {
 
   public updateClient = vi.fn(
     async (
-      _ownerUserId: number,
+      _ownerUserId: string,
       clientId: string,
       input: OAuthClientUpdate
     ): Promise<OAuthClientDetail> => {
@@ -80,7 +80,7 @@ class MockClientsRepo implements OAuthClientsRepositoryInterface {
   }));
 
   public deleteClient = vi.fn(
-    async (_ownerUserId: number, clientId: string) => {
+    async (_ownerUserId: string, clientId: string) => {
       this.clients.delete(clientId);
     }
   );
@@ -105,7 +105,7 @@ describe('OAuthClientsService', () => {
       'owned-client',
       createMockOAuthClient({
         client_id: 'owned-client',
-        owner_user_id: 10,
+        owner_user_id: '10',
         confidential: true
       })
     );
@@ -113,33 +113,33 @@ describe('OAuthClientsService', () => {
       'public-client',
       createMockOAuthClient({
         client_id: 'public-client',
-        owner_user_id: 10,
+        owner_user_id: '10',
         confidential: false
       })
     );
   });
 
   it('lists clients for owner', async () => {
-    const items = await service.listForOwner(10);
+    const items = await service.listForOwner('10');
 
     expect(items).toHaveLength(2);
-    expect(repo.listClientByOwner).toHaveBeenCalledWith(10);
+    expect(repo.listClientByOwner).toHaveBeenCalledWith('10');
   });
 
   it('returns client detail for owner', async () => {
-    const detail = await service.getByClientId(10, 'owned-client');
+    const detail = await service.getByClientId('10', 'owned-client');
 
     expect(detail.client_id).toBe('owned-client');
   });
 
   it('rejects access to another owner client', async () => {
-    await expect(service.getByClientId(99, 'owned-client')).rejects.toThrow(
+    await expect(service.getByClientId('99', 'owned-client')).rejects.toThrow(
       'Access denied'
     );
   });
 
   it('creates a client for owner', async () => {
-    const created = await service.create(10, {
+    const created = await service.create('10', {
       client_name: 'New App',
       redirect_uris: ['https://app.example/callback'],
       confidential: true
@@ -150,7 +150,7 @@ describe('OAuthClientsService', () => {
   });
 
   it('updates a client after ownership check', async () => {
-    const updated = await service.update(10, 'owned-client', {
+    const updated = await service.update('10', 'owned-client', {
       client_name: 'Renamed App',
       redirect_uris: ['https://app.example/callback']
     });
@@ -160,19 +160,19 @@ describe('OAuthClientsService', () => {
   });
 
   it('rotates secret for confidential clients only', async () => {
-    const rotated = await service.rotateSecret(10, 'owned-client');
+    const rotated = await service.rotateSecret('10', 'owned-client');
 
     expect(rotated.client_secret).toBe('rotated-secret');
 
-    await expect(service.rotateSecret(10, 'public-client')).rejects.toThrow(
+    await expect(service.rotateSecret('10', 'public-client')).rejects.toThrow(
       'Public clients do not have a client_secret'
     );
   });
 
   it('deletes a client after ownership check', async () => {
-    await service.delete(10, 'owned-client');
+    await service.delete('10', 'owned-client');
 
-    expect(repo.deleteClient).toHaveBeenCalledWith(10, 'owned-client');
+    expect(repo.deleteClient).toHaveBeenCalledWith('10', 'owned-client');
     expect(repo.clients.has('owned-client')).toBe(false);
   });
 });

@@ -7,13 +7,18 @@ import {
 import type {
   OAuthTokenRequest,
   OAuthTokenServiceInterface,
-  OAuthUserAdapterInterface,
   OAuthWrapperRepositoryInterface,
   OAuthTokenResponse
 } from '../../core';
+import type { OAuthUserAccessToken } from './OAuthAbstractProvider';
 import { OAuthWrapperError } from '../utils/OAuthWrapperError';
 import { verifyPkceS256 } from '../utils/pkce';
 import type { EncryptorInterface } from '@qlover/fe-corekit';
+
+export type ExchangeProviderAccessToken = (params: {
+  token: string;
+  lang?: string;
+}) => Promise<OAuthUserAccessToken>;
 
 function hashOpaqueToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -34,7 +39,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
 
   constructor(
     protected tokenEncryption: EncryptorInterface<string, string>,
-    protected userAdapter: OAuthUserAdapterInterface,
+    protected exchangeProviderAccessToken: ExchangeProviderAccessToken,
     protected oauthRepo: OAuthWrapperRepositoryInterface
   ) {}
 
@@ -220,7 +225,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
     }
 
     try {
-      const access = await this.userAdapter.exchangeAccessToken({
+      const access = await this.exchangeProviderAccessToken({
         token: sessionToken
       });
 

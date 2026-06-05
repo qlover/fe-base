@@ -1,9 +1,11 @@
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
+import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { TokenEncryption } from '@server/utils/TokenEncryption';
 import type { LoggerInterface } from '@qlover/logger';
+import type { ResolveAuthorizePageResult } from '@qlover/oauth-wrapper';
 
 export type VerifyLoginParams = {
   email: string;
@@ -26,6 +28,9 @@ export class OAuthControllerService {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
+  @inject(I.AppConfig)
+  protected config!: SeedServerConfigInterface;
+
   constructor(
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
@@ -37,43 +42,22 @@ export class OAuthControllerService {
   public async verifyLogin(
     params: VerifyLoginParams
   ): Promise<VerifyLoginResult> {
-    const adapter = this.oauthProvider.getOAuthAdapter();
-    const credentials = await adapter.login(params);
+    return await this.oauthProvider.login(params);
+  }
 
-    this.logger.debug('User provider login successful', credentials);
+  public async resolveAuthorizePage(
+    rawQuery: Record<string, string | string[] | undefined>
+  ): Promise<ResolveAuthorizePageResult> {
+    const result = await this.oauthProvider.resolveAuthorizePage(rawQuery);
 
-    const sessionToken = credentials.token;
-    if (!sessionToken) {
-      throw new Error('User provider login did not return a session token');
-    }
+    return result;
+  }
 
-    const userInfo = await adapter.getUserInfo(sessionToken);
-    const userId = String(userInfo.id);
-    const profileEmail = userInfo.email ?? params.email;
-    const nameFromParts = [userInfo.first_name, userInfo.last_name]
-      .filter(Boolean)
-      .join(' ');
-    const profileName = userInfo.name ?? (nameFromParts || profileEmail);
+  public async getUser(): Promise<UserSchema | null> {
+    return this.oauthProvider.getUserSchema();
+  }
 
-    await this.oauthProvider.getOAuthSession().setSession({
-      userId: userId,
-      email: profileEmail,
-      name: profileName,
-      providerSessionToken: sessionToken
-    });
-
-    const access = await adapter.exchangeAccessToken(credentials);
-
-    const oauthrepo = this.oauthProvider.getOAuthRepo();
-    if (oauthrepo) {
-      await oauthrepo.upsertUserCredentials(userId, {
-        provider_session_token: sessionToken,
-        provider_refresh_token: access.refresh_token
-          ? this.tokenEncryption.encrypt(access.refresh_token)
-          : null
-      });
-    }
-
-    return { userId, email: profileEmail, name: profileName };
+  public async clearSession(): Promise<void> {
+    return this.oauthProvider.clearSession();
   }
 }
