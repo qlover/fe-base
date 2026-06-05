@@ -4,7 +4,7 @@ import type { EncryptorInterface } from '@qlover/fe-corekit';
 import { OAuthRfcCodes } from '../src/core';
 import type { OAuthAuthorizationCodeRow } from '../src/core/schema/OAuthAuthorizeSchema';
 import type { OAuthRefreshTokenRow } from '../src/core/schema/OAuthClientSchema';
-import type { OAuthUserAdapterInterface } from '../src/core/interfaces/OAuthUserAdapterInterface';
+import type { ExchangeProviderAccessToken } from '../src/server/services/OAuthTokenService';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
 import { OAuthTokenService } from '../src/server/services/OAuthTokenService';
 import { OAuthWrapperError } from '../src/server/utils/OAuthWrapperError';
@@ -38,7 +38,7 @@ class MockOAuthTokenRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public consumeCode = vi.fn(async () => this.authCode);
 
   public getUserCredentials = vi.fn(async () => ({
-    user_id: 42,
+    user_id: '42',
     provider_session_token: 'provider-session',
     provider_refresh_token: null,
     updated_at: '2026-01-01T00:00:00.000Z'
@@ -46,7 +46,7 @@ class MockOAuthTokenRepo implements Partial<OAuthWrapperRepositoryInterface> {
 
   public createRefreshToken = vi.fn(async (input) => {
     this.refreshTokens.set(input.refresh_token, {
-      id: 1,
+      id: '1',
       refresh_token: input.refresh_token,
       client_id: input.client_id,
       user_id: input.user_id,
@@ -70,35 +70,27 @@ class MockOAuthTokenRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public upsertUserCredentials = vi.fn(async () => undefined);
 }
 
-class MockUserAdapter implements OAuthUserAdapterInterface {
-  public login = vi.fn();
-  public getUserInfo = vi.fn();
-  public getUserInfoByAccessToken = vi.fn();
-
-  public exchangeAccessToken = vi.fn(async () => ({
-    access_token: 'provider-access-token',
-    expires_in: 3600,
-    refresh_token: 'provider-refresh-token'
-  }));
-}
-
 describe('OAuthTokenService', () => {
   let repo: MockOAuthTokenRepo;
-  let userAdapter: MockUserAdapter;
+  let exchangeProviderAccessToken: ExchangeProviderAccessToken;
   let service: OAuthTokenService;
 
   beforeEach(() => {
     repo = new MockOAuthTokenRepo();
-    userAdapter = new MockUserAdapter();
+    exchangeProviderAccessToken = vi.fn(async () => ({
+      access_token: 'provider-access-token',
+      expires_in: 3600,
+      refresh_token: 'provider-refresh-token'
+    }));
     service = new OAuthTokenService(
       new MockEncryptor(),
-      userAdapter,
+      exchangeProviderAccessToken,
       repo as unknown as OAuthWrapperRepositoryInterface
     );
     repo.authCode = {
       code: 'auth-code',
       client_id: 'test-client',
-      user_id: 42,
+      user_id: '42',
       redirect_uri: 'https://app.example/callback',
       scope: 'openid profile',
       code_challenge: TEST_CODE_CHALLENGE,
@@ -179,10 +171,10 @@ describe('OAuthTokenService', () => {
       const plainRefresh = 'refresh-token-plain';
       const tokenHash = hashOpaqueToken(plainRefresh);
       repo.refreshTokens.set(tokenHash, {
-        id: 1,
+        id: '1',
         refresh_token: tokenHash,
         client_id: 'test-client',
-        user_id: 42,
+        user_id: '42',
         expires_at: new Date(Date.now() + 60_000).toISOString(),
         revoked: false,
         created_at: '2026-01-01T00:00:00.000Z'
@@ -206,10 +198,10 @@ describe('OAuthTokenService', () => {
       const plainRefresh = 'refresh-token-plain';
       const tokenHash = hashOpaqueToken(plainRefresh);
       repo.refreshTokens.set(tokenHash, {
-        id: 1,
+        id: '1',
         refresh_token: tokenHash,
         client_id: 'test-client',
-        user_id: 42,
+        user_id: '42',
         expires_at: new Date(Date.now() + 60_000).toISOString(),
         revoked: false,
         created_at: '2026-01-01T00:00:00.000Z'

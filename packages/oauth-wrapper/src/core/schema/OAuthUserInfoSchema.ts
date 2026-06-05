@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const OAuthUserInfoResponseSchema = z.object({
   sub: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   name: z.string(),
   roles: z.array(z.string()).optional()
 });
@@ -10,7 +10,7 @@ export const OAuthUserInfoResponseSchema = z.object({
 export type OAuthUserInfoResponse = z.infer<typeof OAuthUserInfoResponseSchema>;
 
 export const OAuthUserInfoErrorResponseSchema = z.object({
-  error: z.literal('invalid_token'),
+  error: z.string(),
   error_id: z.string().optional()
 });
 

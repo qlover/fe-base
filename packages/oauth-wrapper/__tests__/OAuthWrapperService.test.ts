@@ -1,17 +1,31 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExecutorError } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 import { OAuthRfcCodes } from '@qlover/oauth-wrapper/core';
 import type {
   OAuthSessionInterface,
   OAuthSessionPayload
 } from '../src/core/interfaces/OAuthSessionInterface';
-import type { OAuthUserAdapterInterface } from '../src/core/interfaces/OAuthUserAdapterInterface';
+import type {
+  OAuthUserCredentials,
+  OAuthUserProfile
+} from '../src/server/services/OAuthAbstractProvider';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
-import type { OAuthTokenServiceInterface } from '../src/core/interfaces/OAuthServiceInterface';
 import { OAuthWrapperService } from '../src/server/services/OAuthWrapperService';
 import { OAuthWrapperError } from '../src/server/utils/OAuthWrapperError';
 import { createMockOAuthClient } from './helpers/mockOAuthClient';
 import { TEST_CODE_CHALLENGE } from './helpers/pkceFixtures';
+import type { LoginParams } from '@qlover/corekit-bridge/core';
+
+class MockEncryptor implements EncryptorInterface<string, string> {
+  public encrypt(value: string): string {
+    return `enc:${value}`;
+  }
+
+  public decrypt(value: string): string {
+    return value.replace(/^enc:/, '');
+  }
+}
 
 class MockOAuthRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public client = createMockOAuthClient();
@@ -29,7 +43,7 @@ class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
     throw new Error('Method not implemented.');
   }
   public session: OAuthSessionPayload | null = {
-    userId: 42,
+    userId: '42',
     email: '',
     name: '',
     providerSessionToken: ''
@@ -42,38 +56,39 @@ class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
   });
 }
 
-class MockUserAdapter implements OAuthUserAdapterInterface {
-  public login = vi.fn();
-  public exchangeAccessToken = vi.fn();
-  public getUserInfo = vi.fn();
-  public getUserInfoByAccessToken = vi.fn(async () => ({
+class TestOAuthWrapperService extends OAuthWrapperService<OAuthSessionPayload> {
+  public providerLogin = vi.fn<
+    [LoginParams],
+    Promise<OAuthUserCredentials>
+  >();
+  public providerExchangeAccessToken = vi.fn();
+  public providerGetUserInfo = vi.fn();
+  public providerGetUserInfoByAccessToken = vi.fn(async () => ({
     id: 42,
     email: 'user@example.com',
     name: 'Test User'
-  }));
-}
+  })) as ReturnType<
+    typeof vi.fn<[string], Promise<OAuthUserProfile>>
+  >;
 
-class MockTokenService implements OAuthTokenServiceInterface {
-  public exchangeToken = vi.fn();
-  public revokeToken = vi.fn();
+  constructor(
+    session: OAuthSessionInterface<OAuthSessionPayload>,
+    repo: OAuthWrapperRepositoryInterface
+  ) {
+    super(session, new MockEncryptor(), repo);
+  }
 }
 
 describe('OAuthWrapperService', () => {
   let repo: MockOAuthRepo;
   let session: MockOAuthSession;
-  let userAdapter: MockUserAdapter;
-  let tokenService: MockTokenService;
-  let service: OAuthWrapperService<OAuthSessionPayload>;
+  let service: TestOAuthWrapperService;
 
   beforeEach(() => {
     repo = new MockOAuthRepo();
     session = new MockOAuthSession();
-    userAdapter = new MockUserAdapter();
-    tokenService = new MockTokenService();
-    service = new OAuthWrapperService(
+    service = new TestOAuthWrapperService(
       session,
-      userAdapter,
-      tokenService,
       repo as unknown as OAuthWrapperRepositoryInterface
     );
   });
@@ -173,8 +188,8 @@ describe('OAuthWrapperService', () => {
   });
 
   describe('getUserInfo', () => {
-    it('maps adapter profile to OIDC userinfo claims', async () => {
-      const userinfo = await service.getUserInfo('access-token');
+    it('maps provider profile to OIDC userinfo claims', async () => {
+      const userinfo = await service.getUserInfoWithAccessToken('access-token');
 
       expect(userinfo).toEqual({
         sub: '42',
@@ -183,14 +198,14 @@ describe('OAuthWrapperService', () => {
       });
     });
 
-    it('throws OAuthWrapperError when adapter lookup fails', async () => {
-      userAdapter.getUserInfoByAccessToken.mockRejectedValueOnce(
+    it('throws OAuthWrapperError when provider lookup fails', async () => {
+      service.providerGetUserInfoByAccessToken.mockRejectedValueOnce(
         new Error('invalid token')
       );
 
-      await expect(service.getUserInfo('bad-token')).rejects.toBeInstanceOf(
-        OAuthWrapperError
-      );
+      await expect(
+        service.getUserInfoWithAccessToken('bad-token')
+      ).rejects.toBeInstanceOf(OAuthWrapperError);
     });
   });
 });
