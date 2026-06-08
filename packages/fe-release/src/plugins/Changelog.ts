@@ -40,7 +40,7 @@ import {
   type WorkspaceValue
 } from './workspaces/Workspaces';
 import { join } from 'path';
-import { existsSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
 import { type GitChangelogOptions } from '../interface/ChangeLog';
 import {
@@ -359,10 +359,7 @@ export default class Changelog extends ScriptPlugin<
           )
       });
 
-      await this.context.runChangesetsCli('version', [
-        '--no-changelog',
-        '--update-dependencies'
-      ]);
+      await this.runChangesetVersion();
 
       if (this.getConfig('ignoreNonUpdatedPackages')) {
         await this.restoreIgnorePackages();
@@ -376,6 +373,33 @@ export default class Changelog extends ScriptPlugin<
     this.logger.debug('new workspaces', newWorkspaces);
 
     this.context.setWorkspaces(newWorkspaces);
+  }
+
+  /**
+   * Runs `changeset version` without generating package changelogs.
+   *
+   * TODO: changeset 更新到了2.31.0, 不在支持cli临时 --no-changelog，未来需要重新实现Changeset 创建pr和发布流程
+   *
+   * Changesets v2+ no longer accepts `--no-changelog` / `--update-dependencies`
+   * CLI flags (removed in v2; rejected since @changesets/cli@2.31.0). Changelog
+   * output is handled by this plugin; internal dependency bumps use
+   * `updateInternalDependencies` from `.changeset/config.json`.
+   */
+  private async runChangesetVersion(): Promise<void> {
+    const configPath = this.changesetConfigPath;
+    const originalConfig = readFileSync(configPath, 'utf-8');
+    const config = JSON.parse(originalConfig) as { changelog?: unknown };
+    try {
+      config.changelog = false;
+      writeFileSync(
+        configPath,
+        `${JSON.stringify(config, null, 2)}\n`,
+        'utf-8'
+      );
+      await this.context.runChangesetsCli('version');
+    } finally {
+      writeFileSync(configPath, originalConfig, 'utf-8');
+    }
   }
 
   /**
