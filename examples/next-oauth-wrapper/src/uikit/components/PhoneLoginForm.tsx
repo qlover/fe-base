@@ -7,11 +7,14 @@ import {
   useRef,
   useState
 } from 'react';
-import { PhoneLoginGateway } from '@/impls/PhoneLoginGateway';
+import { AppUserGateway } from '@/impls/AppUserGateway';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
+import { useReturnTo } from '@/uikit/hook/useReturnTo';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
-import { ROUTE_DEVELOPER_APPS } from '@config/route';
+import { URLParamsKeys } from '@config/common';
+import { ROUTE_DEVELOPER_APPS, ROUTE_REGISTER } from '@config/route';
 
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
@@ -24,18 +27,17 @@ interface PhoneLoginFormProps {
 
 export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
   const t = useWarnTranslations();
-  const phoneGateway = useIOC(PhoneLoginGateway);
+  const userGateway = useIOC(AppUserGateway);
+  const { returnTo } = useReturnTo({ returnToKey: URLParamsKeys.returnTo });
 
   const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [otpError, setOtpError] = useState<string | undefined>();
   const [countdown, setCountdown] = useState(0);
-  const [_otpExp, setOtpExp] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isCountingDown = countdown > 0;
@@ -93,9 +95,8 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
 
     setLoading(true);
     try {
-      const result = await phoneGateway.sendOtp(phone.trim());
+      await userGateway.sendOtp({ phone: phone.trim() });
       setStep('otp');
-      setOtpExp(result.OTP_EXP ?? 300);
       setCountdown(60);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Send OTP failed');
@@ -112,10 +113,8 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
 
     setLoading(true);
     try {
-      await phoneGateway.verifyOtp(phone.trim(), otp.trim());
-
-      setSuccess(true);
-      window.location.assign(ROUTE_DEVELOPER_APPS);
+      await userGateway.verifyOtp({ phone: phone.trim(), token: otp.trim() });
+      returnTo(ROUTE_DEVELOPER_APPS);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Phone login failed');
     } finally {
@@ -128,9 +127,8 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
     setSubmitError(null);
     setLoading(true);
     try {
-      const result = await phoneGateway.sendOtp(phone.trim());
+      await userGateway.sendOtp({ phone: phone.trim() });
       setOtp('');
-      setOtpExp(result.OTP_EXP ?? 300);
       setCountdown(60);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Resend OTP failed');
@@ -140,30 +138,16 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
   };
 
   const isEmpty = !phone.trim();
-  const submitDisabled = loading || success;
+  const submitDisabled = loading;
 
   return (
-    <div data-testid="PhoneLoginForm" className="w-full max-w-[420px] mx-auto">
-      <h3 className="text-lg font-semibold text-primary-text mb-1">
-        {tt.phoneTitle}
-      </h3>
-      <p className="text-secondary-text text-sm mb-5">{tt.phoneSubtitle}</p>
-
+    <div data-testid="PhoneLoginForm" className="w-full">
       {submitError && (
         <div
           role="alert"
           className="text-red-500 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm mb-4 dark:border-red-800 dark:bg-red-950/30"
         >
           {submitError}
-        </div>
-      )}
-
-      {success && (
-        <div
-          role="status"
-          className="text-green-600 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm mb-4 dark:border-green-800 dark:bg-green-950/30"
-        >
-          {tt.phoneSuccess}
         </div>
       )}
 
@@ -319,6 +303,17 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
           </div>
         </form>
       )}
+
+      <p className="text-secondary-text mt-6 text-center text-sm">
+        {tt.noAccount}{' '}
+        <LocaleLink
+          href={ROUTE_REGISTER}
+          title={tt.createAccountTitle}
+          className="text-brand font-medium hover:underline"
+        >
+          {tt.createAccount}
+        </LocaleLink>
+      </p>
     </div>
   );
 }

@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { EmailOTPForm } from '@/uikit/components/EmailOTPForm';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 
 type LoginTab = 'email' | 'phone';
+type EmailMode = 'password' | 'otp';
 
 export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [tab, setTab] = useState<LoginTab>('email');
+  const [emailMode, setEmailMode] = useState<EmailMode>('password');
 
   const tabBaseClass =
     'flex-1 py-2.5 text-sm font-medium text-center transition-colors cursor-pointer border-b-2 outline-none';
@@ -39,7 +42,39 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </button>
       </div>
 
-      {tab === 'email' ? <LoginForm tt={tt} /> : <PhoneLoginForm tt={tt} />}
+      {tab === 'email' && (
+        <>
+          {emailMode === 'password' ? (
+            <>
+              <LoginForm tt={tt} />
+              <p className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => setEmailMode('otp')}
+                  className="text-brand text-sm hover:underline"
+                >
+                  {tt.switchToOtp}
+                </button>
+              </p>
+            </>
+          ) : (
+            <>
+              <EmailOTPForm tt={tt} />
+              <p className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => setEmailMode('password')}
+                  className="text-brand text-sm hover:underline"
+                >
+                  {tt.switchToPassword}
+                </button>
+              </p>
+            </>
+          )}
+        </>
+      )}
+
+      {tab === 'phone' && <PhoneLoginForm tt={tt} />}
     </div>
   );
 }
