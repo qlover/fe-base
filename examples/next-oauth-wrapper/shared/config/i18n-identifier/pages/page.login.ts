@@ -248,7 +248,8 @@ export const PAGE_LOGIN_PHONE_OTP_LABEL = 'page_login:phone_otp_label';
  * @localZh 请输入6位验证码
  * @localEn Enter 6-digit code
  */
-export const PAGE_LOGIN_PHONE_OTP_PLACEHOLDER = 'page_login:phone_otp_placeholder';
+export const PAGE_LOGIN_PHONE_OTP_PLACEHOLDER =
+  'page_login:phone_otp_placeholder';
 /**
  * @description OTP validation error
  * @localZh 请输入6位数字验证码
@@ -266,7 +267,8 @@ export const PAGE_LOGIN_PHONE_VERIFY = 'page_login:phone_verify';
  * @localZh 后可重新发送
  * @localEn to resend
  */
-export const PAGE_LOGIN_PHONE_COUNTDOWN_SUFFIX = 'page_login:phone_countdown_suffix';
+export const PAGE_LOGIN_PHONE_COUNTDOWN_SUFFIX =
+  'page_login:phone_countdown_suffix';
 /**
  * @description Resend OTP button text
  * @localZh 重新发送验证码
@@ -303,7 +305,8 @@ export const PAGE_LOGIN_EMAIL_OTP_LABEL = 'page_login:email_otp_label';
  * @localZh 请输入6位验证码
  * @localEn Enter 6-digit code
  */
-export const PAGE_LOGIN_EMAIL_OTP_PLACEHOLDER = 'page_login:email_otp_placeholder';
+export const PAGE_LOGIN_EMAIL_OTP_PLACEHOLDER =
+  'page_login:email_otp_placeholder';
 /**
  * @description Email OTP validation error
  * @localZh 请输入6位数字验证码
@@ -321,7 +324,8 @@ export const PAGE_LOGIN_EMAIL_OTP_VERIFY = 'page_login:email_otp_verify';
  * @localZh 后可重新发送
  * @localEn to resend
  */
-export const PAGE_LOGIN_EMAIL_OTP_COUNTDOWN_SUFFIX = 'page_login:email_otp_countdown_suffix';
+export const PAGE_LOGIN_EMAIL_OTP_COUNTDOWN_SUFFIX =
+  'page_login:email_otp_countdown_suffix';
 /**
  * @description Email OTP resend button
  * @localZh 重新发送验证码

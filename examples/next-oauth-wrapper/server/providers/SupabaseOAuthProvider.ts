@@ -289,7 +289,9 @@ export class SupabaseOAuthProvider
   /**
    * Establish the app session from an already-authenticated Supabase session
    * (used by magic-link callback and SSO flows).
-   */
+
+   * @override
+      */
   public async loginWithSession(session: Session): Promise<void> {
     const initialRefreshToken = requireSupabaseRefreshToken(session);
 
@@ -371,7 +373,9 @@ export class SupabaseOAuthProvider
         type: 'sms'
       });
     } else {
-      throw new Error('Either email or phone must be provided for OTP verification');
+      throw new Error(
+        'Either email or phone must be provided for OTP verification'
+      );
     }
 
     this.supabaseBridge.throwIfError(result);

@@ -12,8 +12,8 @@ import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useReturnTo } from '@/uikit/hook/useReturnTo';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { URLParamsKeys } from '@config/common';
+import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { ROUTE_DEVELOPER_APPS, ROUTE_REGISTER } from '@config/route';
 
 const inputClass =

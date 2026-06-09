@@ -67,5 +67,4 @@ export const PAGE_EMAIL_OTP_CB_ERROR = 'page_email_otp_callback:error';
  * @localZh 请稍候，我们正在完成登录。
  * @localEn Please wait while we complete your sign-in.
  */
-export const PAGE_EMAIL_OTP_CB_SUBTITLE =
-  'page_email_otp_callback:subtitle';
+export const PAGE_EMAIL_OTP_CB_SUBTITLE = 'page_email_otp_callback:subtitle';

@@ -21,8 +21,8 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { BootstrapServer } from '@server/BootstrapServer';
 import { I } from '@config/ioc-identifiter';
+import { BootstrapServer } from '@server/BootstrapServer';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 
 export async function POST(request: NextRequest) {
@@ -41,7 +41,10 @@ export async function POST(request: NextRequest) {
 
   if (!accessToken || !refreshToken) {
     return NextResponse.json(
-      { success: false, message: 'access_token and refresh_token are required' },
+      {
+        success: false,
+        message: 'access_token and refresh_token are required'
+      },
       { status: 400 }
     );
   }
@@ -73,9 +76,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json(
-      { success: false, message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

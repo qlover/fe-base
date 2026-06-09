@@ -1,13 +1,10 @@
 import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
-  SignOtpResult,
-  SignWithOtpParams
-} from '@qlover/oauth-wrapper';
-import type {
   UserService as CorekitBridgeUserServiceInterface,
   LoginParams,
   UserServiceGateway
 } from '@qlover/corekit-bridge';
+import type { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 
 export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
   UserSchema,

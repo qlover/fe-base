@@ -193,10 +193,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   public async verifyOtp(
     params: { phone: string; token: string } | { email: string; token: string }
   ): Promise<SignOtpResult> {
-    const response = await this.client.request<
-      SignOtpResult,
-      typeof params
-    >({
+    const response = await this.client.request<SignOtpResult, typeof params>({
       url: API_USER_OTP_VERIFY,
       method: HttpMethods.POST,
       data: params

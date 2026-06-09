@@ -1,5 +1,9 @@
 import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
-import { SignOtpResult, signWithPhoneOtpSchema, signWithEmailOtpSchema } from '@qlover/oauth-wrapper';
+import {
+  SignOtpResult,
+  signWithPhoneOtpSchema,
+  signWithEmailOtpSchema
+} from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';

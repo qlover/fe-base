@@ -102,9 +102,7 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
           >
             {tt.emailOtpSuccess}
           </div>
-          <p className="text-secondary-text text-sm text-center">
-            {email}
-          </p>
+          <p className="text-secondary-text text-sm text-center">{email}</p>
           <p className="text-center">
             <button
               type="button"
@@ -145,7 +143,9 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
               className={inputClass}
               disabled={loading}
               aria-invalid={!!emailError}
-              aria-describedby={emailError ? 'magic-link-email-error' : undefined}
+              aria-describedby={
+                emailError ? 'magic-link-email-error' : undefined
+              }
             />
             {emailError && (
               <p
