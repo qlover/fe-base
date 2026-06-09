@@ -1,5 +1,5 @@
 import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
-import { SignOtpResult, signWithPhoneOtpSchema } from '@qlover/oauth-wrapper';
+import { SignOtpResult, signWithPhoneOtpSchema, signWithEmailOtpSchema } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
@@ -116,11 +116,30 @@ export class UserController {
   }
 
   public signWithOtp(body: unknown): Promise<SignOtpResult> {
-    const result = signWithPhoneOtpSchema.safeParse(body);
-    if (result.success) {
-      return this.userService.signWithOtp(result.data);
+    const phoneResult = signWithPhoneOtpSchema.safeParse(body);
+    if (phoneResult.success) {
+      return this.userService.signWithOtp(phoneResult.data);
     }
 
-    throw new Error('OTP sign only suppport Phone!');
+    const emailResult = signWithEmailOtpSchema.safeParse(body);
+    if (emailResult.success) {
+      return this.userService.signWithOtp(emailResult.data);
+    }
+
+    throw new Error('OTP sign requires a valid phone or email!');
+  }
+
+  public verifyOtp(body: unknown): Promise<SignOtpResult> {
+    const phoneResult = signWithPhoneOtpSchema.safeParse(body);
+    if (phoneResult.success && phoneResult.data.token) {
+      return this.userService.signWithOtp(phoneResult.data);
+    }
+
+    const emailResult = signWithEmailOtpSchema.safeParse(body);
+    if (emailResult.success && emailResult.data.token) {
+      return this.userService.signWithOtp(emailResult.data);
+    }
+
+    throw new Error('OTP verification requires a valid phone/email and token!');
   }
 }

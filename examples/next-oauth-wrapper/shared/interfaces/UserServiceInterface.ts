@@ -1,5 +1,9 @@
 import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
+  SignOtpResult,
+  SignWithOtpParams
+} from '@qlover/oauth-wrapper';
+import type {
   UserService as CorekitBridgeUserServiceInterface,
   LoginParams,
   UserServiceGateway
@@ -50,6 +54,8 @@ export interface UserServiceGatewayInterface extends UserServiceGateway<
    */
   submitOAuthConsent(payload: OAuthConsentPayload): Promise<string>;
 
-  sendOtp(phone: string): Promise<Otpre>;
-  verifyOtp(phone: string, otp: string): Promise<PhoneLoginResponse>;
+  sendOtp(params: SignWithOtpParams): Promise<SignOtpResult>;
+  verifyOtp(
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult>;
 }

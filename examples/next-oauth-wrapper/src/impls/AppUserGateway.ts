@@ -1,4 +1,5 @@
 import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import {
   API_OAUTH_CONSENT,
@@ -24,7 +25,6 @@ import {
   AppApiRequesterContext
 } from './appApi/AppApiRequester';
 import type { LoginParams } from '@qlover/corekit-bridge';
-import { SignWithOtpParams } from '@qlover/oauth-wrapper';
 
 /**
  * UserApi
@@ -166,11 +166,14 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   }
 
   /**
-   * Send OTP to phone number (step 1)
+   * Send OTP (step 1) — supports both phone and email
    * @override
    */
-  public async sendOtp(params: SignWithOtpParams): Promise<SignWithOtpParams> {
-    const response = await this.client.request({
+  public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      SignOtpResult,
+      SignWithOtpParams
+    >({
       url: API_USER_OTP_LOGIN,
       method: HttpMethods.POST,
       data: params
@@ -184,24 +187,23 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   }
 
   /**
-   * Verify OTP code (step 2)
+   * Verify OTP code (step 2) — supports both phone and email
    * @override
    */
   public async verifyOtp(
-    phone: string,
-    otp: string
-  ): Promise<PhoneLoginResponse> {
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult> {
     const response = await this.client.request<
-      PhoneLoginApiResponse,
-      { phone: string; otp: string }
+      SignOtpResult,
+      typeof params
     >({
       url: API_USER_OTP_VERIFY,
       method: HttpMethods.POST,
-      data: { phone, otp }
+      data: params
     });
 
     if (!response.data.success || !response.data.data) {
-      throw new Error(response.data.message ?? 'Phone login failed');
+      throw new Error(response.data.message ?? 'OTP verification failed');
     }
 
     return response.data.data;

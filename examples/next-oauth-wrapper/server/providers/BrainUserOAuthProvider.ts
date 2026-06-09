@@ -187,7 +187,7 @@ export class BrainUserOAuthProvider
    */
   public async signWithOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
     if ('email' in params) {
-      throw new Error('Email is not suppported');
+      throw new Error('Email is not supported');
     }
 
     // TODO: 调用真实 brain otp 接口
@@ -204,7 +204,7 @@ export class BrainUserOAuthProvider
    */
   public async verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult> {
     if ('email' in params) {
-      throw new Error('Email is not suppported');
+      throw new Error('Email is not supported');
     }
 
     // const profile = await this.gateway.signWithOtp({

@@ -17,6 +17,7 @@ import type {
   SliceStoreAdapter,
   UserStateInterface
 } from '@qlover/corekit-bridge';
+import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 
 @injectable()
 export class UserService
@@ -107,5 +108,15 @@ export class UserService
         this.getStore().failed(error);
         return false;
       });
+  }
+
+  public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    return this.gateway.sendOtp(params);
+  }
+
+  public async verifyOtp(
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult> {
+    return this.gateway.verifyOtp(params);
   }
 }
