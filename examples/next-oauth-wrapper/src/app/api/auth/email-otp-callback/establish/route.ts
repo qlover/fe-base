@@ -24,6 +24,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { I } from '@config/ioc-identifiter';
 import { BootstrapServer } from '@server/BootstrapServer';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { Session } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
@@ -70,8 +71,8 @@ export async function POST(request: NextRequest) {
       refresh_token: refreshToken,
       expires_in: parseInt(String(body.expires_in ?? '3600'), 10),
       token_type: String(body.token_type ?? 'bearer'),
-      user: null as any
-    } as any);
+      user: null
+    } as unknown as Session);
 
     return NextResponse.json({ success: true });
   } catch (err) {

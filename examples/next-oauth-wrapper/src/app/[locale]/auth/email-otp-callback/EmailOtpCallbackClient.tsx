@@ -120,17 +120,14 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
       className="bg-primary flex min-h-screen items-center justify-center font-sans p-4"
     >
       <div className="bg-bg-container border-primary-border w-full max-w-sm rounded-xl border p-8 text-center shadow-sm">
-        {/* 品牌标识 */}
         <span className="border-primary-border text-brand mb-6 inline-flex items-center rounded-full border bg-primary-bg px-3 py-1 text-xs font-semibold tracking-wide uppercase">
           OAuth 2.0
         </span>
 
-        {/* Spinner */}
         <div className="my-6 flex justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-primary-border border-t-brand" />
         </div>
 
-        {/* 状态文案 */}
         <p className="text-primary-text text-sm font-medium">
           {statusMessages[status]}
         </p>
