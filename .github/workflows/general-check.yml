@@ -32,6 +32,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: npx nx build @qlover/fe-scripts
+      # - run: npx nx build @qlover/fe-scripts --no-cloud
       # NX Cloud Task
       - name: NX Cloud Build (exclude examples)
         run: pnpm build:packages
