@@ -20,7 +20,10 @@ import type {
   OAuthUserAccessToken,
   OAuthUserCredentials,
   OAuthUserProfile,
-  OAuthWrapperRepositoryInterface
+  OAuthWrapperRepositoryInterface,
+  SignOtpResult,
+  SignWithOtpParams,
+  VerifyOtpParams
 } from '@qlover/oauth-wrapper';
 import type { Session, User } from '@supabase/supabase-js';
 
@@ -34,6 +37,19 @@ function createHeadlessSupabaseClient() {
   return createSupabaseClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
+}
+
+/**
+ * Build the magic-link redirect URL.
+ *
+ * Supabase appends auth tokens to this URL as a hash fragment (#access_token=...)
+ * after the user clicks the magic link in their email.
+ * Points to the frontend /auth/email-otp-callback page (client component)
+ * which reads the hash and establishes the session.
+ */
+function buildMagicLinkRedirectUrl(appHost: string): string {
+  const base = appHost.replace(/\/+$/, '');
+  return `${base}/en/auth/email-otp-callback`;
 }
 
 function shouldMd5Password(): boolean {
@@ -90,6 +106,8 @@ export class SupabaseOAuthProvider
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
+  protected readonly appHost: string;
+
   constructor(
     @inject(I.AppConfig) config: SeedServerConfigInterface,
     @inject(OAuthSessionService)
@@ -101,6 +119,7 @@ export class SupabaseOAuthProvider
     @inject(SupabaseBridge) protected supabaseBridge: SupabaseBridge
   ) {
     super(oauthSession, new TokenEncryption(config.encryptionKey), oauthRepo);
+    this.appHost = config.appHost;
   }
 
   protected resolvePassword(password: string): string {
@@ -265,5 +284,117 @@ export class SupabaseOAuthProvider
    */
   public hasNeedLogged(): boolean {
     return true;
+  }
+
+  /**
+   * Establish the app session from an already-authenticated Supabase session
+   * (used by magic-link callback and SSO flows).
+
+   * @override
+      */
+  public async loginWithSession(session: Session): Promise<void> {
+    const initialRefreshToken = requireSupabaseRefreshToken(session);
+
+    // Refresh the session — Supabase rotates refresh tokens, so we must
+    // use the NEW refresh token returned by refreshSession().
+    const refreshed = await this.refreshSession(initialRefreshToken);
+    const refreshToken = requireSupabaseRefreshToken(refreshed);
+
+    if (!refreshed.user) {
+      throw new Error('Refreshed Supabase session is missing user info');
+    }
+
+    const profile = toOAuthUserProfile(refreshed.user);
+    const sessionPayload = this.generageSessionPayload({
+      email: profile.email,
+      ...profile,
+      sessionToken: refreshToken
+    });
+
+    this.oauthSession.setSession(sessionPayload);
+
+    const oauthRepo = this.getOAuthRepo();
+    await oauthRepo.upsertUserCredentials(sessionPayload.userId, {
+      provider_session_token: sessionPayload.providerSessionToken
+    });
+  }
+
+  /**
+   * @override
+   */
+  public async signWithOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    const supabase = createHeadlessSupabaseClient();
+
+    if ('email' in params) {
+      const redirectTo = buildMagicLinkRedirectUrl(this.appHost);
+      const result = await supabase.auth.signInWithOtp({
+        email: params.email,
+        options: { emailRedirectTo: redirectTo }
+      });
+      this.supabaseBridge.throwIfError(result);
+
+      return {
+        expired: Math.floor(Date.now() / 1000) + 3600
+      };
+    }
+
+    const result = await supabase.auth.signInWithOtp({
+      phone: params.phone
+    });
+    this.supabaseBridge.throwIfError(result);
+
+    return {
+      expired: Math.floor(Date.now() / 1000) + 3600,
+      messageId: result.data.messageId
+    };
+  }
+
+  /**
+   * @override
+   */
+  public async verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult> {
+    if (!params.token) {
+      throw new Error('OTP token is required for verification');
+    }
+
+    const supabase = createHeadlessSupabaseClient();
+
+    let result;
+    if ('email' in params && params.email) {
+      result = await supabase.auth.verifyOtp({
+        email: params.email,
+        token: params.token,
+        type: 'email'
+      });
+    } else if ('phone' in params && params.phone) {
+      result = await supabase.auth.verifyOtp({
+        phone: params.phone,
+        token: params.token,
+        type: 'sms'
+      });
+    } else {
+      throw new Error(
+        'Either email or phone must be provided for OTP verification'
+      );
+    }
+
+    this.supabaseBridge.throwIfError(result);
+
+    const session = result.data.session;
+    if (!session) {
+      throw new Error('OTP verification did not return a session');
+    }
+
+    this.logger.debug('Supabase OTP verification successful', {
+      userId: session.user?.id
+    });
+
+    // Establish the app-level session so the user is recognised on
+    // subsequent requests (critical for phone-OTP flow).
+    await this.loginWithSession(session);
+
+    return {
+      expired: session.expires_at ?? Math.floor(Date.now() / 1000) + 3600
+    };
   }
 }

@@ -18,7 +18,10 @@ import type {
   OAuthUserAccessToken,
   OAuthUserCredentials,
   OAuthUserProfile,
-  OAuthWrapperRepositoryInterface
+  OAuthWrapperRepositoryInterface,
+  SignWithOtpParams,
+  VerifyOtpParams,
+  SignOtpResult
 } from '@qlover/oauth-wrapper';
 
 type BrainLoginLike = Record<string, unknown>;
@@ -177,5 +180,37 @@ export class BrainUserOAuthProvider
    */
   public hasNeedLogged(): boolean {
     return true;
+  }
+
+  /**
+   * @override
+   */
+  public async signWithOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    if ('email' in params) {
+      throw new Error('Email is not supported');
+    }
+
+    // TODO: 调用真实 brain otp 接口
+    // const profile = await this.gateway.signWithOtp({
+    //   phone: params.phone
+    // });
+    throw new Error(
+      'signWithOtp is not implemented for BrainUserOAuthProvider'
+    );
+  }
+
+  /**
+   * @override
+   */
+  public async verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult> {
+    if ('email' in params) {
+      throw new Error('Email is not supported');
+    }
+
+    // const profile = await this.gateway.signWithOtp({
+    //   phone: params.phone,
+    //   otp: params.token
+    // });
+    throw new Error('verifyOtp is not implemented for BrainUserOAuthProvider');
   }
 }

@@ -1,4 +1,5 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
+import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { isObject, isString } from 'lodash';
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
@@ -107,5 +108,15 @@ export class UserService
         this.getStore().failed(error);
         return false;
       });
+  }
+
+  public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    return this.gateway.sendOtp(params);
+  }
+
+  public async verifyOtp(
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult> {
+    return this.gateway.verifyOtp(params);
   }
 }

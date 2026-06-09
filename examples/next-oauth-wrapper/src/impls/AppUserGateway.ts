@@ -1,10 +1,13 @@
 import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import {
   API_OAUTH_CONSENT,
   API_OAUTH_VERIFY,
   API_USER_LOGIN,
   API_USER_LOGOUT,
+  API_USER_OTP_LOGIN,
+  API_USER_OTP_VERIFY,
   API_USER_REGISTER,
   API_USER_SESSION
 } from '@config/apiRoutes';
@@ -160,5 +163,46 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     }
 
     return response.data.data!.redirectUrl;
+  }
+
+  /**
+   * Send OTP (step 1) — supports both phone and email
+   * @override
+   */
+  public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      SignOtpResult,
+      SignWithOtpParams
+    >({
+      url: API_USER_OTP_LOGIN,
+      method: HttpMethods.POST,
+      data: params
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message ?? 'Send OTP failed');
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Verify OTP code (step 2) — supports both phone and email
+   * @override
+   */
+  public async verifyOtp(
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult> {
+    const response = await this.client.request<SignOtpResult, typeof params>({
+      url: API_USER_OTP_VERIFY,
+      method: HttpMethods.POST,
+      data: params
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message ?? 'OTP verification failed');
+    }
+
+    return response.data.data;
   }
 }

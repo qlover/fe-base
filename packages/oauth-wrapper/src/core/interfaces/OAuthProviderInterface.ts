@@ -4,6 +4,7 @@ import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryIn
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
 import type { OAuthUserInfoResponse } from '../schema/OAuthUserInfoSchema';
 import type { LoginParams } from '@qlover/corekit-bridge/core';
+import type { SignWithOtpSchema } from '@qlover/oauth-wrapper';
 
 /**
  * OAuth authorize page data shared by server rendering and client UI.
@@ -95,4 +96,59 @@ export interface OAuthProviderInterface<
   getUserInfoWithAccessToken(
     accessToken: string
   ): Promise<OAuthUserInfoResponse>;
+}
+
+export type SignWithOtpParams =
+  | {
+      email: string;
+    }
+  | {
+      phone: string;
+    };
+
+export interface VerifyMobileOtpParams {
+  /** The user's phone number. */
+  phone: string;
+  /** The otp sent to the user's phone number. */
+  token: string;
+}
+export interface VerifyEmailOtpParams {
+  /** The user's email address. */
+  email: string;
+  /** The otp sent to the user's email address. */
+  token: string;
+}
+
+export type VerifyOtpParams = SignWithOtpSchema;
+
+export type SignOtpResult = {
+  expired: number;
+  messageId?: string;
+};
+
+/**
+ * Interface for OAuth providers that support OTP-based authentication.
+ *
+ * This interface extends the base OAuthProviderInterface with methods specific to OTP flows.
+ * It allows for signing in with OTP and verifying OTP tokens to establish sessions.
+ *
+ * The generic SessionPayload type parameter allows implementations to define their own session data structure.
+ */
+export interface OAuthOTPProviderInterface {
+  /**
+   * Sign in using OTP. The params can be either email-based or phone-based.
+   * The implementation should handle sending the OTP to the user.
+   *
+   * @param params - Parameters for signing in with OTP, either email or phone.
+   * @returns A promise that resolves to the session payload after successful OTP initiation.
+   */
+  signWithOtp(params: SignWithOtpParams): Promise<SignOtpResult>;
+
+  /**
+   * Verify the OTP token provided by the user. This method should validate the OTP and establish a session if valid.
+   *
+   * @param params - Parameters for verifying the OTP, including the identifier (email or phone) and the OTP token.
+   * @returns A promise that resolves to the session payload after successful OTP verification.
+   */
+  verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult>;
 }

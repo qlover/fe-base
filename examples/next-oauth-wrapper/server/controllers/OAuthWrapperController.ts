@@ -10,13 +10,11 @@ import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { LoginSchema } from '@schemas/LoginSchema';
+import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { ServerConfig } from '@server/ServerConfig';
-import {
-  OAuthControllerService,
-  VerifyLoginResult
-} from '@server/services/OAuthControllerService';
+import { OAuthUserService } from '@server/services/OAuthUserService';
 import type {
   OAuthAuthorizePageData,
   OAuthAuthorizeValidationError,
@@ -33,8 +31,8 @@ export class OAuthWrapperController {
     protected loginValidator: ValidatorInterface<LoginSchema>,
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
-    @inject(OAuthControllerService)
-    protected oauthService: OAuthControllerService,
+    @inject(OAuthUserService)
+    protected oauthService: OAuthUserService,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer
   ) {
@@ -47,7 +45,7 @@ export class OAuthWrapperController {
   /**
    * Validates credentials and performs demo provider login via service layer.
    */
-  public async verifyLogin(requestBody: unknown): Promise<VerifyLoginResult> {
+  public async verifyLogin(requestBody: unknown): Promise<UserSchema> {
     try {
       if ((requestBody as LoginSchema).password) {
         (requestBody as LoginSchema).password = this.stringEncryptor.decrypt(
@@ -63,7 +61,7 @@ export class OAuthWrapperController {
     const body = await this.loginValidator.getThrow(requestBody);
 
     try {
-      return await this.oauthService.verifyLogin({
+      return await this.oauthService.login({
         email: body.email,
         password: body.password
       });

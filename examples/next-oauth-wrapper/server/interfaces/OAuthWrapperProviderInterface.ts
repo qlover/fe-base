@@ -1,10 +1,15 @@
 import type { UserSchema } from '@schemas/UserSchema';
 import type {
   OAuthProviderInterface,
-  OAuthSessionPayload
+  OAuthSessionPayload,
+  OAuthOTPProviderInterface
 } from '@qlover/oauth-wrapper';
+import type { Session as SupabaseSession } from '@supabase/supabase-js';
 
-export interface OAuthWrapperProviderInterface extends OAuthProviderInterface<OAuthSessionPayload> {
+export interface OAuthWrapperProviderInterface
+  extends
+    OAuthProviderInterface<OAuthSessionPayload>,
+    OAuthOTPProviderInterface {
   /**
    * OAuthWrapper 用户信息交换
    *
@@ -23,4 +28,10 @@ export interface OAuthWrapperProviderInterface extends OAuthProviderInterface<OA
   hasNeedLogged(): boolean;
 
   clearSession(): Promise<void>;
+
+  /**
+   * Establish app session from an external provider session (e.g. Supabase magic link callback).
+   * Providers that do not support this flow should throw.
+   */
+  loginWithSession?(session: SupabaseSession): Promise<void>;
 }

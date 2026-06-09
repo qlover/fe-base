@@ -11,6 +11,19 @@ export const ROUTE_LOGIN = '/auth/login' as const;
 export const ROUTE_REGISTER = '/auth/register' as const;
 
 /**
+ * Email OTP / Magic Link 登录回调页面
+ *
+ * 用户点击邮件中的 magic link 后，Supabase 重定向到此页面。
+ * 前端 client component 读取 URL hash fragment 中的 tokens 并建立 session。
+ *
+ * 未来可能增加的回调页面：
+ *   - /auth/email-verify-callback  邮箱验证回调
+ *   - /auth/register-success       注册成功
+ *   - /auth/register-error         注册失败
+ */
+export const ROUTE_EMAIL_OTP_CALLBACK = '/auth/email-otp-callback' as const;
+
+/**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
  */
 export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
@@ -40,6 +53,18 @@ export const ROUTE_OAUTH_CALLBACK = '/oauth/callback' as const;
 /** OAuth 2.0 / OIDC userinfo endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_USERINFO = '/userinfo' as const;
 
+/**
+ * ─── Auth 相关 API 路由常量 ───
+ *
+ * 与 apiRoutes.ts 中的通用 API 常量区分，
+ * 专门用于 auth 回调流程中的后端接口。
+ * 后续如有更多回调 API 可统一放入此区域。
+ */
+
+/** Email OTP callback: 后端建立应用级 session 的接口 */
+export const API_AUTH_EMAIL_OTP_ESTABLISH =
+  '/api/auth/email-otp-callback/establish' as const;
+
 /** OAuth machine endpoints that skip session and locale middleware. */
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
@@ -53,6 +78,7 @@ export const AUTH_ROUTES = [
   ROUTE_HOME,
   ROUTE_LOGIN,
   ROUTE_REGISTER,
+  ROUTE_EMAIL_OTP_CALLBACK,
   ROUTE_DOCS_OAUTH
 ] as const;
 

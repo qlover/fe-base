@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
-import { LoginForm } from '@/uikit/components/LoginForm';
+import { LoginTabSwitch } from '@/uikit/components/LoginTabSwitch';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
@@ -112,7 +112,7 @@ export default async function LoginPage(props: PageParamsProps) {
               <p className="text-secondary-text text-sm">{tt.formSubtitle}</p>
             }
           >
-            <LoginForm tt={tt} />
+            <LoginTabSwitch tt={tt} />
           </Suspense>
 
           <p className="text-tertiary-text mt-8 text-center text-xs leading-relaxed">

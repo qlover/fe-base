@@ -1,4 +1,5 @@
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SignOtpResult, SignWithOtpSchema } from '@qlover/oauth-wrapper';
 
 export type UserServiceRegisterParams = {
   username?: string;
@@ -27,4 +28,6 @@ export interface UserServiceInterface {
 
   refresh(): Promise<UserSchema>;
   getUser(): Promise<UserSchema>;
+
+  signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult>;
 }
