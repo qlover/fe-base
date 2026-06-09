@@ -3,6 +3,7 @@ import { defineRouting } from 'next-intl/routing';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
+  ROUTE_EMAIL_OTP_CALLBACK,
   ROUTE_DEVELOPER_APPS,
   ROUTE_LOGIN,
   ROUTE_OAUTH_AUTHORIZE,
@@ -35,6 +36,10 @@ export const routing = defineRouting({
     [ROUTE_REGISTER]: {
       en: '/auth/register',
       zh: '/auth/register'
+    },
+    [ROUTE_EMAIL_OTP_CALLBACK]: {
+      en: '/auth/email-otp-callback',
+      zh: '/auth/email-otp-callback'
     },
     [ROUTE_REQUEST_LOGS]: {
       en: '/admin/request-logs',

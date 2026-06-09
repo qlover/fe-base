@@ -6,13 +6,14 @@
  */
 
 /**
- * API path: `/api/callback`
+ * API path: `/api/auth/email-otp-callback/establish`
  *
- * @see [src/app/api/callback/route.ts](../../src/app/api/callback/route.ts)
+ * @see [src/app/api/auth/email-otp-callback/establish/route.ts](../../src/app/api/auth/email-otp-callback/establish/route.ts)
  *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/route.ts`
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/auth/email-otp-callback/establish/route.ts`
  */
-export const API_CALLBACK = '/api/callback' as const;
+export const API_AUTH_EMAIL_OTP_CALLBACK_ESTABLISH =
+  '/api/auth/email-otp-callback/establish' as const;
 
 /**
  * API path: `/api/clients`
@@ -152,7 +153,7 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
-  | typeof API_CALLBACK
+  | typeof API_AUTH_EMAIL_OTP_CALLBACK_ESTABLISH
   | typeof API_CLIENTS
   | typeof API_CLIENTS_2
   | typeof API_CLIENTS_ROTATE_SECRET
