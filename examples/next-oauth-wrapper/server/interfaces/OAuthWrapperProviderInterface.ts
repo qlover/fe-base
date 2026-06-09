@@ -1,10 +1,14 @@
 import type { UserSchema } from '@schemas/UserSchema';
 import type {
   OAuthProviderInterface,
-  OAuthSessionPayload
+  OAuthSessionPayload,
+  OAuthOTPProviderInterface
 } from '@qlover/oauth-wrapper';
 
-export interface OAuthWrapperProviderInterface extends OAuthProviderInterface<OAuthSessionPayload> {
+export interface OAuthWrapperProviderInterface
+  extends
+    OAuthProviderInterface<OAuthSessionPayload>,
+    OAuthOTPProviderInterface {
   /**
    * OAuthWrapper 用户信息交换
    *

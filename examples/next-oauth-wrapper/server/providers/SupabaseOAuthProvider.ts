@@ -20,7 +20,10 @@ import type {
   OAuthUserAccessToken,
   OAuthUserCredentials,
   OAuthUserProfile,
-  OAuthWrapperRepositoryInterface
+  OAuthWrapperRepositoryInterface,
+  SignOtpResult,
+  SignWithOtpParams,
+  VerifyOtpParams
 } from '@qlover/oauth-wrapper';
 import type { Session, User } from '@supabase/supabase-js';
 
@@ -265,5 +268,36 @@ export class SupabaseOAuthProvider
    */
   public hasNeedLogged(): boolean {
     return true;
+  }
+
+  /**
+   * @override
+   */
+  public async signWithOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    if ('email' in params) {
+      throw new Error('Email is not suppported');
+    }
+
+    // const profile = await this.gateway.signWithOtp({
+    //   phone: params.phone
+    // });
+    throw new Error(
+      'signWithOtp is not implemented for BrainUserOAuthProvider'
+    );
+  }
+
+  /**
+   * @override
+   */
+  public async verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult> {
+    if ('email' in params) {
+      throw new Error('Email is not suppported');
+    }
+
+    // const profile = await this.gateway.signWithOtp({
+    //   phone: params.phone,
+    //   otp: params.token
+    // });
+    throw new Error('verifyOtp is not implemented for BrainUserOAuthProvider');
   }
 }

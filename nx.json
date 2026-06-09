@@ -22,7 +22,7 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "dependsOn": ["^build"], 
+      "dependsOn": ["^build"],
       "inputs": [
         "default",
         "{workspaceRoot}/.eslint.config.js",
@@ -39,5 +39,6 @@
       "inputs": ["default", "^default"]
     }
   },
-  "nxCloudId": "69b221a9ce7a5bcc1af23da8"
+  "nxCloudId": "69b221a9ce7a5bcc1af23da8",
+  "analytics": true
 }

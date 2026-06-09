@@ -1,4 +1,9 @@
 import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
+import {
+  SignOtpResult,
+  SignWithOtpSchema,
+  VerifyOtpParams
+} from '@qlover/oauth-wrapper';
 import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
@@ -9,7 +14,7 @@ import {
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { OAuthControllerService } from './OAuthControllerService';
+import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
@@ -23,7 +28,9 @@ import type {
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class UserService implements UserServiceInterface, ServerAuthInterface {
+export class OAuthUserService
+  implements UserServiceInterface, ServerAuthInterface
+{
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
@@ -31,12 +38,12 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
   protected config!: SeedServerConfigInterface;
 
   constructor(
-    @inject(OAuthControllerService)
-    protected oauthService: OAuthControllerService,
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
     @inject(RequestLogsRepository)
-    protected requestLogsRepository: RequestLogsRepositoryInterface
+    protected requestLogsRepository: RequestLogsRepositoryInterface,
+    @inject(I.OAuthWrapperProviderInterface)
+    protected oauthProvider: OAuthWrapperProviderInterface
   ) {}
 
   /**
@@ -55,7 +62,7 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
    * @override
    */
   public async login(params: UserLoginParams): Promise<UserSchema> {
-    await this.oauthService.verifyLogin(params);
+    await this.oauthProvider.login(params);
 
     this.logger.info('OAuth wrapper login success', { email: params.email });
 
@@ -71,7 +78,7 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
       }
     });
 
-    const user = await this.oauthService.getUser();
+    const user = await this.oauthProvider.getUserSchema();
     if (!user) {
       throw new ExecutorError(
         API_USER_NOT_FOUND,
@@ -86,7 +93,7 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
    * @override
    */
   public async logout(context?: UserLoginContext): Promise<void> {
-    const user = await this.oauthService.getUser();
+    const user = await this.oauthProvider.getUserSchema();
 
     await this.requestLogsRepository.insertEvent({
       event_category: 'auth',
@@ -114,7 +121,7 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
    * @override
    */
   public async getUser(): Promise<UserSchema> {
-    const user = await this.oauthService.getUser();
+    const user = await this.oauthProvider.getUserSchema();
 
     if (!user) {
       throw new ExecutorError(API_USER_NOT_FOUND);
@@ -133,14 +140,14 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
    * @override
    */
   public async getCredential(): Promise<string> {
-    const user = await this.oauthService.getUser();
+    const user = await this.oauthProvider.getUserSchema();
     return user?.credential_token ?? '';
   }
   /**
    * @override
    */
   public async clear(): Promise<void> {
-    await this.oauthService.clearSession();
+    await this.oauthProvider.clearSession();
 
     const legacyKey = this.config.userTokenKey;
     if (legacyKey) {
@@ -152,7 +159,7 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
    * @override
    */
   public async hasAuth(): Promise<boolean> {
-    const user = await this.oauthService.getUser();
+    const user = await this.oauthProvider.getUserSchema();
     return !isEmpty(user);
   }
   /**
@@ -162,5 +169,16 @@ export class UserService implements UserServiceInterface, ServerAuthInterface {
     if (!(await this.hasAuth())) {
       throw new ExecutorError(API_NOT_AUTHORIZED, 'Not authorized');
     }
+  }
+
+  /**
+   * @override
+   */
+  public async signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult> {
+    if (body.token) {
+      return this.oauthProvider.verifyOtp(body as VerifyOtpParams);
+    }
+
+    return this.oauthProvider.signWithOtp(body);
   }
 }

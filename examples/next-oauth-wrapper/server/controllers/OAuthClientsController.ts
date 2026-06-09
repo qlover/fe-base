@@ -3,7 +3,7 @@ import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
-import { UserService } from '@server/services/UserService';
+import { OAuthUserService } from '@server/services/OAuthUserService';
 import type {
   OAuthClientCreate,
   OAuthClientCreateResponse,
@@ -23,7 +23,7 @@ export class OAuthClientsController {
   protected clientsService: OAuthClientsService;
 
   constructor(
-    @inject(UserService) protected userService: ServerAuthInterface,
+    @inject(OAuthUserService) protected userService: ServerAuthInterface,
     @inject(I.OAuthWrapperProviderInterface)
     oauthProvider: OAuthWrapperProviderInterface
   ) {

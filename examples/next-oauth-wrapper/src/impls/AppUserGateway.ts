@@ -5,6 +5,8 @@ import {
   API_OAUTH_VERIFY,
   API_USER_LOGIN,
   API_USER_LOGOUT,
+  API_USER_OTP_LOGIN,
+  API_USER_OTP_VERIFY,
   API_USER_REGISTER,
   API_USER_SESSION
 } from '@config/apiRoutes';
@@ -22,6 +24,7 @@ import {
   AppApiRequesterContext
 } from './appApi/AppApiRequester';
 import type { LoginParams } from '@qlover/corekit-bridge';
+import { SignWithOtpParams } from '@qlover/oauth-wrapper';
 
 /**
  * UserApi
@@ -160,5 +163,47 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     }
 
     return response.data.data!.redirectUrl;
+  }
+
+  /**
+   * Send OTP to phone number (step 1)
+   * @override
+   */
+  public async sendOtp(params: SignWithOtpParams): Promise<SignWithOtpParams> {
+    const response = await this.client.request({
+      url: API_USER_OTP_LOGIN,
+      method: HttpMethods.POST,
+      data: params
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message ?? 'Send OTP failed');
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Verify OTP code (step 2)
+   * @override
+   */
+  public async verifyOtp(
+    phone: string,
+    otp: string
+  ): Promise<PhoneLoginResponse> {
+    const response = await this.client.request<
+      PhoneLoginApiResponse,
+      { phone: string; otp: string }
+    >({
+      url: API_USER_OTP_VERIFY,
+      method: HttpMethods.POST,
+      data: { phone, otp }
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message ?? 'Phone login failed');
+    }
+
+    return response.data.data;
   }
 }

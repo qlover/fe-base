@@ -107,6 +107,24 @@ export const API_USER_LOGIN = '/api/user/login' as const;
 export const API_USER_LOGOUT = '/api/user/logout' as const;
 
 /**
+ * API path: `/api/user/otp/login`
+ *
+ * @see [src/app/api/user/otp/login/route.ts](../../src/app/api/user/otp/login/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/otp/login/route.ts`
+ */
+export const API_USER_OTP_LOGIN = '/api/user/otp/login' as const;
+
+/**
+ * API path: `/api/user/otp/verify`
+ *
+ * @see [src/app/api/user/otp/verify/route.ts](../../src/app/api/user/otp/verify/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/otp/verify/route.ts`
+ */
+export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
+
+/**
  * API path: `/api/user/register`
  *
  * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
@@ -145,6 +163,8 @@ export type ApiRoutePath =
   | typeof API_REFERENCE
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGOUT
+  | typeof API_USER_OTP_LOGIN
+  | typeof API_USER_OTP_VERIFY
   | typeof API_USER_REGISTER
   | typeof API_USER_REQUEST_LOGS
   | typeof API_USER_SESSION;

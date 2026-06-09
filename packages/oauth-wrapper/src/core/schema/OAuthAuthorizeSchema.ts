@@ -150,3 +150,21 @@ export const OAuthAuthorizationCodeRowSchema = z.object({
 export type OAuthAuthorizationCodeRow = z.infer<
   typeof OAuthAuthorizationCodeRowSchema
 >;
+
+export const signWithPhoneOtpSchema = z.object({
+  /** The user's phone number. */
+  phone: z.string(),
+  /** The otp sent to the user's phone number. */
+  token: z.string().optional()
+});
+
+export const signWithEmailOtpSchema = z.object({
+  /** The user's email address. */
+  email: z.email(),
+  /** The otp sent to the user's email address. */
+  token: z.string().optional()
+});
+
+export type SignWithPhoneOtpSchema = z.infer<typeof signWithPhoneOtpSchema>;
+export type SignWithEmailOtpSchema = z.infer<typeof signWithEmailOtpSchema>;
+export type SignWithOtpSchema = SignWithPhoneOtpSchema | SignWithEmailOtpSchema;

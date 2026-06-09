@@ -49,4 +49,7 @@ export interface UserServiceGatewayInterface extends UserServiceGateway<
    * @param payload
    */
   submitOAuthConsent(payload: OAuthConsentPayload): Promise<string>;
+
+  sendOtp(phone: string): Promise<Otpre>;
+  verifyOtp(phone: string, otp: string): Promise<PhoneLoginResponse>;
 }
