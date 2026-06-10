@@ -14,12 +14,17 @@ import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
 import { ExecutorError, type StorageInterface } from '@qlover/fe-corekit';
+import {
+  createGatewayResultFailed,
+  type GatewayResult
+} from '../interface/GatewayServiceInterface';
 
 const UserServiceName = 'UserService';
 
 export const UserServiceErrorIds = {
   InValidCredential: 'USERSERVICE_INVALID_CREDENTIAL',
-  InValidUser: 'USERSERVICE_INVALID_USER'
+  InValidUser: 'USERSERVICE_INVALID_USER',
+  UserGatewayError: 'user_gateway_error'
 } as const;
 
 /**
@@ -473,37 +478,58 @@ export class UserService<
    * });
    * ```
    */
-  public async login(params: LoginParams, config?: Cfg): Promise<Credential> {
+  public async login(
+    params: LoginParams,
+    config?: Cfg
+  ): Promise<GatewayResult<Credential>> {
     this.getStore().start();
 
     try {
-      const credential = await this.gateway.login(params, config);
+      const credentialResult = await this.gateway.login(params, config);
 
-      if (!this.isCredential(credential)) {
-        throw new ExecutorError(
-          UserServiceErrorIds.InValidCredential,
-          'Login is not valid credential'
+      if (credentialResult.error) {
+        return credentialResult;
+      }
+
+      if (!this.isCredential(credentialResult.data)) {
+        return createGatewayResultFailed(
+          new ExecutorError(
+            UserServiceErrorIds.InValidCredential,
+            'Login is not valid credential'
+          )
         );
       }
 
       if (this.pullUserWithLogin) {
-        const user = await this.getUserInfo(credential, config);
+        const result = await this.getUserInfo(credentialResult.data, config);
 
         this.logger?.debug(
           this.serviceName,
           'login success(pull userinfo)',
-          user,
-          credential
+          result,
+          credentialResult
         );
-        this.getStore().success(user ?? null, credential);
-        return credential;
+
+        if (result.error) {
+          this.logger?.debug(
+            this.serviceName,
+            'Login succeeded but failed to fetch user info',
+            result.error
+          );
+          this.getStore().success(null, credentialResult.data);
+          return credentialResult;
+        }
+
+        this.getStore().success(result.data, credentialResult.data);
+        return credentialResult;
       }
 
-      this.logger?.debug(this.serviceName, 'login success', credential);
-      this.getStore().success(null, credential);
-      return credential;
+      this.logger?.debug(this.serviceName, 'login success', credentialResult);
+      this.getStore().success(null, credentialResult.data);
+      return credentialResult;
     } catch (error) {
       this.getStore().failed(error);
+
       throw error;
     }
   }
@@ -579,18 +605,24 @@ export class UserService<
    * });
    * ```
    */
-  public register(params: unknown, config?: Cfg): Promise<User> {
-    return this.gateway.register(params, config).then((user) => {
-      if (!this.isUser(user)) {
-        throw new ExecutorError(
-          UserServiceErrorIds.InValidUser,
-          'Register user is not valid user'
+  public register(params: unknown, config?: Cfg): Promise<GatewayResult<User>> {
+    return this.gateway.register(params, config).then((result) => {
+      if (result.error) {
+        return result;
+      }
+
+      if (!this.isUser(result.data)) {
+        return createGatewayResultFailed(
+          new ExecutorError(
+            UserServiceErrorIds.InValidUser,
+            'Register user is not valid user'
+          )
         );
       }
 
-      this.getStore().setUser(user);
+      this.getStore().setUser(result.data);
 
-      return user;
+      return result;
     });
   }
 
@@ -625,20 +657,29 @@ export class UserService<
    * });
    * ```
    */
-  public getUserInfo(params?: unknown, config?: Cfg): Promise<User> {
+  public getUserInfo(
+    params?: unknown,
+    config?: Cfg
+  ): Promise<GatewayResult<User>> {
     const uparams =
       params !== undefined ? params : this.getStore().getCredential();
 
-    return this.gateway.getUserInfo(uparams, config).then((user) => {
-      if (!this.isUser(user)) {
-        throw new ExecutorError(
-          UserServiceErrorIds.InValidUser,
-          'getUserInfo is not valid user'
+    return this.gateway.getUserInfo(uparams, config).then((result) => {
+      if (result.error) {
+        return result;
+      }
+
+      if (!this.isUser(result.data)) {
+        return createGatewayResultFailed(
+          new ExecutorError(
+            UserServiceErrorIds.InValidUser,
+            'getUserInfo is not valid user'
+          )
         );
       }
 
-      this.getStore().setUser(user);
-      return user;
+      this.getStore().setUser(result.data);
+      return result;
     });
   }
 
@@ -667,21 +708,32 @@ export class UserService<
    * });
    * ```
    */
-  public refreshUserInfo(params?: unknown, config?: Cfg): Promise<User> {
+  public refreshUserInfo(
+    params?: unknown,
+    config?: Cfg
+  ): Promise<GatewayResult<User>> {
     const refreshParams =
       params !== undefined ? params : this.getStore().getCredential();
 
-    return this.gateway.refreshUserInfo(refreshParams, config).then((user) => {
-      if (!this.isUser(user)) {
-        throw new ExecutorError(
-          UserServiceErrorIds.InValidUser,
-          'RefreshUser is not valid user'
-        );
-      }
+    return this.gateway
+      .refreshUserInfo(refreshParams, config)
+      .then((result) => {
+        if (result.error) {
+          return result;
+        }
 
-      this.getStore().setUser(user);
-      return user;
-    });
+        if (!this.isUser(result.data)) {
+          return createGatewayResultFailed(
+            new ExecutorError(
+              UserServiceErrorIds.InValidUser,
+              'RefreshUser is not valid user'
+            )
+          );
+        }
+
+        this.getStore().setUser(result.data);
+        return result;
+      });
   }
 
   /**
