@@ -60,22 +60,39 @@ class MockUserGateway implements UserServiceGateway<
   TestCredential,
   any
 > {
-  public login = vi.fn<
-    [LoginParams, any?],
-    Promise<GatewayResult<TestCredential>>
-  >();
-  public logout = vi.fn<[unknown?, any?], Promise<unknown>>();
-  public register = vi.fn<[unknown, any?], Promise<GatewayResult<TestUser>>>();
-  public getUserInfo = vi.fn<
-    [unknown?, any?],
-    Promise<GatewayResult<TestUser>>
-  >();
-  public refreshUserInfo = vi.fn<
-    [unknown?, any?],
-    Promise<GatewayResult<TestUser>>
-  >();
+  public login = vi
+    .fn()
+    .mockImplementation(
+      (
+        _params: LoginParams,
+        _config?: any
+      ): Promise<GatewayResult<TestCredential>> =>
+        Promise.resolve({ data: {} as TestCredential, error: null })
+    );
+  public logout = vi
+    .fn()
+    .mockImplementation(
+      (_params?: unknown, _config?: any): Promise<unknown> => Promise.resolve()
+    );
+  public register = vi
+    .fn()
+    .mockImplementation(
+      (_params: unknown, _config?: any): Promise<GatewayResult<TestUser>> =>
+        Promise.resolve({ data: {} as TestUser, error: null })
+    );
+  public getUserInfo = vi
+    .fn()
+    .mockImplementation(
+      (_params?: unknown, _config?: any): Promise<GatewayResult<TestUser>> =>
+        Promise.resolve({ data: {} as TestUser, error: null })
+    );
+  public refreshUserInfo = vi
+    .fn()
+    .mockImplementation(
+      (_params?: unknown, _config?: any): Promise<GatewayResult<TestUser>> =>
+        Promise.resolve({ data: {} as TestUser, error: null })
+    );
 }
-
 /**
  * Mock logger implementation for testing
  */

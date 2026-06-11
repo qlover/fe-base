@@ -6,16 +6,11 @@ import type {
   OAuthSessionInterface,
   OAuthSessionPayload
 } from '../src/core/interfaces/OAuthSessionInterface';
-import type {
-  OAuthUserCredentials,
-  OAuthUserProfile
-} from '../src/server/services/OAuthAbstractProvider';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
 import { OAuthWrapperService } from '../src/server/services/OAuthWrapperService';
 import { OAuthWrapperError } from '../src/server/utils/OAuthWrapperError';
 import { createMockOAuthClient } from './helpers/mockOAuthClient';
 import { TEST_CODE_CHALLENGE } from './helpers/pkceFixtures';
-import type { LoginParams } from '@qlover/corekit-bridge/core';
 
 class MockEncryptor implements EncryptorInterface<string, string> {
   public encrypt(value: string): string {
@@ -57,19 +52,14 @@ class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
 }
 
 class TestOAuthWrapperService extends OAuthWrapperService<OAuthSessionPayload> {
-  public providerLogin = vi.fn<
-    [LoginParams],
-    Promise<OAuthUserCredentials>
-  >();
+  public providerLogin = vi.fn();
   public providerExchangeAccessToken = vi.fn();
   public providerGetUserInfo = vi.fn();
   public providerGetUserInfoByAccessToken = vi.fn(async () => ({
     id: 42,
     email: 'user@example.com',
     name: 'Test User'
-  })) as ReturnType<
-    typeof vi.fn<[string], Promise<OAuthUserProfile>>
-  >;
+  }));
 
   constructor(
     session: OAuthSessionInterface<OAuthSessionPayload>,

@@ -218,9 +218,7 @@ describe('GatewayService', () => {
         AsyncStore<AsyncStoreStateInterface<TestUser>, string>,
         MockGateway
       >({
-        serviceName: 'TestService',
-        storage: mockStorage,
-        storageKey: 'test-key'
+        serviceName: 'TestService'
       });
       const store = serviceWithStoreOptions.getStore();
       expect(store).toBeDefined();
@@ -309,9 +307,7 @@ describe('GatewayService', () => {
       >({
         serviceName: 'FullService',
         gateway: mockGateway,
-        logger: mockLogger,
-        storage: mockStorage,
-        storageKey: 'test-key'
+        logger: mockLogger
       });
 
       // Verify all components are accessible
