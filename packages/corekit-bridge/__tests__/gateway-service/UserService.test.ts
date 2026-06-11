@@ -30,6 +30,7 @@ import { LogContext } from '@qlover/logger';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { UserStoreInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
 import { UserStore } from '@qlover/corekit-bridge/core';
+import type { GatewayResult } from '../../src/core/gateway-service/interface/GatewayServiceInterface';
 
 /**
  * Test credential type
@@ -59,11 +60,20 @@ class MockUserGateway implements UserServiceGateway<
   TestCredential,
   any
 > {
-  public login = vi.fn();
-  public logout = vi.fn();
-  public register = vi.fn();
-  public getUserInfo = vi.fn();
-  public refreshUserInfo = vi.fn();
+  public login = vi.fn<
+    [LoginParams, any?],
+    Promise<GatewayResult<TestCredential>>
+  >();
+  public logout = vi.fn<[unknown?, any?], Promise<unknown>>();
+  public register = vi.fn<[unknown, any?], Promise<GatewayResult<TestUser>>>();
+  public getUserInfo = vi.fn<
+    [unknown?, any?],
+    Promise<GatewayResult<TestUser>>
+  >();
+  public refreshUserInfo = vi.fn<
+    [unknown?, any?],
+    Promise<GatewayResult<TestUser>>
+  >();
 }
 
 /**
@@ -248,11 +258,14 @@ describe('UserService', () => {
           }
         });
 
-        mockGateway.login.mockResolvedValue(testCredential);
-        mockGateway.getUserInfo.mockResolvedValue(testUser);
+        mockGateway.login.mockResolvedValue({
+          data: testCredential,
+          error: null
+        });
+        mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-        await service.login(loginParams);
-
+        const result = await service.login(loginParams);
+        expect(result.error).toBeNull();
         // Credential should be persisted
         expect(mockStorage.data.get('auth-token')).toEqual(testCredential);
         // User info should NOT be persisted (in memory only)
@@ -270,8 +283,11 @@ describe('UserService', () => {
           }
         });
 
-        mockGateway.login.mockResolvedValue(testCredential);
-        mockGateway.getUserInfo.mockResolvedValue(testUser);
+        mockGateway.login.mockResolvedValue({
+          data: testCredential,
+          error: null
+        });
+        mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
         await service.login(loginParams);
 
@@ -612,17 +628,18 @@ describe('UserService', () => {
 
   describe('login', () => {
     it('should login successfully and fetch user info', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       const result = await userService.login(loginParams);
 
-      // Verify login was called
-      expect(mockGateway.login).toHaveBeenCalled();
-      // getUserInfo is called inside the custom execution function with credential
-      // Note: getUserInfo is called via gateway?.getUserInfo(credential) inside the execute callback
+      expect(mockGateway.login).toHaveBeenCalledWith(loginParams, undefined);
       expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testCredential);
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual(testCredential);
 
       const store = userService.getStore();
       expect(store.getCredential()).toEqual(testCredential);
@@ -630,44 +647,44 @@ describe('UserService', () => {
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
 
-    it('should fail login if getUserInfo fails', async () => {
-      // Setup mocks
-      mockGateway.login.mockImplementationOnce(() =>
-        Promise.resolve(testCredential)
-      );
+    it('should login successfully but fail to fetch user info (still returns credential)', async () => {
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
       const getUserInfoError = new Error('Failed to fetch user info');
-      mockGateway.getUserInfo.mockImplementationOnce(() =>
-        Promise.reject(getUserInfoError)
-      );
+      mockGateway.getUserInfo.mockResolvedValue({
+        error: getUserInfoError,
+        data: null
+      });
 
-      await expect(userService.login(loginParams)).rejects.toThrow(
-        getUserInfoError
-      );
+      const result = await userService.login(loginParams);
 
       // Verify login was called
       expect(mockGateway.login).toHaveBeenCalled();
       // Verify getUserInfo was called
       expect(mockGateway.getUserInfo).toHaveBeenCalled();
+      // Should still return credential (success)
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual(testCredential);
 
       const store = userService.getStore();
-      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
+      // Credential is saved, user info is null, status SUCCESS
+      expect(store.getCredential()).toEqual(testCredential);
+      expect(store.getUser()).toBeNull();
+      expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      // Warning logged
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
 
-    it('should handle login failure when gateway returns invalid credential', async () => {
-      mockGateway.login.mockResolvedValue(null as unknown as TestCredential);
+    it('should handle login failure when gateway returns error result', async () => {
+      const loginError = new Error('Invalid credentials');
+      mockGateway.login.mockResolvedValue({ error: loginError, data: null });
 
-      let caught: unknown;
-      try {
-        await userService.login(loginParams);
-      } catch (e) {
-        caught = e;
-      }
-      expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(
-        UserServiceErrorIds.InValidCredential
-      );
-      expect((caught as Error).message).toBe('Login is not valid credential');
+      const result = await userService.login(loginParams);
 
+      expect(result.error).toEqual(loginError);
+      expect(result.data).toBeNull();
       expect(mockGateway.getUserInfo).not.toHaveBeenCalled();
 
       const store = userService.getStore();
@@ -675,12 +692,29 @@ describe('UserService', () => {
       expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
     });
 
-    it('should handle login error', async () => {
-      const error = new Error('Login failed');
-      mockGateway.login.mockRejectedValue(error);
+    it('should handle login failure when gateway returns invalid credential (null data)', async () => {
+      mockGateway.login.mockResolvedValue({ data: null } as any);
+
+      const result = await userService.login(loginParams);
+
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe(
+        UserServiceErrorIds.InValidCredential
+      );
+      expect(result.error!.message).toBe('Login is not valid credential');
+      expect(mockGateway.getUserInfo).not.toHaveBeenCalled();
+
+      const store = userService.getStore();
+      expect(store.getCredential()).toBeNull();
+      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
+    });
+
+    it('should throw system-level errors (network, unexpected) from gateway.login', async () => {
+      const networkError = new Error('Network failure');
+      mockGateway.login.mockRejectedValue(networkError);
 
       await expect(userService.login(loginParams)).rejects.toThrow(
-        'Login failed'
+        'Network failure'
       );
 
       const store = userService.getStore();
@@ -693,21 +727,30 @@ describe('UserService', () => {
         code: '123456'
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       const result = await userService.login(phoneLoginParams);
 
-      expect(mockGateway.login).toHaveBeenCalled();
-      expect(result).toEqual(testCredential);
+      expect(mockGateway.login).toHaveBeenCalledWith(
+        phoneLoginParams,
+        undefined
+      );
+      expect(result.data).toEqual(testCredential);
     });
   });
 
   describe('logout', () => {
     beforeEach(async () => {
       // Setup authenticated state
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
     });
 
@@ -717,12 +760,10 @@ describe('UserService', () => {
       const result = await userService.logout();
 
       expect(mockGateway.logout).toHaveBeenCalled();
-      // Logout returns void by default
       expect(result).toBeUndefined();
       const store = userService.getStore();
       expect(store.getCredential()).toBeNull();
       expect(store.getUser()).toBeNull();
-      // After reset, status should be DRAFT
       expect(store.getStatus()).toBe(AsyncStoreStatus.DRAFT);
     });
 
@@ -732,7 +773,7 @@ describe('UserService', () => {
 
       await userService.logout(logoutParams);
 
-      expect(mockGateway.logout).toHaveBeenCalled();
+      expect(mockGateway.logout).toHaveBeenCalledWith(logoutParams, undefined);
     });
 
     it('should handle logout failure without resetting store', async () => {
@@ -741,11 +782,10 @@ describe('UserService', () => {
 
       await expect(userService.logout()).rejects.toThrow('Logout failed');
 
-      // Store should not be reset on failure - credential should still be there
+      // Store should not be reset on failure
       const store = userService.getStore();
       expect(store.getCredential()).toEqual(testCredential);
       expect(store.getUser()).toEqual(testUser);
-      // Status should remain SUCCESS (logout failed, so user is still logged in)
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
   });
@@ -758,12 +798,16 @@ describe('UserService', () => {
         code: '123456'
       };
 
-      mockGateway.register.mockResolvedValue(testUser);
+      mockGateway.register.mockResolvedValue({ data: testUser, error: null });
 
       const result = await userService.register(registerParams);
 
-      expect(mockGateway.register).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      expect(mockGateway.register).toHaveBeenCalledWith(
+        registerParams,
+        undefined
+      );
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual(testUser);
 
       const store = userService.getStore();
       expect(store.getUser()).toEqual(testUser);
@@ -771,33 +815,42 @@ describe('UserService', () => {
       expect(store.getCredential()).toBeNull();
     });
 
-    it('should handle registration failure when gateway returns invalid user', async () => {
+    it('should handle registration failure when gateway returns error result', async () => {
       const registerParams = {
         email: 'newuser@example.com',
         password: 'password123'
       };
+      const regError = new Error('Email already exists');
+      mockGateway.register.mockResolvedValue({ error: regError, data: null });
 
-      mockGateway.register.mockResolvedValue(null as unknown as TestUser);
+      const result = await userService.register(registerParams);
 
-      let caught: unknown;
-      try {
-        await userService.register(registerParams);
-      } catch (e) {
-        caught = e;
-      }
-      expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(
-        UserServiceErrorIds.InValidUser
-      );
-      expect((caught as Error).message).toBe('Register user is not valid user');
+      expect(result.error).toEqual(regError);
+      expect(result.data).toBeNull();
+      expect(userService.getStore().getUser()).toBeNull();
     });
 
-    it('should handle registration error', async () => {
+    it('should handle registration failure when gateway returns invalid user (null data)', async () => {
       const registerParams = {
         email: 'newuser@example.com',
         password: 'password123'
       };
+      mockGateway.register.mockResolvedValue({ data: null } as any);
 
+      const result = await userService.register(registerParams);
+
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe(
+        UserServiceErrorIds.InValidUser
+      );
+      expect(result.error!.message).toBe('Register user is not valid user');
+    });
+
+    it('should throw system-level errors from register gateway', async () => {
+      const registerParams = {
+        email: 'newuser@example.com',
+        password: 'password123'
+      };
       const error = new Error('Registration failed');
       mockGateway.register.mockRejectedValue(error);
 
@@ -811,64 +864,86 @@ describe('UserService', () => {
     beforeEach(async () => {
       // Setup authenticated state
       vi.clearAllMocks();
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
       vi.clearAllMocks(); // Clear mocks after login setup
     });
 
     it('should get user info using credential from store', async () => {
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.getUserInfo.mockResolvedValue({
+        data: testUser,
+        error: null
+      });
 
       const result = await userService.getUserInfo();
 
-      expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
+        testCredential,
+        undefined
+      );
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual(testUser);
 
       const store = userService.getStore();
       expect(store.getUser()).toEqual(testUser);
-      // Should not change authentication status
       expect(store.getCredential()).toEqual(testCredential);
     });
 
     it('should get user info with custom parameters', async () => {
       const customParams = { token: 'custom-token' };
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       const result = await userService.getUserInfo(customParams);
 
-      expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
+        customParams,
+        undefined
+      );
+      expect(result.data).toEqual(testUser);
     });
 
-    it('should handle getUserInfo failure without affecting auth state', async () => {
-      const error = new Error('Failed to get user info');
-      mockGateway.getUserInfo.mockRejectedValue(error);
+    it('should handle getUserInfo failure when gateway returns error result', async () => {
+      const error = new Error('User not found');
+      mockGateway.getUserInfo.mockResolvedValue({ error, data: null });
 
-      await expect(userService.getUserInfo()).rejects.toThrow(
-        'Failed to get user info'
-      );
+      const result = await userService.getUserInfo();
 
+      expect(result.error).toEqual(error);
+      expect(result.data).toBeNull();
       // Authentication state should remain unchanged
       const store = userService.getStore();
       expect(store.getCredential()).toEqual(testCredential);
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
 
-    it('should throw with error id when getUserInfo returns invalid user', async () => {
-      mockGateway.getUserInfo.mockResolvedValue(null as unknown as TestUser);
+    it('should throw system-level errors from getUserInfo gateway', async () => {
+      const networkError = new Error('Network failure');
+      mockGateway.getUserInfo.mockRejectedValue(networkError);
 
-      let caught: unknown;
-      try {
-        await userService.getUserInfo();
-      } catch (e) {
-        caught = e;
-      }
-      expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(
+      await expect(userService.getUserInfo()).rejects.toThrow(
+        'Network failure'
+      );
+
+      // Auth state unchanged
+      const store = userService.getStore();
+      expect(store.getCredential()).toEqual(testCredential);
+      expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+    });
+
+    it('should return error when getUserInfo returns invalid user (null data)', async () => {
+      mockGateway.getUserInfo.mockResolvedValue({ data: null } as any);
+
+      const result = await userService.getUserInfo();
+
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe(
         UserServiceErrorIds.InValidUser
       );
-      expect((caught as Error).message).toBe('getUserInfo is not valid user');
+      expect(result.error!.message).toBe('getUserInfo is not valid user');
     });
   });
 
@@ -876,10 +951,13 @@ describe('UserService', () => {
     beforeEach(async () => {
       // Setup authenticated state
       vi.clearAllMocks();
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
-      vi.clearAllMocks(); // Clear mocks after login setup
+      vi.clearAllMocks();
     });
 
     it('should refresh user info using credential from store', async () => {
@@ -887,16 +965,22 @@ describe('UserService', () => {
         ...testUser,
         name: 'John Updated'
       };
-      mockGateway.refreshUserInfo.mockResolvedValue(refreshedUser);
+      mockGateway.refreshUserInfo.mockResolvedValue({
+        data: refreshedUser,
+        error: null
+      });
 
       const result = await userService.refreshUserInfo();
 
-      expect(mockGateway.refreshUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(refreshedUser);
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
+        testCredential,
+        undefined
+      );
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual(refreshedUser);
 
       const store = userService.getStore();
       expect(store.getUser()).toEqual(refreshedUser);
-      // Should not change authentication status
       expect(store.getCredential()).toEqual(testCredential);
     });
 
@@ -906,109 +990,96 @@ describe('UserService', () => {
         ...testUser,
         name: 'John Updated'
       };
-      mockGateway.refreshUserInfo.mockResolvedValue(refreshedUser);
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: refreshedUser });
 
       const result = await userService.refreshUserInfo(customParams);
 
-      expect(mockGateway.refreshUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(refreshedUser);
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
+        customParams,
+        undefined
+      );
+      expect(result.data).toEqual(refreshedUser);
     });
 
-    it('should handle refreshUserInfo failure without affecting auth state', async () => {
-      const error = new Error('Failed to refresh user info');
-      mockGateway.refreshUserInfo.mockRejectedValue(error);
+    it('should handle refreshUserInfo failure when gateway returns error result', async () => {
+      const error = new Error('Refresh failed');
+      mockGateway.refreshUserInfo.mockResolvedValue({ error, data: null });
 
-      await expect(userService.refreshUserInfo()).rejects.toThrow(
-        'Failed to refresh user info'
-      );
+      const result = await userService.refreshUserInfo();
 
-      // Authentication state should remain unchanged
+      expect(result.error).toEqual(error);
+      expect(result.data).toBeNull();
+      // Auth state unchanged
       const store = userService.getStore();
       expect(store.getCredential()).toEqual(testCredential);
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
 
-    it('should throw with error id when refreshUserInfo returns invalid user', async () => {
-      mockGateway.refreshUserInfo.mockResolvedValue(
-        null as unknown as TestUser
-      );
+    it('should throw system-level errors from refreshUserInfo gateway', async () => {
+      const networkError = new Error('Network failure');
+      mockGateway.refreshUserInfo.mockRejectedValue(networkError);
 
-      let caught: unknown;
-      try {
-        await userService.refreshUserInfo();
-      } catch (e) {
-        caught = e;
-      }
-      expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(
+      await expect(userService.refreshUserInfo()).rejects.toThrow(
+        'Network failure'
+      );
+    });
+
+    it('should return error when refreshUserInfo returns invalid user (null data)', async () => {
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: null } as any);
+
+      const result = await userService.refreshUserInfo();
+
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe(
         UserServiceErrorIds.InValidUser
       );
-      expect((caught as Error).message).toBe('RefreshUser is not valid user');
+      expect(result.error!.message).toBe('RefreshUser is not valid user');
     });
   });
 
   describe('isAuthenticated', () => {
     it('should return false when not authenticated (basic check)', () => {
-      // No credential, no SUCCESS status
       expect(userService.isAuthenticated()).toBe(false);
     });
 
     it('should return false when credential exists but status is not SUCCESS', () => {
-      // Set credential but status is DRAFT
       userService.getStore().setCredential(testCredential);
       expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
-      // Basic check requires SUCCESS status
       expect(userService.isAuthenticated()).toBe(false);
     });
 
-    it('should return true when credential exists and status is SUCCESS (basic check)', () => {
-      // Set credential and status to SUCCESS
+    it('should return true when credential exists and status is SUCCESS', () => {
       userService.getStore().success(null, testCredential);
       expect(userService.getStore().getCredential()).toEqual(testCredential);
       expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
-      // Basic check passes
       expect(userService.isAuthenticated()).toBe(true);
     });
 
     it('should return false when status is SUCCESS but credential is null', () => {
-      // Set status to SUCCESS but no credential
       userService.getStore().success(testUser);
       userService.getStore().setCredential(null);
       expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
       expect(userService.getStore().getCredential()).toBeNull();
-      // Basic check requires credential
       expect(userService.isAuthenticated()).toBe(false);
     });
 
     it('should return true when credential exists and status is SUCCESS (user info optional)', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       await userService.login(loginParams);
-
-      // Basic check: credential + SUCCESS status = authenticated
-      // User info is optional for basic check
       expect(userService.isAuthenticated()).toBe(true);
     });
 
-    it('should fail authentication when getUserInfo fails', async () => {
-      mockGateway.login.mockImplementationOnce(() =>
-        Promise.resolve(testCredential)
-      );
-      mockGateway.getUserInfo.mockImplementationOnce(() =>
-        Promise.reject(new Error('Failed to fetch user'))
-      );
-
-      await expect(userService.login(loginParams)).rejects.toThrow();
-
-      // Login failed, so status is FAILED
-      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.FAILED);
-      expect(userService.isAuthenticated()).toBe(false);
-    });
-
     it('should return false after logout', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       mockGateway.logout.mockResolvedValue(undefined);
 
       await userService.login(loginParams);
@@ -1025,27 +1096,32 @@ describe('UserService', () => {
     });
 
     it('should return user after login', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       await userService.login(loginParams);
-
       expect(userService.getUser()).toEqual(testUser);
     });
 
     it('should return updated user after getUserInfo', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
 
       const updatedUser: TestUser = {
         ...testUser,
         name: 'Updated Name'
       };
-      mockGateway.getUserInfo.mockResolvedValue(updatedUser);
+      mockGateway.getUserInfo.mockResolvedValue({ data: updatedUser });
 
-      await userService.getUserInfo();
-
+      const result = await userService.getUserInfo();
+      expect(result.data).toEqual(updatedUser);
       expect(userService.getUser()).toEqual(updatedUser);
     });
   });
@@ -1069,28 +1145,30 @@ describe('UserService', () => {
   describe('integration', () => {
     it('should handle complete user flow: login -> getUserInfo -> logout', async () => {
       // Login
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
-      await userService.login(loginParams);
-
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
+      const loginResult = await userService.login(loginParams);
+      expect(loginResult.data).toEqual(testCredential);
       expect(userService.isAuthenticated()).toBe(true);
       expect(userService.getUser()).toEqual(testUser);
 
-      // Get user info
+      // Get user info (refresh)
       const updatedUser: TestUser = {
         ...testUser,
         name: 'Updated Name'
       };
-      mockGateway.getUserInfo.mockResolvedValue(updatedUser);
-      await userService.getUserInfo();
-
+      mockGateway.getUserInfo.mockResolvedValue({ data: updatedUser });
+      const userInfoResult = await userService.getUserInfo();
+      expect(userInfoResult.data).toEqual(updatedUser);
       expect(userService.getUser()).toEqual(updatedUser);
       expect(userService.isAuthenticated()).toBe(true);
 
       // Logout
       mockGateway.logout.mockResolvedValue(undefined);
       await userService.logout();
-
       expect(userService.isAuthenticated()).toBe(false);
       expect(userService.getUser()).toBeNull();
       expect(userService.getStore().getCredential()).toBeNull();
@@ -1102,115 +1180,107 @@ describe('UserService', () => {
         email: 'newuser@example.com',
         password: 'password123'
       };
-      mockGateway.register.mockResolvedValue(testUser);
-      await userService.register(registerParams);
-
+      mockGateway.register.mockResolvedValue({ data: testUser });
+      const registerResult = await userService.register(registerParams);
+      expect(registerResult.data).toEqual(testUser);
       expect(userService.getUser()).toEqual(testUser);
       expect(userService.isAuthenticated()).toBe(false);
 
       // Login
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
-      await userService.login(loginParams);
-
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
+      const loginResult = await userService.login(loginParams);
+      expect(loginResult.data).toEqual(testCredential);
       expect(userService.isAuthenticated()).toBe(true);
       expect(userService.getStore().getCredential()).toEqual(testCredential);
     });
   });
 
   describe('edge cases', () => {
-    it('should handle getUserInfo when not authenticated', async () => {
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+    it('should handle getUserInfo when not authenticated (no credential)', async () => {
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      const result = await userService.getUserInfo();
-
-      // Should use null credential when not authenticated
-      expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      // Pass null explicitly
+      const result = await userService.getUserInfo(null);
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(null, undefined);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should handle refreshUserInfo when not authenticated', async () => {
-      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: testUser });
 
-      const result = await userService.refreshUserInfo();
-
-      // Should use null credential when not authenticated
-      expect(mockGateway.refreshUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      const result = await userService.refreshUserInfo(null);
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(null, undefined);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should handle null params in getUserInfo', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
 
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       // Explicitly pass null
-      const result = await userService.getUserInfo(null as unknown);
-
-      // Should use null instead of credential when null is explicitly passed
-      expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      const result = await userService.getUserInfo(null);
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(null, undefined);
+      expect(result.data).toEqual(testUser);
     });
 
-    it('should handle undefined params in getUserInfo', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+    it('should handle undefined params in getUserInfo (use stored credential)', async () => {
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
       await userService.login(loginParams);
 
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // Pass undefined
       const result = await userService.getUserInfo(undefined);
-
-      // Should use credential when undefined is passed
-      expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      expect(result).toEqual(testUser);
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
+        testCredential,
+        undefined
+      );
+      expect(result.data).toEqual(testUser);
     });
   });
 
   /**
    * Type safety tests
-   *
-   * Coverage:
-   * 1. Generic type constraints – Verify User and Credential type parameters
-   * 2. Method return types – Verify all method return types
-   * 3. Type inference – Verify TypeScript type inference
-   * 4. Combined runtime and type – Verify both runtime behavior and types
    */
   describe('Type Safety Tests', () => {
     it('should maintain generic types throughout the service', () => {
-      // Verify User type in return values
       expectTypeOf(
         userService.getUser
       ).returns.toEqualTypeOf<TestUser | null>();
-
-      // Verify Credential type in login
-      expectTypeOf(
-        userService.login
-      ).returns.resolves.toEqualTypeOf<TestCredential>();
-
-      // Verify store interface type
+      expectTypeOf(userService.login).returns.resolves.toMatchTypeOf<
+        GatewayResult<TestCredential>
+      >();
       expectTypeOf(userService.getStore).returns.toMatchTypeOf<
         UserStoreInterface<TestUser, TestCredential>
       >();
     });
 
     it('should validate all async method return types', () => {
-      expectTypeOf(
-        userService.login
-      ).returns.resolves.toEqualTypeOf<TestCredential>();
-      // logout returns Promise<void> - verified by runtime tests
-      expectTypeOf(
-        userService.register
-      ).returns.resolves.toEqualTypeOf<TestUser>();
-      expectTypeOf(
-        userService.getUserInfo
-      ).returns.resolves.toEqualTypeOf<TestUser>();
-      expectTypeOf(
-        userService.refreshUserInfo
-      ).returns.resolves.toEqualTypeOf<TestUser>();
+      expectTypeOf(userService.login).returns.resolves.toMatchTypeOf<
+        GatewayResult<TestCredential>
+      >();
+      expectTypeOf(userService.register).returns.resolves.toMatchTypeOf<
+        GatewayResult<TestUser>
+      >();
+      expectTypeOf(userService.getUserInfo).returns.resolves.toMatchTypeOf<
+        GatewayResult<TestUser>
+      >();
+      expectTypeOf(userService.refreshUserInfo).returns.resolves.toMatchTypeOf<
+        GatewayResult<TestUser>
+      >();
     });
 
     it('should validate sync method return types', () => {
@@ -1223,11 +1293,14 @@ describe('UserService', () => {
     });
 
     it('should infer types correctly from method calls', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       const loginResult = await userService.login(loginParams);
-      expectTypeOf(loginResult).toEqualTypeOf<TestCredential>();
+      expectTypeOf(loginResult).toMatchTypeOf<GatewayResult<TestCredential>>();
 
       const user = userService.getUser();
       expectTypeOf(user).toEqualTypeOf<TestUser | null>();
@@ -1235,43 +1308,10 @@ describe('UserService', () => {
       const isAuth = userService.isAuthenticated();
       expectTypeOf(isAuth).toEqualTypeOf<boolean>();
     });
-
-    it('should maintain type safety in store operations', () => {
-      const store = userService.getStore();
-
-      expectTypeOf(
-        store.getCredential
-      ).returns.toEqualTypeOf<TestCredential | null>();
-      expectTypeOf(store.setCredential)
-        .parameter(0)
-        .toEqualTypeOf<TestCredential | null>();
-    });
-
-    it('should validate both types and runtime behavior for login', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
-
-      // Type validation
-      expectTypeOf(userService.login).parameter(0).toMatchTypeOf<LoginParams>();
-      expectTypeOf(
-        userService.login
-      ).returns.resolves.toEqualTypeOf<TestCredential>();
-
-      // Runtime validation
-      const result = await userService.login(loginParams);
-      expect(result).toEqual(testCredential);
-    });
   });
 
   /**
    * Config parameter tests
-   *
-   * Coverage:
-   * 1. login method with config – Verify config is passed to gateway
-   * 2. logout method with config – Verify config is passed to gateway
-   * 3. register method with config – Verify config is passed to gateway
-   * 4. getUserInfo method with config – Verify config is passed to gateway
-   * 5. refreshUserInfo method with config – Verify config is passed to gateway
    */
   describe('Config Parameter Tests', () => {
     it('should pass config parameter to login method in gateway', async () => {
@@ -1280,17 +1320,16 @@ describe('UserService', () => {
         headers: { 'X-Custom-Header': 'test-value' }
       };
 
-      mockGateway.login.mockImplementationOnce(async () => {
-        return testCredential;
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
       });
-      mockGateway.getUserInfo.mockImplementationOnce(async () => {
-        return testCredential;
-      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
       const result = await userService.login(loginParams, testConfig);
 
       expect(mockGateway.login).toHaveBeenCalledWith(loginParams, testConfig);
-      expect(result).toEqual(testCredential);
+      expect(result.data).toEqual(testCredential);
     });
 
     it('should pass config parameter to logout method in gateway', async () => {
@@ -1318,7 +1357,7 @@ describe('UserService', () => {
         headers: { 'Content-Type': 'application/json' }
       };
 
-      mockGateway.register.mockResolvedValue(testUser);
+      mockGateway.register.mockResolvedValue({ data: testUser });
 
       const result = await userService.register(
         { email: 'test@example.com' },
@@ -1329,7 +1368,7 @@ describe('UserService', () => {
         { email: 'test@example.com' },
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should pass config parameter to getUserInfo method in gateway', async () => {
@@ -1338,19 +1377,20 @@ describe('UserService', () => {
         headers: { 'X-API-Key': 'secret-key' }
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
       const result = await userService.getUserInfo(testCredential, testConfig);
 
       expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
         testCredential,
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should pass config parameter to refreshUserInfo method in gateway', async () => {
@@ -1359,19 +1399,14 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockImplementationOnce(() =>
-        Promise.resolve(testCredential)
-      );
-      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
-      mockGateway.getUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: testUser });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
       const result = await userService.refreshUserInfo(
         testCredential,
         testConfig
@@ -1381,50 +1416,46 @@ describe('UserService', () => {
         testCredential,
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should work with config parameter when no params are provided to getUserInfo', async () => {
       const testConfig = { timeout: 6000 };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
       const result = await userService.getUserInfo(undefined, testConfig);
 
       expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
-        testCredential, // Uses credential when params is undefined
+        testCredential,
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should work with config parameter when no params are provided to refreshUserInfo', async () => {
       const testConfig = { timeout: 9000 };
 
-      mockGateway.login.mockImplementationOnce(() =>
-        Promise.resolve(testCredential)
-      );
-      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
-      mockGateway.getUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: testUser });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
       const result = await userService.refreshUserInfo(undefined, testConfig);
 
       expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
-        testCredential, // Uses credential when params is undefined
+        testCredential,
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should pass null params with config to getUserInfo when null is explicitly provided', async () => {
@@ -1433,17 +1464,17 @@ describe('UserService', () => {
         headers: { 'X-API-Key': 'secret-key' }
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
-      // Pass null explicitly as params
       const result = await userService.getUserInfo(null, testConfig);
 
       expect(mockGateway.getUserInfo).toHaveBeenCalledWith(null, testConfig);
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
 
     it('should pass null params with config to refreshUserInfo when null is explicitly provided', async () => {
@@ -1452,27 +1483,21 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockImplementationOnce(() =>
-        Promise.resolve(testCredential)
-      );
-      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
-      mockGateway.getUserInfo.mockImplementationOnce(() =>
-        Promise.resolve(testUser)
-      );
+      mockGateway.login.mockResolvedValue({
+        data: testCredential,
+        error: null
+      });
+      mockGateway.refreshUserInfo.mockResolvedValue({ data: testUser });
+      mockGateway.getUserInfo.mockResolvedValue({ data: testUser });
 
-      // First login to establish credential
       await userService.login(loginParams);
-
-      // Pass null explicitly as params
       const result = await userService.refreshUserInfo(null, testConfig);
 
       expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
         null,
         testConfig
       );
-      expect(result).toEqual(testUser);
+      expect(result.data).toEqual(testUser);
     });
   });
 });

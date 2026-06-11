@@ -14,10 +14,8 @@ import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
 import { ExecutorError, type StorageInterface } from '@qlover/fe-corekit';
-import {
-  createGatewayResultFailed,
-  type GatewayResult
-} from '../interface/GatewayServiceInterface';
+import type { GatewayResult } from '../interface/GatewayServiceInterface';
+import { createGatewayResultFailed } from '../interface/GatewayServiceInterface';
 
 const UserServiceName = 'UserService';
 
@@ -208,6 +206,19 @@ export type UserServiceConfig<User, Credential> = Omit<
  * - Main function: Provide single entry point for all user-related operations
  * - Main purpose: Simplify user management with unified state and direct implementation
  *
+ * **Version 3.3.0+ Change:**
+ * Starting from version 3.3.0, all methods that return `GatewayResult<T>` now use the
+ * `{ error, data }` object structure.
+ * - If `error` is `null`, `data` contains the successful result (e.g., credential, user info).
+ * - If `error` is non-null (a `GatewayResultFailedInterface`), `data` may be `null` or contain
+ *   additional error context.
+ * - **Business errors** (e.g., invalid credentials, user not found) are returned as `error` in the result.
+ * - **System-level errors** (e.g., network failure, unexpected exceptions) are **thrown** and
+ *   should be caught by the caller.
+ *
+ * This design ensures clear separation between expected business failures (handled via result type)
+ * and unexpected system failures (handled via exceptions).
+ *
  * **Persistence Behavior (inherited from UserStore):**
  * - **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
  *   - When `store` configuration includes `storage` and `storageKey`, **credential will be persisted using `storageKey`**
@@ -260,7 +271,13 @@ export type UserServiceConfig<User, Credential> = Omit<
  * });
  *
  * // Use unified service
- * await userService.login({ email, password });
+ * const loginResult = await userService.login({ email, password });
+ * if (loginResult.error) {
+ *   console.error('Login failed', loginResult.error);
+ * } else {
+ *   console.log('Credential:', loginResult.data);
+ * }
+ *
  * const user = await userService.getUserInfo();
  * const isAuth = userService.isAuthenticated();
  * ```
@@ -433,7 +450,7 @@ export class UserService<
    * Get the store instance
    *
    * @override
-   * @returns
+   * @returns The user store instance containing credential and user state
    */
   public getStore(): UserStoreInterface<User, Credential> {
     return this.gatewayService.getStore();
@@ -443,39 +460,36 @@ export class UserService<
    * Login user with credentials
    *
    * Performs user authentication using provided credentials through the configured gateway.
-   * After successful login, automatically fetches user information.
+   * After successful login, automatically fetches user information if `pullUserWithLogin` is true.
+   *
+   * **Error handling:**
+   * - Business errors (invalid credentials, missing data) are returned as `GatewayResultFailed`
+   * - System-level errors (network failure, unexpected exceptions) are **thrown** and should be caught by the caller
    *
    * @override
-   * @template Params - The type of login parameters (must extend LoginParams)
    * @param params - Login parameters (email/phone + password, or phone + code)
-   * @param config - Optional configuration that can be passed to the gateway for customized behavior
-   * @returns Promise resolving to credential data
+   * @param config - Optional configuration passed to the gateway
+   * @returns Promise resolving to `GatewayResult<Credential>` containing either success data or error
    *
    * @example Email and password login
    * ```typescript
-   * const credential = await userService.login({
+   * const result = await userService.login({
    *   email: 'user@example.com',
    *   password: 'password123'
    * });
-   * ```
-   *
-   * @example Phone code login
-   * ```typescript
-   * const credential = await userService.login({
-   *   phone: '13800138000',
-   *   code: '123456'
-   * });
+   * if (result.error) {
+   *   console.error('Login failed', result.error);
+   * } else {
+   *   console.log('Credential:', result.data);
+   * }
    * ```
    *
    * @example Login with additional config
    * ```typescript
-   * const credential = await userService.login({
+   * const result = await userService.login({
    *   email: 'user@example.com',
    *   password: 'password123'
-   * }, {
-   *   timeout: 5000,
-   *   headers: { 'X-Custom-Header': 'value' }
-   * });
+   * }, { timeout: 5000 });
    * ```
    */
   public async login(
@@ -488,16 +502,17 @@ export class UserService<
       const credentialResult = await this.gateway.login(params, config);
 
       if (credentialResult.error) {
+        this.getStore().failed(credentialResult.error);
         return credentialResult;
       }
 
       if (!this.isCredential(credentialResult.data)) {
-        return createGatewayResultFailed(
-          new ExecutorError(
-            UserServiceErrorIds.InValidCredential,
-            'Login is not valid credential'
-          )
+        const error = new ExecutorError(
+          UserServiceErrorIds.InValidCredential,
+          'Login is not valid credential'
         );
+        this.getStore().failed(error);
+        return createGatewayResultFailed(error);
       }
 
       if (this.pullUserWithLogin) {
@@ -511,11 +526,12 @@ export class UserService<
         );
 
         if (result.error) {
-          this.logger?.debug(
+          this.logger?.warn(
             this.serviceName,
             'Login succeeded but failed to fetch user info',
             result.error
           );
+          // Still consider login as successful, credential is saved but user info is null
           this.getStore().success(null, credentialResult.data);
           return credentialResult;
         }
@@ -529,7 +545,7 @@ export class UserService<
       return credentialResult;
     } catch (error) {
       this.getStore().failed(error);
-
+      // Re-throw system-level errors (network, parsing, etc.) - do not wrap as GatewayResult
       throw error;
     }
   }
@@ -537,15 +553,15 @@ export class UserService<
   /**
    * Logout current user
    *
-   * Clears authentication credential state and calls the logout gateway if configured.
-   * Resets user info store after logout.
+   * Calls the logout gateway if configured, then clears the user store (credential and user info).
+   *
+   * **Note:** This method returns the raw result from the gateway (not wrapped in `GatewayResult`).
+   * Errors are thrown directly and should be handled by the caller.
    *
    * @override
-   * @template LogoutParams - Type of logout parameters (default: void)
-   * @template LogoutResult - Type of logout result (default: void)
-   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
-   * @param config - Optional configuration that can be passed to the gateway for customized behavior
-   * @returns Promise resolving to logout result (e.g., success status, redirect URL)
+   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl)
+   * @param config - Optional configuration passed to the gateway
+   * @returns Promise resolving to the logout result (type `R`, typically `void`)
    *
    * @example Basic logout
    * ```typescript
@@ -554,15 +570,7 @@ export class UserService<
    *
    * @example Logout with parameters
    * ```typescript
-   * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
-   * ```
-   *
-   * @example Logout with additional config
-   * ```typescript
-   * await userService.logout(null, {
-   *   timeout: 5000,
-   *   headers: { 'X-Custom-Header': 'value' }
-   * });
+   * await userService.logout({ revokeAll: true });
    * ```
    */
   public logout<R = void>(params?: unknown, config?: Cfg): Promise<R> {
@@ -576,33 +584,29 @@ export class UserService<
    * Register a new user
    *
    * Creates a new user account with the provided registration parameters.
-   * Uses unified userStore for registration state.
+   * If registration succeeds, the user object is stored in the store.
+   *
+   * **Error handling:** Business errors are returned as `GatewayResultFailed`;
+   * system errors are thrown.
    *
    * @override
-   * @template Params - The type of registration parameters
-   * @param params - Registration parameters containing user information
-   * @param config - Optional configuration that can be passed to the gateway for customized behavior
-   * @returns Promise resolving to user information if registration succeeds, or `null` if it fails
+   * @param params - Registration parameters (email, password, name, etc.)
+   * @param config - Optional configuration passed to the gateway
+   * @returns Promise resolving to `GatewayResult<User>` containing the created user or error
    *
    * @example Register user
    * ```typescript
-   * const user = await userService.register({
+   * const result = await userService.register({
    *   email: 'user@example.com',
    *   password: 'password123',
-   *   code: '123456'
+   *   first_name: 'John',
+   *   last_name: 'Doe'
    * });
-   * ```
-   *
-   * @example Register user with additional config
-   * ```typescript
-   * const user = await userService.register({
-   *   email: 'user@example.com',
-   *   password: 'password123',
-   *   code: '123456'
-   * }, {
-   *   timeout: 5000,
-   *   headers: { 'X-Custom-Header': 'value' }
-   * });
+   * if (result.error) {
+   *   console.error('Registration failed', result.error);
+   * } else {
+   *   console.log('User created:', result.data);
+   * }
    * ```
    */
   public register(params: unknown, config?: Cfg): Promise<GatewayResult<User>> {
@@ -621,7 +625,6 @@ export class UserService<
       }
 
       this.getStore().setUser(result.data);
-
       return result;
     });
   }
@@ -629,32 +632,30 @@ export class UserService<
   /**
    * Get current user information
    *
-   * Retrieves the current user's information (may use cached data if available).
-   * Uses unified userStore for user info operations.
+   * Retrieves user information from the gateway.
+   * If no parameters are provided, the current credential from the store is used.
+   *
+   * **Error handling:** Business errors (e.g., user not found) are returned as `GatewayResultFailed`;
+   * system errors are thrown.
    *
    * @override
-   * @template Params - The type of parameters for fetching user info
-   * @param params - Optional parameters for fetching user info
-   * @param config - Optional configuration that can be passed to the gateway for customized behavior
-   * @returns Promise resolving to user information, or `null` if not available
-   * @throws {Error}
+   * @param params - Optional parameters (e.g., credential token). Defaults to current credential.
+   * @param config - Optional configuration passed to the gateway
+   * @returns Promise resolving to `GatewayResult<User>` containing user data or error
    *
-   * @example Get user info
+   * @example Get user info using stored credential
    * ```typescript
-   * const user = await userService.getUserInfo();
+   * const result = await userService.getUserInfo();
+   * if (result.error) {
+   *   console.error('Failed to get user info', result.error);
+   * } else {
+   *   console.log('User:', result.data);
+   * }
    * ```
    *
-   * @example Get user info with parameters
+   * @example Get user info with explicit token
    * ```typescript
-   * const user = await userService.getUserInfo({ token: 'abc123' });
-   * ```
-   *
-   * @example Get user info with additional config
-   * ```typescript
-   * const user = await userService.getUserInfo({ token: 'abc123' }, {
-   *   timeout: 5000,
-   *   headers: { 'X-Custom-Header': 'value' }
-   * });
+   * const result = await userService.getUserInfo({ token: 'xyz' });
    * ```
    */
   public getUserInfo(
@@ -686,26 +687,25 @@ export class UserService<
   /**
    * Refresh user information
    *
-   * Forces a refresh of user information from the server, bypassing any cache.
-   * Uses separate userInfoStore for refresh operations (not authentication store).
+   * Forces a fresh fetch of user information from the server, bypassing any cache.
+   * The updated user data is stored in the store.
+   *
+   * **Error handling:** Business errors are returned as `GatewayResultFailed`;
+   * system errors are thrown.
    *
    * @override
-   * @template Params - The type of parameters for refreshing user info
-   * @param params - Optional parameters for refreshing user info
-   * @param config - Optional configuration that can be passed to the gateway for customized behavior
-   * @returns Promise resolving to refreshed user information, or `null` if refresh fails
+   * @param params - Optional parameters (e.g., credential token). Defaults to current credential.
+   * @param config - Optional configuration passed to the gateway
+   * @returns Promise resolving to `GatewayResult<User>` containing refreshed user data or error
    *
    * @example Refresh user info
    * ```typescript
-   * const user = await userService.refreshUserInfo();
-   * ```
-   *
-   * @example Refresh user info with additional config
-   * ```typescript
-   * const user = await userService.refreshUserInfo({ token: 'abc123' }, {
-   *   timeout: 5000,
-   *   headers: { 'X-Custom-Header': 'value' }
-   * });
+   * const result = await userService.refreshUserInfo();
+   * if (result.error) {
+   *   console.error('Refresh failed', result.error);
+   * } else {
+   *   console.log('Updated user:', result.data);
+   * }
    * ```
    */
   public refreshUserInfo(
@@ -744,17 +744,11 @@ export class UserService<
    * - Credential exists
    *
    * **Important:** This is a basic implementation that may not suit all application scenarios.
-   * Different applications may have different authentication requirements:
-   * - Some may need to check credential expiration
-   * - Some may need to verify user info exists
-   * - Some may require additional permission checks
-   * - Some may need to validate credential with server periodically
+   * Override this method to implement custom authentication logic (e.g., expiration checks,
+   * server validation, requiring user info).
    *
-   * **Override this method** to implement custom authentication logic based on your application's
-   * specific requirements. The base implementation only checks if status is SUCCESS and credential exists.
-   *
-   * **Note:** When credential is restored from storage via `restore()`, the status is NOT automatically
-   * set to SUCCESS. You need to manually set the status based on your validation logic (see examples below).
+   * **Note:** When credential is restored from storage, the status is NOT automatically set to `SUCCESS`.
+   * You need to manually set the status based on your validation logic.
    *
    * @override
    * @returns `true` if user is authenticated (has SUCCESS status and credential), `false` otherwise
@@ -763,8 +757,6 @@ export class UserService<
    * ```typescript
    * if (userService.isAuthenticated()) {
    *   console.log('User is authenticated');
-   *   const user = userService.getUser();
-   *   const credential = userService.getCredential();
    * } else {
    *   console.log('User is not authenticated');
    * }
@@ -776,62 +768,11 @@ export class UserService<
    *   override isAuthenticated(): boolean {
    *     const credential = this.getCredential();
    *     if (!credential) return false;
-   *
-   *     // Check if credential has expired
    *     if (credential.expiresAt && Date.now() >= credential.expiresAt) {
-   *       // Credential expired, clear it
    *       this.getStore().setCredential(null);
    *       return false;
    *     }
-   *
-   *     // Use base implementation
    *     return super.isAuthenticated();
-   *   }
-   * }
-   * ```
-   *
-   * @example Override to require both credential and user info
-   * ```typescript
-   * class CustomUserService extends UserService<User, Credential> {
-   *   override isAuthenticated(): boolean {
-   *     const state = this.getStore().getState();
-   *     // Require both credential and user info
-   *     return (
-   *       state.status === AsyncStoreStatus.SUCCESS &&
-   *       !!this.getCredential() &&
-   *       !!this.getUser()
-   *     );
-   *   }
-   * }
-   * ```
-   *
-   * @example Override with server validation
-   * ```typescript
-   * class CustomUserService extends UserService<User, Credential> {
-   *   private isValidated = false;
-   *
-   *   override isAuthenticated(): boolean {
-   *     if (!super.isAuthenticated()) return false;
-   *
-   *     // If not validated yet, trigger async validation
-   *     if (!this.isValidated) {
-   *       this.validateCredential();
-   *       return false; // Return false until validated
-   *     }
-   *
-   *     return true;
-   *   }
-   *
-   *   private async validateCredential(): Promise<void> {
-   *     const credential = this.getCredential();
-   *     if (!credential) return;
-   *
-   *     try {
-   *       const isValid = await this.getGateway()?.validateCredential?.(credential);
-   *       this.isValidated = isValid ?? false;
-   *     } catch {
-   *       this.isValidated = false;
-   *     }
    *   }
    * }
    * ```
@@ -846,9 +787,6 @@ export class UserService<
 
   /**
    * Get current user from the unified store
-   *
-   * Returns the current user information from the UserStore.
-   * This is a convenience method that accesses the store's user info directly.
    *
    * @override
    * @returns The current user information, or `null` if not available
@@ -868,9 +806,6 @@ export class UserService<
   /**
    * Get the current credential
    *
-   * Returns the current credential data if available.
-   * This is a convenience method that accesses the state's credential property directly.
-   *
    * @override
    * @returns The current credential data, or `null` if not available
    *
@@ -887,26 +822,28 @@ export class UserService<
   }
 
   /**
-   * Check if value is credential
+   * Check if value is a valid credential
    *
-   * runs a type guard to check if a value is a credential.
+   * Type guard to validate credential objects.
+   * Override this method if you need specific validation logic.
    *
    * @override
-   * @param value
-   * @returns
+   * @param value - The value to check
+   * @returns `true` if the value is a valid credential, `false` otherwise
    */
   public isCredential(value: unknown): value is Credential {
     return !!value;
   }
 
   /**
-   * Check if value is user
+   * Check if value is a valid user object
    *
-   * runs a type guard to check if a value is a user.
+   * Type guard to validate user objects.
+   * Override this method if you need specific validation logic (e.g., checking required fields).
    *
    * @override
-   * @param value
-   * @returns
+   * @param value - The value to check
+   * @returns `true` if the value is a valid user object, `false` otherwise
    */
   public isUser(value: unknown): value is User {
     return typeof value === 'object' && value !== null;
