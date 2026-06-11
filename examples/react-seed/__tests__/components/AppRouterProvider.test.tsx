@@ -31,7 +31,8 @@ const {
       subscribe: vi.fn(() => () => {}),
       getState: () => ({ result: storeRoutes })
     }),
-    getRoutes: () => routes
+    getRoutes: () => routes,
+    consumePostSwitchNavigateTo: () => ''
   };
   const useIOC = vi.fn((id: unknown) =>
     id === 'Logger'
@@ -96,7 +97,8 @@ describe('AppRouterProvider', () => {
               subscribe: vi.fn(() => () => {}),
               getState: () => ({ result: mockRoutesForStore })
             }),
-            getRoutes: () => mockBaseRoutes
+            getRoutes: () => mockBaseRoutes,
+            consumePostSwitchNavigateTo: () => ''
           }
     );
     mockUseStore.mockImplementation(
