@@ -58,8 +58,9 @@ describe('RouteService', () => {
   });
 
   describe('useMainRoutes', () => {
-    it('should update store with main+general routes and set loading false', () => {
+    it('should update store with main+general routes and set loading false', async () => {
       service.useMainRoutes();
+      await Promise.resolve();
 
       const state = service.getStore().getState();
       expect(state.loading).toBe(false);
@@ -69,11 +70,18 @@ describe('RouteService', () => {
       ]);
       expect(state.result).toEqual(expected);
     });
+
+    it('should queue post-switch navigation path', async () => {
+      service.useMainRoutes('/en');
+      expect(service.consumePostSwitchNavigateTo()).toBe('/en');
+      await Promise.resolve();
+    });
   });
 
   describe('useAuthRoutes', () => {
-    it('should update store with auth+general routes and set loading false', () => {
+    it('should update store with auth+general routes and set loading false', async () => {
       service.useAuthRoutes();
+      await Promise.resolve();
 
       const state = service.getStore().getState();
       expect(state.loading).toBe(false);
@@ -86,14 +94,16 @@ describe('RouteService', () => {
   });
 
   describe('switching routes', () => {
-    it('should allow switching from main to auth routes', () => {
+    it('should allow switching from main to auth routes', async () => {
       service.useMainRoutes();
+      await Promise.resolve();
       let state = service.getStore().getState();
       expect(state.result).toEqual(
         filterRouteByCategorys(mockBaseRoutes, ['main', 'general'])
       );
 
       service.useAuthRoutes();
+      await Promise.resolve();
       state = service.getStore().getState();
       expect(state.result).toEqual(
         filterRouteByCategorys(mockBaseRoutes, ['auth', 'general'])

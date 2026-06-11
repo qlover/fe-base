@@ -17,6 +17,7 @@ const authCategory: RouteCategory[] = ['auth', 'general'];
 export class RouteService implements RouteServiceInterface {
   protected defaultRoutes: RouteConfigValue[];
   protected store: AsyncStore<RouteServiceState, string>;
+  private postSwitchNavigateTo: string | null = null;
 
   constructor() {
     this.defaultRoutes = usePathLocaleRoute ? baseRoutesWithLocale : baseRoutes;
@@ -32,16 +33,35 @@ export class RouteService implements RouteServiceInterface {
     });
   }
 
-  public useMainRoutes(): void {
-    const routes = this.defaultRoutes;
-    const activeRoutes = filterRouteByCategorys(routes, mainCategory);
-    this.store.emit({ result: activeRoutes, loading: false });
+  /**
+   * Path queued during auth/main route switch; consumed by AppRouterProvider after
+   * the new router mounts so navigation runs on the live router instance.
+   */
+  public consumePostSwitchNavigateTo(): string | null {
+    const path = this.postSwitchNavigateTo;
+    this.postSwitchNavigateTo = null;
+    return path;
   }
 
-  public useAuthRoutes(): void {
-    const routes = this.defaultRoutes;
-    const activeRoutes = filterRouteByCategorys(routes, authCategory);
-    this.store.emit({ result: activeRoutes, loading: false });
+  private switchActiveRoutes(
+    activeRoutes: RouteConfigValue[],
+    navigateTo?: string
+  ): void {
+    this.postSwitchNavigateTo = navigateTo ?? null;
+    this.store.emit({ loading: true });
+    queueMicrotask(() => {
+      this.store.emit({ result: activeRoutes, loading: false });
+    });
+  }
+
+  public useMainRoutes(navigateTo?: string): void {
+    const activeRoutes = filterRouteByCategorys(this.defaultRoutes, mainCategory);
+    this.switchActiveRoutes(activeRoutes, navigateTo);
+  }
+
+  public useAuthRoutes(navigateTo?: string): void {
+    const activeRoutes = filterRouteByCategorys(this.defaultRoutes, authCategory);
+    this.switchActiveRoutes(activeRoutes, navigateTo);
   }
 
   /**

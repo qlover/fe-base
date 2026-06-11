@@ -16,7 +16,11 @@ import type {
   UserCredential,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
-import type { LoginParams, UserServiceGateway } from '@qlover/corekit-bridge';
+import type {
+  GatewayResult,
+  LoginParams,
+  UserServiceGateway
+} from '@qlover/corekit-bridge';
 
 /**
  * UserApi
@@ -42,7 +46,7 @@ export class UserGateway implements UserServiceGateway<
   public async getUserInfo(
     data?: UserCredential,
     config?: AppApiConfig
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
     const response = await this.client.request(
       // 去掉值为 undeinfed 的属性,这样在扩展值的时候不会用undefined覆盖默认值,比如这里的data.token
       omitBy(
@@ -56,7 +60,10 @@ export class UserGateway implements UserServiceGateway<
       )
     );
 
-    return response.data as UserSchema;
+    return {
+      data: response.data as UserSchema,
+      error: null
+    };
   }
   /**
    * @override
@@ -64,7 +71,7 @@ export class UserGateway implements UserServiceGateway<
   public refreshUserInfo(
     data?: UserCredential,
     config?: UserGatewayConfig
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
     return this.getUserInfo(data, config);
   }
 
@@ -73,27 +80,35 @@ export class UserGateway implements UserServiceGateway<
    */
   public async login(
     params: UserGatewayLoginData & LoginParams
-  ): Promise<UserCredential> {
+  ): Promise<GatewayResult<UserCredential>> {
     const response = await this.client.request({
       ...toEndpointObject(EP_USER_LOGIN),
       data: params,
       encryptProps: 'password'
     });
 
-    return response.data as UserCredential;
+    return {
+      data: response.data as UserCredential,
+      error: null
+    };
   }
 
   /**
    * @override
    */
-  public async register(params: UserGatewayLoginData): Promise<UserSchema> {
+  public async register(
+    params: UserGatewayLoginData
+  ): Promise<GatewayResult<UserSchema>> {
     const response = await this.client.request({
       ...toEndpointObject(EP_USER_REGISTER),
       data: params,
       encryptProps: 'password'
     });
 
-    return response.data as UserSchema;
+    return {
+      data: response.data as UserSchema,
+      error: null
+    };
   }
 
   /**
