@@ -55,12 +55,18 @@ export class RouteService implements RouteServiceInterface {
   }
 
   public useMainRoutes(navigateTo?: string): void {
-    const activeRoutes = filterRouteByCategorys(this.defaultRoutes, mainCategory);
+    const activeRoutes = filterRouteByCategorys(
+      this.defaultRoutes,
+      mainCategory
+    );
     this.switchActiveRoutes(activeRoutes, navigateTo);
   }
 
   public useAuthRoutes(navigateTo?: string): void {
-    const activeRoutes = filterRouteByCategorys(this.defaultRoutes, authCategory);
+    const activeRoutes = filterRouteByCategorys(
+      this.defaultRoutes,
+      authCategory
+    );
     this.switchActiveRoutes(activeRoutes, navigateTo);
   }
 

@@ -1,8 +1,8 @@
 import { AppRouterProvider } from './components/AppRouterProvider';
 import { Loading } from './components/Loading';
+import { logger } from './globals';
 import { useIOC } from './hooks/useIOC';
 import { useStore } from './hooks/useStore';
-import { logger } from './globals';
 import { RouteService } from './impls/RouteService';
 import type { ComponentMap } from './impls/RouterLoader';
 
