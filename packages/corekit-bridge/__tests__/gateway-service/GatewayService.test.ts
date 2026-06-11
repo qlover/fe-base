@@ -18,7 +18,6 @@ import {
 } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
-import type { StorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Test data type
@@ -60,39 +59,6 @@ class MockLogger implements LoggerInterface {
   }
 }
 
-/**
- * Mock storage implementation for testing
- */
-class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
-  public data = new Map<string, unknown>();
-
-  public get length(): number {
-    return this.data.size;
-  }
-
-  public setItem<T>(key: Key, value: T): T {
-    this.data.set(String(key), value);
-    return value;
-  }
-
-  public getItem<T>(key: Key): T | null {
-    const value = this.data.get(String(key));
-    return (value ?? null) as T | null;
-  }
-
-  public removeItem(key: Key): void {
-    this.data.delete(String(key));
-  }
-
-  public clear(): void {
-    this.data.clear();
-  }
-
-  public reset(): void {
-    this.data.clear();
-  }
-}
-
 describe('GatewayService', () => {
   let service: GatewayService<
     TestUser,
@@ -101,12 +67,10 @@ describe('GatewayService', () => {
   >;
   let mockGateway: MockGateway;
   let mockLogger: MockLogger;
-  let mockStorage: MockStorage<string>;
 
   beforeEach(() => {
     mockGateway = new MockGateway();
     mockLogger = new MockLogger();
-    mockStorage = new MockStorage<string>();
 
     service = new GatewayService<
       TestUser,
