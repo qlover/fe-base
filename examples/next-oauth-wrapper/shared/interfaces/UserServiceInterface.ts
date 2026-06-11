@@ -1,6 +1,7 @@
 import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserService as CorekitBridgeUserServiceInterface,
+  GatewayResult,
   LoginParams,
   UserServiceGateway
 } from '@qlover/corekit-bridge';
@@ -43,7 +44,7 @@ export interface UserServiceGatewayInterface extends UserServiceGateway<
    *
    * @param params
    */
-  verify(params: LoginParams): Promise<UserCredential>;
+  verify(params: LoginParams): Promise<GatewayResult<UserCredential>>;
 
   /**
    * 主要用提交 OAuth 授权请求
