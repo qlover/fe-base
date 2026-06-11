@@ -36,8 +36,8 @@ jobs:
           npx nx reset
           rm -rf .nx/cache/cloud
 
-      - run: npx nx build @qlover/fe-scripts
-      # - run: npx nx build @qlover/fe-scripts --no-cloud
+      # - run: npx nx build @qlover/fe-scripts
+      - run: npx nx build @qlover/fe-scripts --no-cloud
       # NX Cloud Task
       - name: NX Cloud Build (exclude examples)
         run: pnpm build:packages
