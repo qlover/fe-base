@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      # Disable daemon process to prevent hangs in CI
+      NX_DAEMON: "false"
 
     steps:
       - name: Checkout repository
@@ -36,12 +38,20 @@ jobs:
           npx nx reset
           rm -rf .nx/cache/cloud
 
-      # - run: npx nx build @qlover/fe-scripts
-      - run: npx nx build @qlover/fe-scripts --no-cloud
-      # NX Cloud Task
-      - name: NX Cloud Build (exclude examples)
+      # Build fe-scripts with NX Cloud (daemon disabled to prevent hangs)
+      - name: Build fe-scripts
+        timeout-minutes: 5
+        run: npx nx build @qlover/fe-scripts
+      
+      # Build all packages with NX Cloud acceleration
+      - name: Build packages (exclude examples)
+        timeout-minutes: 10
         run: pnpm build:packages
-      - run: pnpm lint
+        
+      # Lint with NX Cloud cache for speed
+      - name: Lint
+        timeout-minutes: 5
+        run: pnpm lint
 
       # 普通 task
       # - name: Build (affected force)

@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NX_DAEMON: "false"
 
     steps:
       - name: Checkout repository
@@ -44,11 +45,20 @@ jobs:
       # - run: pnpm lint
       # - run: pnpm test
 
-      # 普通 task
+      # Build all packages with NX Cloud acceleration
       - name: Build (affected force)
+        timeout-minutes: 15
         run: pnpm build:packages:force
-      - run: pnpm lint:force
-      - run: pnpm test:force
+        
+      # Lint with NX Cloud cache
+      - name: Lint
+        timeout-minutes: 5
+        run: pnpm lint:force
+        
+      # Test with NX Cloud cache
+      - name: Test
+        timeout-minutes: 10
+        run: pnpm test:force
       - run: pnpm rebuild
 
       - name: Release Pull Request
@@ -64,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NX_DAEMON: "false"
 
     steps:
       - name: Checkout repository
@@ -91,11 +102,20 @@ jobs:
       # - run: pnpm lint
       # - run: pnpm test
 
-      # 普通 task
+      # Build all packages with NX Cloud acceleration
       - name: Build (affected force)
+        timeout-minutes: 15
         run: pnpm build:packages:force
-      - run: pnpm lint:force
-      - run: pnpm test:force
+        
+      # Lint with NX Cloud cache
+      - name: Lint
+        timeout-minutes: 5
+        run: pnpm lint:force
+        
+      # Test with NX Cloud cache
+      - name: Test
+        timeout-minutes: 10
+        run: pnpm test:force
       - run: pnpm rebuild
 
       - name: Create tag and publish
