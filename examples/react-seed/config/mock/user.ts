@@ -22,8 +22,8 @@ export default [
         email: 'test@example.com',
         credential_token: 'mock-token-info',
         email_confirmed_at: 1717702400,
-        created_at: new Date(),
-        updated_at: new Date()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
     }
   },

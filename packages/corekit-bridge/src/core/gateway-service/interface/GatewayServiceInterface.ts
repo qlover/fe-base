@@ -3,6 +3,7 @@ import {
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
 } from '../../store-state';
+import type { ExecutorError } from '@qlover/fe-corekit';
 
 export type ServiceGatewayType = object;
 
@@ -124,3 +125,42 @@ export interface GatewayServiceInterface<
    */
   getLogger(): LoggerInterface | undefined;
 }
+
+export interface GatewayResultFailedInterface<
+  ErrorType extends Error = ExecutorError
+> {
+  data: null;
+  error: Error extends ExecutorError ? ExecutorError : ErrorType;
+}
+
+export interface GatewayResultSuccessInterface<T> {
+  data: T;
+  error: null;
+}
+
+export function createGatewayResultFailed<
+  ErrorType extends Error = ExecutorError
+>(error: ErrorType): GatewayResultFailedInterface<ErrorType> {
+  return {
+    error,
+    data: null
+  };
+}
+
+export function createGatewayResultSuccess<T>(
+  data: T
+): GatewayResultSuccessInterface<T> {
+  return {
+    data,
+    error: null
+  };
+}
+
+/**
+ * Gateway Service Return Result type
+ *
+ * @since 3.3.0
+ */
+export type GatewayResult<T, ErrorType extends Error = ExecutorError> =
+  | GatewayResultSuccessInterface<T>
+  | GatewayResultFailedInterface<ErrorType>;

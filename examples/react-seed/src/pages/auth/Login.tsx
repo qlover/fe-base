@@ -1,8 +1,10 @@
 import { pageLoginI18n } from '@config/i18n-mapping/page.login';
+import { usePathLocaleRoute } from '@config/seed.config';
 import { useState } from 'react';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
+import { useLocale } from '@/hooks/useLocale';
 import { useOAuthLogin } from '@/hooks/useOAuthLogin';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
@@ -14,6 +16,7 @@ export default function LoginPage(_props: RouterRenderProps) {
   const text = useI18nMapping(pageLoginI18n);
   const userService = useIOC(UserService);
   const routeService = useIOC(RouteService);
+  const { locale } = useLocale();
   const { startLogin, isStarting, startError, isConfigured } = useOAuthLogin();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +46,7 @@ export default function LoginPage(_props: RouterRenderProps) {
     setIsSubmitting(true);
     try {
       await userService.login(parsed.data);
-      routeService.useMainRoutes();
+      routeService.useMainRoutes(usePathLocaleRoute ? `/${locale}` : '/');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Login failed');
     } finally {

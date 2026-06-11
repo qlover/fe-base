@@ -4,10 +4,12 @@ import {
   COMMON_CANCEL
 } from '@config/i18n-identifier/common';
 import { pageHomeI18n } from '@config/i18n-mapping/page.home';
+import { usePathLocaleRoute } from '@config/seed.config';
 import { useCallback, useState } from 'react';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
+import { useLocale } from '@/hooks/useLocale';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
@@ -17,6 +19,7 @@ export default function HomePage() {
   const text = useI18nMapping(pageHomeI18n);
   const userService = useIOC(UserService as never) as UserService;
   const routeService = useIOC(RouteService);
+  const { locale } = useLocale();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
@@ -30,12 +33,14 @@ export default function HomePage() {
     setIsLoggingOut(true);
     try {
       await userService.logout();
-      routeService.useAuthRoutes();
+      routeService.useAuthRoutes(
+        usePathLocaleRoute ? `/${locale}/login` : '/login'
+      );
       setLogoutDialogOpen(false);
     } finally {
       setIsLoggingOut(false);
     }
-  }, [userService, routeService]);
+  }, [userService, routeService, locale]);
 
   return (
     <div

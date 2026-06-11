@@ -132,13 +132,15 @@ export class UserService extends BridgeUserService<
     }
 
     return this.getUserInfo().then((result) => {
-      if (result && this.isUser(result)) {
-        this.getStore().success(result, {
-          token: result.credential_token
+      if (result && this.isUser(result.data)) {
+        this.getStore().success(result.data, {
+          token: result.data.credential_token
         });
 
         return true;
       }
+
+      this.logger?.error('refreshUser user is not valid!');
 
       return false;
     });

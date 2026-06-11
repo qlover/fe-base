@@ -93,9 +93,9 @@ export class UserService
 
     return this.refreshUserInfo(null, params)
       .then((result) => {
-        if (result && this.isUser(result)) {
-          this.getStore().success(result, {
-            credential_token: result.credential_token
+        if (result && this.isUser(result.data)) {
+          this.getStore().success(result.data, {
+            credential_token: result.data.credential_token
           });
 
           return true;

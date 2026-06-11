@@ -1,3 +1,4 @@
+import type { GatewayResult } from './GatewayServiceInterface';
 import type { UserStoreInterface } from './UserStoreInterface';
 
 /**
@@ -531,9 +532,9 @@ export interface UserInfoGetter<User> {
  */
 export interface UserServiceGateway<User, Credential, GatewayConfig>
   extends
-    LoginInterface<Credential, GatewayConfig>,
-    RegisterInterface<User, GatewayConfig>,
-    UserInfoInterface<User, GatewayConfig> {}
+    LoginInterface<GatewayResult<Credential>, GatewayConfig>,
+    RegisterInterface<GatewayResult<User>, GatewayConfig>,
+    UserInfoInterface<GatewayResult<User>, GatewayConfig> {}
 
 /**
  * User service interface

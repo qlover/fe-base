@@ -1,5 +1,5 @@
 import { routerPrefix } from '@config/seed.config';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';
 import { useStore } from '@/hooks/useStore';
@@ -14,6 +14,7 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
   const routeService = useIOC(RouteService);
   const logger = useIOC('Logger');
   const routes = useStore(routeService.getUIStore(), (s) => s.result ?? []);
+  const loading = useStore(routeService.getUIStore(), (s) => s.loading);
 
   const routerLoader = useMemo(
     () =>
@@ -34,6 +35,17 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
       basename: routerPrefix
     });
   }, [routes, routerLoader, logger]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    const to = routeService.consumePostSwitchNavigateTo();
+    if (to) {
+      void routerBase.navigate(to, { replace: true });
+    }
+  }, [loading, routes, routerBase, routeService]);
 
   return <RouterProvider router={routerBase} />;
 }
