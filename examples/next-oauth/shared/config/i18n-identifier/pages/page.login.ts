@@ -350,3 +350,10 @@ export const PAGE_LOGIN_SWITCH_TO_OTP = 'page_login:switch_to_otp';
  * @localEn Sign in with password
  */
 export const PAGE_LOGIN_SWITCH_TO_PASSWORD = 'page_login:switch_to_password';
+
+/**
+ * @description Login with GitHub button text
+ * @localZh 使用 GitHub 登录
+ * @localEn Sign in with GitHub
+ */
+export const PAGE_LOGIN_WITH_GITHUB = 'page_login:with_github';

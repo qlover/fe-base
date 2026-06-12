@@ -146,4 +146,8 @@ export class UserController {
 
     throw new Error('OTP verification requires a valid phone/email and token!');
   }
+
+  public async loginWithProvider(_query: unknown): Promise<void> {
+    throw new Error('Not implemented');
+  }
 }

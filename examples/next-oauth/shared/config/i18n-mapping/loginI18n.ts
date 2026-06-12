@@ -49,6 +49,7 @@ export const loginI18n = Object.freeze({
   continueWith: i18nKeys.PAGE_LOGIN_CONTINUE_WITH,
   withGoogleTitle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE2,
   withGoogle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE,
+  withGitHub: i18nKeys.PAGE_LOGIN_WITH_GITHUB,
   noAccount: i18nKeys.PAGE_LOGIN_NO_ACCOUNT,
   createAccountTitle: i18nKeys.PAGE_LOGIN_CREATE_ACCOUNT2,
   createAccount: i18nKeys.PAGE_LOGIN_CREATE_ACCOUNT,
