@@ -1,0 +1,655 @@
+/* custom variables - for antd and custom css (aligned with packages/tailwind-theme tokens) */
+html,
+.fe-theme {
+  /* Antd primary - from default.css */
+  --fantd-color-primary: rgb(var(--fe-color-brand));
+  --fantd-color-primary-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-active: var(--fe-color-primary-active);
+  --fantd-color-primary-bg: var(--fe-color-primary-bg);
+  --fantd-color-primary-border: rgb(var(--fe-color-brand));
+  --fantd-color-primary-text: rgb(var(--fe-color-brand));
+  --fantd-color-primary-text-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-text-active: var(--fe-color-primary-active);
+  --fantd-color-primary-deprecated-bg: rgb(var(--fe-color-brand));
+  --fantd-color-primary-deprecated-border: rgb(var(--fe-color-brand));
+
+  /* State colors - from default.css */
+  --fantd-color-success: var(--fe-color-success);
+  --fantd-color-warning: var(--fe-color-warning);
+  /* Warning palette (antd-specific, main color from default.css) */
+  --fantd-color-warning-bg: #fffbe6;
+  --fantd-color-warning-bg-hover: #fff1b8;
+  --fantd-color-warning-border: #ffe58f;
+  --fantd-color-warning-border-hover: #ffd666;
+  --fantd-color-warning-hover: #ffd666;
+  --fantd-color-warning-active: #d48806;
+  --fantd-color-warning-text-hover: #ffc53d;
+  --fantd-color-warning-text: var(--fe-color-warning);
+  --fantd-color-warning-text-active: #d48806;
+  --fantd-color-error: var(--fe-color-error);
+  --fantd-color-info: rgb(var(--fe-color-brand));
+  --fantd-color-link: rgb(var(--fe-color-brand));
+
+  /* Antd base - from default.css */
+  --fantd-color-bg-container: var(--fe-color-bg-container);
+  --fantd-color-bg-elevated: rgb(var(--fe-color-elevated));
+  --fantd-color-text-heading: var(--fe-color-text-heading);
+  --fantd-color-text: var(--fe-color-text);
+  --fantd-color-text-secondary: rgb(var(--fe-color-primary-text) / 0.45);
+  --fantd-color-text-tertiary: rgb(var(--fe-color-primary-text) / 0.35);
+  --fantd-color-text-quaternary: rgb(var(--fe-color-primary-text) / 0.15);
+  --fantd-color-text-placeholder: rgb(var(--fe-color-primary-text) / 0.25);
+  --fantd-color-text-disabled: var(--fe-color-text-disabled);
+  --fantd-color-border: rgb(var(--fe-color-primary-border));
+
+  /* Antd 组件通用变量 */
+  --fantd-line-width: 1px;
+  --fantd-line-type: solid;
+  --fantd-border-radius: 6px;
+  --fantd-motion-duration-mid: 0.2s;
+  --fantd-line-height: 1.5715;
+
+  /* Motion 动画变量 */
+  --fantd-motion-duration-slow: 0.3s;
+  --fantd-motion-duration-normal: 0.2s;
+  --fantd-motion-duration-fast: 0.1s;
+
+  /* Antd icon - from default.css (light: text primary with opacity) */
+  --fantd-color-icon: rgb(var(--fe-color-primary-text) / 0.45);
+  --fantd-color-icon-hover: rgb(var(--fe-color-primary-text) / 0.88);
+  --fantd-color-icon-active: rgb(var(--fe-color-brand));
+  --fantd-color-icon-disabled: var(--fe-color-text-disabled);
+
+  /* Antd Input */
+  .ant-input,
+  .ant-input-css-var {
+    --fantd-input-padding-block: 4px;
+    --fantd-input-padding-block-sm: 0px;
+    --fantd-input-padding-block-lg: 7px;
+    --fantd-input-padding-inline: 11px;
+    --fantd-input-padding-inline-sm: 7px;
+    --fantd-input-padding-inline-lg: 11px;
+    --fantd-input-input-font-size: 14px;
+    --fantd-input-input-font-size-lg: 16px;
+    --fantd-input-input-font-size-sm: 14px;
+    --fantd-input-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-input-active-border-color: var(--fe-color-primary-active);
+    --fantd-input-active-shadow: 0 0 0 2px var(--fe-color-primary-bg);
+    --fantd-input-error-active-shadow: 0 0 0 2px rgb(255 38 5 / 0.06);
+    --fantd-input-warning-active-shadow: 0 0 0 2px rgb(255 215 5 / 0.1);
+    --fantd-input-hover-bg: var(--fe-color-bg-container);
+    --fantd-input-active-bg: var(--fe-color-bg-container);
+    --fantd-input-addon-bg: rgb(var(--fe-color-primary-text) / 0.02);
+  }
+
+  /* Antd Button - from default.css */
+  .ant-btn,
+  .ant-btn-css-var {
+    --fantd-button-font-weight: 400;
+    --fantd-button-padding-inline: 15px;
+    --fantd-button-padding-inline-lg: 15px;
+    --fantd-button-padding-inline-sm: 7px;
+    --fantd-button-padding-block: 4px;
+    --fantd-button-padding-block-sm: 0px;
+    --fantd-button-padding-block-lg: 7px;
+    --fantd-button-content-font-size: 14px;
+    --fantd-button-content-font-size-sm: 14px;
+    --fantd-button-content-font-size-lg: 16px;
+    --fantd-button-content-line-height: 1.5714285714285714;
+    --fantd-button-content-line-height-sm: 1.5714285714285714;
+    --fantd-button-content-line-height-lg: 1.5;
+    --fantd-button-primary-color: #fff;
+    --fantd-button-primary-bg: rgb(var(--fe-color-brand));
+    --fantd-button-primary-hover-bg: var(--fe-color-primary-hover);
+    --fantd-button-primary-active-bg: var(--fe-color-primary-active);
+    --fantd-button-primary-shadow: 0 2px 0 rgb(var(--fe-color-brand) / 0.1);
+    --fantd-button-default-color: rgb(var(--fe-color-primary-text) / 0.88);
+    --fantd-button-default-bg: var(--fe-color-bg-container);
+    --fantd-button-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-button-default-hover-bg: var(--fe-color-bg-container);
+    --fantd-button-default-hover-color: var(--fe-color-primary-hover);
+    --fantd-button-default-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-button-default-active-bg: var(--fe-color-bg-container);
+    --fantd-button-default-active-color: var(--fe-color-primary-active);
+    --fantd-button-default-active-border-color: var(--fe-color-primary-active);
+    --fantd-button-default-shadow: 0 2px 0 rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-button-danger-color: #fff;
+    --fantd-button-danger-shadow: 0 2px 0 rgb(255 38 5 / 0.06);
+    --fantd-button-border-color-disabled: rgb(var(--fe-color-primary-border));
+    --fantd-button-text-hover-bg: rgb(var(--fe-color-primary-text) / 0.04);
+  }
+
+  /* Antd Select */
+  .ant-select,
+  .ant-select-css-var {
+    --fantd-select-internal_fixed_item_margin: 2px;
+    --fantd-select-z-index-popup: var(--zi-select);
+    --fantd-select-option-selected-color: rgb(var(--fe-color-primary-text) / 0.88);
+    --fantd-select-option-selected-font-weight: 600;
+    --fantd-select-option-selected-bg: var(--fe-color-primary-bg);
+    --fantd-select-option-active-bg: rgb(var(--fe-color-primary-text) / 0.04);
+    --fantd-select-option-padding: 5px 12px;
+    --fantd-select-option-font-size: 14px;
+    --fantd-select-option-line-height: 1.5714285714285714;
+    --fantd-select-option-height: 32px;
+    --fantd-select-selector-bg: var(--fe-color-bg-container);
+    --fantd-select-clear-bg: var(--fe-color-bg-container);
+    --fantd-select-single-item-height-lg: 40px;
+    --fantd-select-multiple-item-bg: rgb(var(--fe-color-primary-text) / 0.06);
+    --fantd-select-multiple-item-border-color: transparent;
+    --fantd-select-multiple-item-height: 24px;
+    --fantd-select-multiple-item-height-sm: 16px;
+    --fantd-select-multiple-item-height-lg: 32px;
+    --fantd-select-multiple-selector-bg-disabled: rgb(
+      var(--fe-color-primary-text) / 0.04
+    );
+    --fantd-select-multiple-item-color-disabled: var(--fe-color-text-disabled);
+    --fantd-select-multiple-item-border-color-disabled: transparent;
+    --fantd-select-show-arrow-padding-inline-end: 18px;
+    --fantd-select-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-select-active-border-color: var(--fe-color-primary-active);
+    --fantd-select-active-outline-color: var(--fe-color-primary-bg);
+    --fantd-select-select-affix-padding: 4px;
+  }
+
+  /* Antd Tag 组件变量 */
+  .ant-tag,
+  .ant-tag-css-var {
+    --fantd-tag-default-bg: var(--fe-color-bg-container);
+    --fantd-tag-default-color: var(--fe-color-text);
+    --fantd-tag-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-tag-font-size: 12px;
+    --fantd-tag-line-height: 20px;
+    --fantd-tag-height: 22px;
+    --fantd-tag-padding-horizontal: 7px;
+    --fantd-tag-margin: 0 8px 0 0;
+    --fantd-tag-border-radius: 4px;
+  }
+
+  /* Antd Progress 组件变量 */
+  .ant-progress,
+  .ant-progress-css-var {
+    --fantd-progress-default-color: rgb(var(--fe-color-brand));
+    --fantd-progress-remaining-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-text-color: var(--fe-color-text);
+    --fantd-progress-line-font-size: 14px;
+    --fantd-progress-circle-font-size: 14px;
+    --fantd-progress-circle-text-color: var(--fe-color-text);
+    --fantd-progress-circle-trail-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-circle-stroke-width: 6px;
+    --fantd-progress-line-stroke-width: 8px;
+  }
+
+  /* Antd Modal */
+  .ant-modal,
+  .ant-modal-css-var {
+    --fantd-modal-footer-bg: transparent;
+    --fantd-modal-header-bg: var(--fe-color-bg-container);
+    --fantd-modal-title-line-height: var(--fe-line-height);
+    --fantd-modal-title-font-size: 16px;
+    --fantd-modal-content-bg: var(--fe-color-bg-container);
+    --fantd-modal-title-color: var(--fe-color-text);
+    --fantd-modal-content-padding: 20px 24px;
+    --fantd-modal-header-padding: 0px;
+    --fantd-modal-header-border-bottom: none;
+    --fantd-modal-header-margin-bottom: 8px;
+    --fantd-modal-body-padding: 0px;
+    --fantd-modal-footer-padding: 0px;
+    --fantd-modal-footer-border-top: none;
+    --fantd-modal-footer-border-radius: var(--fe-border-radius);
+    --fantd-modal-footer-margin-top: 12px;
+    --fantd-modal-confirm-body-padding: 0px;
+    --fantd-modal-confirm-icon-margin-inline-end: 12px;
+    --fantd-modal-confirm-btns-margin-top: 12px;
+  }
+
+  /* Antd Message 组件变量 */
+  .ant-message,
+  .ant-message-css-var {
+    --fantd-message-z-index-popup: var(--zi-message);
+    --fantd-message-content-bg: var(--fe-color-bg-container);
+    --fantd-message-content-padding: 9px 12px;
+    --fantd-message-notice-content-padding: 10px 16px;
+    --fantd-message-notice-content-bg: var(--fe-color-bg-container);
+    --fantd-message-notice-content-shadow:
+      0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+      0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    --fantd-message-success-color: var(--fe-color-success);
+    --fantd-message-error-color: var(--fe-color-error);
+    --fantd-message-warning-color: var(--fe-color-warning);
+    --fantd-message-info-color: rgb(var(--fe-color-brand));
+    --fantd-message-loading-color: rgb(var(--fe-color-brand));
+  }
+
+  .ant-dropdown-css-var {
+    --fantd-control-outline-width: 2px;
+    --fantd-control-interactive-size: 16px;
+    --fantd-control-item-bg-hover: rgb(var(--fe-color-primary-text) / 0.04);
+    --fantd-control-item-bg-active: var(--fe-color-primary-bg);
+    --fantd-control-item-bg-active-hover: rgb(var(--fe-color-brand) / 0.2);
+    --fantd-control-item-bg-active-disabled: rgb(var(--fe-color-primary-text) / 0.15);
+    --fantd-control-tmp-outline: rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-control-outline: var(--fe-color-primary-bg);
+  }
+
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fantd-layout-color-bg-header: rgb(var(--fe-color-primary));
+    --fantd-layout-color-bg-body: rgb(var(--fe-color-secondary));
+    --fantd-layout-color-bg-trigger: rgb(var(--fe-color-elevated));
+    --fantd-layout-body-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-header-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-header-height: 64px;
+    --fantd-layout-header-padding: 0 50px;
+    --fantd-layout-header-color: rgb(var(--fe-color-primary-text));
+    --fantd-layout-footer-padding: 24px 50px;
+    --fantd-layout-footer-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-sider-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-trigger-height: 48px;
+    --fantd-layout-trigger-bg: rgb(var(--fe-color-elevated));
+    --fantd-layout-trigger-color: rgb(var(--fe-color-primary-text));
+    --fantd-layout-zero-trigger-width: 40px;
+    --fantd-layout-zero-trigger-height: 40px;
+    --fantd-layout-light-sider-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-light-trigger-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-light-trigger-color: rgb(var(--fe-color-primary-text));
+  }
+}
+
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme {
+  /* Antd primary & base - from default.css dark theme */
+  --fantd-color-primary: rgb(var(--fe-color-brand));
+  --fantd-color-primary-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-active: var(--fe-color-primary-active);
+  --fantd-color-primary-bg: var(--fe-color-primary-bg);
+  --fantd-color-primary-border: rgb(var(--fe-color-brand));
+  --fantd-color-primary-text: var(--fe-color-primary-hover);
+  --fantd-color-primary-text-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-text-active: rgb(var(--fe-color-brand));
+  --fantd-color-primary-deprecated-bg: rgb(var(--fe-color-brand));
+  --fantd-color-primary-deprecated-border: rgb(var(--fe-color-brand));
+  --fantd-color-success: var(--fe-color-success);
+  --fantd-color-warning: var(--fe-color-warning);
+  --fantd-color-warning-bg: rgb(250 173 20 / 0.15);
+  --fantd-color-warning-bg-hover: rgb(250 173 20 / 0.25);
+  --fantd-color-warning-border: rgb(250 173 20 / 0.3);
+  --fantd-color-warning-border-hover: #d48806;
+  --fantd-color-warning-hover: #d48806;
+  --fantd-color-warning-active: #ad6800;
+  --fantd-color-warning-text-hover: #ffc53d;
+  --fantd-color-warning-text: var(--fe-color-warning);
+  --fantd-color-warning-text-active: #d48806;
+  --fantd-color-error: var(--fe-color-error);
+  --fantd-color-info: rgb(var(--fe-color-brand));
+  --fantd-color-link: rgb(var(--fe-color-brand));
+  --fantd-color-bg-container: var(--fe-color-bg-container);
+  --fantd-color-bg-elevated: rgb(var(--fe-color-elevated));
+  --fantd-color-text-heading: var(--fe-color-text-heading);
+  --fantd-color-text: var(--fe-color-text);
+  --fantd-color-text-secondary: rgb(var(--fe-color-primary-text) / 0.45);
+  --fantd-color-text-tertiary: rgb(var(--fe-color-primary-text) / 0.35);
+  --fantd-color-text-quaternary: rgb(var(--fe-color-primary-text) / 0.15);
+  --fantd-color-text-placeholder: rgb(var(--fe-color-primary-text) / 0.25);
+  --fantd-color-text-disabled: var(--fe-color-text-disabled);
+  --fantd-color-border: rgb(var(--fe-color-primary-border));
+  --fantd-color-icon: rgb(var(--fe-color-primary-text) / 0.45);
+  --fantd-color-icon-hover: rgb(var(--fe-color-primary-text) / 0.85);
+  --fantd-color-icon-active: rgb(var(--fe-color-brand));
+  --fantd-color-icon-disabled: var(--fe-color-text-disabled);
+
+  .ant-input,
+  .ant-input-css-var {
+    --fantd-input-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-input-active-border-color: var(--fe-color-primary-active);
+    --fantd-input-active-shadow: 0 0 0 2px var(--fe-color-primary-bg);
+    --fantd-input-hover-bg: rgb(var(--fe-color-elevated));
+    --fantd-input-active-bg: rgb(var(--fe-color-elevated));
+    --fantd-input-addon-bg: rgb(var(--fe-color-primary-text) / 0.02);
+  }
+
+  .ant-btn,
+  .ant-btn-css-var {
+    --fantd-button-primary-color: #fff;
+    --fantd-button-primary-bg: rgb(var(--fe-color-brand));
+    --fantd-button-primary-hover-bg: var(--fe-color-primary-hover);
+    --fantd-button-primary-active-bg: var(--fe-color-primary-active);
+    --fantd-button-primary-shadow: 0 2px 0 rgb(var(--fe-color-brand) / 0.2);
+    --fantd-button-default-color: var(--fe-color-text);
+    --fantd-button-default-bg: var(--fe-color-bg-container);
+    --fantd-button-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-button-default-hover-bg: var(--fe-color-bg-container);
+    --fantd-button-default-hover-color: var(--fe-color-primary-hover);
+    --fantd-button-default-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-button-default-active-bg: var(--fe-color-bg-container);
+    --fantd-button-default-active-color: var(--fe-color-primary-active);
+    --fantd-button-default-active-border-color: var(--fe-color-primary-active);
+    --fantd-button-default-shadow: 0 2px 0 rgb(var(--fe-color-primary-text) / 0.1);
+    --fantd-button-text-hover-bg: rgb(var(--fe-color-primary-text) / 0.08);
+    --fantd-button-border-color-disabled: rgb(var(--fe-color-primary-border));
+  }
+
+  .ant-select,
+  .ant-select-css-var {
+    --fantd-select-internal_fixed_item_margin: 2px;
+    --fantd-select-z-index-popup: var(--zi-select);
+    --fantd-select-option-selected-color: rgb(var(--fe-color-primary-text) / 0.88);
+    --fantd-select-option-selected-font-weight: 600;
+    --fantd-select-option-selected-bg: var(--fe-color-primary-bg);
+    --fantd-select-option-active-bg: rgb(var(--fe-color-primary-text) / 0.08);
+    --fantd-select-option-padding: 5px 12px;
+    --fantd-select-option-font-size: 14px;
+    --fantd-select-option-line-height: 1.5714285714285714;
+    --fantd-select-option-height: 32px;
+    --fantd-select-selector-bg: var(--fe-color-bg-container);
+    --fantd-select-clear-bg: var(--fe-color-bg-container);
+    --fantd-select-single-item-height-lg: 40px;
+    --fantd-select-multiple-item-bg: rgb(var(--fe-color-primary-text) / 0.08);
+    --fantd-select-multiple-item-border-color: transparent;
+    --fantd-select-multiple-item-height: 24px;
+    --fantd-select-multiple-item-height-sm: 16px;
+    --fantd-select-multiple-item-height-lg: 32px;
+    --fantd-select-multiple-selector-bg-disabled: rgb(
+      var(--fe-color-primary-text) / 0.08
+    );
+    --fantd-select-multiple-item-color-disabled: var(--fe-color-text-disabled);
+    --fantd-select-multiple-item-border-color-disabled: transparent;
+    --fantd-select-show-arrow-padding-inline-end: 18px;
+    --fantd-select-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-select-active-border-color: var(--fe-color-primary-active);
+    --fantd-select-active-outline-color: var(--fe-color-primary-bg);
+    --fantd-select-select-affix-padding: 4px;
+  }
+
+  /* Antd Tag 组件变量 */
+  .ant-tag,
+  .ant-tag-css-var {
+    --fantd-tag-default-bg: var(--fe-color-bg-container);
+    --fantd-tag-default-color: var(--fe-color-text);
+    --fantd-tag-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-tag-font-size: 12px;
+    --fantd-tag-line-height: 20px;
+    --fantd-tag-height: 22px;
+    --fantd-tag-padding-horizontal: 7px;
+    --fantd-tag-margin: 0 8px 0 0;
+    --fantd-tag-border-radius: 4px;
+  }
+
+  /* Antd Progress 组件变量 */
+  .ant-progress,
+  .ant-progress-css-var {
+    --fantd-progress-default-color: rgb(var(--fe-color-brand));
+    --fantd-progress-remaining-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-text-color: var(--fe-color-text);
+    --fantd-progress-line-font-size: 14px;
+    --fantd-progress-circle-font-size: 14px;
+    --fantd-progress-circle-text-color: var(--fe-color-text);
+    --fantd-progress-circle-trail-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-circle-stroke-width: 6px;
+    --fantd-progress-line-stroke-width: 8px;
+  }
+
+  .ant-message,
+  .ant-message-css-var {
+    --fantd-message-z-index-popup: var(--zi-message);
+    --fantd-message-content-bg: rgb(var(--fe-color-elevated));
+    --fantd-message-content-padding: 9px 12px;
+    --fantd-message-notice-content-padding: 10px 16px;
+    --fantd-message-notice-content-bg: rgb(var(--fe-color-elevated));
+    --fantd-message-notice-content-shadow:
+      0 6px 16px 0 rgb(var(--fe-color-primary-text) / 0.25),
+      0 3px 6px -4px rgb(var(--fe-color-primary-text) / 0.3),
+      0 9px 28px 8px rgb(var(--fe-color-primary-text) / 0.2);
+    --fantd-message-notice-content-border: 1px solid rgb(var(--fe-color-primary-border));
+    --fantd-message-success-color: var(--fe-color-success);
+    --fantd-message-error-color: var(--fe-color-error);
+    --fantd-message-warning-color: var(--fe-color-warning);
+    --fantd-message-info-color: rgb(var(--fe-color-brand));
+    --fantd-message-loading-color: rgb(var(--fe-color-brand));
+    --fantd-message-text-color: var(--fe-color-text);
+  }
+  .ant-dropdown-css-var {
+    --fantd-control-outline-width: 2px;
+    --fantd-control-interactive-size: 16px;
+    --fantd-control-item-bg-hover: rgb(var(--fe-color-primary-text) / 0.08);
+    --fantd-control-item-bg-active: rgb(var(--fe-color-brand) / 0.2);
+    --fantd-control-item-bg-active-hover: rgb(var(--fe-color-brand) / 0.3);
+    --fantd-control-item-bg-active-disabled: rgb(var(--fe-color-primary-text) / 0.15);
+    --fantd-control-tmp-outline: rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-control-outline: var(--fe-color-primary-bg);
+  }
+
+  &.ant-layout-sider {
+    --fantd-layout-color-bg-header: rgb(var(--fe-color-primary));
+    --fantd-layout-color-bg-body: rgb(var(--fe-color-secondary));
+    --fantd-layout-color-bg-trigger: rgb(var(--fe-color-primary));
+    --fantd-layout-body-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-header-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-header-height: 64px;
+    --fantd-layout-header-padding: 0 50px;
+    --fantd-layout-header-color: rgb(var(--fe-color-primary-text));
+    --fantd-layout-footer-padding: 24px 50px;
+    --fantd-layout-footer-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-sider-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-trigger-height: 48px;
+    --fantd-layout-trigger-bg: rgb(var(--fe-color-primary));
+    --fantd-layout-trigger-color: rgb(var(--fe-color-primary-text));
+    --fantd-layout-zero-trigger-width: 40px;
+    --fantd-layout-zero-trigger-height: 40px;
+    --fantd-layout-light-sider-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-light-trigger-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-light-trigger-color: rgb(var(--fe-color-primary-text));
+  }
+}
+
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme {
+  /* Antd primary & base - from default.css pink theme */
+  --fantd-color-primary: rgb(var(--fe-color-brand));
+  --fantd-color-primary-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-active: var(--fe-color-primary-active);
+  --fantd-color-primary-bg: var(--fe-color-primary-bg);
+  --fantd-color-primary-border: rgb(var(--fe-color-brand));
+  --fantd-color-primary-text: rgb(var(--fe-color-brand));
+  --fantd-color-primary-text-hover: var(--fe-color-primary-hover);
+  --fantd-color-primary-text-active: var(--fe-color-primary-active);
+  --fantd-color-primary-deprecated-bg: rgb(var(--fe-color-brand));
+  --fantd-color-primary-deprecated-border: rgb(var(--fe-color-brand));
+  --fantd-color-success: var(--fe-color-success);
+  --fantd-color-warning: var(--fe-color-warning);
+  --fantd-color-warning-bg: #fff7e6;
+  --fantd-color-warning-bg-hover: #fff0d9;
+  --fantd-color-warning-border: #ffd591;
+  --fantd-color-warning-border-hover: #ffc069;
+  --fantd-color-warning-hover: #ffc069;
+  --fantd-color-warning-active: #d4770c;
+  --fantd-color-warning-text-hover: #ffc53d;
+  --fantd-color-warning-text: var(--fe-color-warning);
+  --fantd-color-warning-text-active: #d4770c;
+  --fantd-color-error: var(--fe-color-error);
+  --fantd-color-info: rgb(var(--fe-color-brand));
+  --fantd-color-link: rgb(var(--fe-color-brand));
+  /* Pink theme uses same --fe-* from default.css; alias for antd components that expect ant-color-* */
+  --ant-color-bg-container: var(--fe-color-bg-container);
+  --ant-color-bg-elevated: rgb(var(--fe-color-elevated));
+  --fantd-color-text-heading: var(--fe-color-text-heading);
+  --ant-color-text: var(--fe-color-text);
+  --ant-color-text-secondary: rgb(var(--fe-color-primary-text) / 0.45);
+  --ant-color-text-tertiary: rgb(var(--fe-color-primary-text) / 0.35);
+  --ant-color-text-quaternary: rgb(var(--fe-color-primary-text) / 0.15);
+  --ant-color-text-placeholder: rgb(var(--fe-color-primary-text) / 0.25);
+  --fantd-color-text-disabled: var(--fe-color-text-disabled);
+  --ant-color-border: rgb(var(--fe-color-primary-border));
+  --fantd-color-icon: rgb(var(--fe-color-primary-text) / 0.45);
+  --fantd-color-icon-hover: rgb(var(--fe-color-primary-text) / 0.85);
+  --fantd-color-icon-active: rgb(var(--fe-color-brand));
+  --fantd-color-icon-disabled: var(--fe-color-text-disabled);
+
+  .ant-input,
+  .ant-input-css-var {
+    --fantd-input-bg: var(--fe-color-bg-container);
+    --fantd-input-hover-bg: rgb(var(--fe-color-elevated));
+    --fantd-input-active-bg: rgb(var(--fe-color-elevated));
+    --fantd-input-addon-bg: rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-input-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-input-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-input-active-border-color: var(--fe-color-primary-active);
+    --fantd-input-active-shadow: 0 0 0 2px var(--fe-color-primary-bg);
+  }
+
+  .ant-btn,
+  .ant-btn-css-var {
+    --fantd-button-primary-color: #fff;
+    --fantd-button-primary-bg: rgb(var(--fe-color-brand));
+    --fantd-button-primary-hover-bg: var(--fe-color-primary-hover);
+    --fantd-button-primary-active-bg: var(--fe-color-primary-active);
+    --fantd-button-primary-shadow: 0 2px 0 rgb(var(--fe-color-brand) / 0.15);
+    --fantd-button-default-color: rgb(var(--fe-color-primary-text));
+    --fantd-button-default-bg: var(--fe-color-bg-container);
+    --fantd-button-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-button-default-hover-bg: var(--fe-color-bg-container);
+    --fantd-button-default-hover-color: var(--fe-color-primary-hover);
+    --fantd-button-default-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-button-default-active-bg: var(--fe-color-bg-container);
+    --fantd-button-default-active-color: var(--fe-color-primary-active);
+    --fantd-button-default-active-border-color: var(--fe-color-primary-active);
+    --fantd-button-default-shadow: 0 2px 0 rgb(var(--fe-color-brand) / 0.1);
+    --fantd-button-text-hover-bg: rgb(var(--fe-color-brand) / 0.08);
+    --fantd-button-border-color-disabled: rgb(var(--fe-color-primary-border));
+  }
+
+  .ant-select,
+  .ant-select-css-var {
+    --fantd-select-internal_fixed_item_margin: 2px;
+    --fantd-select-z-index-popup: var(--zi-select);
+    --fantd-select-option-selected-color: rgb(var(--fe-color-primary-text) / 0.88);
+    --fantd-select-option-selected-font-weight: 600;
+    --fantd-select-option-selected-bg: var(--fe-color-primary-bg);
+    --fantd-select-option-active-bg: rgb(var(--fe-color-primary-text) / 0.04);
+    --fantd-select-option-padding: 5px 12px;
+    --fantd-select-option-font-size: 14px;
+    --fantd-select-option-line-height: 1.5714285714285714;
+    --fantd-select-option-height: 32px;
+    --fantd-select-selector-bg: var(--fe-color-bg-container);
+    --fantd-select-clear-bg: var(--fe-color-bg-container);
+    --fantd-select-single-item-height-lg: 40px;
+    --fantd-select-multiple-item-bg: rgb(var(--fe-color-primary-text) / 0.06);
+    --fantd-select-multiple-item-border-color: transparent;
+    --fantd-select-multiple-item-height: 24px;
+    --fantd-select-multiple-item-height-sm: 16px;
+    --fantd-select-multiple-item-height-lg: 32px;
+    --fantd-select-multiple-selector-bg-disabled: rgb(
+      var(--fe-color-primary-text) / 0.04
+    );
+    --fantd-select-multiple-item-color-disabled: var(--fe-color-text-disabled);
+    --fantd-select-multiple-item-border-color-disabled: transparent;
+    --fantd-select-show-arrow-padding-inline-end: 18px;
+    --fantd-select-hover-border-color: var(--fe-color-primary-hover);
+    --fantd-select-active-border-color: var(--fe-color-primary-active);
+    --fantd-select-active-outline-color: var(--fe-color-primary-bg);
+    --fantd-select-select-affix-padding: 4px;
+  }
+
+  .ant-tag,
+  .ant-tag-css-var {
+    --fantd-tag-default-bg: var(--fe-color-bg-container);
+    --fantd-tag-default-color: var(--fe-color-text);
+    --fantd-tag-default-border-color: rgb(var(--fe-color-primary-border));
+    --fantd-tag-font-size: 12px;
+    --fantd-tag-line-height: 20px;
+    --fantd-tag-height: 22px;
+    --fantd-tag-padding-horizontal: 7px;
+    --fantd-tag-margin: 0 8px 0 0;
+    --fantd-tag-border-radius: 4px;
+  }
+
+  .ant-progress,
+  .ant-progress-css-var {
+    --fantd-progress-default-color: rgb(var(--fe-color-brand));
+    --fantd-progress-remaining-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-text-color: var(--fe-color-text);
+    --fantd-progress-line-font-size: 14px;
+    --fantd-progress-circle-font-size: 14px;
+    --fantd-progress-circle-text-color: var(--fe-color-text);
+    --fantd-progress-circle-trail-color: rgb(var(--fe-color-elevated));
+    --fantd-progress-circle-stroke-width: 6px;
+    --fantd-progress-line-stroke-width: 8px;
+  }
+
+  .ant-message,
+  .ant-message-css-var {
+    --fantd-message-z-index-popup: var(--zi-message);
+    --fantd-message-content-bg: var(--fe-color-bg-container);
+    --fantd-message-content-padding: 9px 12px;
+    --fantd-message-notice-content-padding: 10px 16px;
+    --fantd-message-notice-content-bg: var(--fe-color-bg-container);
+    --fantd-message-notice-content-shadow:
+      0 6px 16px 0 rgb(var(--fe-color-brand) / 0.08),
+      0 3px 6px -4px rgb(var(--fe-color-brand) / 0.12),
+      0 9px 28px 8px rgb(var(--fe-color-brand) / 0.05);
+    --fantd-message-success-color: var(--fe-color-success);
+    --fantd-message-error-color: var(--fe-color-error);
+    --fantd-message-warning-color: var(--fe-color-warning);
+    --fantd-message-info-color: rgb(var(--fe-color-brand));
+    --fantd-message-loading-color: rgb(var(--fe-color-brand));
+  }
+
+  .ant-modal,
+  .ant-modal-css-var {
+    --fantd-modal-footer-bg: transparent;
+    --fantd-modal-header-bg: var(--fe-color-bg-container);
+    --fantd-modal-title-line-height: var(--fe-line-height);
+    --fantd-modal-title-font-size: 16px;
+    --fantd-modal-content-bg: var(--fe-color-bg-container);
+    --fantd-modal-title-color: var(--fe-color-text);
+    --fantd-modal-content-padding: 20px 24px;
+    --fantd-modal-header-padding: 16px 24px;
+    --fantd-modal-header-border-bottom: 1px solid rgb(var(--fe-color-primary-border));
+    --fantd-modal-header-margin-bottom: 8px;
+    --fantd-modal-body-padding: 0px;
+    --fantd-modal-footer-padding: 10px 16px;
+    --fantd-modal-footer-border-top: 1px solid rgb(var(--fe-color-primary-border));
+    --fantd-modal-footer-border-radius: var(--fe-border-radius);
+    --fantd-modal-footer-margin-top: 12px;
+    --fantd-modal-confirm-body-padding: 32px 32px 24px;
+    --fantd-modal-confirm-icon-margin-inline-end: 12px;
+    --fantd-modal-confirm-btns-margin-top: 12px;
+    --fantd-modal-box-shadow:
+      0 6px 16px 0 rgb(var(--fe-color-brand) / 0.08),
+      0 3px 6px -4px rgb(var(--fe-color-brand) / 0.12),
+      0 9px 28px 8px rgb(var(--fe-color-brand) / 0.05);
+    --fantd-modal-mask-bg: rgb(var(--fe-color-brand) / 0.45);
+  }
+  .ant-dropdown-css-var {
+    --fantd-control-outline-width: 2px;
+    --fantd-control-interactive-size: 16px;
+    --fantd-control-item-bg-hover: rgb(var(--fe-color-primary-text) / 0.04);
+    --fantd-control-item-bg-active: rgb(var(--fe-color-brand) / 0.15);
+    --fantd-control-item-bg-active-hover: rgb(var(--fe-color-brand) / 0.25);
+    --fantd-control-item-bg-active-disabled: rgb(var(--fe-color-primary-text) / 0.15);
+    --fantd-control-tmp-outline: rgb(var(--fe-color-primary-text) / 0.02);
+    --fantd-control-outline: var(--fe-color-primary-bg);
+  }
+
+  &.ant-layout-sider {
+    --fantd-layout-color-bg-header: var(--fe-color-bg-container);
+    --fantd-layout-color-bg-body: rgb(var(--fe-color-secondary));
+    --fantd-layout-color-bg-trigger: rgb(var(--fe-color-elevated));
+    --fantd-layout-body-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-header-bg: var(--fe-color-bg-container);
+    --fantd-layout-header-height: 64px;
+    --fantd-layout-header-padding: 0 50px;
+    --fantd-layout-header-color: var(--fe-color-text);
+    --fantd-layout-footer-padding: 24px 50px;
+    --fantd-layout-footer-bg: rgb(var(--fe-color-secondary));
+    --fantd-layout-sider-bg: var(--fe-color-bg-container);
+    --fantd-layout-trigger-height: 48px;
+    --fantd-layout-trigger-bg: rgb(var(--fe-color-elevated));
+    --fantd-layout-trigger-color: var(--fe-color-text);
+    --fantd-layout-zero-trigger-width: 40px;
+    --fantd-layout-zero-trigger-height: 40px;
+    --fantd-layout-light-sider-bg: var(--fe-color-bg-container);
+    --fantd-layout-light-trigger-bg: var(--fe-color-bg-container);
+    --fantd-layout-light-trigger-color: var(--fe-color-text);
+  }
+}
