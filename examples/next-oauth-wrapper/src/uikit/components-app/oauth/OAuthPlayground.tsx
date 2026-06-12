@@ -12,7 +12,7 @@ import {
 import {
   computePkceS256Challenge,
   generatePkceVerifier
-} from '@qlover/oauth-wrapper';
+} from '@qlover/oauth-wrapper/core';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import {
