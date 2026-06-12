@@ -1,6 +1,7 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { generateApiRoutes } from './tools/generateApiRoutes';
 import { generateLocales } from './tools/generateLocales';
+import { getLocalIpAddress } from './tools/getLocalIpAddress';
 import type { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
@@ -18,6 +19,8 @@ generateLocales(__dirname, {
   console.error('Failed to generate locales:', error);
 });
 
+const localIp = getLocalIpAddress();
+
 const nextConfig: NextConfig = {
   // reactStrictMode: false,
   // pages 路由需要
@@ -26,7 +29,8 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['node-fetch', 'https-proxy-agent'],
   env: {
     APP_ENV: process.env.APP_ENV
-  }
+  },
+  allowedDevOrigins: localIp ? [localIp as string] : []
 };
 
 export default withNextIntl(nextConfig);
