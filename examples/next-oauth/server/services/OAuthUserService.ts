@@ -4,17 +4,24 @@ import {
   SignWithOtpSchema,
   VerifyOtpParams
 } from '@qlover/oauth-wrapper';
+import { Provider } from '@supabase/supabase-js';
 import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
+import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
+import { LoginProviderType } from '@config/common';
 import {
   API_NOT_AUTHORIZED,
   API_USER_NOT_FOUND
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
+import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
+import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
@@ -43,7 +50,9 @@ export class OAuthUserService
     @inject(RequestLogsRepository)
     protected requestLogsRepository: RequestLogsRepositoryInterface,
     @inject(I.OAuthWrapperProviderInterface)
-    protected oauthProvider: OAuthWrapperProviderInterface
+    protected oauthProvider: OAuthWrapperProviderInterface,
+    @inject(SupabaseBridge)
+    protected supabaseBridge: SupabaseBridge
   ) {}
 
   /**
@@ -180,5 +189,61 @@ export class OAuthUserService
     }
 
     return this.oauthProvider.signWithOtp(body);
+  }
+
+  /**
+   * @override
+   */
+  public async loginWithProvider({
+    provider
+  }: {
+    provider: LoginProviderType;
+  }): Promise<LoginProviderResult> {
+    const supabase = await this.supabaseBridge.getSupabase();
+
+    // FIXME: toLocaleLowerCase 不够严谨
+    const supabsaeProvider = provider.toLocaleLowerCase() as Provider;
+    const redirectTo = this.config.siteUrl + API_AUTH_PROVIDER_LOGIN_CALLBACK;
+
+    this.logger.debug(
+      'loginwithProvider:',
+      supabsaeProvider,
+      'redirectTo:',
+      redirectTo
+    );
+    const result = await supabase.auth.signInWithOAuth({
+      provider: supabsaeProvider,
+      options: {
+        redirectTo
+      }
+    });
+
+    this.supabaseBridge.throwIfError(result);
+
+    return {
+      providerUrl: result.data.url!,
+      provider: provider
+    };
+  }
+
+  /**
+   * @override
+   */
+  public async loginWithProviderCallback(
+    query: LoginWithProviderCallbackSchema
+  ): Promise<ResultHandlerContext> {
+    const supabase = await this.supabaseBridge.getSupabase();
+
+    const result = await supabase.auth.exchangeCodeForSession(query.code);
+
+    this.supabaseBridge.throwIfError(result);
+
+    await this.oauthProvider.loginWithSession?.(result.data.session!);
+
+    const nextPathname = query.next ?? '/';
+    const siteUrl = query.origin ?? this.config.siteUrl;
+    return {
+      redirectUrl: siteUrl + nextPathname
+    };
   }
 }

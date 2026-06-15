@@ -48,8 +48,6 @@ export const loginI18n = Object.freeze({
   button: i18nKeys.PAGE_LOGIN_BUTTON,
   continueWith: i18nKeys.PAGE_LOGIN_CONTINUE_WITH,
   withGoogleTitle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE2,
-  withGoogle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE,
-  withGitHub: i18nKeys.PAGE_LOGIN_WITH_GITHUB,
   noAccount: i18nKeys.PAGE_LOGIN_NO_ACCOUNT,
   createAccountTitle: i18nKeys.PAGE_LOGIN_CREATE_ACCOUNT2,
   createAccount: i18nKeys.PAGE_LOGIN_CREATE_ACCOUNT,
@@ -86,5 +84,9 @@ export const loginI18n = Object.freeze({
 
   // switch between modes
   switchToOtp: i18nKeys.PAGE_LOGIN_SWITCH_TO_OTP,
-  switchToPassword: i18nKeys.PAGE_LOGIN_SWITCH_TO_PASSWORD
+  switchToPassword: i18nKeys.PAGE_LOGIN_SWITCH_TO_PASSWORD,
+
+  // 这里的i18nkey 名与 config/common 中的 loginProviders value一致
+  providerGoogle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE,
+  providerGitHub: i18nKeys.PAGE_LOGIN_WITH_GITHUB
 });

@@ -2,6 +2,7 @@ import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
 import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import * as apiRoutes from '@config/apiRoutes';
+import { LoginProviderType } from '@config/common';
 import { UserCredential, UserSchema } from '@schemas/UserSchema';
 import { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
@@ -10,7 +11,10 @@ import type {
   UserApiRegisterTransaction,
   UserSubmitOAuthConsentTransaction
 } from '@interfaces/AppUserApiInterface';
-import { UserServiceGatewayInterface } from '@interfaces/UserServiceInterface';
+import {
+  LoginProviderResult,
+  UserServiceGatewayInterface
+} from '@interfaces/UserServiceInterface';
 import {
   AppApiConfig,
   AppApiRequester,
@@ -214,5 +218,23 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     }
 
     return response.data.data;
+  }
+
+  /**
+   * @override
+   */
+  public async loginWithProvider(params: {
+    provider: LoginProviderType;
+  }): Promise<LoginProviderResult> {
+    const response = await this.client.request<
+      AppApiResult<LoginProviderResult>,
+      { provider: LoginProviderType }
+    >({
+      url: apiRoutes.API_AUTH_PROVIDER_LOGIN,
+      method: HttpMethods.GET,
+      params: params
+    });
+
+    return response.data.data! as LoginProviderResult;
   }
 }

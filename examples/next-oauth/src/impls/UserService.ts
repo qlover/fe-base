@@ -9,6 +9,7 @@ import {
   type UserSchema
 } from '@schemas/UserSchema';
 import type {
+  LoginProviderResult,
   UserServiceGatewayInterface,
   UserServiceInterface
 } from '@interfaces/UserServiceInterface';
@@ -18,6 +19,7 @@ import type {
   SliceStoreAdapter,
   UserStateInterface
 } from '@qlover/corekit-bridge';
+import { LoginProviderType } from '@config/common';
 
 @injectable()
 export class UserService

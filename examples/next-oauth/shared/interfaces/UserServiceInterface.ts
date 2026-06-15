@@ -1,3 +1,4 @@
+import type { LoginProviderType } from '@config/common';
 import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserService as CorekitBridgeUserServiceInterface,
@@ -6,6 +7,11 @@ import type {
   UserServiceGateway
 } from '@qlover/corekit-bridge';
 import type { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
+
+export type LoginProviderResult = {
+  providerUrl: string;
+  provider: string;
+};
 
 export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
   UserSchema,
@@ -56,4 +62,8 @@ export interface UserServiceGatewayInterface extends UserServiceGateway<
   verifyOtp(
     params: { phone: string; token: string } | { email: string; token: string }
   ): Promise<SignOtpResult>;
+
+  loginWithProvider(params: {
+    provider: LoginProviderType;
+  }): Promise<LoginProviderResult>;
 }
