@@ -1,4 +1,4 @@
-import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
+import { API_CALLBACK_PROVIDER_LOGIN } from '@config/apiRoutes';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 
@@ -8,9 +8,8 @@ export async function GET(request: Request) {
 
   rawQuery.origin = origin;
 
-  return await new NextApiServer(
-    API_AUTH_PROVIDER_LOGIN_CALLBACK
-  ).runWithRedirect(async ({ parameters: { IOC } }) =>
-    IOC(UserController).loginWithProviderCallback(rawQuery)
+  return await new NextApiServer(API_CALLBACK_PROVIDER_LOGIN).runWithRedirect(
+    async ({ parameters: { IOC } }) =>
+      IOC(UserController).loginWithProviderCallback(rawQuery)
   );
 }

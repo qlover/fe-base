@@ -6,33 +6,23 @@
  */
 
 /**
- * API path: `/api/auth/email-otp-callback/establish`
+ * API path: `/api/callback/email-login`
  *
- * @see [src/app/api/auth/email-otp-callback/establish/route.ts](../../src/app/api/auth/email-otp-callback/establish/route.ts)
+ * @see [src/app/api/callback/email-login/route.ts](../../src/app/api/callback/email-login/route.ts)
  *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/auth/email-otp-callback/establish/route.ts`
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/email-login/route.ts`
  */
-export const API_AUTH_EMAIL_OTP_CALLBACK_ESTABLISH =
-  '/api/auth/email-otp-callback/establish' as const;
+export const API_CALLBACK_EMAIL_LOGIN = '/api/callback/email-login' as const;
 
 /**
- * API path: `/api/auth/provider/login`
+ * API path: `/api/callback/provider-login`
  *
- * @see [src/app/api/auth/provider/login/route.ts](../../src/app/api/auth/provider/login/route.ts)
+ * @see [src/app/api/callback/provider-login/route.ts](../../src/app/api/callback/provider-login/route.ts)
  *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/auth/provider/login/route.ts`
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/provider-login/route.ts`
  */
-export const API_AUTH_PROVIDER_LOGIN = '/api/auth/provider/login' as const;
-
-/**
- * API path: `/api/auth/provider/login/callback`
- *
- * @see [src/app/api/auth/provider/login/callback/route.ts](../../src/app/api/auth/provider/login/callback/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/auth/provider/login/callback/route.ts`
- */
-export const API_AUTH_PROVIDER_LOGIN_CALLBACK =
-  '/api/auth/provider/login/callback' as const;
+export const API_CALLBACK_PROVIDER_LOGIN =
+  '/api/callback/provider-login' as const;
 
 /**
  * API path: `/api/clients`
@@ -118,6 +108,15 @@ export const API_REFERENCE = '/api/reference' as const;
 export const API_USER_LOGIN = '/api/user/login' as const;
 
 /**
+ * API path: `/api/user/login/provider`
+ *
+ * @see [src/app/api/user/login/provider/route.ts](../../src/app/api/user/login/provider/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/provider/route.ts`
+ */
+export const API_USER_LOGIN_PROVIDER = '/api/user/login/provider' as const;
+
+/**
  * API path: `/api/user/logout`
  *
  * @see [src/app/api/user/logout/route.ts](../../src/app/api/user/logout/route.ts)
@@ -172,9 +171,8 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
-  | typeof API_AUTH_EMAIL_OTP_CALLBACK_ESTABLISH
-  | typeof API_AUTH_PROVIDER_LOGIN
-  | typeof API_AUTH_PROVIDER_LOGIN_CALLBACK
+  | typeof API_CALLBACK_EMAIL_LOGIN
+  | typeof API_CALLBACK_PROVIDER_LOGIN
   | typeof API_CLIENTS
   | typeof API_CLIENTS_2
   | typeof API_CLIENTS_ROTATE_SECRET
@@ -184,6 +182,7 @@ export type ApiRoutePath =
   | typeof API_OAUTH_VERIFY
   | typeof API_REFERENCE
   | typeof API_USER_LOGIN
+  | typeof API_USER_LOGIN_PROVIDER
   | typeof API_USER_LOGOUT
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY

@@ -1,3 +1,4 @@
+import { API_CLIENTS_2 } from './apiRoutes';
 import { i18nConfig } from './i18n';
 
 export * from './apiRoutes';
@@ -19,11 +20,11 @@ export const ROUTE_REGISTER = '/auth/register' as const;
  * 前端 client component 读取 URL hash fragment 中的 tokens 并建立 session。
  *
  * 未来可能增加的回调页面：
- *   - /auth/email-verify-callback  邮箱验证回调
- *   - /auth/register-success       注册成功
- *   - /auth/register-error         注册失败
+ *   - /callback/email-verify-callback  邮箱验证回调
+ *   - /callback/register-success       注册成功
+ *   - /callback/register-error         注册失败
  */
-export const ROUTE_EMAIL_OTP_CALLBACK = '/auth/email-otp-callback' as const;
+export const ROUTE_EMAIL_OTP_CALLBACK = '/callback/email-login' as const;
 
 /**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
@@ -62,10 +63,6 @@ export const ROUTE_USERINFO = '/userinfo' as const;
  * 专门用于 auth 回调流程中的后端接口。
  * 后续如有更多回调 API 可统一放入此区域。
  */
-
-/** Email OTP callback: 后端建立应用级 session 的接口 */
-export const API_AUTH_EMAIL_OTP_ESTABLISH =
-  '/api/auth/email-otp-callback/establish' as const;
 
 /** OAuth machine endpoints that skip session and locale middleware. */
 export const OAUTH_MACHINE_ROUTES = [
@@ -110,4 +107,20 @@ export function isPublicPath(pathname: string): boolean {
     // Use suffix match so /auth/login does not match longer auth paths incorrectly
     return pathname === route || pathname.endsWith(route);
   });
+}
+
+export function apiClientDetail<T extends string>(
+  clientId: T
+): `/api/clients/${T}` {
+  return API_CLIENTS_2.replace(
+    ':clientId',
+    encodeURIComponent(clientId)
+  ) as `/api/clients/${T}`;
+}
+
+export function apiClientRotateSecret(clientId: string): string {
+  return apiClientDetail(clientId).replace(
+    ':clientId',
+    encodeURIComponent(clientId)
+  );
 }

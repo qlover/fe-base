@@ -230,7 +230,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       AppApiResult<LoginProviderResult>,
       { provider: LoginProviderType }
     >({
-      url: apiRoutes.API_AUTH_PROVIDER_LOGIN,
+      url: apiRoutes.API_USER_LOGIN_PROVIDER,
       method: HttpMethods.GET,
       params: params
     });

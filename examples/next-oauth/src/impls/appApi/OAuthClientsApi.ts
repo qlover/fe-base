@@ -1,4 +1,9 @@
 import { inject } from '@shared/container';
+import {
+  API_CLIENTS,
+  apiClientDetail,
+  apiClientRotateSecret
+} from '@config/route';
 import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 import { AppApiRequester } from './AppApiRequester';
 import type {
@@ -19,7 +24,7 @@ export class OAuthClientsApi {
    * List all OAuth clients for current user
    */
   public async list(): Promise<OAuthClientListItem[]> {
-    const response = await this.appApiRequester.get('/api/clients');
+    const response = await this.appApiRequester.get(API_CLIENTS);
     const envelope = response.data as AppApiSuccessInterface<
       OAuthClientListItem[]
     >;
@@ -30,7 +35,7 @@ export class OAuthClientsApi {
    * Get OAuth client details
    */
   public async get(clientId: string): Promise<OAuthClientDetail> {
-    const response = await this.appApiRequester.get(`/api/clients/${clientId}`);
+    const response = await this.appApiRequester.get(apiClientDetail(clientId));
     const envelope = response.data as AppApiSuccessInterface<OAuthClientDetail>;
     return envelope.data!;
   }
@@ -41,7 +46,7 @@ export class OAuthClientsApi {
   public async create(
     input: OAuthClientCreate
   ): Promise<OAuthClientCreateResponse> {
-    const response = await this.appApiRequester.post('/api/clients', input);
+    const response = await this.appApiRequester.post(API_CLIENTS, input);
     const envelope =
       response.data as AppApiSuccessInterface<OAuthClientCreateResponse>;
     return envelope.data!;
@@ -55,7 +60,7 @@ export class OAuthClientsApi {
     input: OAuthClientUpdate
   ): Promise<OAuthClientDetail> {
     const response = await this.appApiRequester.put(
-      `/api/clients/${clientId}`,
+      apiClientDetail(clientId),
       input
     );
     const envelope = response.data as AppApiSuccessInterface<OAuthClientDetail>;
@@ -66,7 +71,7 @@ export class OAuthClientsApi {
    * Delete an OAuth client
    */
   public async delete(clientId: string): Promise<void> {
-    await this.appApiRequester.delete(`/api/clients/${clientId}`);
+    await this.appApiRequester.delete(apiClientDetail(clientId));
   }
 
   /**
@@ -76,7 +81,7 @@ export class OAuthClientsApi {
     clientId: string
   ): Promise<OAuthClientSecretRotateResponse> {
     const response = await this.appApiRequester.post(
-      `/api/clients/${clientId}/rotate-secret`
+      apiClientRotateSecret(clientId)
     );
     const envelope =
       response.data as AppApiSuccessInterface<OAuthClientSecretRotateResponse>;

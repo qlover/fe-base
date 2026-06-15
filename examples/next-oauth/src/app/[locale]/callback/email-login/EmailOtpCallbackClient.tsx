@@ -11,7 +11,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { createClient } from '@shared/supabase/client';
 import type { EmailOtpCallbackI18nInterface } from '@config/i18n-mapping/emailOtpCallbackI18n';
-import { API_AUTH_EMAIL_OTP_ESTABLISH } from '@config/route';
+import {
+  API_CALLBACK_EMAIL_LOGIN,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_LOGIN
+} from '@config/route';
 
 type CallbackStatus = 'authenticating' | 'establishing' | 'error';
 
@@ -36,7 +40,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
       // ── Step 0: 从 URL hash fragment 中提取参数 ──
       const hash = window.location.hash.substring(1);
       if (!hash) {
-        router.replace('/auth/login');
+        router.replace(ROUTE_LOGIN);
         return;
       }
 
@@ -49,13 +53,13 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
       if (error) {
         const desc = params.get('error_description');
         console.error('Supabase magic link error:', error, desc);
-        router.replace('/auth/login');
+        router.replace(ROUTE_LOGIN);
         return;
       }
 
       // ── 必须同时有 access_token 和 refresh_token ──
       if (!accessToken || !refreshToken) {
-        router.replace('/auth/login');
+        router.replace(ROUTE_LOGIN);
         return;
       }
 
@@ -70,7 +74,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
         if (sessionError) {
           console.error('Failed to set Supabase session:', sessionError);
           if (!cancelled) setStatus('error');
-          router.replace('/auth/login');
+          router.replace(ROUTE_LOGIN);
           return;
         }
 
@@ -78,7 +82,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
         setStatus('establishing');
 
         // ── Step 2: 通知后端建立应用级 session（OAuth wrapper cookie） ──
-        const establishRes = await fetch(API_AUTH_EMAIL_OTP_ESTABLISH, {
+        const establishRes = await fetch(API_CALLBACK_EMAIL_LOGIN, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -92,18 +96,18 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
         if (!establishRes.ok) {
           console.error('Failed to establish app session');
           if (!cancelled) setStatus('error');
-          router.replace('/auth/login');
+          router.replace(ROUTE_LOGIN);
           return;
         }
 
         if (cancelled) return;
 
         // ── Step 3: 登录成功，跳转到应用首页 ──
-        router.replace('/developer/apps');
+        router.replace(ROUTE_DEVELOPER_APPS);
       } catch (err) {
         console.error('Email OTP callback error:', err);
         if (!cancelled) setStatus('error');
-        if (!cancelled) router.replace('/auth/login');
+        if (!cancelled) router.replace(ROUTE_LOGIN);
       }
     }
 

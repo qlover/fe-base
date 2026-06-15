@@ -8,13 +8,13 @@ import { Provider } from '@supabase/supabase-js';
 import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
+import { API_CALLBACK_PROVIDER_LOGIN } from '@config/apiRoutes';
 import { LoginProviderType } from '@config/common';
 import {
   API_NOT_AUTHORIZED,
   API_USER_NOT_FOUND
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
-import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
 import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
@@ -203,7 +203,7 @@ export class OAuthUserService
 
     // FIXME: toLocaleLowerCase 不够严谨
     const supabsaeProvider = provider.toLocaleLowerCase() as Provider;
-    const redirectTo = this.config.siteUrl + API_AUTH_PROVIDER_LOGIN_CALLBACK;
+    const redirectTo = this.config.siteUrl + API_CALLBACK_PROVIDER_LOGIN;
 
     this.logger.debug(
       'loginwithProvider:',
