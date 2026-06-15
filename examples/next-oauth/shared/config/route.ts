@@ -43,6 +43,8 @@ export const ROUTE_OAUTH_AUTHORIZE = '/oauth/authorize' as const;
 /** In-app OAuth flow playground (developer testing). */
 export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
 
+export const ROUTE_ABOUT = '/about' as const;
+
 /** OAuth integration guide (public documentation). */
 export const ROUTE_DOCS_OAUTH = '/docs/oauth' as const;
 
@@ -80,7 +82,8 @@ export const AUTH_ROUTES = [
   ROUTE_LOGIN,
   ROUTE_REGISTER,
   ROUTE_CALLBACK_EMAIL_LOGIN,
-  ROUTE_DOCS_OAUTH
+  ROUTE_DOCS_OAUTH,
+  ROUTE_ABOUT
 ] as const;
 
 /**
