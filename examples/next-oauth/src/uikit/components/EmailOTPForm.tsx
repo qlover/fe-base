@@ -22,7 +22,7 @@ interface EmailOTPFormProps {
  * Email magic-link login form.
  *
  * Sends a Supabase magic link to the user's email. When the user clicks the
- * link, Supabase redirects to /auth/email-otp-callback (client component)
+ * link, Supabase redirects to /callback/email-login (client component)
  * which reads the URL hash tokens, sets Supabase cookies, and calls the
  * backend to establish the app-level session.
  */

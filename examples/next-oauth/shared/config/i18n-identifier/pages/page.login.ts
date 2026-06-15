@@ -50,8 +50,8 @@ export const PAGE_LOGIN_USERNAME = 'page_login:username';
 export const PAGE_LOGIN_PASSWORD = 'page_login:password';
 /**
  * @description Login button text
- * @localZh 登录并建立会话
- * @localEn Sign in & establish session
+ * @localZh 登录
+ * @localEn Sign in
  */
 export const PAGE_LOGIN_BUTTON = 'page_login:login';
 /**

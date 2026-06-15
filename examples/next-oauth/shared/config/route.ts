@@ -1,5 +1,6 @@
 import { API_CLIENTS_2 } from './apiRoutes';
 import { i18nConfig } from './i18n';
+import type { LocaleType } from './i18n';
 
 export * from './apiRoutes';
 
@@ -24,7 +25,7 @@ export const ROUTE_REGISTER = '/auth/register' as const;
  *   - /callback/register-success       注册成功
  *   - /callback/register-error         注册失败
  */
-export const ROUTE_EMAIL_OTP_CALLBACK = '/callback/email-login' as const;
+export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
 /**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
@@ -68,8 +69,9 @@ export const ROUTE_USERINFO = '/userinfo' as const;
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_REVOKE,
-  ROUTE_USERINFO
-  // ROUTE_OAUTH_CALLBACK
+  ROUTE_USERINFO,
+  // 回调路由
+  ROUTE_CALLBACK_EMAIL_LOGIN
 ] as const;
 
 /** Routes that are allowed without authentication (public routes). */
@@ -77,7 +79,7 @@ export const AUTH_ROUTES = [
   ROUTE_HOME,
   ROUTE_LOGIN,
   ROUTE_REGISTER,
-  ROUTE_EMAIL_OTP_CALLBACK,
+  ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DOCS_OAUTH
 ] as const;
 
@@ -123,4 +125,8 @@ export function apiClientRotateSecret(clientId: string): string {
     ':clientId',
     encodeURIComponent(clientId)
   );
+}
+
+export function localePage(route: string, locale: LocaleType): string {
+  return locale + route;
 }
