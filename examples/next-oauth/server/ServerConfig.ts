@@ -63,5 +63,5 @@ export class ServerConfig implements SeedServerConfigInterface {
     process.env.LOG_PREFIX_TEMPLATE ?? logPrefixTemplate;
 
   public readonly oauthSessionKey: string =
-    process.env.OAUTH_SESSION_KEY ?? 'next_oauth_wrapper_session';
+    process.env.OAUTH_SESSION_KEY ?? 'next_oauth_session';
 }

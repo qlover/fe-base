@@ -1,6 +1,8 @@
 import { API_CLIENTS_2 } from './apiRoutes';
 import { i18nConfig } from './i18n';
 import type { LocaleType } from './i18n';
+import type { NextURL } from 'next/dist/server/web/next-url';
+import type { NextRequest } from 'next/server';
 
 export * from './apiRoutes';
 
@@ -86,6 +88,13 @@ export const AUTH_ROUTES = [
   ROUTE_ABOUT
 ] as const;
 
+/** 需要登陆才能访问的页面 */
+export const LOGINED_PAGES = [
+  ROUTE_REQUEST_LOGS,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_OAUTH_PLAYGROUND
+] as const;
+
 /**
  * Returns true if pathname is an OAuth machine endpoint (token, userinfo, etc.).
  */
@@ -132,4 +141,58 @@ export function apiClientRotateSecret(clientId: string): string {
 
 export function localePage(route: string, locale: LocaleType): string {
   return locale + route;
+}
+
+/**
+ * 是否是 oauth 认证服务的路由
+ * @param pathname
+ */
+export function isOAuthRoutePath(pathname: string): boolean {
+  return OAUTH_MACHINE_ROUTES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * 是否需要登录才能访问的页面
+ * @param pathname
+ */
+export function hasSessionPath(pathname: string): boolean {
+  return LOGINED_PAGES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * 是否需要携带国际化路由的路径
+ *
+ * 一般来说，除了 isOAuthRoutePath 的 pat h其余都需要带上
+ * @param pathname
+ */
+export function hasLocalPath(pathname: string): boolean {
+  return !isOAuthRoutePath(pathname);
+}
+
+/**
+ * 用于将请求重定向到某个路径，但是会携带当前 pathnmae 参数，用于重定向回来
+ *
+ * 常见场景为访问了需要登陆的页面时没有登陆则会重定向到登陆页面，当登陆成功后可以在根据参数重定向回来
+ *
+ * @param request
+ * @param pathnmae
+ * @param targetRoute
+ * @returns
+ */
+export function redirectToPath(
+  request: NextRequest,
+  pathnmae?: string,
+  targetRoute: string = ROUTE_LOGIN
+): NextURL {
+  const pathnmae2 = pathnmae || request.nextUrl.pathname;
+
+  const url = request.nextUrl.clone();
+  const returnPath = `${pathnmae2}${request.nextUrl.search}`;
+  url.pathname = targetRoute;
+  url.search = `redirect=${encodeURIComponent(returnPath)}`;
+  return url;
 }
