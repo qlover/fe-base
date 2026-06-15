@@ -8,13 +8,13 @@ import { Provider } from '@supabase/supabase-js';
 import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
-import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
 import { LoginProviderType } from '@config/common';
 import {
   API_NOT_AUTHORIZED,
   API_USER_NOT_FOUND
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
+import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
 import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';

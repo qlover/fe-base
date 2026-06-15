@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { API_LOCALES_JSON } from '@config/apiRoutes';
 import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
+import { API_LOCALES_JSON } from '@config/route';
 import { LocalesController } from '@server/controllers/LocalesController';
 import type { LocalesControllerJsonQuery } from '@server/interfaces/LocalesControllerInterface';
 import { NextApiServer } from '@server/NextApiServer';

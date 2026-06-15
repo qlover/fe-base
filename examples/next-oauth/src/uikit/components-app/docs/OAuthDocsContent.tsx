@@ -8,9 +8,10 @@ import {
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
-import { API_OAUTH_VERIFY, API_REFERENCE } from '@config/apiRoutes';
 import type { OAuthDocsI18nInterface } from '@config/i18n-mapping/oauthDocsI18n';
 import {
+  API_OAUTH_VERIFY,
+  API_REFERENCE,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_AUTHORIZE,
   ROUTE_OAUTH_PLAYGROUND,

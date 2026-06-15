@@ -1,5 +1,7 @@
 import { i18nConfig } from './i18n';
 
+export * from './apiRoutes';
+
 /**
  * 登录页面路由地址
  */

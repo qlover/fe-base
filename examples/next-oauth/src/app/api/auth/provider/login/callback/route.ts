@@ -1,4 +1,4 @@
-import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/apiRoutes';
+import { API_AUTH_PROVIDER_LOGIN_CALLBACK } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 

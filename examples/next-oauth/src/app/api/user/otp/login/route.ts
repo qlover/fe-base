@@ -1,4 +1,4 @@
-import { API_USER_OTP_LOGIN } from '@config/apiRoutes';
+import { API_USER_OTP_LOGIN } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 import type { NextRequest } from 'next/server';
