@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { ROUTE_LOGIN } from '@config/route';
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -18,5 +19,5 @@ export default async function LoginAliasPage({ searchParams }: PageProps) {
     }
   }
   const query = qs.toString();
-  redirect(`/auth/login${query ? `?${query}` : ''}`);
+  redirect(`${ROUTE_LOGIN}${query ? `?${query}` : ''}`);
 }

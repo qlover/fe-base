@@ -1,9 +1,9 @@
 /**
  * ─── Email OTP / Magic Link — 建立应用 Session ───
  *
- * POST /api/auth/email-otp-callback/establish
+ * POST /api/callback/email-login
  *
- * 调用方：前端 /auth/email-otp-callback 页面（client component）。
+ * 调用方：前端 /callback/email-login 页面（client component）。
  * 前端已通过 supabase.auth.setSession() 设置了 Supabase auth cookie，
  * 本接口在此基础上建立应用级 OAuth wrapper session cookie，
  * 使得后续请求能被应用识别为已登录状态。
