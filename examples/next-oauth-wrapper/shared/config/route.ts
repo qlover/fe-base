@@ -51,7 +51,7 @@ export const ROUTE_OAUTH_REVOKE = '/oauth/revoke' as const;
 export const ROUTE_OAUTH_CALLBACK = '/oauth/callback' as const;
 
 /** OAuth 2.0 / OIDC userinfo endpoint (machine-to-machine, no locale prefix). */
-export const ROUTE_USERINFO = '/userinfo' as const;
+export const ROUTE_OAUTH_USERINFO = '/oauth/userinfo' as const;
 
 /**
  * ─── Auth 相关 API 路由常量 ───
@@ -69,7 +69,7 @@ export const API_AUTH_EMAIL_OTP_ESTABLISH =
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_REVOKE,
-  ROUTE_USERINFO
+  ROUTE_OAUTH_USERINFO
   // ROUTE_OAUTH_CALLBACK
 ] as const;
 

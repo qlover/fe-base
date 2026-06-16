@@ -1,6 +1,6 @@
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { isEmpty } from 'lodash';
-import { ROUTE_USERINFO } from '@config/route';
+import { ROUTE_OAUTH_USERINFO } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   const corsHeaders = buildApiCorsHeaders(req, corsConfig);
 
   return await new NextApiServer({
-    name: ROUTE_USERINFO,
+    name: ROUTE_OAUTH_USERINFO,
     nextRequest: req,
     event_category: 'oauth-wrapper'
   }).runWithJson(

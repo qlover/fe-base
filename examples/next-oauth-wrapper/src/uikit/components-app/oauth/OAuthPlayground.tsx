@@ -35,7 +35,11 @@ import {
   type OAuthCallbackParams
 } from '@/uikit/utils/oauthPlaygroundUtils';
 import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
-import { ROUTE_LOGIN, ROUTE_OAUTH_TOKEN, ROUTE_USERINFO } from '@config/route';
+import {
+  ROUTE_LOGIN,
+  ROUTE_OAUTH_TOKEN,
+  ROUTE_OAUTH_USERINFO
+} from '@config/route';
 import type {
   OAuthClientDetail,
   OAuthClientListItem,
@@ -434,7 +438,7 @@ export function OAuthPlayground() {
     setUserinfoLoading(true);
     setErrorMessage(null);
     try {
-      const res = await fetch(ROUTE_USERINFO, {
+      const res = await fetch(ROUTE_OAUTH_USERINFO, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
       const result = await readAppApiJson(res);
