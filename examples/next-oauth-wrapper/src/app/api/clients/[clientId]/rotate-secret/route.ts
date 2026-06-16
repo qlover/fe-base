@@ -1,3 +1,4 @@
+import { API_CLIENTS_ROTATE_SECRET } from '@config/route';
 import { OAuthClientsController } from '@server/controllers/OAuthClientsController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';
@@ -32,7 +33,7 @@ type ClientIdRouteContext = {
 export async function POST(req: NextRequest, context: ClientIdRouteContext) {
   const { clientId } = await context.params;
 
-  return await new NextApiServer('/api/clients/[clientId]/rotate-secret', req)
+  return await new NextApiServer(API_CLIENTS_ROTATE_SECRET, req)
     .use(new ServerAuthPlugin())
     .runWithJson(async ({ parameters: { IOC } }) => {
       const controller = IOC(OAuthClientsController);

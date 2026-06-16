@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { API_OAUTH_VERIFY } from '@config/apiRoutes';
 import {
   API_OAUTH_WRAPPER_AUTH_FAILED,
   API_OAUTH_INVALID_REQUEST
 } from '@config/i18n-identifier/api';
+import { API_OAUTH_VERIFY } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
 

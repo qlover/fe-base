@@ -345,7 +345,7 @@ export class SupabaseOAuthProvider
 
     return {
       expired: Math.floor(Date.now() / 1000) + 3600,
-      messageId: result.data.messageId
+      messageId: result.data.messageId ?? ''
     };
   }
 

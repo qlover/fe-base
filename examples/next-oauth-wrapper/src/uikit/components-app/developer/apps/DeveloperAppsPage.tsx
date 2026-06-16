@@ -35,7 +35,12 @@ import {
   oauthWarningButtonClass
 } from '@config/component';
 import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
-import { ROUTE_OAUTH_PLAYGROUND } from '@config/route';
+import {
+  API_CLIENTS,
+  apiClientDetail,
+  apiClientRotateSecret,
+  ROUTE_OAUTH_PLAYGROUND
+} from '@config/route';
 import {
   OAuthClientAppForm,
   emptyOAuthClientFormValues,
@@ -150,7 +155,7 @@ export function DeveloperAppsPageComponent({
   const loadApps = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/clients', { credentials: 'include' });
+      const response = await fetch(API_CLIENTS, { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Failed to load applications');
       }
@@ -226,7 +231,7 @@ export function DeveloperAppsPageComponent({
         confidential: createValues.confidential
       };
 
-      const response = await fetch('/api/clients', {
+      const response = await fetch(API_CLIENTS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -285,15 +290,12 @@ export function DeveloperAppsPageComponent({
         redirect_uris: redirectUris
       };
 
-      const response = await fetch(
-        `/api/clients/${encodeURIComponent(editingApp.client_id)}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(payload)
-        }
-      );
+      const response = await fetch(apiClientDetail(editingApp.client_id), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
 
       if (!response.ok) {
         throw new Error('Failed to update application');
@@ -348,10 +350,10 @@ export function DeveloperAppsPageComponent({
       variant: 'default',
       onConfirm: async () => {
         try {
-          const response = await fetch(
-            `/api/clients/${encodeURIComponent(clientId)}/rotate-secret`,
-            { method: 'POST', credentials: 'include' }
-          );
+          const response = await fetch(apiClientRotateSecret(clientId), {
+            method: 'POST',
+            credentials: 'include'
+          });
 
           if (!response.ok) {
             throw new Error('Failed to rotate secret');
@@ -386,13 +388,10 @@ export function DeveloperAppsPageComponent({
       variant: 'danger',
       onConfirm: async () => {
         try {
-          const response = await fetch(
-            `/api/clients/${encodeURIComponent(clientId)}`,
-            {
-              method: 'DELETE',
-              credentials: 'include'
-            }
-          );
+          const response = await fetch(apiClientDetail(clientId), {
+            method: 'DELETE',
+            credentials: 'include'
+          });
 
           if (!response.ok && response.status !== 204) {
             throw new Error('Failed to delete application');
@@ -416,7 +415,7 @@ export function DeveloperAppsPageComponent({
     void (async () => {
       try {
         const detail = await readAppApiJson<OAuthClientDetail>(
-          await fetch(`/api/clients/${encodeURIComponent(app.client_id)}`, {
+          await fetch(apiClientDetail(app.client_id), {
             credentials: 'include'
           })
         );

@@ -1,4 +1,10 @@
+import { API_CLIENTS_2 } from './apiRoutes';
 import { i18nConfig } from './i18n';
+import type { LocaleType } from './i18n';
+import type { NextURL } from 'next/dist/server/web/next-url';
+import type { NextRequest } from 'next/server';
+
+export * from './apiRoutes';
 
 /**
  * 登录页面路由地址
@@ -17,11 +23,11 @@ export const ROUTE_REGISTER = '/auth/register' as const;
  * 前端 client component 读取 URL hash fragment 中的 tokens 并建立 session。
  *
  * 未来可能增加的回调页面：
- *   - /auth/email-verify-callback  邮箱验证回调
- *   - /auth/register-success       注册成功
- *   - /auth/register-error         注册失败
+ *   - /callback/email-verify-callback  邮箱验证回调
+ *   - /callback/register-success       注册成功
+ *   - /callback/register-error         注册失败
  */
-export const ROUTE_EMAIL_OTP_CALLBACK = '/auth/email-otp-callback' as const;
+export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
 /**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
@@ -38,6 +44,8 @@ export const ROUTE_OAUTH_AUTHORIZE = '/oauth/authorize' as const;
 
 /** In-app OAuth flow playground (developer testing). */
 export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
+
+export const ROUTE_ABOUT = '/about' as const;
 
 /** OAuth integration guide (public documentation). */
 export const ROUTE_DOCS_OAUTH = '/docs/oauth' as const;
@@ -61,16 +69,13 @@ export const ROUTE_USERINFO = '/userinfo' as const;
  * 后续如有更多回调 API 可统一放入此区域。
  */
 
-/** Email OTP callback: 后端建立应用级 session 的接口 */
-export const API_AUTH_EMAIL_OTP_ESTABLISH =
-  '/api/auth/email-otp-callback/establish' as const;
-
 /** OAuth machine endpoints that skip session and locale middleware. */
 export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_REVOKE,
-  ROUTE_USERINFO
-  // ROUTE_OAUTH_CALLBACK
+  ROUTE_USERINFO,
+  // 回调路由
+  ROUTE_CALLBACK_EMAIL_LOGIN
 ] as const;
 
 /** Routes that are allowed without authentication (public routes). */
@@ -78,8 +83,16 @@ export const AUTH_ROUTES = [
   ROUTE_HOME,
   ROUTE_LOGIN,
   ROUTE_REGISTER,
-  ROUTE_EMAIL_OTP_CALLBACK,
-  ROUTE_DOCS_OAUTH
+  ROUTE_CALLBACK_EMAIL_LOGIN,
+  ROUTE_DOCS_OAUTH,
+  ROUTE_ABOUT
+] as const;
+
+/** 需要登陆才能访问的页面 */
+export const LOGINED_PAGES = [
+  ROUTE_REQUEST_LOGS,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_OAUTH_PLAYGROUND
 ] as const;
 
 /**
@@ -108,4 +121,78 @@ export function isPublicPath(pathname: string): boolean {
     // Use suffix match so /auth/login does not match longer auth paths incorrectly
     return pathname === route || pathname.endsWith(route);
   });
+}
+
+export function apiClientDetail<T extends string>(
+  clientId: T
+): `/api/clients/${T}` {
+  return API_CLIENTS_2.replace(
+    ':clientId',
+    encodeURIComponent(clientId)
+  ) as `/api/clients/${T}`;
+}
+
+export function apiClientRotateSecret(clientId: string): string {
+  return apiClientDetail(clientId).replace(
+    ':clientId',
+    encodeURIComponent(clientId)
+  );
+}
+
+export function localePage(route: string, locale: LocaleType): string {
+  return locale + route;
+}
+
+/**
+ * 是否是 oauth 认证服务的路由
+ * @param pathname
+ */
+export function isOAuthRoutePath(pathname: string): boolean {
+  return OAUTH_MACHINE_ROUTES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * 是否需要登录才能访问的页面
+ * @param pathname
+ */
+export function hasSessionPath(pathname: string): boolean {
+  return LOGINED_PAGES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * 是否需要携带国际化路由的路径
+ *
+ * 一般来说，除了 isOAuthRoutePath 的 pat h其余都需要带上
+ * @param pathname
+ */
+export function hasLocalPath(pathname: string): boolean {
+  return !isOAuthRoutePath(pathname);
+}
+
+/**
+ * 用于将请求重定向到某个路径，但是会携带当前 pathnmae 参数，用于重定向回来
+ *
+ * 常见场景为访问了需要登陆的页面时没有登陆则会重定向到登陆页面，当登陆成功后可以在根据参数重定向回来
+ *
+ * @param request
+ * @param pathnmae
+ * @param targetRoute
+ * @returns
+ */
+export function redirectToPath(
+  request: NextRequest,
+  pathnmae?: string,
+  targetRoute: string = ROUTE_LOGIN
+): NextURL {
+  const pathnmae2 = pathnmae || request.nextUrl.pathname;
+
+  const url = request.nextUrl.clone();
+  const returnPath = `${pathnmae2}${request.nextUrl.search}`;
+  url.pathname = targetRoute;
+  url.search = `redirect=${encodeURIComponent(returnPath)}`;
+  return url;
 }

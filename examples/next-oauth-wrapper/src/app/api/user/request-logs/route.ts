@@ -1,4 +1,4 @@
-import { API_USER_REQUEST_LOGS } from '@config/apiRoutes';
+import { API_USER_REQUEST_LOGS } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';

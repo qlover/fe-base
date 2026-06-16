@@ -1,4 +1,5 @@
 import { OAuthClientCreateSchema } from '@qlover/oauth-wrapper';
+import { API_CLIENTS } from '@config/route';
 import { OAuthClientsController } from '@server/controllers/OAuthClientsController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';
@@ -19,7 +20,7 @@ import type { NextRequest } from 'next/server';
  *         description: Not authenticated
  */
 export async function GET(req: NextRequest) {
-  return await new NextApiServer('/api/clients', req)
+  return await new NextApiServer(API_CLIENTS, req)
     .use(new ServerAuthPlugin())
     .runWithJson(async ({ parameters: { IOC } }) => {
       const controller = IOC(OAuthClientsController);
@@ -67,7 +68,7 @@ export async function GET(req: NextRequest) {
  *         description: Not authenticated
  */
 export async function POST(req: NextRequest) {
-  return await new NextApiServer('/api/clients', req)
+  return await new NextApiServer(API_CLIENTS, req)
     .use(new ServerAuthPlugin())
     .runWithJson(async ({ parameters: { IOC } }) => {
       const body = await req.json();

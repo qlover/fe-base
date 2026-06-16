@@ -1,4 +1,4 @@
-import { API_OAUTH_PLAYGROUND_VALIDATE } from '@config/apiRoutes';
+import { API_OAUTH_PLAYGROUND_VALIDATE } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
 import type { NextRequest } from 'next/server';
