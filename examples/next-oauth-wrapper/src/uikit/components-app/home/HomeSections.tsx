@@ -13,9 +13,12 @@ import {
 } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
-import { API_OAUTH_VERIFY } from '@config/apiRoutes';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
-import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
+import {
+  API_OAUTH_VERIFY,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_DOCS_OAUTH
+} from '@config/route';
 
 const primaryButtonClassName =
   'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-md';

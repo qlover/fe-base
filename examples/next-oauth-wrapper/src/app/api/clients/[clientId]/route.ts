@@ -1,5 +1,6 @@
 import { OAuthClientUpdateSchema } from '@qlover/oauth-wrapper';
 import { NextResponse } from 'next/server';
+import { API_CLIENTS_2 } from '@config/route';
 import { OAuthClientsController } from '@server/controllers/OAuthClientsController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';
@@ -34,7 +35,7 @@ type ClientIdRouteContext = {
 export async function GET(req: NextRequest, context: ClientIdRouteContext) {
   const { clientId } = await context.params;
 
-  return await new NextApiServer('/api/clients/[clientId]', req)
+  return await new NextApiServer(API_CLIENTS_2, req)
     .use(new ServerAuthPlugin())
     .runWithJson(async ({ parameters: { IOC } }) => {
       const controller = IOC(OAuthClientsController);
@@ -92,7 +93,7 @@ export async function GET(req: NextRequest, context: ClientIdRouteContext) {
 export async function PUT(req: NextRequest, context: ClientIdRouteContext) {
   const { clientId } = await context.params;
 
-  return await new NextApiServer('/api/clients/[clientId]', req)
+  return await new NextApiServer(API_CLIENTS_2, req)
     .use(new ServerAuthPlugin())
     .runWithJson(async ({ parameters: { IOC } }) => {
       const body = await req.json();
@@ -127,7 +128,7 @@ export async function PUT(req: NextRequest, context: ClientIdRouteContext) {
 export async function DELETE(req: NextRequest, context: ClientIdRouteContext) {
   const { clientId } = await context.params;
 
-  const result = await new NextApiServer('/api/clients/[clientId]', req)
+  const result = await new NextApiServer(API_CLIENTS_2, req)
     .use(new ServerAuthPlugin())
     .run(async ({ parameters: { IOC } }) => {
       await IOC(OAuthClientsController).remove(clientId);

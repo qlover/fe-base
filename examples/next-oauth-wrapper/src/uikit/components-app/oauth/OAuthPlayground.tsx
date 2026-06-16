@@ -12,7 +12,7 @@ import {
 import {
   computePkceS256Challenge,
   generatePkceVerifier
-} from '@qlover/oauth-wrapper';
+} from '@qlover/oauth-wrapper/core';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import {
@@ -34,8 +34,10 @@ import {
   randomStateValue,
   type OAuthCallbackParams
 } from '@/uikit/utils/oauthPlaygroundUtils';
+import { API_CLIENTS, API_OAUTH_PLAYGROUND_VALIDATE } from '@config/apiRoutes';
 import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
 import {
+  apiClientDetail,
   ROUTE_LOGIN,
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_USERINFO
@@ -207,7 +209,7 @@ export function OAuthPlayground() {
     setClientsLoading(true);
     try {
       const list = await readAppApiJson<OAuthClientListItem[]>(
-        await fetch('/api/clients', { credentials: 'include' })
+        await fetch(API_CLIENTS, { credentials: 'include' })
       );
       setClients(list);
       if (list.length > 0 && !clientId) {
@@ -238,7 +240,7 @@ export function OAuthPlayground() {
     void (async () => {
       try {
         const detail = await readAppApiJson<OAuthClientDetail>(
-          await fetch(`/api/clients/${encodeURIComponent(clientId)}`, {
+          await fetch(apiClientDetail(clientId), {
             credentials: 'include'
           })
         );
@@ -320,7 +322,7 @@ export function OAuthPlayground() {
 
     try {
       const result = await readAppApiJson<ValidateResult>(
-        await fetch(`/api/oauth/playground/validate?${params.toString()}`, {
+        await fetch(`${API_OAUTH_PLAYGROUND_VALIDATE}?${params.toString()}`, {
           credentials: 'include'
         })
       );

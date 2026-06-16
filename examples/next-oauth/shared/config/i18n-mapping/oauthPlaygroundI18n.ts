@@ -1,0 +1,50 @@
+import { COMMON_ADMIN_TITLE } from '../i18n-identifier/common/common';
+import * as i18nKeys from '../i18n-identifier/pages/page.oauth-playground';
+
+export type OAuthPlaygroundI18nInterface = typeof oauthPlaygroundI18n;
+
+export const oauthPlaygroundI18nNamespace = 'page_oauth_playground';
+
+export const oauthPlaygroundI18n = Object.freeze({
+  title: i18nKeys.PAGE_OAUTH_PLAYGROUND_TITLE,
+  description: i18nKeys.PAGE_OAUTH_PLAYGROUND_DESCRIPTION,
+  content: i18nKeys.PAGE_OAUTH_PLAYGROUND_CONTENT,
+  keywords: i18nKeys.PAGE_OAUTH_PLAYGROUND_KEYWORDS,
+  intro: i18nKeys.PAGE_OAUTH_PLAYGROUND_INTRO,
+  demoNote: i18nKeys.PAGE_OAUTH_PLAYGROUND_DEMO_NOTE,
+  stepSession: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_SESSION,
+  stepClient: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_CLIENT,
+  stepAuthorize: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_AUTHORIZE,
+  stepToken: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_TOKEN,
+  stepUserinfo: i18nKeys.PAGE_OAUTH_PLAYGROUND_STEP_USERINFO,
+  signedInAs: i18nKeys.PAGE_OAUTH_PLAYGROUND_SIGNED_IN_AS,
+  loginRequired: i18nKeys.PAGE_OAUTH_PLAYGROUND_LOGIN_REQUIRED,
+  goLogin: i18nKeys.PAGE_OAUTH_PLAYGROUND_GO_LOGIN,
+  clientLabel: i18nKeys.PAGE_OAUTH_PLAYGROUND_CLIENT_LABEL,
+  redirectLabel: i18nKeys.PAGE_OAUTH_PLAYGROUND_REDIRECT_LABEL,
+  scopeLabel: i18nKeys.PAGE_OAUTH_PLAYGROUND_SCOPE_LABEL,
+  stateLabel: i18nKeys.PAGE_OAUTH_PLAYGROUND_STATE_LABEL,
+  secretLabel: i18nKeys.PAGE_OAUTH_PLAYGROUND_SECRET_LABEL,
+  validate: i18nKeys.PAGE_OAUTH_PLAYGROUND_VALIDATE,
+  authorizeUrl: i18nKeys.PAGE_OAUTH_PLAYGROUND_AUTHORIZE_URL,
+  allow: i18nKeys.PAGE_OAUTH_PLAYGROUND_ALLOW,
+  deny: i18nKeys.PAGE_OAUTH_PLAYGROUND_DENY,
+  exchange: i18nKeys.PAGE_OAUTH_PLAYGROUND_EXCHANGE,
+  fetchUserinfo: i18nKeys.PAGE_OAUTH_PLAYGROUND_FETCH_USERINFO,
+  callback: i18nKeys.PAGE_OAUTH_PLAYGROUND_CALLBACK,
+  response: i18nKeys.PAGE_OAUTH_PLAYGROUND_RESPONSE,
+  validOk: i18nKeys.PAGE_OAUTH_PLAYGROUND_VALID_OK,
+  copy: i18nKeys.PAGE_OAUTH_PLAYGROUND_COPY,
+  randomState: i18nKeys.PAGE_OAUTH_PLAYGROUND_RANDOM_STATE,
+  navLink: i18nKeys.PAGE_OAUTH_PLAYGROUND_NAV_LINK,
+  simulatedNote: i18nKeys.PAGE_OAUTH_PLAYGROUND_SIMULATED_NOTE,
+  pkceTitle: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_TITLE,
+  pkceEnabled: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_ENABLED,
+  pkceVerifier: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_VERIFIER,
+  pkceChallenge: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_CHALLENGE,
+  pkceRegenerate: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_REGENERATE,
+  pkceHint: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_HINT,
+  pkceOptional: i18nKeys.PAGE_OAUTH_PLAYGROUND_PKCE_OPTIONAL,
+  clientType: i18nKeys.PAGE_OAUTH_PLAYGROUND_CLIENT_TYPE,
+  adminTitle: COMMON_ADMIN_TITLE
+});
