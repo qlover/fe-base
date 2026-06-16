@@ -5,9 +5,11 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { inject, injectable } from '@shared/container';
 import { SUPABASE_KEY, SUPABASE_URL } from '@shared/supabase/conts';
 import { I } from '@config/ioc-identifiter';
+import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
 import { UserRole, type UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { ServerStateInterface } from '@server/interfaces/ServerStateInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
@@ -37,19 +39,6 @@ function createHeadlessSupabaseClient() {
   return createSupabaseClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
-}
-
-/**
- * Build the magic-link redirect URL.
- *
- * Supabase appends auth tokens to this URL as a hash fragment (#access_token=...)
- * after the user clicks the magic link in their email.
- * Points to the frontend /auth/email-otp-callback page (client component)
- * which reads the hash and establishes the session.
- */
-function buildMagicLinkRedirectUrl(appHost: string): string {
-  const base = appHost.replace(/\/+$/, '');
-  return `${base}/en/auth/email-otp-callback`;
 }
 
 function shouldMd5Password(): boolean {
@@ -105,6 +94,8 @@ export class SupabaseOAuthProvider
 {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
+  @inject(I.ServerStateInterface)
+  protected serverState!: ServerStateInterface;
 
   protected readonly appHost: string;
 
@@ -326,7 +317,9 @@ export class SupabaseOAuthProvider
     const supabase = createHeadlessSupabaseClient();
 
     if ('email' in params) {
-      const redirectTo = buildMagicLinkRedirectUrl(this.appHost);
+      const locale = await this.serverState.getLocale();
+      const redirectTo =
+        this.appHost + localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale);
       const result = await supabase.auth.signInWithOtp({
         email: params.email,
         options: { emailRedirectTo: redirectTo }
@@ -345,7 +338,7 @@ export class SupabaseOAuthProvider
 
     return {
       expired: Math.floor(Date.now() / 1000) + 3600,
-      messageId: result.data.messageId
+      messageId: result.data.messageId ?? ''
     };
   }
 

@@ -141,8 +141,15 @@ export class NextApiServer extends BootstrapServer {
       BootstrapServerContextOptions
     >
   ): Promise<AppApiResult<Result>> {
+    const serverState = this.IOC('ServerStateInterface');
+
+    if (this.context.nextRequest) {
+      await serverState.handler(this.context.nextRequest);
+    }
+
     const result = await this.execNoError(task);
 
+    // FIXME: 是否移动到 ServerStateInterface 中更合理？
     const options: ResultHandlerOptions = {
       started: performance.now(),
       logger: this.logger,

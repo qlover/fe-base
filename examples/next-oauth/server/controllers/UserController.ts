@@ -9,12 +9,18 @@ import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import { SearchParamsValidator } from '@shared/validators/SearchParamsValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
-import { type LoginSchema } from '@schemas/LoginSchema';
+import {
+  loginWithProviderCallbackSchema,
+  loginWithProviderSchema,
+  type LoginSchema
+} from '@schemas/LoginSchema';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
 import type {
@@ -145,5 +151,21 @@ export class UserController {
     }
 
     throw new Error('OTP verification requires a valid phone/email and token!');
+  }
+
+  public loginWithProvider(_query: unknown): Promise<LoginProviderResult> {
+    const params = loginWithProviderSchema.parse(_query);
+
+    return this.userService.loginWithProvider({
+      provider: params.provider
+    });
+  }
+
+  public loginWithProviderCallback(
+    _query: unknown
+  ): Promise<ResultHandlerContext> {
+    const params = loginWithProviderCallbackSchema.parse(_query);
+
+    return this.userService.loginWithProviderCallback(params);
   }
 }

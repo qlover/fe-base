@@ -1,4 +1,8 @@
+import type { LoginProviderType } from '@config/common';
+import type { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { LoginProviderResult } from '@interfaces/UserServiceInterface';
+import type { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type { SignOtpResult, SignWithOtpSchema } from '@qlover/oauth-wrapper';
 
 export type UserServiceRegisterParams = {
@@ -30,4 +34,10 @@ export interface UserServiceInterface {
   getUser(): Promise<UserSchema>;
 
   signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult>;
+  loginWithProvider(params: {
+    provider: LoginProviderType;
+  }): Promise<LoginProviderResult>;
+  loginWithProviderCallback(
+    query: LoginWithProviderCallbackSchema
+  ): Promise<ResultHandlerContext>;
 }

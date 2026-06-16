@@ -1,6 +1,6 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
-import { first } from 'lodash';
+import { first, isNumber, isPlainObject, isString } from 'lodash';
 import { ZodError } from 'zod';
 import { API_SERVER_ERROR } from '@config/i18n-identifier/api';
 import { V_ZOD_FAILED } from '@config/i18n-identifier/common/validators';
@@ -34,7 +34,21 @@ export class ResultCotnext {
 }
 
 function isResultHandlerContext(value: unknown): value is ResultHandlerContext {
-  return value instanceof ResultCotnext;
+  if (value instanceof ResultCotnext) {
+    return true;
+  }
+
+  if (isPlainObject(value)) {
+    const redirectUrl = (value as ResultHandlerContext).redirectUrl;
+    if (redirectUrl instanceof URL || isString(redirectUrl)) {
+      return true;
+    }
+
+    if (isNumber((value as ResultHandlerContext).httpStatus)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export type ResultHandlerContext = (typeof ResultCotnext)['prototype'];
@@ -109,8 +123,8 @@ export class NextApiHandler implements ResultHandlerInterface {
       return value;
     }
 
-    if (this.handlerResultContext(value)) {
-      return NextApiHandler.createServerError(options);
+    if (this.handlerResultContext(value, options)) {
+      return NextApiHandler.createApiSuccess(value as T, options);
     }
 
     // 如果是 oauth 包裹错误对象, 该对象有一个 httpStatus 属性需要注入
@@ -124,8 +138,7 @@ export class NextApiHandler implements ResultHandlerInterface {
     // 如果是一个执行错误
     if (value instanceof ExecutorError) {
       // 如果 excutorError 的 cause 是一个 ResultHandlerContext 对象
-
-      if (this.handlerResultContext(value.cause)) {
+      if (this.handlerResultContext(value.cause, options)) {
         options.logger.debug('NextApiHandler handler', value);
         return NextApiHandler.createServerError(options);
       }
@@ -142,10 +155,12 @@ export class NextApiHandler implements ResultHandlerInterface {
   }
 
   protected handlerResultContext(
-    value: unknown
+    value: unknown,
+    options: Readonly<ResultHandlerOptions>
   ): value is ResultHandlerContext {
     if (isResultHandlerContext(value)) {
-      Object.assign(this.context, value);
+      options.logger.debug('is ResultCotnext', value);
+      this.context = Object.assign(this.context, value);
       return true;
     }
     return false;

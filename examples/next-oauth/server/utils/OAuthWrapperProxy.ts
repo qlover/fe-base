@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse, type NextRequest } from 'next/server';
-import { isPublicPath, ROUTE_LOGIN } from '@config/route';
+import { isPublicPath, redirectToPath } from '@config/route';
 import { ServerConfig } from '@server/ServerConfig';
 import type { OAuthSessionPayload } from '@qlover/oauth-wrapper';
 
@@ -37,11 +37,7 @@ export async function oauthWrapperProxySession(request: NextRequest) {
   const session = parseOAuthAppSessionCookie(raw, sessionSecret);
 
   if (!session && !isPublicPath(pathname)) {
-    const url = request.nextUrl.clone();
-    const returnPath = `${pathname}${request.nextUrl.search}`;
-    url.pathname = ROUTE_LOGIN;
-    url.search = `redirect=${encodeURIComponent(returnPath)}`;
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(redirectToPath(request));
   }
 
   return response;
