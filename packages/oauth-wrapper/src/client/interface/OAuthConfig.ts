@@ -2,7 +2,7 @@ export const OAuthWrapperEndpoints = {
   authorize: '/oauth/authorize',
   token: '/oauth/token',
   revoke: '/oauth/revoke',
-  userinfo: '/userinfo'
+  userinfo: '/oauth/userinfo'
 } as const;
 
 export const DEFAULT_OAUTH_AUTHORIZE_PATH = OAuthWrapperEndpoints.authorize;
