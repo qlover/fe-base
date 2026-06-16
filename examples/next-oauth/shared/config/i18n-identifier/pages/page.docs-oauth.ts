@@ -7,8 +7,8 @@ export const PAGE_DOCS_OAUTH_TITLE = 'page_docs_oauth:title';
 
 /**
  * @description OAuth docs meta description
- * @localZh 通用 OAuth 包装层集成指南：授权码流程、端点与可插拔登录 Provider
- * @localEn Integration guide for the universal OAuth wrapper: flows, endpoints, and pluggable providers
+ * @localZh Next OAuth 集成指南：第三方登录、OAuth 授权流程与端点说明
+ * @localEn Next OAuth integration guide: third-party sign-in, OAuth flows, and endpoints
  */
 export const PAGE_DOCS_OAUTH_DESCRIPTION = 'page_docs_oauth:description';
 
@@ -28,38 +28,38 @@ export const PAGE_DOCS_OAUTH_KEYWORDS = 'page_docs_oauth:keywords';
 
 /**
  * @description Page intro
- * @localZh 本文说明第三方应用如何接入本项目的通用 OAuth 2.0 授权包装层，以及本仓库示例中 demo-oauth（Brain User 登录）的部署方式。
- * @localEn How third-party apps integrate with this universal OAuth 2.0 wrapper, and how the demo-oauth reference deployment (Brain User login) is wired in this repo.
+ * @localZh 本文说明 Next OAuth 如何集成 GitHub、Google 等第三方登录（基于 Supabase Auth），以及第三方应用如何对接其标准 OAuth 2.0 授权端点。
+ * @localEn This document explains how Next OAuth integrates GitHub, Google and other third-party sign-in via Supabase Auth, and how third-party apps connect to its standard OAuth 2.0 authorization endpoints.
  */
 export const PAGE_DOCS_OAUTH_INTRO = 'page_docs_oauth:intro';
 
 /**
  * @description Architecture section title
- * @localZh 架构：通用内核与示例装配
- * @localEn Architecture: core vs example wiring
+ * @localZh 架构：认证客户端与 OAuth 授权
+ * @localEn Architecture: authentication client and OAuth authorization
  */
 export const PAGE_DOCS_OAUTH_SECTION_ARCHITECTURE =
   'page_docs_oauth:section__architecture';
 
 /**
  * @description Architecture body
- * @localZh shared/oauth-wrapper 提供与上游登录 API 无关的 OAuth 2.0 服务（authorize、consent、token、PKCE、userinfo）。oauth-wrapper 负责会话、登录编排与持久化；通过实现 OAuthUserAdapterInterface 接入任意上游。本站点运行的是 demo-oauth 中的一种实现（BrainUserAdapter），并非协议本身的限制。
- * @localEn shared/oauth-wrapper is provider-agnostic OAuth 2.0 logic. oauth-wrapper handles sessions, login orchestration, and storage; you integrate upstream systems via OAuthUserAdapterInterface. This site runs one reference adapter (BrainUserAdapter)—that is not a protocol limitation.
+ * @localZh Next OAuth 通过 SupabaseOAuthProvider 接入 Supabase Auth，支持 GitHub、Google 第三方登录及邮箱密码、手机验证码等方式。同时基于 @qlover/oauth-wrapper 提供标准 OAuth 2.0 授权端点（authorize、consent、token、PKCE、userinfo），供第三方应用接入。
+ * @localEn Next OAuth connects to Supabase Auth via SupabaseOAuthProvider, supporting GitHub, Google sign-in and email/password, phone OTP. It also provides standard OAuth 2.0 endpoints (authorize, consent, token, PKCE, userinfo) via @qlover/oauth-wrapper for third-party app integration.
  */
 export const PAGE_DOCS_OAUTH_ARCHITECTURE_BODY =
   'page_docs_oauth:architecture__body';
 
 /**
  * @description Demo provider section title
- * @localZh 本示例：demo-oauth + Brain User
- * @localEn This example: demo-oauth + Brain User
+ * @localZh 当前部署：Supabase Auth
+ * @localEn Current deployment: Supabase Auth
  */
 export const PAGE_DOCS_OAUTH_SECTION_DEMO = 'page_docs_oauth:section__demo';
 
 /**
  * @description Demo provider body
- * @localZh 终端用户通过 POST /api/oauth/verify 使用邮箱密码登录（由 DemoAuthService 调用 BrainUserAdapter）。授权页与换票流程与 Provider 无关。配置 OAUTH_WRAPPER_API_BASE、SESSION_SECRET、ENCRYPTION_KEY 等见 .env.template。替换 Provider 时修改 oauth-wrapper 与 serverIoc 绑定即可。
- * @localEn End users sign in with email/password via POST /api/oauth/verify (DemoAuthService → BrainUserAdapter). Authorize and token endpoints are provider-agnostic. See .env.template for OAUTH_WRAPPER_API_BASE and secrets. To swap providers, change oauth-wrapper and IOC bindings.
+ * @localZh 用户可通过 GitHub、Google 第三方登录，或使用邮箱密码（POST /api/user/login）、手机验证码、邮箱 Magic Link 等方式登录。OAuth 授权端点与具体登录方式无关。配置 SUPABASE_URL、SESSION_SECRET、ENCRYPTION_KEY 等见 .env.template。
+ * @localEn Users can sign in via GitHub, Google, or email/password (POST /api/user/login), phone OTP, email Magic Link. OAuth authorization endpoints are independent of the sign-in method. See .env.template for SUPABASE_URL, SESSION_SECRET, ENCRYPTION_KEY, etc.
  */
 export const PAGE_DOCS_OAUTH_DEMO_BODY = 'page_docs_oauth:demo__body';
 
@@ -73,8 +73,8 @@ export const PAGE_DOCS_OAUTH_SECTION_OVERVIEW =
 
 /**
  * @description Overview body
- * @localZh 对外暴露标准 OAuth 2.0 授权码模式（RFC 6749），支持机密客户端与公共客户端（公共客户端须 PKCE）。返回给第三方的 access_token 来自上游 Provider（示例为 Brain 签发的 JWT）；本包装层还维护独立的 wrapper refresh_token 用于第三方客户端刷新。
- * @localEn Exposes the OAuth 2.0 authorization code grant (RFC 6749) for confidential and public clients (PKCE for public). access_token returned to clients comes from the upstream provider (Brain JWT in the demo); the wrapper also issues its own refresh_token for third-party refresh grants.
+ * @localZh 对外暴露标准 OAuth 2.0 授权码模式（RFC 6749），支持机密客户端与公共客户端（公共客户端须 PKCE）。返回给第三方的 access_token 来自 Supabase Auth（JWT）；本平台还维护独立的 refresh_token 用于第三方客户端刷新。
+ * @localEn Exposes the OAuth 2.0 authorization code grant (RFC 6749) for confidential and public clients (PKCE for public). The access_token returned to clients comes from Supabase Auth (JWT); the platform also issues its own refresh_token for third-party refresh grants.
  */
 export const PAGE_DOCS_OAUTH_OVERVIEW_BODY = 'page_docs_oauth:overview__body';
 
@@ -101,8 +101,8 @@ export const PAGE_DOCS_OAUTH_FLOW_STEP2 = 'page_docs_oauth:flow__step2';
 
 /**
  * @description Flow step 3
- * @localZh 终端用户先在站点登录（本示例：POST /api/oauth/verify），再在授权页同意；浏览器携带 ?code=...&state=... 回到 redirect_uri。
- * @localEn The end user signs in on this site (this demo: POST /api/oauth/verify), grants consent, then the browser returns to redirect_uri with ?code=...&state=....
+ * @localZh 终端用户先在站点登录（GitHub、Google 或邮箱密码等），再在授权页同意；浏览器携带 ?code=...&state=... 回到 redirect_uri。
+ * @localEn The end user signs in on this site (GitHub, Google, or email/password), grants consent, then the browser returns to redirect_uri with ?code=...&state=....
  */
 export const PAGE_DOCS_OAUTH_FLOW_STEP3 = 'page_docs_oauth:flow__step3';
 
@@ -177,8 +177,8 @@ export const PAGE_DOCS_OAUTH_ENDPOINT_VERIFY =
 
 /**
  * @description Login verify endpoint description
- * @localZh 邮箱/密码登录，建立授权页所需会话；由 demo-oauth 编排，非 OAuth 客户端调用。
- * @localEn Email/password sign-in for the consent UI session; demo-oauth orchestration—not for OAuth clients.
+ * @localZh 邮箱/密码登录，建立授权页所需会话；由 Supabase Auth 编排，非 OAuth 客户端调用。
+ * @localEn Email/password sign-in for the consent UI session; orchestrated by Supabase Auth—not for OAuth clients.
  */
 export const PAGE_DOCS_OAUTH_ENDPOINT_VERIFY_DESC =
   'page_docs_oauth:endpoint__verify__desc';

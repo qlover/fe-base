@@ -8,7 +8,7 @@ export type EmailOtpCallbackI18nInterface = typeof emailOtpCallbackI18n;
 /**
  * Email OTP Callback page i18n namespace
  *
- * - /auth/email-otp-callback/page.tsx
+ * - /callback/email-login/page.tsx
  */
 export const NS_PAGE_EMAIL_OTP_CALLBACK = 'page_email_otp_callback';
 

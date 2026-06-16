@@ -5,6 +5,7 @@ import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { ServerStateInterface } from '@server/interfaces/ServerStateInterface';
 import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
@@ -40,7 +41,14 @@ export const IOCIdentifier = Object.freeze({
   /**
    * OAuth 包装服务提供接口
    */
-  OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface'
+  OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface',
+
+  /**
+   * 服务器状态接口, 其实和 config 类型，不过仅仅用于保存当次会话的配置状态
+   *
+   * 比如当次请求的 locale 等
+   */
+  ServerStateInterface: 'ServerStateInterface'
 });
 
 export const I = IOCIdentifier;
@@ -80,4 +88,5 @@ export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
   [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
+  [IOCIdentifier.ServerStateInterface]: ServerStateInterface;
 }

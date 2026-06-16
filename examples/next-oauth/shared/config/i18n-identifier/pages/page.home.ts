@@ -1,21 +1,21 @@
 /**
  * @description Home page title
- * @localZh Next OAuth Wrapper
- * @localEn Next OAuth Wrapper
+ * @localZh Next OAuth
+ * @localEn Next OAuth
  */
 export const PAGE_HOME_TITLE = 'page_home:title';
 
 /**
  * @description Home page meta description
- * @localZh 通用 OAuth 2.0 授权包装层，可接入任意上游登录 API
- * @localEn Universal OAuth 2.0 wrapper for any upstream login API
+ * @localZh 集成 GitHub、Google 等第三方账号的统一认证登录平台
+ * @localEn Unified authentication platform with GitHub, Google and other third-party sign-in
  */
 export const PAGE_HOME_DESCRIPTION = 'page_home:description';
 
 /**
  * @description Home page keywords
- * @localZh OAuth 2.0, 授权服务器, 登录 API, Next OAuth Wrapper
- * @localEn OAuth 2.0, authorization server, login API, Next OAuth Wrapper
+ * @localZh OAuth 2.0, 第三方登录, GitHub, Google, Supabase, Next OAuth
+ * @localEn OAuth 2.0, third-party login, GitHub, Google, Supabase, Next OAuth
  */
 export const PAGE_HOME_KEYWORDS = 'page_home:keywords';
 
@@ -35,29 +35,29 @@ export const PAGE_HOME_NAV_ABOUT = 'page_home:nav__about';
 
 /**
  * @description Hero badge label
- * @localZh 通用 OAuth 2.0 授权包装层
- * @localEn Universal OAuth 2.0 wrapper
+ * @localZh 第三方账号统一登录
+ * @localEn Unified third-party sign-in
  */
 export const PAGE_HOME_HERO_BADGE = 'page_home:hero__badge';
 
 /**
  * @description Hero title line 1
- * @localZh 任意登录 API
- * @localEn Any login API
+ * @localZh GitHub、Google 等
+ * @localEn GitHub, Google and more
  */
 export const PAGE_HOME_HERO_TITLE1 = 'page_home:hero__title1';
 
 /**
  * @description Hero title line 2
- * @localZh 变成 OAuth 服务端
- * @localEn becomes your OAuth server
+ * @localZh 一键登录你的应用
+ * @localEn sign in to your apps
  */
 export const PAGE_HOME_HERO_TITLE2 = 'page_home:hero__title2';
 
 /**
  * @description Hero description
- * @localZh 将现有用户/登录体系包装为标准 OAuth 2.0 授权服务器（授权码 + PKCE、refresh_token、userinfo）。第三方应用只需对接 OAuth，无需直接接触你的账号密码；上游登录能力通过可替换的 Provider 适配器接入。
- * @localEn Wrap your existing user/login API as a standards-compliant OAuth 2.0 authorization server (authorization code + PKCE, refresh_token, userinfo). Third-party apps integrate via OAuth only—credentials stay with your upstream provider through a swappable adapter.
+ * @localZh 基于 Supabase 的统一认证平台，集成 GitHub、Google 等第三方账号登录，同时提供标准 OAuth 2.0 授权能力（授权码 + PKCE、refresh_token、userinfo）。用户可通过多种登录方式快速访问，第三方应用也可对接 OAuth 实现统一认证。
+ * @localEn A Supabase-powered authentication platform that integrates GitHub, Google and other third-party sign-in methods, while providing standard OAuth 2.0 authorization (authorization code + PKCE, refresh_token, userinfo). Users can sign in via multiple providers, and third-party apps can integrate via OAuth for unified authentication.
  */
 export const PAGE_HOME_HERO_DESC = 'page_home:hero__desc';
 
@@ -77,29 +77,29 @@ export const PAGE_HOME_HERO_DOCS = 'page_home:hero__docs';
 
 /**
  * @description Feature 1 label
- * @localZh 通用 OAuth 内核
- * @localEn Generic OAuth core
+ * @localZh 多种第三方登录
+ * @localEn Multiple third-party sign-in
  */
 export const PAGE_HOME_FEATURE1_TITLE = 'page_home:feature1__title';
 
 /**
  * @description Feature 1 description
- * @localZh shared/oauth-wrapper 实现 RFC 授权码、PKCE、换票与客户端管理，与具体登录 API 无关。
- * @localEn shared/oauth-wrapper implements RFC flows, PKCE, token exchange, and client registry—provider-agnostic.
+ * @localZh 通过 Supabase Auth 集成 GitHub、Google 等第三方账号登录，同时支持邮箱密码、手机验证码等多种登录方式。
+ * @localEn Integrate GitHub, Google and other third-party sign-in via Supabase Auth, along with email/password, phone OTP and more.
  */
 export const PAGE_HOME_FEATURE1_DESC = 'page_home:feature1__desc';
 
 /**
  * @description Feature 2 label
- * @localZh 可插拔登录 Provider
- * @localEn Pluggable login provider
+ * @localZh OAuth 2.0 授权
+ * @localEn OAuth 2.0 authorization
  */
 export const PAGE_HOME_FEATURE2_TITLE = 'page_home:feature2__title';
 
 /**
  * @description Feature 2 description
- * @localZh 通过 OAuthUserAdapter 对接任意上游；本仓库 demo-oauth 目录提供参考实现。
- * @localEn Plug in any upstream via OAuthUserAdapter; this repo ships a reference under oauth-wrapper.
+ * @localZh 基于 @qlover/oauth-wrapper 提供标准 OAuth 2.0 授权码 + PKCE 流程，第三方应用可快速接入统一认证。
+ * @localEn Standard OAuth 2.0 authorization code + PKCE via @qlover/oauth-wrapper—third-party apps can integrate unified auth quickly.
  */
 export const PAGE_HOME_FEATURE2_DESC = 'page_home:feature2__desc';
 
@@ -120,28 +120,28 @@ export const PAGE_HOME_FEATURE3_DESC = 'page_home:feature3__desc';
 /**
  * @description Architecture section title
  * @localZh 项目如何分层
- * @localEn How this repo is split
+ * @localEn How this project is structured
  */
 export const PAGE_HOME_SECTION_ARCH_TITLE = 'page_home:section__arch__title';
 
 /**
  * @description Architecture section body
- * @localZh shared/oauth-wrapper 是通用 OAuth 授权服务器逻辑；oauth-wrapper 是本示例的装配层（会话 cookie、登录编排、Supabase 仓储）。换登录 API 时主要替换 demo-oauth 中的 Provider 适配器并调整 IOC 绑定，内核尽量保持不变。
- * @localEn shared/oauth-wrapper is the reusable OAuth server core. oauth-wrapper is this example’s wiring (session cookie, login orchestration, Supabase repository). To use another login API, replace the provider adapter under demo-oauth and rebind IOC—the core stays stable.
+ * @localZh @qlover/oauth-wrapper 提供通用 OAuth 2.0 协议能力（授权码、PKCE、换票）；next-oauth 通过 SupabaseOAuthProvider 装配 Supabase Auth，实现 GitHub、Google 等第三方登录及邮箱/手机登录，并暴露标准 OAuth 端点供第三方应用接入。
+ * @localEn @qlover/oauth-wrapper provides the reusable OAuth 2.0 protocol core (authorization code, PKCE, token exchange); next-oauth wires Supabase Auth via SupabaseOAuthProvider for GitHub, Google and email/phone sign-in, and exposes standard OAuth endpoints for third-party app integration.
  */
 export const PAGE_HOME_SECTION_ARCH_BODY = 'page_home:section__arch__body';
 
 /**
  * @description Demo deployment section title
- * @localZh 本示例部署：Brain User 登录
- * @localEn This deployment: Brain User login
+ * @localZh 当前部署：Supabase Auth 登录
+ * @localEn This deployment: Supabase Auth sign-in
  */
 export const PAGE_HOME_SECTION_DEMO_TITLE = 'page_home:section__demo__title';
 
 /**
  * @description Demo deployment section body
- * @localZh 当前运行的示例在 oauth-wrapper 中接入了 Brain User API（BrainUserAdapter），环境变量 OAUTH_WRAPPER_API_BASE 指向上游地址。这只是演示一种 Provider；你的 fork 可以换成 Keycloak、自建 REST 等，无需修改 OAuth 协议面。
- * @localEn This running example uses Brain User API via BrainUserAdapter under oauth-wrapper (see OAUTH_WRAPPER_API_BASE). It is one reference provider—your fork can swap in Keycloak, a custom REST API, etc., without changing the OAuth surface.
+ * @localZh 当前实例通过 SupabaseOAuthProvider 接入 Supabase Auth，支持 GitHub、Google 第三方登录以及邮箱密码、手机验证码、邮箱 Magic Link 等多种方式。OAuth 协议面（authorize、token、userinfo）保持不变，第三方应用可无缝对接。
+ * @localEn This instance uses SupabaseOAuthProvider with Supabase Auth, supporting GitHub and Google sign-in along with email/password, phone OTP, email Magic Link and more. The OAuth surface (authorize, token, userinfo) remains consistent for seamless third-party app integration.
  */
 export const PAGE_HOME_SECTION_DEMO_BODY = 'page_home:section__demo__body';
 
@@ -154,8 +154,8 @@ export const PAGE_HOME_API_SNIPPET_TITLE = 'page_home:api__snippet__title';
 
 /**
  * @description API snippet login line note
- * @localZh 终端用户登录（示例 Provider）
- * @localEn End-user sign-in (example provider)
+ * @localZh 终端用户登录（Supabase Auth）
+ * @localEn End-user sign-in (Supabase Auth)
  */
 export const PAGE_HOME_API_SNIPPET_LOGIN = 'page_home:api__snippet__login';
 
@@ -182,7 +182,7 @@ export const PAGE_HOME_CTA_BUTTON = 'page_home:cta__button';
 
 /**
  * @description Footer tagline
- * @localZh 通用 OAuth 2.0 授权包装层
- * @localEn Universal OAuth 2.0 authorization wrapper
+ * @localZh 统一认证登录平台
+ * @localEn Unified authentication platform
  */
 export const PAGE_HOME_FOOTER_TAGLINE = 'page_home:footer__tagline';

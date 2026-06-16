@@ -7,8 +7,8 @@ export const PAGE_OAUTH_PLAYGROUND_TITLE = 'page_oauth_playground:title';
 
 /**
  * @description OAuth playground meta description
- * @localZh 在站内调试通用 OAuth 包装层完整流程（本示例使用 Brain User 登录）
- * @localEn Debug the full universal OAuth wrapper flow in-app (this demo uses Brain User login)
+ * @localZh 在站内调试 Next OAuth 完整 OAuth 流程（基于 Supabase Auth）
+ * @localEn Debug the full OAuth flow in-app with Next OAuth (powered by Supabase Auth)
  */
 export const PAGE_OAUTH_PLAYGROUND_DESCRIPTION =
   'page_oauth_playground:description';
@@ -29,15 +29,15 @@ export const PAGE_OAUTH_PLAYGROUND_KEYWORDS = 'page_oauth_playground:keywords';
 
 /**
  * @description Page intro
- * @localZh 使用已注册客户端的真实参数，在站内完成授权、换票与 userinfo（不跳转到外部 redirect_uri）。步骤 1 需先用本示例的登录页或 POST /api/oauth/verify 建立会话（demo-oauth 接 Brain User）；OAuth 协议步骤本身与上游 Provider 无关。
- * @localEn Use real registered-client parameters to authorize, exchange tokens, and call userinfo without an external redirect. Step 1 requires a session via the login page or POST /api/oauth/verify (demo-oauth + Brain User in this repo); the OAuth steps themselves are provider-agnostic.
+ * @localZh 使用已注册客户端的真实参数，在站内完成授权、换票与 userinfo（不跳转到外部 redirect_uri）。步骤 1 需先通过 GitHub、Google 或邮箱密码等方式登录建立会话；OAuth 协议步骤本身与具体登录方式无关。
+ * @localEn Use real registered-client parameters to authorize, exchange tokens, and call userinfo without an external redirect. Step 1 requires signing in via GitHub, Google or email/password to establish a session; the OAuth steps themselves are independent of the sign-in method.
  */
 export const PAGE_OAUTH_PLAYGROUND_INTRO = 'page_oauth_playground:intro';
 
 /**
  * @description Demo provider note banner
- * @localZh 提示：当前站点示例在 oauth-wrapper 中使用 Brain User 作为上游登录 API；你 fork 时可替换为任意 Provider。
- * @localEn Note: this deployment uses Brain User under oauth-wrapper as the upstream login API—you can swap any provider in your fork.
+ * @localZh 提示：当前站点通过 Supabase Auth 支持 GitHub、Google 第三方登录及邮箱密码登录；OAuth 协议面与登录方式无关。
+ * @localEn Note: this site supports GitHub, Google sign-in and email/password via Supabase Auth; the OAuth surface is independent of the sign-in method.
  */
 export const PAGE_OAUTH_PLAYGROUND_DEMO_NOTE =
   'page_oauth_playground:demo__note';

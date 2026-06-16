@@ -1,3 +1,5 @@
+import type { ValueOf } from '@qlover/fe-corekit';
+
 export const envPrefix = 'NEXT_PUBLIC_';
 
 export const browserGlobalsName = 'feGlobals';
@@ -93,3 +95,9 @@ export const URLParamsKeys = {
  * 查询参数中的语言参数 key
  */
 export const localeQueryParam = 'locale' as const;
+
+export const loginProviders = {
+  GitHub: 'GitHub',
+  Google: 'Google'
+} as const;
+export type LoginProviderType = ValueOf<typeof loginProviders>;
