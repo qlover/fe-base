@@ -1,5 +1,5 @@
 import { inject } from '@shared/container';
-import { API_USER_REQUEST_LOGS } from '@config/apiRoutes';
+import { API_USER_REQUEST_LOGS } from '@config/route';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 import { AppApiRequester } from './AppApiRequester';

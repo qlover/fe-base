@@ -13,9 +13,12 @@ import {
 } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
-import { API_OAUTH_VERIFY } from '@config/apiRoutes';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
-import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
+import {
+  API_OAUTH_VERIFY,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_DOCS_OAUTH
+} from '@config/route';
 
 const primaryButtonClassName =
   'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-md';
@@ -78,7 +81,9 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="rounded-xl border border-primary-border bg-elevated/50 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <CodeOutlined className="text-brand text-lg mt-0.5 shrink-0" />
+            <span className="text-brand text-lg mt-0.5 shrink-0">
+              <CodeOutlined />
+            </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionArchTitle}
             </h2>
@@ -89,7 +94,9 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
         </div>
         <div className="rounded-xl border border-brand/30 bg-brand/5 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <ApiOutlined className="text-brand text-lg mt-0.5 shrink-0" />
+            <span className="text-brand text-lg mt-0.5 shrink-0">
+              <ApiOutlined />
+            </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionDemoTitle}
             </h2>

@@ -22,6 +22,7 @@ export function AppRoutePagePages({
   authButtonShowLogoutLabel,
   showHeaderNav = true,
   headerNav,
+  authButtonLoginOnly: _authButtonLoginOnly,
   tt,
   ...layoutProps
 }: AppRoutePageProps) {

@@ -35,7 +35,13 @@ import {
   type OAuthCallbackParams
 } from '@/uikit/utils/oauthPlaygroundUtils';
 import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
-import { ROUTE_LOGIN, ROUTE_OAUTH_TOKEN, ROUTE_USERINFO } from '@config/route';
+import {
+  API_CLIENTS,
+  API_OAUTH_PLAYGROUND_VALIDATE,
+  ROUTE_LOGIN,
+  ROUTE_OAUTH_TOKEN,
+  ROUTE_USERINFO
+} from '@config/route';
 import type {
   OAuthClientDetail,
   OAuthClientListItem,
@@ -203,7 +209,7 @@ export function OAuthPlayground() {
     setClientsLoading(true);
     try {
       const list = await readAppApiJson<OAuthClientListItem[]>(
-        await fetch('/api/clients', { credentials: 'include' })
+        await fetch(API_CLIENTS, { credentials: 'include' })
       );
       setClients(list);
       if (list.length > 0 && !clientId) {
@@ -234,7 +240,7 @@ export function OAuthPlayground() {
     void (async () => {
       try {
         const detail = await readAppApiJson<OAuthClientDetail>(
-          await fetch(`/api/clients/${encodeURIComponent(clientId)}`, {
+          await fetch(`${API_CLIENTS}/${encodeURIComponent(clientId)}`, {
             credentials: 'include'
           })
         );
@@ -316,7 +322,7 @@ export function OAuthPlayground() {
 
     try {
       const result = await readAppApiJson<ValidateResult>(
-        await fetch(`/api/oauth/playground/validate?${params.toString()}`, {
+        await fetch(`${API_OAUTH_PLAYGROUND_VALIDATE}?${params.toString()}`, {
           credentials: 'include'
         })
       );

@@ -11,9 +11,9 @@ import {
   HeartOutlined
 } from '@ant-design/icons';
 import { useMountedClient } from '@brain-toolkit/react-kit';
+import { useTheme } from '@wrksz/themes/client';
 import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
-import { useTheme } from 'next-themes';
 import { useEffect, useMemo } from 'react';
 import { headerActionButtonClassName } from '@config/component';
 import {
@@ -26,6 +26,7 @@ import { I } from '@config/ioc-identifiter';
 import { type SupportedTheme, themeConfig } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
+import type { DefaultTheme } from '@wrksz/themes/client';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { supportedThemes, storageKey } = themeConfig;
@@ -133,7 +134,7 @@ export function ThemeSwitcher() {
         selectedKeys: mounted ? [resolvedTheme!] : undefined,
         onClick: ({ key }) => {
           if (!mounted) return;
-          setTheme(key);
+          setTheme(key as DefaultTheme);
         }
       }}
     >
@@ -144,7 +145,7 @@ export function ThemeSwitcher() {
         disabled={!mounted}
         onClick={() => {
           if (!mounted) return;
-          setTheme(nextTheme);
+          setTheme(nextTheme as DefaultTheme);
         }}
       >
         <ThemeIcon className="text-base" />
