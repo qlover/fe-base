@@ -40,7 +40,7 @@ import {
   API_OAUTH_PLAYGROUND_VALIDATE,
   ROUTE_LOGIN,
   ROUTE_OAUTH_TOKEN,
-  ROUTE_USERINFO
+  ROUTE_OAUTH_USERINFO
 } from '@config/route';
 import type {
   OAuthClientDetail,
@@ -440,7 +440,7 @@ export function OAuthPlayground() {
     setUserinfoLoading(true);
     setErrorMessage(null);
     try {
-      const res = await fetch(ROUTE_USERINFO, {
+      const res = await fetch(ROUTE_OAUTH_USERINFO, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
       const result = await readAppApiJson(res);

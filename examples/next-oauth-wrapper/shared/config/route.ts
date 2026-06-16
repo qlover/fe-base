@@ -56,8 +56,6 @@ export const ROUTE_OAUTH_TOKEN = '/oauth/token' as const;
 /** RFC 7009 token revocation endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_OAUTH_REVOKE = '/oauth/revoke' as const;
 
-export const ROUTE_OAUTH_CALLBACK = '/oauth/callback' as const;
-
 /** OAuth 2.0 / OIDC userinfo endpoint (machine-to-machine, no locale prefix). */
 export const ROUTE_OAUTH_USERINFO = '/oauth/userinfo' as const;
 

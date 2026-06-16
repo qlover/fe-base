@@ -2,7 +2,6 @@
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import { ThemeProvider } from '@wrksz/themes/next';
 import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { I } from '@config/ioc-identifiter';
 import type { CommonThemeConfig } from '@config/theme';

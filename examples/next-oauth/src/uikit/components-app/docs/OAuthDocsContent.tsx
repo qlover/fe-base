@@ -16,7 +16,7 @@ import {
   ROUTE_OAUTH_AUTHORIZE,
   ROUTE_OAUTH_PLAYGROUND,
   ROUTE_OAUTH_TOKEN,
-  ROUTE_USERINFO
+  ROUTE_OAUTH_USERINFO
 } from '@config/route';
 import type { ReactNode } from 'react';
 
@@ -189,7 +189,7 @@ export function OAuthDocsContent() {
             },
             {
               method: 'GET',
-              path: ROUTE_USERINFO,
+              path: ROUTE_OAUTH_USERINFO,
               label: tt.endpointUserinfo,
               desc: tt.endpointUserinfoDesc
             }
@@ -242,7 +242,7 @@ grant_type=refresh_token
 
       <DocSection id="userinfo" title={tt.sectionUserinfo}>
         <p className={proseClass}>{tt.userinfoBody}</p>
-        <CodeBlock>{`GET ${ROUTE_USERINFO}
+        <CodeBlock>{`GET ${ROUTE_OAUTH_USERINFO}
 Authorization: Bearer ACCESS_TOKEN`}</CodeBlock>
       </DocSection>
 
