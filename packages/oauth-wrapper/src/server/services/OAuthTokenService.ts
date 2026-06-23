@@ -8,17 +8,40 @@ import type {
   OAuthTokenRequest,
   OAuthTokenServiceInterface,
   OAuthWrapperRepositoryInterface,
-  OAuthTokenResponse
+  OAuthTokenResponse,
+  OAuthSessionPayload
 } from '../../core';
-import type { OAuthUserAccessToken } from './OAuthAbstractProvider';
 import { OAuthWrapperError } from '../utils/OAuthWrapperError';
 import { verifyPkceS256 } from '../utils/pkce';
 import type { EncryptorInterface } from '@qlover/fe-corekit';
 
-export type ExchangeProviderAccessToken = (params: {
-  token: string;
-  lang?: string;
-}) => Promise<OAuthUserAccessToken>;
+/**
+ * 主要用于标识交换的 access_token 包装层类型
+ */
+export interface OAuthWrapperAccessToken {
+  provider_token?: string;
+  provider_refresh_token?: string;
+  /**
+   * 用于请求 api 时的 key 名字
+   */
+  token_type: string;
+  /**
+   * access_token 值
+   */
+  access_token: string;
+  /**
+   * 过期时间
+   */
+  expires_in: number;
+  /**
+   * 刷新 token
+   */
+  refresh_token: string;
+}
+
+export type ExchangeProviderAccessToken = (
+  params: OAuthSessionPayload
+) => Promise<OAuthWrapperAccessToken>;
 
 function hashOpaqueToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -211,6 +234,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
 
   protected async fetchProviderAccessToken(userId: string): Promise<{
     access_token: string;
+    refresh_token: string;
     expires_in: number;
   }> {
     const credentials = await this.oauthRepo.getUserCredentials(userId);
@@ -226,7 +250,9 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
 
     try {
       const access = await this.exchangeProviderAccessToken({
-        token: sessionToken
+        providerRefreshToken: sessionToken,
+        // TODO:
+        userId: ''
       });
 
       if (access.refresh_token) {
@@ -238,6 +264,7 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
       }
 
       return {
+        ...access,
         access_token: access.access_token,
         expires_in: access.expires_in
       };
