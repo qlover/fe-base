@@ -4,7 +4,6 @@ import {
   V_REQUEST_LOGS_QUERY_INVALID,
   V_ZOD_FAILED
 } from '@config/i18n-identifier/common/validators';
-import { REQUEST_LOGS_ORDER_BY_WHITELIST } from '@schemas/RequestLogSchema';
 import { searchParamsSchema } from '@schemas/SearchParamsSchema';
 import type {
   ExtendedExecutorError,
@@ -98,13 +97,11 @@ export class SearchParamsValidator implements ValidatorInterface<ResourceSearchP
     }
 
     if (criteria.sort == null) {
-      const orderByRaw =
+      const orderBy =
         searchParams.get('orderBy')?.trim() ||
-        defaultSearchParams.sort[0].orderBy;
+        defaultSearchParams.sort[0].orderBy ||
+        'created_at';
 
-      const orderBy = REQUEST_LOGS_ORDER_BY_WHITELIST.has(orderByRaw)
-        ? orderByRaw
-        : defaultSearchParams.sort[0].orderBy;
       const order = parseOrder(
         searchParams.get('order') ?? defaultSearchParams.sort[0].order
       );

@@ -28,6 +28,9 @@ export interface BootstrapServerRoot {
 
 export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
+  /**
+   * FIXME: 可能会被 ServerContext 代替
+   */
   root: BootstrapServerRoot;
   /**
    * User-agent and IP extracted server-side (`loginContextFromRequest`) when NextApiServer is constructed with `NextRequest`.
@@ -39,7 +42,7 @@ export interface BootstrapServerPlugin extends LifecyclePluginInterface<Bootstra
 
 export interface BootstrapServerContext extends ExecutorContextInterface<BootstrapServerContextOptions> {}
 
-export interface ServerInterface {
+export interface BootstrapServerInterface {
   readonly logger: LoggerInterface;
 
   getIOC(): IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;

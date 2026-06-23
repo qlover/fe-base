@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   return await new NextApiServer({
     name: ROUTE_OAUTH_USERINFO,
     nextRequest: req,
-    event_category: 'oauth-wrapper'
+    event_type: 'oauth-wrapper'
   }).runWithJson(
     async ({ parameters: { IOC } }) => {
       const accessToken = parseBearerAuthorization(

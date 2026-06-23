@@ -27,7 +27,9 @@ export interface UserServiceInterface {
   logout(context?: UserLoginContext): Promise<void>;
 
   refresh(): Promise<UserSchema>;
-  getUser(): Promise<UserSchema>;
+
+  getUser(): Promise<UserSchema | null>;
+  getUser(throwError: boolean): Promise<UserSchema>;
 
   signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult>;
 }

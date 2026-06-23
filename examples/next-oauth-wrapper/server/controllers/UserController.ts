@@ -16,7 +16,6 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
-import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
 import type {
   UserLoginContext,
   UserServiceInterface
@@ -36,7 +35,7 @@ export class UserController {
     protected searchParamsValidator: ValidatorInterface<ResourceSearchParams>,
     @inject(OAuthUserService) protected userService: UserServiceInterface,
     @inject(RequestLogsRepository)
-    protected requestLogsRepository: RequestLogsRepositoryInterface,
+    protected requestLogsRepository: RequestLogsRepository,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer
   ) {
@@ -103,7 +102,7 @@ export class UserController {
     return await this.userService.refresh();
   }
 
-  public async getUser(): Promise<UserSchema> {
+  public async getUser(): Promise<UserSchema | null> {
     return await this.userService.getUser();
   }
 
@@ -116,7 +115,7 @@ export class UserController {
   ): Promise<ResourceSearchResult<RequestLogRow>> {
     const criteria = await this.searchParamsValidator.getThrow(query);
 
-    return await this.requestLogsRepository.searchForCurrentUser(criteria);
+    return await this.requestLogsRepository.search(criteria);
   }
 
   public signWithOtp(body: unknown): Promise<SignOtpResult> {

@@ -20,7 +20,7 @@ export type RequestLogPayload = {
   [key: string]: unknown;
 };
 
-export const requestLogRowSchema = z.object({
+export const requestLogSchema = z.object({
   id: z.uuid(),
   user_id: z.uuid().nullable(),
   created_at: z.string(),
@@ -33,21 +33,12 @@ export const requestLogRowSchema = z.object({
   payload: z.record(z.string(), z.unknown()).nullable()
 });
 
-export type RequestLogRow = z.infer<typeof requestLogRowSchema>;
+export const requestLogCreateSchema = requestLogSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true
+});
 
-export const REQUEST_LOGS_LIST_FIELDS = [
-  'id',
-  'user_id',
-  'created_at',
-  'updated_at',
-  'event_category',
-  'event_type',
-  'success',
-  'request_id',
-  'record_type',
-  'payload'
-] as const;
-
-export const REQUEST_LOGS_ORDER_BY_WHITELIST = new Set<string>(
-  REQUEST_LOGS_LIST_FIELDS as unknown as readonly string[]
-);
+export type RequestLogRow = z.infer<typeof requestLogSchema>;
+export type RequestLogCreateType = z.infer<typeof requestLogCreateSchema>;
