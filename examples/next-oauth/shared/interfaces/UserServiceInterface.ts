@@ -13,8 +13,10 @@ export type LoginProviderResult = {
   provider: string;
 };
 
-export interface UserServiceInterface
-  extends CorekitBridgeUserServiceInterface<UserSchema, UserCredential> {
+export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
+  UserSchema,
+  UserCredential
+> {
   // You can add your own methods here
 
   /**
@@ -36,8 +38,11 @@ export type OAuthConsentPayload = {
   code_challenge_method?: 'S256';
 };
 
-export interface UserServiceGatewayInterface
-  extends UserServiceGateway<UserSchema, UserCredential, {}> {
+export interface UserServiceGatewayInterface extends UserServiceGateway<
+  UserSchema,
+  UserCredential,
+  {}
+> {
   /**
    * 主要用于 OAuth 验证登陆
    *
