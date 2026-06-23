@@ -5,8 +5,7 @@ import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerStateInterface } from '@server/interfaces/ServerStateInterface';
-import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
+import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
@@ -27,18 +26,6 @@ export const IOCIdentifier = Object.freeze({
   I18nServiceInterface: 'I18nServiceInterface',
   ZustandCounterServiceInterface: 'ZustandCounterServiceInterface',
   /**
-   * 数据库桥接接
-   * 你可以实现不同的例如
-   * - Vercel Postgres
-   * - supabase
-   * - mysql
-   * - postgresql
-   * - mongodb
-   * - redis
-   * - sqllite
-   */
-  DBBridgeInterface: 'DBBridgeInterface',
-  /**
    * OAuth 包装服务提供接口
    */
   OAuthWrapperProviderInterface: 'OAuthWrapperProviderInterface',
@@ -48,7 +35,7 @@ export const IOCIdentifier = Object.freeze({
    *
    * 比如当次请求的 locale 等
    */
-  ServerStateInterface: 'ServerStateInterface'
+  ServerContextInterface: 'ServerContextInterface'
 });
 
 export const I = IOCIdentifier;
@@ -86,7 +73,6 @@ export interface IOCIdentifierMap {
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
-  [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
   [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
-  [IOCIdentifier.ServerStateInterface]: ServerStateInterface;
+  [IOCIdentifier.ServerContextInterface]: ServerContextInterface;
 }

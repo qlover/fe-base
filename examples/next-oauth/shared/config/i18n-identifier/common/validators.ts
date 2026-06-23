@@ -54,3 +54,10 @@ export const V_ZOD_FAILED = 'common:v:zod_failed';
  */
 export const V_REQUEST_LOGS_QUERY_INVALID =
   'common:v:request_logs_query_invalid';
+
+/**
+ * @description 无效 id
+ * @localZh 无效 id
+ * @localEn Ivalid id
+ */
+export const V_INVALID_ID = 'common:v:invalid_id';

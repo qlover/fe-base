@@ -164,7 +164,7 @@ export function hasSessionPath(pathname: string): boolean {
 /**
  * 是否需要携带国际化路由的路径
  *
- * 一般来说，除了 isOAuthRoutePath 的 pat h其余都需要带上
+ * 一般来说，除了 isOAuthRoutePath 的 path 其余都需要带上
  * @param pathname
  */
 export function hasLocalPath(pathname: string): boolean {
@@ -173,6 +173,8 @@ export function hasLocalPath(pathname: string): boolean {
 
 /**
  * 用于将请求重定向到某个路径，但是会携带当前 pathnmae 参数，用于重定向回来
+ *
+ * **默认重定向到 login 页面**
  *
  * 常见场景为访问了需要登陆的页面时没有登陆则会重定向到登陆页面，当登陆成功后可以在根据参数重定向回来
  *

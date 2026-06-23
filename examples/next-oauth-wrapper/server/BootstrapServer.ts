@@ -9,8 +9,8 @@ import type {
   BootstrapServerContextOptions,
   BootstrapServerPlugin,
   BootstrapServerRoot,
-  ServerInterface
-} from './interfaces/ServerInterface';
+  BootstrapServerInterface
+} from './interfaces/BootstrapServerInterface';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
@@ -29,7 +29,7 @@ type BootstrapServerIOC = IOCFunctionInterface<
 >;
 
 export class BootstrapServer
-  implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
+  implements BootstrapInterface<BootstrapServerPlugin>, BootstrapServerInterface
 {
   protected readonly executor: LifecycleExecutor<
     BootstrapServerContext,

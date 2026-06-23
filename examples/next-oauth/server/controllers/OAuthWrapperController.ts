@@ -1,8 +1,5 @@
 import { Base64Serializer, ExecutorError } from '@qlover/fe-corekit';
-import {
-  OAuthTokenResponse,
-  OAuthUserInfoResponse
-} from '@qlover/oauth-wrapper';
+import { OAuthTokenResponse } from '@qlover/oauth-wrapper';
 import { injectable, inject } from '@shared/container';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
@@ -99,9 +96,7 @@ export class OAuthWrapperController {
     return await this.oauthProvider.revokeToken(fields);
   }
 
-  public async getUserInfo(
-    accessToken: string
-  ): Promise<OAuthUserInfoResponse> {
+  public async getUserInfo(accessToken: string): Promise<UserSchema> {
     return await this.oauthProvider.getUserInfoWithAccessToken(accessToken);
   }
 

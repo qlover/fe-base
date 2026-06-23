@@ -10,7 +10,7 @@ jobs:
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       # Disable daemon process to prevent hangs in CI
       NX_DAEMON: "false"
 
@@ -33,11 +33,23 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: Reset Nx
-        run: |
-          npx nx reset
-          rm -rf .nx/cache/cloud
-
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      
+      - name: Cache NX cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-cache-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            nx-cache-${{ github.ref_name }}-
+            nx-cache-master-
+      
       # Build fe-scripts with NX Cloud (daemon disabled to prevent hangs)
       - name: Build fe-scripts
         timeout-minutes: 5

@@ -1,37 +1,39 @@
-// Import your routing configuration which contains all locales, defaultLocale, and pathnames
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
-import { isOAuthMachinePath } from '@config/route';
-import { oauthWrapperProxySession } from '@server/utils/OAuthWrapperProxy';
+import { ServerConfig } from '@server/ServerConfig';
+import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { routing } from './i18n/routing';
 
+/**
+ * 中间件主逻辑
+ * 1. 处理国际化路径前缀（使用 next-intl）
+ * 2. 检查是否需要登录，若未登录则重定向到登录页
+ */
 export default async function proxy(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+  // ---------- 第一步：处理国际化 ----------
+  const localPathResponse = createMiddleware(routing)(request);
 
-  if (isOAuthMachinePath(pathname)) {
-    return NextResponse.next({ request });
+  // 如果国际化中间件已经返回了重定向（例如自动将根路径重定向到默认语言），
+  // 则直接返回，不再进行登录检查（避免干扰）
+  if (localPathResponse.status >= 300 && localPathResponse.status < 400) {
+    return localPathResponse;
   }
 
-  // OAuth wrapper auth:
-  const sessionResponse = await oauthWrapperProxySession(request);
-  if (sessionResponse.headers.get('Location')) {
-    return sessionResponse;
+  const oauthSession = new OAuthSessionService(new ServerConfig());
+  // ---------- 第二步：登录检查 ----------
+  if (oauthSession.hasNeedProxy(request)) {
+    // 将国际化响应作为“通过”时的返回值传给 oauthSession
+    return await oauthSession.sessionProxy(request, localPathResponse);
   }
 
-  return createMiddleware(routing)(request);
+  // 不需要登录：返回国际化处理后的响应
+  return localPathResponse;
 }
 
 // Next.js middleware configuration object
 export const config = {
   matcher: [
-    '/', // Match the root path explicitly
-
-    // Match all paths except for:
-    // - API routes
-    // - Next.js internals (_next/*)
-    // - Static files (*.svg, *.png, *.jpg, *.jpeg, *.gif, *.ico)
-    // - Other static assets and special files
-    // - Manifest file (manifest.webmanifest)
+    '/',
     '/((?!api|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml|manifest.webmanifest).*)'
   ]
 };

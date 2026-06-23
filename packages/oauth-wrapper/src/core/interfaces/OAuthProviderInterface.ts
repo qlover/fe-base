@@ -1,8 +1,10 @@
-import type { OAuthSessionPayload } from './OAuthSessionInterface';
+import type {
+  OAuthSessionPayload,
+  WithUserSession
+} from './OAuthSessionInterface';
 import type { OAuthTokenRequest } from '../schema/OAuthTokenSchema';
 import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryInterface';
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
-import type { OAuthUserInfoResponse } from '../schema/OAuthUserInfoSchema';
 import type { LoginParams } from '@qlover/corekit-bridge/core';
 import type { SignWithOtpSchema } from '@qlover/oauth-wrapper';
 
@@ -57,6 +59,7 @@ export type ResolveAuthorizePageResult =
   | { ok: false; error: OAuthAuthorizeValidationError };
 
 export interface OAuthProviderInterface<
+  User,
   SessionPayload extends OAuthSessionPayload
 > extends OAuthTokenServiceInterface {
   login(params: LoginParams): Promise<SessionPayload>;
@@ -93,9 +96,19 @@ export interface OAuthProviderInterface<
    */
   processConsent(requestBody: unknown): Promise<OAuthConsentResult>;
 
-  getUserInfoWithAccessToken(
-    accessToken: string
-  ): Promise<OAuthUserInfoResponse>;
+  /**
+   * 使用 access_token 获取用户信息
+   * @param accessToken
+   */
+  getUserInfoWithAccessToken(accessToken: string): Promise<User>;
+
+  /**
+   * 刷新会话数据
+   * @param params
+   */
+  refreshUser(params?: {
+    refresh_token: string;
+  }): Promise<WithUserSession<SessionPayload, User>>;
 }
 
 export type SignWithOtpParams =

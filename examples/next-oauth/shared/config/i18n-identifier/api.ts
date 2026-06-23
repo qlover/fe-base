@@ -141,3 +141,38 @@ export const API_OAUTH_SERVER_ERROR = 'api:oauth_server_error';
  * @localEn OAuth wrapper sign-in failed
  */
 export const API_OAUTH_WRAPPER_AUTH_FAILED = 'api:oauth_wrapper_auth_failed';
+
+/**
+ * @description 请求体为空
+ * @localZh 请求参数为空空
+ * @localEn Request Params is required
+ */
+export const API_REQUEST_BODY_EMPTY = 'api:request_body_empty';
+
+/**
+ * @description 没有pam 项目
+ * @localZh 项目未找到
+ * @localEn Project Not Found
+ */
+export const API_PAM_PROJECT_NOT_FOUND = 'api:pam_project_not_found';
+
+/**
+ * @description 没有pam 环境
+ * @localZh 环境无效
+ * @localEn PAM Environment Invalid
+ */
+export const API_PAM_ENV_NOT_FOUND = 'api:pam_env_not_found';
+
+/**
+ * @description 项目 slug 不能重复
+ * @localZh 项目 slug 已存在
+ * @localEn PAM slug already exists
+ */
+export const API_PAM_SLUG_EXISTS = 'api:pam_slug_exists';
+
+/**
+ * @description 环境名不能重复
+ * @localZh 环境名已存在
+ * @localEn Env name already exists
+ */
+export const API_PAM_ENV_NAME_EXISTS = 'api:pam_env_name_exists';

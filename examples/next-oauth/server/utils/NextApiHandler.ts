@@ -11,7 +11,7 @@ import type {
   AppApiSuccessInterface
 } from '@interfaces/AppApiInterface';
 import { isAppApiResult } from '@interfaces/AppApiInterface';
-import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import type { OAuthRfcCodeType } from '@qlover/oauth-wrapper';
 
@@ -53,23 +53,8 @@ function isResultHandlerContext(value: unknown): value is ResultHandlerContext {
 
 export type ResultHandlerContext = (typeof ResultCotnext)['prototype'];
 
-export type ResultHandlerOptions = {
-  started: number;
-  logger: LoggerInterface;
-  config: SeedServerConfigInterface;
-  requestId: string;
-};
-
 export interface ResultHandlerInterface {
-  handler<T>(
-    value: unknown,
-    options: Readonly<ResultHandlerOptions>
-  ): AppApiResult<T>;
-
-  getContext(): ResultHandlerContext;
-  getContext<K extends keyof ResultHandlerContext>(
-    prop: K
-  ): ResultHandlerContext[K];
+  handler<T>(value: unknown, context: ServerContextInterface): AppApiResult<T>;
 }
 
 function toI18nOAuthError(error: OAuthWrapperError): OAuthWrapperError {
@@ -86,45 +71,23 @@ function toI18nOAuthError(error: OAuthWrapperError): OAuthWrapperError {
  * 它会处理任何接口、服务返回的数据，包装成统一的格式 `AppApiResult`
  */
 export class NextApiHandler implements ResultHandlerInterface {
-  protected context: ResultHandlerContext = {};
+  constructor(
+    protected logger: LoggerInterface,
+    protected serverContext: ServerContextInterface
+  ) {}
 
   /**
    * @override
    */
-  public getContext(): ResultHandlerContext;
-  /**
-   * @override
-   */
-  public getContext<K extends keyof ResultHandlerContext>(
-    prop: K
-  ): ResultHandlerContext[K];
-  /**
-   * @override
-   */
-  public getContext(
-    prop?: keyof ResultHandlerContext
-  ): ResultHandlerContext | ResultHandlerContext[keyof ResultHandlerContext] {
-    if (prop !== undefined) {
-      return this.context[prop];
-    }
-    return this.context;
-  }
-
-  /**
-   * @override
-   */
-  public handler<T>(
-    value: unknown,
-    options: Readonly<ResultHandlerOptions>
-  ): AppApiResult<T> {
+  public handler<T>(value: unknown): AppApiResult<T> {
     // 如果 value 本身就是 AppApiResult 结果, 则直接返回
     // 可能是在 server 层或控制层返回了正确的数据
     if (isAppApiResult<T>(value)) {
       return value;
     }
 
-    if (this.handlerResultContext(value, options)) {
-      return NextApiHandler.createApiSuccess(value as T, options);
+    if (this.handlerResultContext(value)) {
+      return NextApiHandler.createApiSuccess(value as T, this.serverContext);
     }
 
     // 如果是 oauth 包裹错误对象, 该对象有一个 httpStatus 属性需要注入
@@ -132,48 +95,48 @@ export class NextApiHandler implements ResultHandlerInterface {
 
     // 如果是 Zod 验证错误,则直接返回
     if (value instanceof ZodError) {
-      return NextApiHandler.createWithZodError(value, options);
+      return NextApiHandler.createWithZodError(value, this.serverContext);
     }
 
     // 如果是一个执行错误
     if (value instanceof ExecutorError) {
       // 如果 excutorError 的 cause 是一个 ResultHandlerContext 对象
-      if (this.handlerResultContext(value.cause, options)) {
-        options.logger.debug('NextApiHandler handler', value);
-        return NextApiHandler.createServerError(options);
+      if (this.handlerResultContext(value.cause)) {
+        this.logger.debug('NextApiHandler handler', value);
+        return NextApiHandler.createServerError(this.serverContext);
       }
 
-      return NextApiHandler.createWithExecutorError(value, options);
+      return NextApiHandler.createWithExecutorError(value, this.serverContext);
     }
 
     // 如果是未捕获的情况都返回服务器错误
     if (value instanceof Error) {
-      return NextApiHandler.createServerError(options, value);
+      return NextApiHandler.createServerError(this.serverContext, value);
     }
 
-    return NextApiHandler.createApiSuccess(value as T, options);
+    return NextApiHandler.createApiSuccess(value as T, this.serverContext);
   }
 
   protected handlerResultContext(
-    value: unknown,
-    options: Readonly<ResultHandlerOptions>
+    value: unknown
   ): value is ResultHandlerContext {
     if (isResultHandlerContext(value)) {
-      options.logger.debug('is ResultCotnext', value);
-      this.context = Object.assign(this.context, value);
+      this.logger.debug('is ResultCotnext', value);
+
+      this.serverContext.changeState(value);
       return true;
     }
     return false;
   }
 
   protected static createServerError(
-    options: Readonly<ResultHandlerOptions>,
+    context: ServerContextInterface,
     message?: Error | string
   ): AppApiErrorInterface {
     return NextApiHandler.createApiError(
       API_SERVER_ERROR,
       message instanceof Error ? message.message : (message ?? ''),
-      options
+      context
     );
   }
 
@@ -183,7 +146,7 @@ export class NextApiHandler implements ResultHandlerInterface {
    */
   protected handlerOAuthWrapper<T>(value: T): T {
     if (value instanceof OAuthWrapperError) {
-      this.context.httpStatus = value.status;
+      this.serverContext.changeState({ httpStatus: value.status });
       return toI18nOAuthError(value) as T;
     }
 
@@ -192,47 +155,66 @@ export class NextApiHandler implements ResultHandlerInterface {
 
   public static createApiSuccess<T>(
     data: T,
-    options: Readonly<ResultHandlerOptions>
+    context: ServerContextInterface
   ): AppApiSuccessInterface<T> {
     return {
       success: true,
       data,
-      requestId: options.requestId
+      requestId: context.getState('uid')
     };
   }
 
   public static createWithExecutorError(
     error: ExecutorError,
-    options: Readonly<ResultHandlerOptions>
+    context: ServerContextInterface
   ): AppApiErrorInterface {
-    // 如果配置为生产环境，则返回空消息的错
-    if (options.config.isProduction) {
-      return NextApiHandler.createApiError(error.id, '', options);
+    const cause = error.cause;
+    // // TODO: 如果配置为生产环境，则返回空消息的错
+    // if (options.config.isProduction) {
+    //   return NextApiHandler.createApiError(error.id, '', context);
+    // }
+
+    if (cause instanceof ZodError) {
+      return NextApiHandler.createWithZodError(cause, context);
     }
 
-    if (error.cause instanceof ZodError) {
-      return NextApiHandler.createWithZodError(error.cause, options);
+    // 如果 cause 是一个普通数据, 则返回到 data 中
+    if (isPlainObject(cause) || Array.isArray(cause)) {
+      return NextApiHandler.createApiErrorWithCause(error.id, cause, context);
     }
 
-    return NextApiHandler.createApiError(error.id, error.message, options);
+    return NextApiHandler.createApiError(error.id, error.message, context);
   }
 
   public static createApiError(
     id: string,
     message: string,
-    options: Readonly<ResultHandlerOptions>
+    context: ServerContextInterface
   ): AppApiErrorInterface {
     return {
       id,
       success: false,
-      requestId: options.requestId,
+      requestId: context.getState('uid'),
       message
+    };
+  }
+
+  public static createApiErrorWithCause(
+    id: string,
+    data: unknown,
+    context: ServerContextInterface
+  ): AppApiErrorInterface {
+    return {
+      id,
+      success: false,
+      requestId: context.getState('uid'),
+      data
     };
   }
 
   public static createWithZodError(
     error: ZodError,
-    options: Readonly<ResultHandlerOptions>
+    context: ServerContextInterface
   ): AppApiErrorInterface {
     // Zod is already logged in BootstrapServer onError (e.g. nextApiServerBackstop); avoid duplicate.
 
@@ -243,11 +225,11 @@ export class NextApiHandler implements ResultHandlerInterface {
         return NextApiHandler.createApiError(
           V_ZOD_FAILED,
           first(messageList)?.message,
-          options
+          context
         );
       }
     } catch {}
 
-    return NextApiHandler.createApiError(V_ZOD_FAILED, error.message, options);
+    return NextApiHandler.createApiError(V_ZOD_FAILED, error.message, context);
   }
 }

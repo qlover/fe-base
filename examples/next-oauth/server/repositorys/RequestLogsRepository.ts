@@ -1,142 +1,128 @@
+import { NextRequest } from 'next/server';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import {
-  REQUEST_LOGS_LIST_FIELDS,
-  REQUEST_LOGS_ORDER_BY_WHITELIST,
+  RequestLogCreateType,
   type RequestLogRow
 } from '@schemas/RequestLogSchema';
-import type { PaginationInfo } from '@schemas/SearchResultSchema';
-import type {
-  RequestLogInsert,
-  RequestLogsRepositoryInterface,
-  RequestLogsSearchForUserParams
-} from '@server/interfaces/RequestLogsRepositoryInterface';
-import { BaseRepo } from './BaseRepo';
-import { SupabaseBridge } from './SupabaseBridge';
-import type {
-  ResourceSearchParams,
-  ResourceSearchResult
-} from '@qlover/corekit-bridge';
+import { AppApiResult } from '@interfaces/AppApiInterface';
+import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
+import { UserLoginContext } from '@server/interfaces/UserServiceInterface';
+import { SupabaseRepo } from './SupabaseRepo';
 import type { LoggerInterface } from '@qlover/logger';
 
 const TABLE = 'request_logs';
 
-const LIST_FIELDS = REQUEST_LOGS_LIST_FIELDS;
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 20;
-const MAX_PAGE_SIZE = 100;
-const DEFAULT_SORT_FIELD = 'created_at';
-
-function clampPageSize(n: number): number {
-  if (!Number.isFinite(n) || n < 1) {
-    return DEFAULT_PAGE_SIZE;
-  }
-  return Math.min(Math.floor(n), MAX_PAGE_SIZE);
-}
-
-function resolvePageAndSize(criteria: ResourceSearchParams): PaginationInfo {
-  const pageSize = clampPageSize(criteria.pageSize ?? DEFAULT_PAGE_SIZE);
-  if (
-    criteria.page != null &&
-    Number.isFinite(criteria.page) &&
-    criteria.page >= 1
-  ) {
-    return { page: Math.floor(criteria.page), pageSize };
-  }
-  if (
-    criteria.offset != null &&
-    Number.isFinite(criteria.offset) &&
-    criteria.offset >= 0
-  ) {
-    const page = Math.floor(criteria.offset / pageSize) + 1;
-    return { page, pageSize };
-  }
-  return { page: DEFAULT_PAGE, pageSize };
-}
-
-function resolveOrderBy(criteria: ResourceSearchParams): [string, 0 | 1] {
-  const first = criteria.sort?.[0];
-  const rawField = first?.orderBy?.trim() || DEFAULT_SORT_FIELD;
-  const field = REQUEST_LOGS_ORDER_BY_WHITELIST.has(rawField)
-    ? rawField
-    : DEFAULT_SORT_FIELD;
-  const o = first?.order;
-  const ascending = typeof o === 'string' && o.toLowerCase() === 'asc';
-  return [field, ascending ? 0 : 1];
-}
+export type HttpReqeustLogParams = {
+  http_method: string;
+  http_path: string;
+  http_status: number;
+  duration_ms: number;
+  user_agent: string;
+  ip_address: string;
+  correlation_id: string;
+  error_code: string | null;
+  error_message: string | null;
+};
 
 @injectable()
-export class RequestLogsRepository
-  extends BaseRepo
-  implements RequestLogsRepositoryInterface
-{
+export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
-  constructor(
-    @inject(SupabaseBridge)
-    protected supabaseBridge: SupabaseBridge
-  ) {
-    super(supabaseBridge, TABLE);
+  @inject(I.ServerContextInterface)
+  protected serverContext!: ServerContextInterface;
+
+  constructor() {
+    super(TABLE);
+  }
+
+  protected getLoginContext(req: NextRequest): UserLoginContext {
+    const forwarded = req.headers.get('x-forwarded-for');
+    const ip =
+      forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
+    return {
+      userAgent: req.headers.get('user-agent'),
+      ipAddress: ip
+    };
   }
 
   /**
-   * @override
+   * api 请求日志包含以下内容:
+   *
+   * @param params
+   * @returns
    */
-  public async insertEvent(row: RequestLogInsert): Promise<void> {
-    try {
-      await this.supabaseBridge.add({
-        table: TABLE,
-        data: {
-          event_category: row.event_category,
-          event_type: row.event_type,
-          success: row.success ?? true,
-          request_id: row.request_id ?? null,
-          record_type: row.record_type ?? null,
-          payload: row.payload ?? null
-        }
-      });
-    } catch (error) {
-      this.logger.warn('request_logs insert failed', error);
+  public async insertWithApiResult(
+    result: AppApiResult<unknown>,
+    params: {
+      request: NextRequest;
+      user_id?: string;
     }
+  ): Promise<RequestLogCreateType> {
+    const { request } = params;
+    const durationMs = Math.round(
+      performance.now() - this.serverContext.getState('started')
+    );
+    const { userAgent, ipAddress } = this.getLoginContext(request);
+    const success = result.success === true;
+    const httpStatus = success ? 200 : 400;
+    const errorCode = success ? null : result.id;
+    const errorMessage = success ? null : (result.message ?? null);
+    const correlationId = result.requestId;
+
+    const data: RequestLogCreateType = {
+      event_category: 'api',
+      event_type: this.serverContext.getState('event_type') || '_default.type',
+      success,
+      request_id: correlationId?.trim() ? correlationId : null,
+      record_type: request.nextUrl.pathname,
+      payload: {
+        http_method: request.method,
+        http_path: request.nextUrl.pathname,
+        http_status: httpStatus,
+        duration_ms: durationMs,
+        user_agent: userAgent,
+        ip_address: ipAddress,
+        correlation_id: correlationId,
+        error_code: errorCode,
+        error_message: errorMessage
+      }
+    };
+
+    if (params.user_id) {
+      (data as RequestLogRow).user_id = params.user_id;
+    }
+
+    await this.insert({ data: data as RequestLogRow });
+
+    return data;
   }
 
-  /**
-   * @override
-   */
-  public async searchForCurrentUser(
-    criteria: RequestLogsSearchForUserParams
-  ): Promise<ResourceSearchResult<RequestLogRow>> {
-    const { page, pageSize } = resolvePageAndSize(criteria);
-    const orderBy = resolveOrderBy(criteria);
-    try {
-      const result = await this.supabaseBridge.pagination({
-        table: TABLE,
-        fields: LIST_FIELDS.join(','),
-        page,
-        pageSize,
-        orderBy
-      });
-      const items = (result.data ?? []) as RequestLogRow[];
-      const total = result.count ?? items.length;
-      const hasMore = page * pageSize < total;
-      return {
-        items,
-        total,
-        page,
-        pageSize,
-        hasMore
-      };
-    } catch (error) {
-      this.logger.warn('request_logs search failed', error);
-      return {
-        items: [],
-        total: 0,
-        page,
-        pageSize,
-        hasMore: false
-      };
+  public async insertWithAuth(
+    params: UserLoginContext & {
+      auth_provider: string;
+      event_type: string;
+      user_id?: string;
+      login_method?: string;
     }
+  ): Promise<void> {
+    const data: RequestLogCreateType = {
+      event_category: 'auth',
+      event_type: params.event_type,
+      success: true,
+      request_id: this.serverContext.getState('uid'),
+      record_type: 'auth',
+      payload: {
+        auth_provider: params.auth_provider,
+        user_agent: params.userAgent,
+        ip_address: params.ipAddress,
+        login_method: params.login_method
+      }
+    };
+
+    await this.insert({
+      data: data as RequestLogRow
+    });
   }
 }

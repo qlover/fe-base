@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
   return await new NextApiServer({
     name: ROUTE_OAUTH_TOKEN,
     nextRequest: req,
-    event_category: 'oauth-wrapper'
+    event_type: 'oauth-wrapper-token'
   }).runWithJson(
     async ({ parameters: { IOC } }) =>
       IOC(OAuthWrapperController).exchangeToken(

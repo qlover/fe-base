@@ -80,7 +80,8 @@ describe('OAuthTokenService', () => {
     exchangeProviderAccessToken = vi.fn(async () => ({
       access_token: 'provider-access-token',
       expires_in: 3600,
-      refresh_token: 'provider-refresh-token'
+      refresh_token: 'provider-refresh-token',
+      token_type: 'Bearer'
     }));
     service = new OAuthTokenService(
       new MockEncryptor(),

@@ -1,4 +1,3 @@
-export * from './services/OAuthAbstractProvider';
 export * from './services/OAuthClientsService';
 export * from './services/OAuthTokenService';
 export * from './services/OAuthWrapperService';
