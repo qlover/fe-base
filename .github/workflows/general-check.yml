@@ -10,7 +10,8 @@ jobs:
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      # Disable NX Cloud to avoid quota issues, use local cache only
+      # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       # Disable daemon process to prevent hangs in CI
       NX_DAEMON: "false"
 
@@ -33,22 +34,17 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: Reset Nx
-        run: |
-          npx nx reset
-          rm -rf .nx/cache/cloud
-
-      # Build fe-scripts with NX Cloud (daemon disabled to prevent hangs)
+      # Build fe-scripts with local cache only (no cloud)
       - name: Build fe-scripts
         timeout-minutes: 5
-        run: npx nx build @qlover/fe-scripts
+        run: npx nx build @qlover/fe-scripts --no-cloud
       
-      # Build all packages with NX Cloud acceleration
+      # Build all packages with local cache only
       - name: Build packages (exclude examples)
         timeout-minutes: 10
         run: pnpm build:packages
         
-      # Lint with NX Cloud cache for speed
+      # Lint with local cache
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint

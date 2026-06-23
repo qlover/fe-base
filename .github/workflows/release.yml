@@ -17,7 +17,8 @@ jobs:
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      # Disable NX Cloud to avoid quota issues, use local cache only
+      # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NX_DAEMON: "false"
 
     steps:
@@ -45,17 +46,17 @@ jobs:
       # - run: pnpm lint
       # - run: pnpm test
 
-      # Build all packages with NX Cloud acceleration
+      # Build all packages with local cache only
       - name: Build (affected force)
         timeout-minutes: 15
         run: pnpm build:packages:force
         
-      # Lint with NX Cloud cache
+      # Lint with local cache
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint:force
         
-      # Test with NX Cloud cache
+      # Test with local cache
       - name: Test
         timeout-minutes: 10
         run: pnpm test:force
@@ -73,7 +74,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      # Disable NX Cloud to avoid quota issues, use local cache only
+      # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NX_DAEMON: "false"
 
     steps:
@@ -102,17 +104,17 @@ jobs:
       # - run: pnpm lint
       # - run: pnpm test
 
-      # Build all packages with NX Cloud acceleration
+      # Build all packages with local cache only
       - name: Build (affected force)
         timeout-minutes: 15
         run: pnpm build:packages:force
         
-      # Lint with NX Cloud cache
+      # Lint with local cache
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint:force
         
-      # Test with NX Cloud cache
+      # Test with local cache
       - name: Test
         timeout-minutes: 10
         run: pnpm test:force
