@@ -1,5 +1,3 @@
-import type { UserSchema } from '@schemas/UserSchema';
-
 export interface ServerAuthInterface {
   setAuth(credential_token: string): Promise<void>;
 
@@ -10,6 +8,4 @@ export interface ServerAuthInterface {
   hasAuth(): Promise<boolean>;
 
   throwIfNotAuth(): Promise<void>;
-
-  getUser(): Promise<UserSchema | null>;
 }

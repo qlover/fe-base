@@ -3,7 +3,6 @@ import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
 import { API_LOCALES_JSON } from '@config/route';
 import { LocalesController } from '@server/controllers/LocalesController';
-import type { LocalesControllerJsonQuery } from '@server/interfaces/LocalesControllerInterface';
 import { NextApiServer } from '@server/NextApiServer';
 
 // Use literal value instead of imported config to ensure static analysis
@@ -48,10 +47,7 @@ export async function GET(req: NextRequest) {
   const locale = searchParams.locale as LocaleType;
 
   const result = await new NextApiServer(API_LOCALES_JSON, req).run(
-    async ({ parameters: { IOC } }) =>
-      IOC(LocalesController).json(
-        searchParams as unknown as LocalesControllerJsonQuery
-      )
+    async ({ parameters: { IOC } }) => IOC(LocalesController).json(searchParams)
   );
 
   if (!result.success) {

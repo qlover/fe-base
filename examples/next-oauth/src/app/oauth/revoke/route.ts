@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   return await new NextApiServer({
     name: ROUTE_OAUTH_REVOKE,
     nextRequest: req,
-    event_category: 'oauth-wrapper'
+    event_type: 'oauth-wrapper-revoke'
   }).runWithJson(
     async ({ parameters: { IOC } }) =>
       IOC(OAuthWrapperController).revokeToken(

@@ -1,7 +1,7 @@
 import type {
   BootstrapServerContext,
   BootstrapServerPlugin
-} from '@server/interfaces/ServerInterface';
+} from '@server/interfaces/BootstrapServerInterface';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 
 export class ServerAuthPlugin implements BootstrapServerPlugin {

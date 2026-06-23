@@ -1,4 +1,4 @@
-import type { BootstrapServerPlugin } from '@server/interfaces/ServerInterface';
+import type { BootstrapServerPlugin } from '@server/interfaces/BootstrapServerInterface';
 
 export const printRequestIdPlugin: BootstrapServerPlugin = {
   pluginName: 'print-request-id',
