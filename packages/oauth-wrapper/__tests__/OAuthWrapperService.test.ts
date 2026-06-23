@@ -4,7 +4,8 @@ import type { EncryptorInterface } from '@qlover/fe-corekit';
 import { OAuthRfcCodes } from '@qlover/oauth-wrapper/core';
 import type {
   OAuthSessionInterface,
-  OAuthSessionPayload
+  OAuthSessionPayload,
+  WithUserSession
 } from '../src/core/interfaces/OAuthSessionInterface';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
 import { OAuthWrapperService } from '../src/server/services/OAuthWrapperService';
@@ -30,7 +31,11 @@ class MockOAuthRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public create = vi.fn(async () => undefined);
 }
 
-class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
+type TestUser = Record<string, unknown>;
+class MockOAuthSession implements OAuthSessionInterface<
+  OAuthSessionPayload,
+  TestUser
+> {
   public hasSession(): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
@@ -39,9 +44,7 @@ class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
   }
   public session: OAuthSessionPayload | null = {
     userId: '42',
-    email: '',
-    name: '',
-    providerSessionToken: ''
+    providerRefreshToken: ''
   };
 
   public getSession = vi.fn(async () => this.session);
@@ -51,7 +54,16 @@ class MockOAuthSession implements OAuthSessionInterface<OAuthSessionPayload> {
   });
 }
 
-class TestOAuthWrapperService extends OAuthWrapperService<OAuthSessionPayload> {
+class TestOAuthWrapperService extends OAuthWrapperService<
+  TestUser,
+  OAuthSessionPayload
+> {
+  // TODO: test refresh user
+  public refreshUser(_params?: {
+    refresh_token: string;
+  }): Promise<WithUserSession<OAuthSessionPayload, TestUser>> {
+    throw new Error('Method not implemented.');
+  }
   public providerLogin = vi.fn();
   public providerExchangeAccessToken = vi.fn();
   public providerGetUserInfo = vi.fn();
@@ -62,7 +74,7 @@ class TestOAuthWrapperService extends OAuthWrapperService<OAuthSessionPayload> {
   }));
 
   constructor(
-    session: OAuthSessionInterface<OAuthSessionPayload>,
+    session: OAuthSessionInterface<OAuthSessionPayload, TestUser>,
     repo: OAuthWrapperRepositoryInterface
   ) {
     super(session, new MockEncryptor(), repo);
@@ -182,7 +194,7 @@ describe('OAuthWrapperService', () => {
       const userinfo = await service.getUserInfoWithAccessToken('access-token');
 
       expect(userinfo).toEqual({
-        sub: '42',
+        id: 42,
         email: 'user@example.com',
         name: 'Test User'
       });
