@@ -86,7 +86,7 @@ import Changelog from '../plugins/Changelog';
 const innerTuples: PluginTuple<PluginClass>[] = [
   tuple(Workspaces),
   tuple(Changelog, {}),
-  tuple(GithubPR, {})
+  // tuple(GithubPR, {})
 ];
 
 /**
@@ -234,10 +234,10 @@ export default class ReleaseTask {
     ]);
 
     plugins.forEach((plugin) => {
-      // set executor to workspaces plugin
-      if (plugin instanceof Workspaces) {
-        plugin.setReleaseTask(this);
-      }
+      // // set executor to workspaces plugin
+      // if (plugin instanceof Workspaces) {
+      //   plugin.setReleaseTask(this);
+      // }
 
       this.executor.use(plugin);
     });

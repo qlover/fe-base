@@ -6,6 +6,7 @@
       "pushChangedLabels": true
     },
     "changelog": {
+      "dependencyReleaseTemplate": "- Update dependency **${dep.name}** from `${dep.oldVersion}` to `${dep.newVersion}`",
       "formatTemplate": "\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}",
       "commitBody": true,
       "types": [

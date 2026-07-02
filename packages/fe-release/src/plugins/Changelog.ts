@@ -197,27 +197,6 @@ export default class Changelog extends ScriptPlugin<
   }
 
   /**
-   * Determines if the plugin should be enabled
-   *
-   * Plugin is enabled unless explicitly skipped via configuration.
-   * This allows for conditional changelog generation.
-   *
-   * @returns True if plugin should be enabled
-   *
-   * @example
-   * ```typescript
-   * const plugin = new Changelog(context, { skip: true });
-   * plugin.enabled(); // false
-   *
-   * const plugin2 = new Changelog(context, {});
-   * plugin2.enabled(); // true
-   * ```
-   */
-  public override enabled(): boolean {
-    return !this.getConfig('skip');
-  }
-
-  /**
    * Plugin initialization hook
    *
    * Verifies that the changeset directory exists before proceeding
@@ -312,17 +291,26 @@ export default class Changelog extends ScriptPlugin<
    * ```
    */
   public override async onExec(_context: ReleaseContext): Promise<void> {
-    const workspaces = await this.step({
+    const workspaces = this.context.workspaces;
+
+    if (!workspaces || workspaces.length === 0) {
+      this.logger.warn('No workspaces found, skipping changelog generation');
+      return;
+    }
+
+    this.logger.info(
+      `Generating changelogs for ${workspaces.length} workspaces`
+    );
+
+    const newWorkspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>
         Promise.all(
-          this.context.workspaces!.map((workspace) =>
-            this.generateChangelog(workspace)
-          )
+          workspaces.map((workspace) => this.generateChangelog(workspace))
         )
     });
 
-    this.context.setWorkspaces(workspaces);
+    this.context.setWorkspaces(newWorkspaces);
   }
 
   /**
@@ -348,7 +336,13 @@ export default class Changelog extends ScriptPlugin<
    * ```
    */
   public override async onSuccess(): Promise<void> {
-    const workspaces = this.context.workspaces!;
+    const workspaces = this.context.workspaces;
+
+    if (!workspaces || workspaces.length === 0) {
+      this.logger.warn('No workspaces found, skipping changeset generation');
+      return;
+    }
+
     // create changeset files
     if (!this.getConfig('skipChangeset')) {
       await this.step({
@@ -359,18 +353,25 @@ export default class Changelog extends ScriptPlugin<
           )
       });
 
-      await this.runChangesetVersion();
+      await this.runChangesetVersion(this.getConfig('onlyVersion') === true);
 
       if (this.getConfig('ignoreNonUpdatedPackages')) {
         await this.restoreIgnorePackages();
       }
     } else {
-      this.logger.debug('Skip generate changeset files');
+      this.logger.info('Skip generate changeset files');
     }
 
     const newWorkspaces = this.mergeWorkspaces(workspaces);
 
-    this.logger.debug('new workspaces', newWorkspaces);
+    const summary = newWorkspaces.map((w) => `${w.name}@${w.version}`);
+    this.logger.debug(
+      `Updated workspaces (${summary.length}): ${
+        summary.length > 0
+          ? summary.slice(0, 5).join(', ') + (summary.length > 5 ? ' ...' : '')
+          : 'none'
+      }`
+    );
 
     this.context.setWorkspaces(newWorkspaces);
   }
@@ -378,27 +379,39 @@ export default class Changelog extends ScriptPlugin<
   /**
    * Runs `changeset version` without generating package changelogs.
    *
-   * TODO: changeset 更新到了2.31.0, 不在支持cli临时 --no-changelog，未来需要重新实现Changeset 创建pr和发布流程
-   *
    * Changesets v2+ no longer accepts `--no-changelog` / `--update-dependencies`
    * CLI flags (removed in v2; rejected since @changesets/cli@2.31.0). Changelog
    * output is handled by this plugin; internal dependency bumps use
    * `updateInternalDependencies` from `.changeset/config.json`.
+   *
+   * 如果 onlyVersion 为 true, 那么 changeset version 只会更新 package.json 的版本号,
+   * 不会将 changelog 内容更新到 CHANGELOG.md 文件中
    */
-  private async runChangesetVersion(): Promise<void> {
+  protected async runChangesetVersion(onlyVersion?: boolean): Promise<void> {
     const configPath = this.changesetConfigPath;
     const originalConfig = readFileSync(configPath, 'utf-8');
     const config = JSON.parse(originalConfig) as { changelog?: unknown };
+
     try {
-      config.changelog = false;
-      writeFileSync(
-        configPath,
-        `${JSON.stringify(config, null, 2)}\n`,
-        'utf-8'
+      if (onlyVersion) {
+        config.changelog = false;
+        this.logger.info('Set changeset.changelog to false');
+        writeFileSync(
+          configPath,
+          `${JSON.stringify(config, null, 2)}\n`,
+          'utf-8'
+        );
+      }
+
+      this.logger.info(
+        'Use changeset CLI version to generate .changeset/*.md files'
       );
+
       await this.context.runChangesetsCli('version');
     } finally {
-      writeFileSync(configPath, originalConfig, 'utf-8');
+      if (onlyVersion) {
+        writeFileSync(configPath, originalConfig, 'utf-8');
+      }
     }
   }
 
@@ -434,7 +447,15 @@ export default class Changelog extends ScriptPlugin<
             .path
       );
 
-    this.logger.debug('noChangedPackages', noChangedPackages);
+    if (noChangedPackages.length === 0) {
+      this.logger.debug('No unchanged packages to restore');
+    } else {
+      this.logger.debug(
+        `Unchanged packages (${noChangedPackages.length}): ${JSON.stringify(
+          noChangedPackages
+        )}`
+      );
+    }
 
     if (noChangedPackages.length > 0) {
       await this.shell.exec(['git', 'restore', ...noChangedPackages]);
@@ -507,7 +528,9 @@ export default class Changelog extends ScriptPlugin<
       tagName = workspace.lastTag;
     }
 
-    this.logger.debug('tagName is:', tagName);
+    this.logger.debug(
+      `${workspace.name}@${workspace.version} changelog tagName: ${tagName}`
+    );
 
     const baseConfig = this.getConfig() as ChangelogProps;
     const props: GitChangelogProps = {
@@ -726,7 +749,9 @@ export default class Changelog extends ScriptPlugin<
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
     const increment = this.getIncrement();
 
-    this.logger.debug('increment is:', [increment]);
+    this.logger.debug(
+      `${workspace.name}@${workspace.version} increment is: ${increment}`
+    );
 
     const fileContent = Shell.format(contentTmplate, {
       ...workspace,
