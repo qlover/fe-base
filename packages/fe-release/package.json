@@ -57,11 +57,13 @@
   "devDependencies": {
     "@octokit/rest": "^21.0.2",
     "@types/semver": "^7.7.0",
-    "p-limit": "^6.2.0",
     "lodash": "^4.17.21",
+    "p-limit": "^6.2.0",
     "semver": "^7.5.4"
   },
   "dependencies": {
+    "@changesets/get-dependents-graph": "^2.1.4",
+    "@manypkg/get-packages": "^3.1.0",
     "@octokit/rest": "^21.0.2",
     "@qlover/env-loader": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",

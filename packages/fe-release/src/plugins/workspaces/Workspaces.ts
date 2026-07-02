@@ -98,6 +98,16 @@ export interface WorkspaceValue {
    * @private
    */
   changelog?: string;
+
+  /**
+   * 用于表示是否是依赖包的发布工作空间
+   *
+   * 当 A 包代码更新后，B 包依赖了 A 包的最新版本，B 包也需要发布时，B 包会被标记为依赖包的发布工作空间。
+   *
+   * @default `false`
+   * @private
+   */
+  dependencyRelease?: boolean;
 }
 
 export default class Workspaces extends ScriptPlugin<

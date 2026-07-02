@@ -54,6 +54,8 @@ import {
   type ScriptPluginProps,
   Shell
 } from '@qlover/scripts-context';
+import { getDependentsGraph } from '@changesets/get-dependents-graph';
+import { getPackages } from '@manypkg/get-packages';
 
 export interface ChangelogProps extends GitChangelogOptions, ScriptPluginProps {
   /**
@@ -272,6 +274,22 @@ export default class Changelog extends ScriptPlugin<
   }
 
   /**
+   * 该属性用于描述忽略未更新的包
+   *
+   * 比如 A B 两个子包，B 依赖 A，此时 A 代码修改了，B 没有修改代码，
+   * 但是 B 的版本号会因为 A 的版本号修改而修改
+   *
+   * - 如果为 true，则忽略未更新的包，
+   * - 如果为 false，则会将未更新的包也进行版本号修改
+   *
+   *   同时在 v4.4.0 给自动更新包加入 changelog 内容，v4.4.0- 是没有的
+   *
+   */
+  protected get ignoreNonUpdatedPackages(): boolean {
+    return !!this.getConfig('ignoreNonUpdatedPackages');
+  }
+
+  /**
    * Main plugin execution hook
    *
    * Generates changelogs for all workspaces in parallel and updates
@@ -302,7 +320,12 @@ export default class Changelog extends ScriptPlugin<
       `Generating changelogs for ${workspaces.length} workspaces`
     );
 
-    const newWorkspaces = await this.step({
+    let newWorkspaces: typeof workspaces;
+    if (!this.ignoreNonUpdatedPackages) {
+      newWorkspaces = await this.appendDependencyReleaseWorkspaces(workspaces);
+    }
+
+    newWorkspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>
         Promise.all(
@@ -355,7 +378,7 @@ export default class Changelog extends ScriptPlugin<
 
       await this.runChangesetVersion(this.getConfig('onlyVersion') === true);
 
-      if (this.getConfig('ignoreNonUpdatedPackages')) {
+      if (this.ignoreNonUpdatedPackages) {
         await this.restoreIgnorePackages();
       }
     } else {
@@ -772,5 +795,30 @@ export default class Changelog extends ScriptPlugin<
     }
 
     writeFileSync(changesetPath, fileContent, 'utf-8');
+  }
+
+  /**
+   * 在 sources 基础上，追加依赖更新的包，返回新的 workspace 列表
+   *
+   * @param sources
+   */
+  protected async appendDependencyReleaseWorkspaces(
+    sources: WorkspaceValue[]
+  ): Promise<WorkspaceValue[]> {
+    // const projectWorkspaces = this.context.getOptions<WorkspaceValue[]>(
+    //   'workspaces.projectWorkspaces'
+    // );
+
+    const rootPath = this.context.getOptions<string>('rootPath');
+    this.logger.info(
+      `Append dependency release workspaces in path ${rootPath}`
+    );
+
+    const packagesDir: string = rootPath;
+
+    const packages = await getPackages(packagesDir);
+    const dependentsGraph = getDependentsGraph(packages);
+
+    return sources;
   }
 }
