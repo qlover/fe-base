@@ -187,15 +187,16 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 ### 阶段 2：创建发布 PR（手动打 `CI-Release` 触发）
 
-功能 PR **合并到 develop 之后**，在该 PR 上手动添加 **`CI-Release`** 标签（合并前打好也可以）：
+功能 PR **合并到 develop 之前**，在 PR 上添加 **`CI-Release`** 标签（合并时必须仍保留该标签）：
 
-1. `release.yml` 的 `create-release-pr` job 被触发（支持 `closed` 合并事件，或合并后补打 `CI-Release` 的 `labeled` 事件）。
+1. 合并时触发 `release.yml` 的 `create-release-pr` job（`closed` 事件）。
 2. 检出 `develop`，运行 `fe-release`（默认 **`changesetVersion` version 模式**）：
    - 生成 changelog、更新 `CHANGELOG.md`、 bump 版本号
 3. 推送 `release/<repo>-<id>` 分支，创建指向 **`master`** 的发布 PR（自动带 `CI-Release`）。
 4. 原功能 PR 上的 `changes:*` 标签会传递到发布 PR，用于限定发布范围。
 
-> 合并到 develop 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。这是刻意的「手动闸门」。
+> 合并到 develop 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。  
+> 若已合并但未打标签，可在 Actions 里手动运行 **Release sub packages**（`workflow_dispatch`）。
 
 带 **`CI-Release`** 的功能 PR 在打开期间会跳过 `general-check`。
 

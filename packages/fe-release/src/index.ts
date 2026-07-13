@@ -36,8 +36,8 @@
  * ### Phase 2 — Create release PR (trigger: `CI-Release` on merged develop PR)
  *
  * - **CI** (`.github/workflows/release.yml` → `create-release-pr`):
- *   - Runs when a **merged** PR into `develop` has the **`CI-Release`** label
- *     (label before merge, or add after merge via `labeled` event), or via `workflow_dispatch`.
+ *   - Runs when a **merged** PR into `develop` has the **`CI-Release`** label at merge time,
+ *     or via `workflow_dispatch`.
  *   - Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
  *   - Bumps versions, updates `CHANGELOG.md`, pushes `release/<repo>-<id>`, opens PR to `master`.
  *   - The new release PR is also labeled **`CI-Release`** (see `release.github.label.name`).

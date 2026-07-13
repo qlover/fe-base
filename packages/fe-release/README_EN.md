@@ -188,15 +188,16 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 ### Phase 2 — Create release PR (manual `CI-Release` gate)
 
-After a feature PR is **merged into develop**, add the **`CI-Release`** label on that PR (or add it before merge):
+Add the **`CI-Release`** label **before** merging the feature PR into develop (the label must still be present at merge time):
 
-1. The `create-release-pr` job runs (`closed` on merge, or `labeled` when `CI-Release` is added after merge).
+1. On merge, the `create-release-pr` job runs (`closed` event).
 2. Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode:
    - Generates changelog, updates `CHANGELOG.md`, bumps versions
 3. Pushes `release/<repo>-<id>`, opens a PR to **`master`** (auto-labeled `CI-Release`).
 4. `changes:*` labels from the feature PR are forwarded to scope the release.
 
-> Merges into `develop` **without** `CI-Release` do **not** create a release PR.
+> Merges into `develop` **without** `CI-Release` do **not** create a release PR.  
+> If already merged without the label, run **Release sub packages** manually (`workflow_dispatch`).
 
 Open feature PRs with **`CI-Release`** skip `general-check`.
 
