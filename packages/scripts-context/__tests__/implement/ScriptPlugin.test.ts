@@ -397,7 +397,7 @@ describe('ScriptPlugin', () => {
         }
       });
 
-      const options = plugin.options;
+      const options = plugin.config;
       expect(options).toEqual({
         outputDir: './dist'
       });

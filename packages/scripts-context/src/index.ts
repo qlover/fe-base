@@ -131,3 +131,4 @@ export * from './implement/ConfigSearch';
 export * from './implement/ScriptContext';
 export * from './implement/ScriptPlugin';
 export * from './implement/Shell';
+export * from './implement/TemplateEngine';
