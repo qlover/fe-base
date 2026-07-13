@@ -330,7 +330,7 @@ const isDebug = debug === 'true';
 
 ---
 
-#### `getOptions` (Method)
+#### `getParameters` (Method)
 
 **Type:** `(key: string \| string[], defaultValue: T) => T`
 
@@ -343,7 +343,7 @@ const isDebug = debug === 'true';
 
 ---
 
-##### `getOptions` (CallSignature)
+##### `getParameters` (CallSignature)
 
 **Type:** `T`
 
@@ -619,19 +619,19 @@ try {
 
 ---
 
-#### `setOptions` (Method)
+#### `setParameters` (Method)
 
-**Type:** `(options: Partial<Opt>) => void`
+**Type:** `(params: Partial<Opt>) => void`
 
 #### Parameters
 
-| Name      | Type           | Optional | Default | Since | Deprecated | Description                                         |
-| --------- | -------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
-| `options` | `Partial<Opt>` | ❌       | -       | -     | -          | Partial options to merge with current configuration |
+| Name     | Type           | Optional | Default | Since | Deprecated | Description |
+| -------- | -------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `Partial<Opt>` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `setOptions` (CallSignature)
+##### `setParameters` (CallSignature)
 
 **Type:** `void`
 
@@ -683,46 +683,9 @@ this.setOptions({
 
 #### Parameters
 
-| Name      | Type           | Optional | Default | Since | Deprecated | Description                                         |
-| --------- | -------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
-| `options` | `Partial<Opt>` | ❌       | -       | -     | -          | Partial options to merge with current configuration |
-
----
-
-#### `setParameters` (Method)
-
-**Type:** `(params: Opt) => void`
-
-#### Parameters
-
-| Name     | Type  | Optional | Default | Since | Deprecated | Description                                 |
-| -------- | ----- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `params` | `Opt` | ❌       | -       | -     | -          | The parameters to set (stored by reference) |
-
----
-
-##### `setParameters` (CallSignature)
-
-**Type:** `void`
-
-Set parameters in context
-
-**Important**: Parameters are stored by reference, not cloned.
-The provided parameters object will be used directly.
-
-**Example:**
-
-```typescript
-const newParams = { value: 2 };
-context.setParameters(newParams);
-// context.parameters === newParams (same reference)
-```
-
-#### Parameters
-
-| Name     | Type  | Optional | Default | Since | Deprecated | Description                                 |
-| -------- | ----- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `params` | `Opt` | ❌       | -       | -     | -          | The parameters to set (stored by reference) |
+| Name     | Type           | Optional | Default | Since | Deprecated | Description |
+| -------- | -------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `Partial<Opt>` | ❌       | -       | -     | -          |             |
 
 ---
 

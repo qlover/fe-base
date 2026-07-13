@@ -139,6 +139,26 @@ Release context instance
 
 ---
 
+#### `defaultTuples` (Property)
+
+**Type:** `unknown[]`
+
+**Default:** `innerTuples`
+
+Plugin configuration tuples (optional)
+
+---
+
+#### `executor` (Property)
+
+**Type:** `LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, ReleaseContextConfig>>`
+
+**Default:** `{}`
+
+Custom async executor (optional)
+
+---
+
 #### `exec` (Method)
 
 **Type:** `(externalTuples: unknown[]) => Promise<unknown>`

@@ -4,71 +4,97 @@
 
 Command-line interface for the fe-release tool
 
-This module provides the command-line interface for the fe-release tool,
-which automates the release process for frontend packages. It handles
-version management, changelog generation, GitHub PR creation, and
-workspace management.
+Entry point for `@qlover/fe-release`. Parses CLI flags with Commander.js,
+maps them to plugin configuration via dot notation, and runs <a href="./implments/ReleaseTask.md#releasetask-module" class="tsd-kind-module">ReleaseTask</a>.
 
-Core features:
+## Release pipeline
 
-- Version management with semver support
-- Changelog generation and management
-- GitHub PR creation and management
-- Workspace package handling
-- Dry run support for testing
-- Verbose logging for debugging
+Default plugins (in order):
 
-Command structure:
+1. **Workspaces** — detect changed monorepo packages
+2. **ChangesetVersion** — generate changelogs, write changeset files, run `changeset version`
+3. **Github** — enrich changelogs, create release branch and pull request
+
+## Option namespaces
+
+Flags use dot notation to target plugin config under `fe-config.json` → `release`:
+
+| CLI prefix           | fe-config path               | Plugin           |
+| -------------------- | ---------------------------- | ---------------- |
+| (global)             | `release.sourceBranch`       | shared           |
+| `changesetVersion.*` | `release.changesetVersion.*` | ChangesetVersion |
+| `workspaces.*`       | `release.workspaces.*`       | Workspaces       |
+| `github.*`           | `release.github.*`           | Github           |
+
+Global flags (`--dry-run`, `--verbose`) are passed to <a href="./implments/ReleaseContext.md#releasecontext-module" class="tsd-kind-module">ReleaseContext</a> directly.
+Shared release options (e.g. `--source-branch`) are merged into `options`.
+
+## Command reference
 
 ```bash
 fe-release [options]
 
-Options:
-  -v, --version                          Show version
-  -d, --dry-run                          Do not touch or write anything
-  -V, --verbose                          Show more information
-  -p, --publish-path <publishPath>       Package path to release
-  -b, --branch-name <branchName>         Release branch name
-  -s, --source-branch <sourceBranch>     Source branch for release
-  -i, --changelog.increment <increment>   Version increment type
-  -P, --githubPR.release-PR             Create a release PR
-  -l, --workspaces.change-labels <labels> Change labels for release
+Global:
+  -v, --version                                            Show version
+  -d, --dry-run                                            Simulate without writing
+  -V, --verbose                                            Enable debug logging
+  -s, --source-branch <branch>                             Target merge branch
+
+ChangesetVersion:
+  -i, --changesetVersion.increment <increment>             patch | minor | major | semver
+  --changesetVersion.mode <mode>                           version | publish | both
+  --changesetVersion.skip                                  Skip entire plugin
+  --changesetVersion.skip-changeset                        Skip changeset file generation
+  --changesetVersion.only-version                          Bump versions only, skip CHANGELOG.md
+  --changesetVersion.ignore-non-updated-packages           Restore dependency-release workspaces after version
+  --changelog.ignore-non-updated-packages                  Alias of the above
+
+Workspaces:
+  --workspaces.packages-directories <paths>                Comma-separated package paths
+  -l, --workspaces.change-labels <labels>                  Comma-separated change labels
+  --workspaces.skip                                        Skip entire plugin
+
+Github:
+  -b, --github.branch-name <template>                      Release branch name template
+  --github.skip [lifecycle]                                Skip plugin or a lifecycle (e.g. onSuccess)
+  --github.skip-create-release-pr                          Skip GitHub PR creation (branch still pushed)
+  --github.push-change-labels                              Attach change labels to the release PR
+  --github.auto-merge-release-pr                           Auto-merge the release PR
 ```
 
-**Example:** Basic usage
+**Example:** Basic release
 
 ```bash
-# Create a patch release
 fe-release -i patch
-
-# Create a minor release with PR
-fe-release -i minor -P
-
-# Dry run a major release
-fe-release -i major -d
+fe-release -i minor -d
+fe-release -i 1.2.0
 ```
 
-**Example:** Workspace release
+**Example:** Monorepo — target specific packages
 
 ```bash
-# Release specific package
-fe-release -p packages/my-package -i patch
-
-# Release with labels
-fe-release -l "feature,bugfix" -P
+fe-release --workspaces.packages-directories packages/fe-release,packages/scripts-context -i patch
+fe-release -l "changes:fe-release" -i patch
 ```
 
-**Example:** Advanced options
+**Example:** Publish flow
 
 ```bash
-# Custom branch and source
-fe-release -b release-v2 -s develop
+fe-release --changesetVersion.mode publish
+fe-release --changesetVersion.mode both -i minor
+```
 
-# Skip certain steps
-fe-release --changelog.skip --githubPR.skip
+**Example:** Changelog only — skip GitHub PR creation
 
-# Debug mode
-fe-release -V -d
+```bash
+fe-release -i patch --github.skip-create-release-pr
+fe-release -i patch --github.skip onSuccess
+```
+
+**Example:** Custom branches
+
+```bash
+fe-release -s develop -b "release/${repoName}-${releaseId}"
 ```
 
 ---

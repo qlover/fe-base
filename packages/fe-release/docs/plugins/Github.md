@@ -1,41 +1,41 @@
-## `GitBase` (Module)
+## `Github` (Module)
 
-**Type:** `module GitBase`
+**Type:** `module Github`
 
-Base class for Git-related plugins
+GitHub changelog enrichment and release PR plugin
 
-This module provides a base class for plugins that interact with Git
-repositories. It handles common Git operations like branch management,
-repository information retrieval, and commit operations.
+Third plugin in the default release pipeline (after <a href="./Workspaces.md#workspaces-module" class="tsd-kind-module">Workspaces</a> and
+<a href="./ChangesetVersion.md#changesetversion-module" class="tsd-kind-module">ChangesetVersion</a>). Extends <a href="./GitBase.md#gitbase-module" class="tsd-kind-module">GitBase</a> for git operations and
+delegates GitHub API calls to <a href="../implments/GithubManager.md#githubmanager-module" class="tsd-kind-module">GithubManager</a>.
 
-Core Features:
+Pipeline phases:
 
-- Git repository information retrieval (generic, supports GitHub/GitLab/Gitee etc.)
-- Branch management
-- Commit operations
-- Error handling
+- **onBefore**: validate GitHub token; seed <a href="../implments/ReleaseFormatter.md#releaseformatter-module" class="tsd-kind-module">ReleaseFormatter</a> context
+- **onExec**: enrich workspace changelogs with PR/commit links via <a href="../implments/changelog/GithubChangelog.md#githubchangelog-module" class="tsd-kind-module">GithubChangelog</a>
+- **onSuccess**: create release branch, commit, push, and open PR (unless skipped)
 
-**Example:** Basic usage
+Release branch flow:
 
-```typescript
-class MyGitPlugin extends GitBase<GitBaseProps> {
-  async onExec() {
-    const branch = await this.getCurrentBranch();
-    await this.commit('feat: new feature');
-  }
-}
+1. `ReleaseFormatter.getReleaseBranch()` — derive branch and tag names from templates
+2. Create branch from `sourceBranch`, commit version/changelog changes, push
+3. Open PR with formatted title/body and optional labels
+4. Auto-merge when `autoMergeReleasePr` is enabled
+
+**Example:** Skip PR creation (local dry-run)
+
+```bash
+fe-release --github.skip-create-release-pr --dry-run
 ```
 
-**Example:** Repository info
+**Example:** fe-config label and merge settings
 
-```typescript
-class RepoPlugin extends GitBase<GitBaseProps> {
-  async onExec() {
-    const info = await this.getGitRepositoryInfo();
-    // {
-    //   repoName: 'my-repo',
-    //   authorName: 'org-or-group'
-    // }
+```json
+{
+  "release": {
+    "github": {
+      "autoMergeReleasePr": false,
+      "label": { "name": "CI-Release" }
+    }
   }
 }
 ```
@@ -44,64 +44,38 @@ class RepoPlugin extends GitBase<GitBaseProps> {
 
 ### `default` (Class)
 
-**Type:** `class default<T>`
+**Type:** `class default`
 
-Base class for Git-related plugins
+GitHub integration plugin for changelog enrichment and release PR creation.
 
-Provides common functionality for plugins that interact with
-Git repositories. Handles repository information,
-branch management, and commit operations.
-
-Features:
-
-- Automatic repository info detection (generic)
-- Branch management
-- Commit creation
-- Error handling
-
-**Example:** Basic plugin
-
-```typescript
-class CustomGitPlugin extends GitBase<GitBaseProps> {
-  async onExec() {
-    const branch = await this.getCurrentBranch();
-    await this.commit('feat: add feature');
-  }
-}
-```
-
-**Example:** Custom repository parsing (override protected method)
-
-```typescript
-class CustomParserPlugin extends GitBase<GitBaseProps> {
-  protected parseRemoteUrl(remoteUrl: string) {
-    // Custom logic for a private Git server
-    const match = remoteUrl.match(/mygit\.com/([^/]+)/([^/.]+)/);
-    if (!match) throw new Error('Unsupported URL format');
-    return { owner: match[1], name: match[2] };
-  }
-}
-```
+Skips `dependencyRelease` workspaces during changelog enrichment because
+their changelogs are pre-filled by <a href="./Workspaces.md#workspaces-module" class="tsd-kind-module">Workspaces</a> or intentionally
+ignored when `changesetVersion.ignoreNonUpdatedPackages` is enabled.
 
 ---
 
 #### `new default` (Constructor)
 
-**Type:** `(context: default, pluginName: string, props: T) => default<T>`
+**Type:** `(context: default, props: GithubProps) => default`
 
 #### Parameters
 
-| Name         | Type      | Optional | Default | Since | Deprecated | Description                                                   |
-| ------------ | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
-| `context`    | `default` | ❌       | -       | -     | -          | Script context providing environment and configuration        |
-| `pluginName` | `string`  | ❌       | -       | -     | -          | Unique identifier for this plugin (used for config namespace) |
-| `props`      | `T`       | ✅       | -       | -     | -          | Optional runtime configuration overrides                      |
+| Name      | Type          | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `default`     | ❌       | -       | -     | -          |             |
+| `props`   | `GithubProps` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
 #### `context` (Property)
 
 **Type:** `default`
+
+---
+
+#### `githubManager` (Property)
+
+**Type:** `GithubManager`
 
 ---
 
@@ -123,13 +97,25 @@ Ensures only one instance of this plugin can be registered
 
 #### `props` (Property)
 
-**Type:** `T`
+**Type:** `GithubProps`
+
+---
+
+#### `releaseFormatter` (Property)
+
+**Type:** `ReleaseFormatter`
 
 ---
 
 #### `logger` (Accessor)
 
 **Type:** `accessor logger`
+
+---
+
+#### `mode` (Accessor)
+
+**Type:** `accessor mode`
 
 ---
 
@@ -227,6 +213,58 @@ Creates a local branch from the current branch
 | `newBranch`     | `string` | ❌       | -       | -     | -          | The name of the new branch     |
 | `sourceBranch`  | `string` | ❌       | -       | -     | -          | The name of the source branch  |
 | `currentBranch` | `string` | ❌       | -       | -     | -          | The name of the current branch |
+
+---
+
+#### `createReleaseBranch` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[]) => Promise<ReleaseBranchResult>`
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `createReleaseBranch` (CallSignature)
+
+**Type:** `Promise<ReleaseBranchResult>`
+
+Create the release branch, commit changes, push, and return branch/tag names.
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `createReleasePR` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[], releaseBranchResult: ReleaseBranchResult) => Promise<string>`
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
+
+---
+
+##### `createReleasePR` (CallSignature)
+
+**Type:** `Promise<string>`
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -394,19 +432,19 @@ Will throw an error if repository information cannot be determined
 
 #### `getInitialProps` (Method)
 
-**Type:** `(props: T) => T`
+**Type:** `(props: GithubProps) => GithubProps`
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                     |
-| ------- | ---- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `props` | `T`  | ✅       | -       | -     | -          | Runtime configuration overrides |
+| Name    | Type          | Optional | Default | Since | Deprecated | Description                     |
+| ------- | ------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `props` | `GithubProps` | ✅       | -       | -     | -          | Runtime configuration overrides |
 
 ---
 
 ##### `getInitialProps` (CallSignature)
 
-**Type:** `T`
+**Type:** `GithubProps`
 
 Merges configuration from multiple sources with proper priority
 
@@ -432,9 +470,9 @@ const config = this.getInitialProps({
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                     |
-| ------- | ---- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `props` | `T`  | ✅       | -       | -     | -          | Runtime configuration overrides |
+| Name    | Type          | Optional | Default | Since | Deprecated | Description                     |
+| ------- | ------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `props` | `GithubProps` | ✅       | -       | -     | -          | Runtime configuration overrides |
 
 ---
 
@@ -459,6 +497,36 @@ Promise resolving to remote URL
 **Throws:**
 
 Error if remote URL cannot be retrieved
+
+---
+
+#### `handleReleasePullRequest` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[], releaseBranchResult: ReleaseBranchResult) => Promise<void>`
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
+
+---
+
+##### `handleReleasePullRequest` (CallSignature)
+
+**Type:** `Promise<void>`
+
+Create the release PR and optionally auto-merge it.
+
+When `skipCreateReleasePR` is enabled, only logs a PR preview and exits.
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -491,6 +559,32 @@ Checks if the current directory is a Git repository
 **Returns:**
 
 Promise resolving to boolean
+
+---
+
+#### `logReleasePRPreview` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[], releaseBranchResult: ReleaseBranchResult) => void`
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
+
+---
+
+##### `logReleasePRPreview` (CallSignature)
+
+**Type:** `void`
+
+#### Parameters
+
+| Name                  | Type                   | Optional | Default | Since | Deprecated | Description |
+| --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+| `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -575,19 +669,13 @@ async onError(context: Context): Promise<void> {
 
 #### `onExec` (Method)
 
-**Type:** `(_context: default) => void \| Promise<void>`
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
+**Type:** `() => Promise<void>`
 
 ---
 
 ##### `onExec` (CallSignature)
 
-**Type:** `void \| Promise<void>`
+**Type:** `Promise<void>`
 
 Lifecycle method called during script execution
 
@@ -619,12 +707,6 @@ async onExec(context: Context): Promise<void> {
   });
 }
 ```
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
@@ -672,19 +754,13 @@ async onFinally(context: Context): Promise<void> {
 
 #### `onSuccess` (Method)
 
-**Type:** `(_context: default) => void \| Promise<void>`
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
+**Type:** `() => Promise<void>`
 
 ---
 
 ##### `onSuccess` (CallSignature)
 
-**Type:** `void \| Promise<void>`
+**Type:** `Promise<void>`
 
 Lifecycle method called after successful script execution
 
@@ -713,12 +789,6 @@ async onSuccess(context: Context): Promise<void> {
   await this.shell.rmdir('./temp');
 }
 ```
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
@@ -790,13 +860,13 @@ Pushes a branch to the origin remote
 
 #### `setConfig` (Method)
 
-**Type:** `(config: Partial<T>) => void`
+**Type:** `(config: Partial<GithubProps>) => void`
 
 #### Parameters
 
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `config` | `Partial<T>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
+| Name     | Type                   | Optional | Default | Since | Deprecated | Description                                          |
+| -------- | ---------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `config` | `Partial<GithubProps>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
 
 ---
 
@@ -836,9 +906,9 @@ this.setConfig({
 
 #### Parameters
 
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `config` | `Partial<T>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
+| Name     | Type                   | Optional | Default | Since | Deprecated | Description                                          |
+| -------- | ---------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `config` | `Partial<GithubProps>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
 
 ---
 
@@ -927,9 +997,9 @@ await this.step({
 
 ---
 
-### `GitBaseProps` (Interface)
+### `GithubProps` (Interface)
 
-**Type:** `interface GitBaseProps`
+**Type:** `interface GithubProps`
 
 Base configuration for Git-related plugins
 
@@ -945,36 +1015,322 @@ const config: GitBaseProps = {
 
 ---
 
-#### `skip` (Property)
+#### `PRBody` (Property)
 
-**Type:** `string \| boolean`
+**Type:** `string`
 
-Controls whether to skip lifecycle execution
+**Default:** `ts
+from release.json
+`
 
-Skip Options:
+Pull request body template
 
-- `true` - Skip all lifecycle methods (onBefore, onExec, onSuccess, onError)
-- `string` - Skip specific lifecycle method ('onBefore', 'onExec', 'onSuccess', 'onError')
-- `false` or `undefined` - Execute all lifecycle methods (default)
+---
 
-**Example:**
+#### `PRTitle` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+{@link DEFAULT_PR_TITLE}
+`
+
+Pull request title template
+
+---
+
+#### `authorName` (Property)
+
+**Type:** `string`
+
+Author name
+
+---
+
+#### `autoGenerate` (Property)
+
+**Type:** `boolean`
+
+---
+
+#### `autoMergeReleasePr` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+Whether to auto-merge the created release PR
+
+---
+
+#### `batchPRBody` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+from release.json
+`
+
+Template for each workspace section in a multi-workspace PR body
+
+---
+
+#### `branchName` (Property)
+
+**Type:** `string`
+
+**Default:** `release/${repoName}-${releaseId}`
+
+The branch name for batch release
+
+Template variables: see <a href="#branchnametplvars-typealias" class="tsd-kind-type-alias">BranchNameTplVars</a>
+
+---
+
+#### `commitArgs` (Property)
+
+**Type:** `string[]`
+
+**Default:** `ts
+[]
+`
+
+---
+
+#### `commitMessage` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+'chore(tag): ${name} v${version}'
+`
+
+---
+
+#### `discussionCategoryName` (Property)
+
+**Type:** `string`
+
+---
+
+#### `draft` (Property)
+
+**Type:** `boolean`
+
+---
+
+#### `env` (Property)
+
+**Type:** `string`
+
+Release environment
+
+---
+
+#### `label` (Property)
+
+**Type:** `GithubLabel`
+
+Configuration for release pull request labels
+
+Core concept:
+Defines the label configuration for release pull requests,
+enabling automated categorization and visual identification
+of release-related PRs.
+
+Label features:
+
+- Automated label application
+- Customizable label appearance
+- Consistent release identification
+- Integration with GitHub labeling system
+- Support for custom label descriptions
+
+Label properties:
+
+- name: Label identifier and display name
+- color: Hexadecimal color code for visual distinction
+- description: Label description for documentation
+
+**Example:** Basic label configuration
 
 ```typescript
-// Skip all lifecycle methods
-{
-  skip: true;
-}
-
-// Skip only onBefore
-{
-  skip: 'onBefore';
-}
-
-// Skip only onError
-{
-  skip: 'onError';
-}
+const config: FeReleaseConfig = {
+  label: {
+    name: 'release',
+    color: '1A7F37',
+    description: 'Automated release PR'
+  }
+};
 ```
+
+**Example:** Custom label
+
+```typescript
+const config: FeReleaseConfig = {
+  label: {
+    name: 'CI-Release',
+    color: '0366D6',
+    description: 'Release created by CI/CD'
+  }
+};
+```
+
+---
+
+#### `makeLatest` (Property)
+
+**Type:** `boolean \| "true" \| "false" \| "legacy"`
+
+---
+
+#### `mergeType` (Property)
+
+**Type:** `"squash" \| "merge" \| "rebase"`
+
+**Default:** `'squash'`
+
+PR auto-merge strategy for release pull requests
+
+Core concept:
+Defines the merge strategy used when automatically merging
+release pull requests, affecting commit history and
+repository structure.
+
+Merge strategies:
+
+- merge: Creates merge commit with branch history
+- squash: Combines all commits into single commit
+- rebase: Replays commits on target branch
+
+Strategy considerations:
+
+- merge: Preserves complete branch history
+- squash: Creates clean, linear history
+- rebase: Maintains chronological order
+- Affects commit message and history structure
+- Influences repository maintenance and debugging
+
+**Example:** Squash merge
+
+```typescript
+const config: FeReleaseConfig = {
+  autoMergeType: 'squash'
+};
+```
+
+**Example:** Preserve history
+
+```typescript
+const config: FeReleaseConfig = {
+  autoMergeType: 'merge'
+};
+```
+
+---
+
+#### `mode` (Property)
+
+**Type:** `"createPR"`
+
+**Default:** `'createPR'`
+
+Plugin work mode
+
+Currently only `createPR` is supported: enrich changelogs in `onExec`,
+then create release branch and PR in `onSuccess`.
+
+---
+
+#### `preRelease` (Property)
+
+**Type:** `boolean`
+
+---
+
+#### `pushChangeLabels` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+---
+
+#### `releaseId` (Property)
+
+**Type:** `string`
+
+Unique ID for the current release run
+
+---
+
+#### `releaseName` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+'Release ${spaces}'
+`
+
+---
+
+#### `releaseNotes` (Property)
+
+**Type:** `string`
+
+---
+
+#### `releaseTagName` (Property)
+
+**Type:** `string`
+
+**Default:** `release-tag-${count}-patch-${releaseId}`
+
+The tag name for batch release
+
+Template variables: see <a href="#branchnametplvars-typealias" class="tsd-kind-type-alias">BranchNameTplVars</a>
+
+---
+
+#### `repoName` (Property)
+
+**Type:** `string`
+
+Repository name
+
+---
+
+#### `skip` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+Whether to skip this plugin
+
+---
+
+#### `skipCreateReleasePr` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+Skip creating the GitHub release pull request.
+
+When enabled, the release branch is still created and pushed,
+but no PR is opened via the GitHub API. Useful for local testing.
+
+CLI: `--github.skip-create-release-pr`
+fe-config: `release.github.skipCreateReleasePR`
 
 ---
 
@@ -994,8 +1350,80 @@ Environment variable name for GitHub API token
 
 ---
 
-### `GitRepositoryParsedType` (TypeAlias)
+### `GithubLabel` (TypeAlias)
 
-**Type:** `parse.GitUrl`
+**Type:** `Object`
+
+---
+
+#### `color` (Property)
+
+**Type:** `string`
+
+**Default:** `'1A7F37'`
+
+Hexadecimal color code for label appearance
+
+Color format: 6-character hex string without '#'
+Used for visual distinction in GitHub interface
+Supports standard web color codes
+
+**Example:** Green color
+
+```typescript
+color: '1A7F37';
+```
+
+**Example:** Blue color
+
+```typescript
+color: '0366D6';
+```
+
+---
+
+#### `description` (Property)
+
+**Type:** `string`
+
+**Default:** `'Release PR'`
+
+Descriptive text for label documentation
+
+Provides context about the label's purpose
+Used in GitHub label management interface
+Helps team members understand label usage
+
+**Example:**
+
+```typescript
+description: 'Automated release pull request';
+```
+
+---
+
+#### `name` (Property)
+
+**Type:** `string`
+
+**Default:** `'CI-Release'`
+
+Label name for identification and display
+
+Used as the primary identifier for the label
+Displayed in GitHub PR interface
+Should be descriptive and consistent
+
+**Example:**
+
+```typescript
+name: 'release';
+```
+
+---
+
+### `GithubMode` (TypeAlias)
+
+**Type:** `"createPR"`
 
 ---

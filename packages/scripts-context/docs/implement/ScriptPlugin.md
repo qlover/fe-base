@@ -120,15 +120,15 @@ Optional runtime configuration overrides
 
 ---
 
-#### `logger` (Accessor)
+#### `config` (Accessor)
 
-**Type:** `accessor logger`
+**Type:** `accessor config`
 
 ---
 
-#### `options` (Accessor)
+#### `logger` (Accessor)
 
-**Type:** `accessor options`
+**Type:** `accessor logger`
 
 ---
 
@@ -138,15 +138,41 @@ Optional runtime configuration overrides
 
 ---
 
+#### `createStepLabel` (Method)
+
+**Type:** `(label: string) => string`
+
+#### Parameters
+
+| Name    | Type     | Optional | Default | Since | Deprecated | Description |
+| ------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `label` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `createStepLabel` (CallSignature)
+
+**Type:** `string`
+
+Builds the shared step log prefix (plugin context + dry-run)
+
+#### Parameters
+
+| Name    | Type     | Optional | Default | Since | Deprecated | Description |
+| ------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `label` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `enabled` (Method)
 
-**Type:** `(_name: string, _context: Context) => boolean`
+**Type:** `(name: string, _context: Context) => boolean`
 
 #### Parameters
 
 | Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
 | ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
+| `name`     | `string`  | ❌       | -       | -     | -          |                                                  |
 | `_context` | `Context` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
 
 ---
@@ -184,21 +210,21 @@ plugin.enabled('onExec', context); // Returns true
 
 | Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
 | ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
+| `name`     | `string`  | ❌       | -       | -     | -          |                                                  |
 | `_context` | `Context` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
 
 ---
 
 #### `getConfig` (Method)
 
-**Type:** `(keys: string \| string[], defaultValue: T) => T`
+**Type:** `(keys: unknown \| unknown[], defaultValue: T) => T`
 
 #### Parameters
 
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                               |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `keys`         | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if configuration not found                  |
+| Name           | Type                   | Optional | Default | Since | Deprecated | Description                                               |
+| -------------- | ---------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `keys`         | `unknown \| unknown[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
+| `defaultValue` | `T`                    | ✅       | -       | -     | -          | Default value if configuration not found                  |
 
 ---
 
@@ -240,10 +266,10 @@ const plugins = this.getConfig<string[]>('plugins', []);
 
 #### Parameters
 
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                               |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `keys`         | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if configuration not found                  |
+| Name           | Type                   | Optional | Default | Since | Deprecated | Description                                               |
+| -------------- | ---------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `keys`         | `unknown \| unknown[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
+| `defaultValue` | `T`                    | ✅       | -       | -     | -          | Default value if configuration not found                  |
 
 ---
 
@@ -346,13 +372,13 @@ async onBefore(context: ExecutorContext<MyContext>): Promise<void> {
 
 #### `onError` (Method)
 
-**Type:** `(_context: Context) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
+**Type:** `(context: Context) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -392,21 +418,21 @@ async onError(context: Context): Promise<void> {
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 
 #### `onExec` (Method)
 
-**Type:** `(_context: Context) => void \| Promise<void>`
+**Type:** `(context: Context) => void \| Promise<void>`
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -447,9 +473,9 @@ async onExec(context: Context): Promise<void> {
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -497,13 +523,13 @@ async onFinally(context: Context): Promise<void> {
 
 #### `onSuccess` (Method)
 
-**Type:** `(_context: Context) => void \| Promise<void>`
+**Type:** `(context: Context) => void \| Promise<void>`
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -541,9 +567,9 @@ async onSuccess(context: Context): Promise<void> {
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `Context` | ❌       | -       | -     | -          |             |
 
 ---
 

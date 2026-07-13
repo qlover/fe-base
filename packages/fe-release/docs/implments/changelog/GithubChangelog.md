@@ -1,128 +1,103 @@
-## `GitChangelog` (Module)
+## `GithubChangelog` (Module)
 
-**Type:** `module GitChangelog`
+**Type:** `module GithubChangelog`
 
-Git-based changelog generation and commit parsing
+GitHub-specific changelog generation
 
-This module provides functionality for generating changelogs from Git
-history, parsing commit messages according to conventional commit format,
-and managing commit metadata.
+This module extends the base changelog functionality with
+GitHub-specific features like PR linking, commit filtering
+by directory, and workspace-aware changelog generation.
 
 Core Features:
 
-- Git log retrieval
-- Conventional commit parsing
-- Changelog generation
-- Tag resolution
-- PR number extraction
+- PR-aware commit gathering
+- Directory-based filtering
+- GitHub link generation
+- Workspace changelog transformation
+- Markdown formatting
 
 **Example:** Basic usage
 
 ```typescript
-const changelog = new GitChangelog({
-  shell,
-  logger,
-  directory: 'packages/my-pkg'
-});
+const changelog = GithubChangelog.fromContext(context, githubManager);
 
-// Get commits between tags
-const commits = await changelog.getCommits({
+const commits = await changelog.getFullCommit({
   from: 'v1.0.0',
-  to: 'v2.0.0'
+  directory: 'packages/pkg-a'
 });
 ```
 
-**Example:** Commit parsing
+**Example:** Enrich workspace changelog
 
 ```typescript
-const changelog = new GitChangelog({ shell, logger });
-
-// Parse conventional commit
-const commit = changelog.parseCommitlint(
-  'feat(api): add new endpoint',
-  'Detailed description\n\nBREAKING CHANGE: API format changed'
-);
-// {
-//   type: 'feat',
-//   scope: 'api',
-//   message: 'add new endpoint',
-//   body: '  Detailed description\n\n  BREAKING CHANGE: API format changed'
-// }
+const changelog = GithubChangelog.fromContext(context, githubManager);
+const workspace = await changelog.enrichWorkspaceChangelog({
+  name: 'pkg-a',
+  path: 'packages/a',
+  lastTag: 'v1.0.0'
+});
+// Returns workspace with GitHub links in changelog
 ```
 
 ---
 
-### `GitChangelog` (Class)
+### `GithubChangelog` (Class)
 
-**Type:** `class GitChangelog`
+**Type:** `class GithubChangelog`
 
-Core class for Git-based changelog generation
+GitHub-specific changelog generator
 
-Provides functionality for retrieving and parsing Git commit history,
-generating changelogs, and managing commit metadata. Implements the
-ChangeLogInterface for standardized changelog generation.
+Extends the base changelog generator with GitHub-specific
+features like PR linking, directory filtering, and workspace
+transformation.
 
 Features:
 
-- Git log retrieval with flexible options
-- Conventional commit parsing
-- Tag resolution and validation
-- PR number extraction
-- Commit body formatting
+- PR commit aggregation
+- Directory-based filtering
+- GitHub link generation
+- Workspace changelog transformation
+- Markdown formatting
 
 **Example:** Basic usage
 
 ```typescript
-const changelog = new GitChangelog({
-  shell,
-  logger,
-  directory: 'packages/my-pkg'
-});
+const changelog = GithubChangelog.fromContext(context, githubManager);
 
-// Get commits with parsed metadata
-const commits = await changelog.getCommits({
+const commits = await changelog.getFullCommit({
   from: 'v1.0.0',
-  to: 'v2.0.0',
-  noMerges: true
+  directory: 'packages/pkg-a'
 });
-```
-
-**Example:** Custom commit parsing
-
-```typescript
-const changelog = new GitChangelog({ shell, logger });
-
-// Create commit value from hash and message
-const commit = changelog.toCommitValue(
-  'abc1234',
-  'feat(api): new endpoint (#123)'
-);
-// {
-//   base: { hash: 'abc1234', ... },
-//   commitlint: { type: 'feat', scope: 'api', ... },
-//   prNumber: '123'
-// }
 ```
 
 ---
 
-#### `new GitChangelog` (Constructor)
+#### `new GithubChangelog` (Constructor)
 
-**Type:** `(options: GitChangelogProps) => GitChangelog`
+**Type:** `(options: GithubChangelogProps, githubManager: GithubManager) => GithubChangelog`
 
 #### Parameters
 
-| Name      | Type                | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | ------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `options` | `GitChangelogProps` | ❌       | -       | -     | -          | Configuration options including shell and logger |
+| Name            | Type                   | Optional | Default | Since | Deprecated | Description                  |
+| --------------- | ---------------------- | -------- | ------- | ----- | ---------- | ---------------------------- |
+| `options`       | `GithubChangelogProps` | ❌       | -       | -     | -          | Changelog generation options |
+| `githubManager` | `GithubManager`        | ❌       | -       | -     | -          | GitHub API manager           |
+
+---
+
+#### `githubManager` (Property)
+
+**Type:** `GithubManager`
+
+GitHub API manager
 
 ---
 
 #### `options` (Property)
 
-**Type:** `GitChangelogProps`
+**Type:** `GithubChangelogProps`
 
-Configuration options including shell and logger
+Changelog generation options
 
 ---
 
@@ -167,6 +142,74 @@ const commit = changelog.createBaseCommit('feat: new feature', {
 | --------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
 | `message` | `string`              | ❌       | -       | -     | -          | Commit message                  |
 | `target`  | `Partial<BaseCommit>` | ✅       | -       | -     | -          | Optional additional commit data |
+
+---
+
+#### `enrichWorkspaceChangelog` (Method)
+
+**Type:** `(workspace: WorkspaceInterface) => Promise<WorkspaceInterface>`
+
+#### Parameters
+
+| Name        | Type                 | Optional | Default | Since | Deprecated | Description          |
+| ----------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------- |
+| `workspace` | `WorkspaceInterface` | ❌       | -       | -     | -          | Workspace to process |
+
+---
+
+##### `enrichWorkspaceChangelog` (CallSignature)
+
+**Type:** `Promise<WorkspaceInterface>`
+
+Enriches workspace changelog with GitHub repo content (commit/PR links)
+
+**Returns:**
+
+Promise resolving to updated workspace
+
+#### Parameters
+
+| Name        | Type                 | Optional | Default | Since | Deprecated | Description          |
+| ----------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------- |
+| `workspace` | `WorkspaceInterface` | ❌       | -       | -     | -          | Workspace to process |
+
+---
+
+#### `filterCommitsByDirectory` (Method)
+
+**Type:** `(commits: CommitValue[], directory: string) => Promise<CommitValue[]>`
+
+#### Parameters
+
+| Name        | Type            | Optional | Default | Since | Deprecated | Description                 |
+| ----------- | --------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `commits`   | `CommitValue[]` | ❌       | -       | -     | -          | Array of commits to filter  |
+| `directory` | `string`        | ❌       | -       | -     | -          | Directory path to filter by |
+
+---
+
+##### `filterCommitsByDirectory` (CallSignature)
+
+**Type:** `Promise<CommitValue[]>`
+
+**Since:** `2.4.0`
+
+Filters commits by directory
+
+Filters commits based on whether they contain changes in
+the specified directory. Uses GitHub API to get detailed
+commit information.
+
+**Returns:**
+
+Promise resolving to filtered commits
+
+#### Parameters
+
+| Name        | Type            | Optional | Default | Since | Deprecated | Description                 |
+| ----------- | --------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `commits`   | `CommitValue[]` | ❌       | -       | -     | -          | Array of commits to filter  |
+| `directory` | `string`        | ❌       | -       | -     | -          | Directory path to filter by |
 
 ---
 
@@ -225,6 +268,43 @@ const commits = await changelog.getCommits({
 | Name      | Type                  | Optional | Default | Since | Deprecated | Description                                 |
 | --------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
 | `options` | `GitChangelogOptions` | ✅       | -       | -     | -          | Configuration options for Git log retrieval |
+
+---
+
+#### `getFullCommit` (Method)
+
+**Type:** `(options: GitChangelogOptions) => Promise<CommitValue[]>`
+
+#### Parameters
+
+| Name      | Type                  | Optional | Default | Since | Deprecated | Description       |
+| --------- | --------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `options` | `GitChangelogOptions` | ✅       | -       | -     | -          | Changelog options |
+
+---
+
+##### `getFullCommit` (CallSignature)
+
+**Type:** `Promise<CommitValue[]>`
+
+Gets complete commit information with PR details
+
+Retrieves commits and enhances them with pull request
+information. For commits associated with PRs, includes
+all PR commits and filters by directory.
+
+When no PR is found, falls back to directory filtering
+on the commit itself via GitHub API.
+
+**Returns:**
+
+Promise resolving to enhanced commits
+
+#### Parameters
+
+| Name      | Type                  | Optional | Default | Since | Deprecated | Description       |
+| --------- | --------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `options` | `GitChangelogOptions` | ✅       | -       | -     | -          | Changelog options |
 
 ---
 
@@ -507,9 +587,37 @@ const commit = changelog.toCommitValue(
 
 ---
 
-### `GitChangelogProps` (Interface)
+#### `fromContext` (Method)
 
-**Type:** `interface GitChangelogProps`
+**Type:** `(context: default, githubManager: GithubManager) => GithubChangelog`
+
+#### Parameters
+
+| Name            | Type            | Optional | Default | Since | Deprecated | Description |
+| --------------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context`       | `default`       | ❌       | -       | -     | -          |             |
+| `githubManager` | `GithubManager` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `fromContext` (CallSignature)
+
+**Type:** `GithubChangelog`
+
+Creates a GitHub changelog generator from release context
+
+#### Parameters
+
+| Name            | Type            | Optional | Default | Since | Deprecated | Description |
+| --------------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context`       | `default`       | ❌       | -       | -     | -          |             |
+| `githubManager` | `GithubManager` | ❌       | -       | -     | -          |             |
+
+---
+
+### `GithubChangelogProps` (Interface)
+
+**Type:** `interface GithubChangelogProps`
 
 Configuration options for changelog generation
 
@@ -697,6 +805,12 @@ noMerges: false; // Include merge commits
 
 ---
 
+#### `repoUrl` (Property)
+
+**Type:** `string`
+
+---
+
 #### `shell` (Property)
 
 **Type:** `ShellInterface`
@@ -742,23 +856,28 @@ types: [
 
 ---
 
-### `CHANGELOG_ALL_FIELDS` (Variable)
+### `buildGithubChangelogProps` (Function)
 
-**Type:** `CommitField[]`
+**Type:** `(context: default) => GithubChangelogProps`
 
-**Default:** `[]`
+#### Parameters
 
-Complete list of available Git commit fields
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `default` | ❌       | -       | -     | -          |             |
 
-These fields can be used when retrieving commit information
-to specify which data should be included in the output.
+---
 
-**Example:**
+#### `buildGithubChangelogProps` (CallSignature)
 
-```typescript
-const commits = await changelog.getGitLog({
-  fields: CHANGELOG_ALL_FIELDS
-});
-```
+**Type:** `GithubChangelogProps`
+
+Builds GitHub changelog options from release context
+
+#### Parameters
+
+| Name      | Type      | Optional | Default | Since | Deprecated | Description |
+| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `default` | ❌       | -       | -     | -          |             |
 
 ---
