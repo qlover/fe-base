@@ -28,10 +28,7 @@
  * ### Phase 1 — Feature PR (base: `develop`)
  *
  * - **CI** (`.github/workflows/general-check.yml`): lint, test, build on every PR.
- * - **check-packages** (`@qlover/fe-scripts`): scans `packages/` changes and adds
- *   labels like `changes:packages/fe-release` to the PR.
- * - Config: `fe-config.json` → `release.workspaces.packagesDirectories` and
- *   `release.workspaces.changePackagesLabel` (default template: `changes:${name}`).
+ * - Changed packages are detected later by `fe-release` via **git diff** (no `changes:*` labels).
  *
  * ### Phase 2 — Create release PR (trigger: `CI-Release` on merged develop PR)
  *
@@ -39,17 +36,15 @@
  *   - Runs when a **merged** PR into `develop` has the **`CI-Release`** label at merge time,
  *     or via `workflow_dispatch`.
  *   - Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
- *   - Bumps versions, updates `CHANGELOG.md`, pushes `release/<repo>-<id>`, opens PR to `master`.
- *   - The new release PR is also labeled **`CI-Release`** (see `release.github.label.name`).
- *   - Change labels from the feature PR are forwarded via `--workspaces.change-labels`.
+ *   - Detects changed packages with git diff, bumps versions, updates `CHANGELOG.md`,
+ *     pushes `release/<repo>-<id>`, opens PR to `master`.
+ *   - The new release PR is labeled **`CI-Release`** (see `release.github.label.name`).
  *   - Merges into `develop` **without** `CI-Release` do **not** create a release PR (manual gate).
  *
  * ```bash
  * # Equivalent local / CI command (create release PR)
  * fe-release -V -s master \
- *   --github.push-change-labels \
- *   --changesetVersion.ignore-non-updated-packages \
- *   --workspaces.change-labels=changes:packages/fe-release
+ *   --changesetVersion.ignore-non-updated-packages
  * ```
  *
  * Open feature PRs with **`CI-Release`** skip `general-check`.
@@ -65,16 +60,14 @@
  * # Equivalent CI command (publish only, versions already bumped in release PR)
  * fe-release -V \
  *   --changesetVersion.skip-changeset \
- *   --changesetVersion.mode publish \
- *   --workspaces.change-labels=changes:packages/fe-release,CI-Release
+ *   --changesetVersion.mode publish
  * ```
  *
  * ### Labels
  *
  * | Label | Added by | Purpose |
  * |-------|----------|---------|
- * | `changes:packages/<name>` | `check-packages` on feature PRs | Marks which packages changed; filters release scope |
- * | `CI-Release` | Manual on merged develop PR (gate); auto on release PR | Triggers version + release PR; skips general-check; publish on merge to master |
+ * | `CI-Release` | Manual on develop PR (gate); auto on release PR | Triggers version + release PR; skips general-check; publish on merge to master |
  * | `increment:major` / `increment:minor` / `increment:patch` | Manual on PR | Override semver bump (default: patch) |
  *
  * Use a single **`CI-Release`** label for release PRs — do not add a separate `Release` label.
@@ -84,10 +77,6 @@
  * ```json
  * {
  *   "release": {
- *     "workspaces": {
- *       "packagesDirectories": ["packages"],
- *       "changePackagesLabel": "changes:${name}"
- *     },
  *     "changesetVersion": {
  *       "changesetRoot": ".changeset",
  *       "ignoreNonUpdatedPackages": false

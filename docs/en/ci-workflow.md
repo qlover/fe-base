@@ -2,55 +2,50 @@
 
 ## Overview
 
-Our CI system uses a single workflow file `general-check.yml` that handles all PR checks with different behaviors based on the target branch.
+Our CI system uses `general-check.yml` for quality checks and `release.yml` for publishing.
 
 ## Workflow Triggers
 
-The workflow is triggered when:
+`general-check.yml` runs when:
 
 - Creating a new PR
 - Updating an existing PR
 - Reopening a PR
 
+PRs with the **`CI-Release`** label skip `general-check`.
+
 ## Workflow Behaviors
 
 ### Basic Checks
 
-For all PRs, regardless of the target branch, the following checks will run:
+For all non-`CI-Release` PRs:
 
 - Code linting
 - Unit tests
 - Build process
 - Rebuild process
 
-### Package Checks
-
-Package checks are additional verifications that only run when:
-
-- The PR targets the master branch
-- The PR does not have the 'CI-Release' label
+Changed packages are detected later by `fe-release` via **git diff**. PRs are no longer labeled with `changes:*`.
 
 ## Common Development Flow
-
-A typical development flow might look like this:
 
 1. Feature Development:
 
    ```
-   feature branch -> v0.7 (PR)
+   feature branch -> develop (PR)
    └── Runs: lint, test, build, rebuild
    ```
 
 2. Version Release:
    ```
-   v0.7 -> master (PR)
-   ├── Runs: lint, test, build, rebuild
-   └── Additional: package checks
+   develop merge (PR has CI-Release)
+   └── create-release-pr: fe-release version → release/* → master
+   └── merge release PR to master → publish
    ```
 
 ## Important Notes
 
-1. All PRs go through the same basic quality checks (lint, test, build).
-2. Package checks are automatically skipped for PRs not targeting master.
-3. Use the 'CI-Release' label to skip all checks if needed.
-4. The workflow is designed to provide consistent checks across all branches while ensuring extra verification for master.
+1. All regular PRs get the same basic quality checks (lint, test, build).
+2. Release scope is determined by `fe-release` git diff, not PR labels.
+3. To release, add `CI-Release` **before** merging into develop.
+4. If already merged without the label, run the **Release sub packages** workflow manually.

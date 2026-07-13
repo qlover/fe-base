@@ -142,10 +142,6 @@ fe-release [options]
 ```json
 {
   "release": {
-    "workspaces": {
-      "packagesDirectories": ["packages"],
-      "changePackagesLabel": "changes:${name}"
-    },
     "changesetVersion": {
       "changesetRoot": ".changeset",
       "ignoreNonUpdatedPackages": false
@@ -172,17 +168,15 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 | 阶段           | 触发条件                                    | CI 工作流                           | 工具                                         |
 | -------------- | ------------------------------------------- | ----------------------------------- | -------------------------------------------- |
-| 1. 功能开发    | PR 目标为 `develop`                         | `general-check.yml`                 | lint / test / build + `check-packages`       |
-| 2. 创建发布 PR | 合并到 `develop` 后打上 `CI-Release`（或合并前已有） | `release.yml` → `create-release-pr` | `fe-release`（version 模式） |
+| 1. 功能开发    | PR 目标为 `develop`                         | `general-check.yml`                 | lint / test / build                          |
+| 2. 创建发布 PR | 合并到 `develop` 前打上 `CI-Release`        | `release.yml` → `create-release-pr` | `fe-release`（version 模式，git diff 找包） |
 | 3. 发布 | 发布 PR（`release/* → master`）合并到 `master` | `release.yml` → `publish` | `fe-release`（publish 模式，不再 bump 版本） |
 
 ### 阶段 1：功能 PR（目标分支 `develop`）
 
 1. 从 `develop` 拉功能分支，开发并提交（遵循 Conventional Commits）。
 2. 创建 PR，目标分支为 **`develop`**。
-3. CI 自动执行质量检查；`check-packages` 为有改动的包打上标签，例如：
-   - `changes:packages/fe-release`
-   - `changes:packages/fe-scripts`
+3. CI 自动执行质量检查（lint / test / build）。
 4. 可选：在 PR 上添加版本递增标签 `increment:major` / `increment:minor` / `increment:patch`（默认 patch）。
 
 ### 阶段 2：创建发布 PR（手动打 `CI-Release` 触发）
@@ -191,9 +185,9 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 1. 合并时触发 `release.yml` 的 `create-release-pr` job（`closed` 事件）。
 2. 检出 `develop`，运行 `fe-release`（默认 **`changesetVersion` version 模式**）：
+   - 通过 **git diff** 检测变更包
    - 生成 changelog、更新 `CHANGELOG.md`、 bump 版本号
 3. 推送 `release/<repo>-<id>` 分支，创建指向 **`master`** 的发布 PR（自动带 `CI-Release`）。
-4. 原功能 PR 上的 `changes:*` 标签会传递到发布 PR，用于限定发布范围。
 
 > 合并到 develop 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。  
 > 若已合并但未打标签，可在 Actions 里手动运行 **Release sub packages**（`workflow_dispatch`）。
@@ -211,7 +205,6 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 | 标签                      | 来源                        | 作用                                                      |
 | ------------------------- | --------------------------- | --------------------------------------------------------- |
-| `changes:packages/<name>` | `check-packages`（功能 PR） | 标记哪些包有变更，过滤发布范围                            |
 | `CI-Release` | 手动打在 develop 功能 PR 上（触发创建发布 PR）；发布 PR 上由 `fe-release` 自动添加 | 触发 version 流程；跳过 general-check；master 合并后触发 publish |
 | `increment:*`             | 手动添加                    | 覆盖 semver 递增策略                                      |
 
@@ -227,9 +220,9 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 ```mermaid
 graph TD
     A[feature 分支] -->|PR| B[develop]
-    B -->|check-packages 打 changes 标签| B
-    B -->|合并| C[create-release-pr]
-    C -->|fe-release| D[release/* → master PR]
+    B -->|lint test build| B
+    B -->|合并且带 CI-Release| C[create-release-pr]
+    C -->|fe-release git diff| D[release/* → master PR]
     D -->|自动打 CI-Release| E[审核发布 PR]
     E -->|合并到 master| F[publish → npm + GitHub Release]
 ```

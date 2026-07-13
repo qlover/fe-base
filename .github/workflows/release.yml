@@ -70,9 +70,7 @@ jobs:
         run: |
           node packages/fe-release/dist/cli.js -V \
             -s master \
-            --github.push-change-labels \
-            --changesetVersion.ignore-non-updated-packages \
-            --workspaces.change-labels=${{ join(github.event.pull_request.labels.*.name, ',') }}
+            --changesetVersion.ignore-non-updated-packages
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           FE_RELEASE_BRANCH: develop
@@ -82,7 +80,6 @@ jobs:
         run: |
           node packages/fe-release/dist/cli.js -V \
             -s master \
-            --github.push-change-labels \
             --changesetVersion.ignore-non-updated-packages
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -137,8 +134,7 @@ jobs:
         run: |
           node packages/fe-release/dist/cli.js -V \
             --changesetVersion.skip-changeset \
-            --changesetVersion.mode publish \
-            --workspaces.change-labels=${{ join(github.event.pull_request.labels.*.name, ',') }}
+            --changesetVersion.mode publish
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
