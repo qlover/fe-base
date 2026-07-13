@@ -41,11 +41,28 @@ function githubLog(value: unknown, key = 'githubLog'): void {
   console.log(`${key}=${value}`);
 }
 
+const DEFAULT_CHANGE_PACKAGES_LABEL = 'changes:${name}';
+
+/** fe-config.json → release.workspaces (owned by fe-release, not FeConfig) */
+interface CheckPackagesReleaseWorkspaces {
+  packagesDirectories?: string[];
+  changePackagesLabel?: string;
+}
+
+function getReleaseWorkspaces(
+  context: ScriptContextInterface<CheckPackagesOptions>
+): CheckPackagesReleaseWorkspaces | undefined {
+  const { release } = context.feConfig as {
+    release?: { workspaces?: CheckPackagesReleaseWorkspaces };
+  };
+  return release?.workspaces;
+}
+
 function getWorkspacePackages(
   context: ScriptContextInterface<CheckPackagesOptions>
 ): string[] {
   const packagesDirectories =
-    context.feConfig.release?.packagesDirectories || [];
+    getReleaseWorkspaces(context)?.packagesDirectories || [];
 
   if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
     return packagesDirectories;
@@ -86,7 +103,8 @@ async function addChangePackagePRLables(
   const [owner, repo] = repository.split('/');
 
   const changePackagesLabel =
-    context.feConfig.release?.changePackagesLabel || '${name}';
+    getReleaseWorkspaces(context)?.changePackagesLabel ||
+    DEFAULT_CHANGE_PACKAGES_LABEL;
 
   const labels = changePackageNames.map((name) =>
     changePackagesLabel.replace('${name}', name)

@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
+      - develop
       - master
     types:
       - closed
@@ -11,10 +12,15 @@ on:
       - packages/**
 
 jobs:
-  release-pull-request:
+  # develop merge -> version bump + create release PR to master (CI-Release label)
+  create-release-pr:
     if: |
-      github.event.pull_request.merged == true && 
-      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.merged == true &&
+        github.event.pull_request.base.ref == 'develop' &&
+        !contains(github.event.pull_request.labels.*.name, 'CI-Release')
+      )
     runs-on: ubuntu-latest
     env:
       # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -24,6 +30,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: develop
           fetch-depth: 0
           fetch-tags: true
 
@@ -31,6 +38,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -39,32 +47,49 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      # Build all packages with NX Cloud acceleration
       - name: Build (affected force)
         timeout-minutes: 15
         run: pnpm build:packages:force
 
-      # Lint with NX Cloud cache
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint:force
 
-      # Test with NX Cloud cache
       - name: Test
         timeout-minutes: 10
         run: pnpm test:force
+
       - run: pnpm rebuild
 
-      - name: Release Pull Request
-        run: node packages/fe-release/dist/cli.js -V -P --githubPR.push-change-labels --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}} --changelog.ignore-non-updated-packages
+      - name: Create release PR to master (from develop merge)
+        if: github.event_name == 'pull_request'
+        run: |
+          node packages/fe-release/dist/cli.js -V \
+            -s master \
+            --github.push-change-labels \
+            --changesetVersion.ignore-non-updated-packages \
+            --workspaces.change-labels=${{ join(github.event.pull_request.labels.*.name, ',') }}
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          FE_RELEASE_BRANCH: develop
 
-  release:
+      - name: Create release PR to master (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          node packages/fe-release/dist/cli.js -V \
+            -s master \
+            --github.push-change-labels \
+            --changesetVersion.ignore-non-updated-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          FE_RELEASE_BRANCH: develop
+
+  # CI-Release PR merged to master -> publish to npm and GitHub
+  publish:
     if: |
-      github.event.pull_request.merged == true && 
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'master' &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
-
     runs-on: ubuntu-latest
     env:
       # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -90,24 +115,26 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      # Build all packages with NX Cloud acceleration
       - name: Build (affected force)
         timeout-minutes: 15
         run: pnpm build:packages:force
 
-      # Lint with NX Cloud cache
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint:force
 
-      # Test with NX Cloud cache
       - name: Test
         timeout-minutes: 10
         run: pnpm test:force
+
       - run: pnpm rebuild
 
       - name: Create tag and publish
-        run: node packages/fe-release/dist/cli.js -V --changelog.skip-changeset --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
+        run: |
+          node packages/fe-release/dist/cli.js -V \
+            --changesetVersion.skip-changeset \
+            --changesetVersion.mode publish \
+            --workspaces.change-labels=${{ join(github.event.pull_request.labels.*.name, ',') }}
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,6 +1,10 @@
 {
   "protectedBranches": ["master", "develop"],
   "release": {
+    "workspaces": {
+      "packagesDirectories": ["packages"],
+      "changePackagesLabel": "changes:${name}"
+    },
     "changesetVersion": {
       "changesetRoot": ".changeset",
       "ignoreNonUpdatedPackages": false,
