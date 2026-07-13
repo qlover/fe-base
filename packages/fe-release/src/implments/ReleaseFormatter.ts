@@ -1,3 +1,34 @@
+/**
+ * @module ReleaseFormatter
+ * @description Template-based formatting for release branches, commits, and PRs
+ *
+ * Centralizes string formatting for the GitHub release flow. Uses
+ * {@link TemplateEngine} from `@qlover/scripts-context` with ES6-style
+ * `${ path }` placeholders and variables from {@link BranchNameTplVars}.
+ *
+ * Responsibilities:
+ * - **Branch/tag names**: `getReleaseBranch()` from `branchName` / `releaseTagName` templates
+ * - **Commit message**: `getCommitMessage()` with optional `less` / `more` templates when
+ *   workspace count exceeds 3
+ * - **PR content**: `getPRTitle()` and `getPRBody()` with single- vs multi-workspace changelog
+ *   formatting via `batchPRBody`
+ *
+ * Defaults are sourced from `releaseJson.github` in {@link defaults}.
+ * {@link Github} constructs an instance and calls `setConfig()` in `onBefore`
+ * with runtime context (`repoName`, `releaseId`, `env`, etc.).
+ *
+ * @example Branch name template variables
+ * ```typescript
+ * // Template: release/${repoName}-${releaseId}
+ * // Variables: repoName, releaseId, timestamp, authorName, env, count, spaces
+ * formatter.getReleaseBranch(workspaces);
+ * ```
+ *
+ * @example Multi-workspace PR body
+ * ```typescript
+ * formatter.getPRBody(workspaces, releaseBranchResult, templateContext);
+ * ```
+ */
 import type { TemplateEngine } from '@qlover/scripts-context';
 import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 import { worksapce2name } from '../utils/createWorkspace';
@@ -6,80 +37,79 @@ import type { TemplateContext } from '../type';
 
 export type ReleaseBranchResult = {
   /**
-   * 用于创建分支时附带的 tagName
+   * Tag name associated with the release branch
    */
   releaseTagName: string;
   /**
-   * 创建分支名
+   * Release branch name to create and push
    */
   releaseBranch: string;
 };
 
 export type BranchNameTplVars = {
   /**
-   * 仓库名
+   * Repository name
    */
   repoName: string;
 
   /**
-   * 当前发布流程的唯一 ID
+   * Unique ID for the current release run
    */
   releaseId: string;
 
   /**
-   * 时间戳
+   * Timestamp string used in templates
    */
   timestamp: string;
 
   /**
-   * 作者名
+   * Author name
    */
   authorName: string;
 
   /**
-   * 发布时的环境
+   * Release environment (for example `production`)
    */
   env: string;
 
   /**
-   * 发布项目的数量
+   * Number of workspaces in this release
    */
   count: number;
 
   /**
-   * 工作区格式化后的内容
+   * Formatted workspace summary for templates
    *
-   * 一般来说是 `pkgName@version` 的格式的组合字符串
-   *
-   * 但是最多只显示3个工作区
+   * Typically a comma-separated list of `pkgName@version` entries.
+   * Capped at the first 3 workspaces for display brevity.
    */
   spaces: string;
 };
 
 export interface ReleaseFormatterConfig {
   /**
-   * 仓库名
+   * Repository name
    */
   repoName?: string;
   /**
-   * 作者名
+   * Author name
    */
   authorName?: string;
 
   /**
-   * 发布时的环境
+   * Release environment
    */
   env?: string;
 
   /**
-   * 当前发布流程的唯一 ID
+   * Unique ID for the current release run
    */
   releaseId?: string;
 
   /**
    * The branch name for batch release
    *
-   * 支持的模板变量见 {@link BranchNameTplVars}
+   * Template variables: see {@link BranchNameTplVars}
    *
    * @default `release/${repoName}-${releaseId}`
    */
@@ -88,7 +118,7 @@ export interface ReleaseFormatterConfig {
   /**
    * The tag name for batch release
    *
-   * 支持的模板变量见 {@link BranchNameTplVars}
+   * Template variables: see {@link BranchNameTplVars}
    *
    * @default `release-tag-${count}-patch-${releaseId}`
    */
@@ -100,24 +130,26 @@ export interface ReleaseFormatterConfig {
   releaseName?: string;
 
   /**
-   * 用于创建发布分支时的提交信息
+   * Commit message template used when creating the release branch
    *
-   * 如果配置为对象，则支持less和more模板, 其中 less 表示小于3个工作区时的提交信息, more 表示大于3个工作区时的提交信息
+   * When configured as an object, supports `less` and `more` templates:
+   * - `less`: used when workspace count is 3 or fewer
+   * - `more`: used when workspace count exceeds 3
    *
-   * 提交信息支持完整的 commit 规范，支持 subject，body，foot
+   * Supports conventional commit structure: subject, body, and footer.
    *
-   * **对象形式目前处于实验阶段**
+   * **Object form is experimental.**
    *
-   * @example commit 提交格式
+   * @example Conventional commit layout
    * ```
-   * <type>(<scope>): <subject>    <-- 这就是 Header/Subject（必填）
-   *                               <-- 空行
-   * <body>                        <-- 详细描述（选填）
-   *                               <-- 空行
-   * <footer>                      <-- 关闭 Issue 或 BREAKING CHANGE（选填）
+   * <type>(<scope>): <subject>    <-- Header/Subject (required)
+   *                               <-- blank line
+   * <body>                        <-- detailed description (optional)
+   *                               <-- blank line
+   * <footer>                      <-- issue refs or BREAKING CHANGE (optional)
    * ```
    *
-   * @example 完整的模板字符串
+   * @example Full template string
    *
    * ```
    * \`\`\`
@@ -126,7 +158,7 @@ export interface ReleaseFormatterConfig {
    * \`\`\`
    * ```
    *
-   * 默认会直接将所有发布包名字和版本列出来
+   * By default, lists all package names and versions in the commit message.
    *
    * @default `'chore(release): ${spaces}'`
    */
@@ -159,6 +191,13 @@ export interface ReleaseFormatterConfig {
   batchPRBody?: string;
 }
 
+/**
+ * Formats release branch names, commit messages, and PR title/body from templates.
+ *
+ * Inject a shared {@link TemplateEngine} instance (typically from
+ * {@link ReleaseContext.getTemplateEngine}) so formatting stays consistent
+ * across plugins.
+ */
 export class ReleaseFormatter {
   constructor(
     protected templateEngine: TemplateEngine,

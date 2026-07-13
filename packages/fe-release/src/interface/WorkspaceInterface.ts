@@ -1,17 +1,23 @@
-import type { PackageJson } from '../type';
-
 /**
- * 该接口用来描述 relesae 时的核心数据， 其中将每个单独的子包抽象成了 WorkspaceInterface 接口类型
+ * @module WorkspaceInterface
+ * @description Core data model for a monorepo package in a release run
+ *
+ * Represents one publishable workspace discovered by the {@link Workspaces}
+ * plugin and passed through {@link ChangesetVersion} and {@link Github}.
+ *
+ * Typical lifecycle fields:
+ * - `version` / `newVersion` — before and after `changeset version`
+ * - `lastTag` — git baseline for changelog generation
+ * - `dependencyRelease` — internal dependent bumped only because a dependency changed
  */
+import type { PackageJson } from '../type';
 export interface WorkspaceInterface {
   /**
-   * 包名
+   * Package name from package.json
    */
   name: string;
   /**
-   * 包的版本号
-   *
-   * - 一般用于表示原始版本号
+   * Current version from package.json before bump
    */
   version: string;
 
@@ -45,7 +51,7 @@ export interface WorkspaceInterface {
   tagName?: string;
 
   /**
-   * 一般用于表示上一次发布的 tag 名字， 用于计算 changelog 时使用
+   * Previous release tag used as the git changelog baseline
    */
   lastTag?: string;
 

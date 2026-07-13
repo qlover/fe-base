@@ -1,3 +1,21 @@
+/**
+ * @module createWorkspace
+ * @description Workspace factory and path helpers for fe-release
+ *
+ * Replaces the legacy `WorkspaceCreator` module. Provides utilities to:
+ * - Resolve `package.json` paths inside a monorepo root
+ * - Read workspace manifests from disk
+ * - Build {@link WorkspaceValue} instances for plugins
+ * - Format workspace names and version summaries for logging
+ *
+ * @example Create a workspace from a relative path
+ * ```typescript
+ * const workspace = createWorkspaceValue({
+ *   path: 'packages/fe-release',
+ *   rootPath: process.cwd()
+ * });
+ * ```
+ */
 import { readFileSync } from 'fs';
 import { join, isAbsolute } from 'path';
 import { MANIFEST_PATH } from '../defaults';
@@ -5,14 +23,12 @@ import { WorkspaceValue } from '../implments/WorkspaceValue';
 import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 
 /**
- * 将 workspace 对象转成 name
+ * Format a workspace as `name@version`.
  *
  * @example
  * ```
  * pkgname@1.1.0
  * ```
- * @param worksapce
- * @returns
  */
 export function worksapce2name(
   worksapce: Pick<WorkspaceInterface, 'name' | 'version'>
@@ -50,8 +66,11 @@ export function readJson(path: string): Record<string, unknown> {
 }
 
 export type WorkspaceManifestSource = {
+  /** Relative path from monorepo root to the workspace directory */
   path: string;
+  /** Absolute workspace root; derived from `rootPath` + `path` when omitted */
   root?: string;
+  /** Monorepo root used to resolve relative `path` values */
   rootPath?: string;
   /**
    * @default `package.json`
@@ -67,6 +86,11 @@ export type WorkspacePackageOnDisk = {
   packageJson: Record<string, unknown>;
 };
 
+/**
+ * Resolve absolute workspace root and package.json path from manifest source options.
+ *
+ * @throws Error when `path` is missing
+ */
 export function resolveWorkspacePackagePath(
   options: WorkspaceManifestSource
 ): Pick<WorkspacePackageOnDisk, 'root' | 'packagePath' | 'manifestPath'> {
@@ -107,6 +131,13 @@ export function readWorkspacePackageFromDisk(
   };
 }
 
+/**
+ * Build a {@link WorkspaceValue} from partial workspace data and disk manifest.
+ *
+ * Reads `package.json` from disk when `packageJson` is not provided.
+ *
+ * @throws Error when `path` is missing
+ */
 export function createWorkspaceValue(
   workspace: Partial<WorkspaceValue> & WorkspaceManifestSource
 ): WorkspaceValue {

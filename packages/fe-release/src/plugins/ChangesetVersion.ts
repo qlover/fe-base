@@ -1,3 +1,43 @@
+/**
+ * @module ChangesetVersion
+ * @description Changelog generation and changeset version/publish plugin
+ *
+ * Second plugin in the default release pipeline (after {@link Workspaces},
+ * before {@link Github}). Bridges git-based changelog formatting with the
+ * Changesets CLI for monorepo version bumps.
+ *
+ * Pipeline phases:
+ * - **onBefore**: validate `.changeset` directory exists
+ * - **onExec**: generate per-workspace git changelogs (skips `dependencyRelease`
+ *   when `ignoreNonUpdatedPackages` is enabled)
+ * - **onSuccess**: run version and/or publish flow based on `mode`
+ *
+ * Version flow (`mode: 'version'` or first half of `'both'`):
+ * 1. Write `.changeset/*.md` files for directly changed packages only
+ * 2. Run `changeset version` (optionally with `changelog: false` when `onlyVersion`)
+ * 3. Optionally `git restore` dependency-release paths when `ignoreNonUpdatedPackages`
+ * 4. Sync workspace `newVersion` / `tagName` from disk via `mergeWorkspaces`
+ *
+ * @example Version-only release
+ * ```typescript
+ * // fe-config.json
+ * {
+ *   "release": {
+ *     "changesetVersion": {
+ *       "mode": "version",
+ *       "increment": "patch"
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @example Ignore internal dependent bumps
+ * ```bash
+ * fe-release --changesetVersion.ignore-non-updated-packages
+ * ```
+ *
+ * @see {@link ChangesetVersionProps.ignoreNonUpdatedPackages} for dependency-release behavior
+ */
 import type ReleaseContext from '../implments/ReleaseContext';
 import { join } from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -107,6 +147,13 @@ export interface ChangesetVersionProps
 const CHANGESET_FILE_TEMPLATE =
   "---\n'${name}': '${increment}'\n---\n\n${changelog}";
 
+/**
+ * Manages changelog generation, changeset file creation, and Changesets CLI execution.
+ *
+ * Coordinates with {@link Workspaces} for workspace discovery and
+ * `dependencyRelease` tagging. Downstream {@link Github} consumes enriched
+ * changelogs and bumped versions produced here.
+ */
 export default class ChangesetVersion extends ScriptPlugin<
   ReleaseContext,
   ChangesetVersionProps

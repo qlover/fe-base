@@ -1,3 +1,13 @@
+/**
+ * @module WorkspaceValue
+ * @description Concrete {@link WorkspaceInterface} implementation for release plugins
+ *
+ * Holds resolved disk paths (`packagePath`, `manifestPath`) in addition to the
+ * standard workspace fields used across the release pipeline.
+ *
+ * Use {@link createWorkspaceValue} for construction from monorepo paths, or
+ * {@link WorkspaceValue.toWorkspace} when all fields are already known.
+ */
 import { MANIFEST_PATH } from '../defaults';
 import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 import type { PackageJson } from '../type';
@@ -16,6 +26,12 @@ export type WorkspaceValueOptions = WorkspaceInterface & {
   packagePath?: string;
 };
 
+/**
+ * Mutable workspace record used throughout the release pipeline.
+ *
+ * {@link toString} produces a debug-friendly summary including `(DEP)` for
+ * dependency-release entries and optional tag/version fields.
+ */
 export class WorkspaceValue implements WorkspaceInterface {
   protected manifestPath: string = MANIFEST_PATH;
   protected packagePath: string = '';
@@ -45,6 +61,9 @@ export class WorkspaceValue implements WorkspaceInterface {
     return new WorkspaceValue(workspace);
   }
 
+  /**
+   * Debug representation for logging workspace lists during release.
+   */
   public toString(): string {
     let result = '';
     if (typeof this.dependencyRelease === 'boolean') {

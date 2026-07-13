@@ -1,3 +1,39 @@
+/**
+ * @module Workspaces
+ * @description Monorepo workspace discovery and dependency-release tracking
+ *
+ * First plugin in the default release pipeline. Detects which packages changed
+ * relative to `sourceBranch`, resolves git tags for changelog baselines, and
+ * optionally appends internal dependents as `dependencyRelease` workspaces.
+ *
+ * Discovery flow (`onBefore`):
+ * 1. `getProjectWorkspaces()` — scan `packagesDirectories` or `find-workspaces`
+ * 2. `getChangedPackages()` — filter by git diff or `changeLabels`
+ * 3. `appendDependencyReleaseWorkspaces()` — append dependents via
+ *    `@changesets/get-dependents-graph` when `includeDependencyReleases` is true
+ * 4. `getLastTagName()` — resolve per-workspace baseline tag for changelog generation
+ * 5. `context.setWorkspaces()` — publish final workspace list to {@link ReleaseContext}
+ *
+ * `dependencyRelease` workspaces are consumed by {@link ChangesetVersion} and
+ * {@link Github} to decide whether to generate changelogs, write changeset files,
+ * or restore on-disk bumps after `changeset version`.
+ *
+ * @example Limit release to labeled packages
+ * ```bash
+ * fe-release --workspaces.change-labels changes:@qlover/fe-release
+ * ```
+ *
+ * @example Disable dependent workspace appending
+ * ```json
+ * {
+ *   "release": {
+ *     "workspaces": {
+ *       "includeDependencyReleases": false
+ *     }
+ *   }
+ * }
+ * ```
+ */
 import { resolve, relative, isAbsolute } from 'node:path';
 import type ReleaseContext from '../implments/ReleaseContext';
 import type { ReleaseLabelCompare } from '../implments/ReleaseLabel';
@@ -50,18 +86,18 @@ export interface WorkspacesProps extends ScriptPluginProps {
   projectWorkspaces?: WorkspaceInterface[];
 
   /**
-   * 用于匹配 workspace 工作区的版本 tag 格式
+   * Template for generating release tag names after version bump
    *
-   * - 模板中的变量支持 WorkspaceInterface 中的属性
+   * Template variables support {@link WorkspaceInterface} properties.
    *
-   * @default '${name}@${version}'
+   * @default `'${name}@${version}'`
    */
   tagTemplate?: string;
 
   /**
-   * 该属性用于匹配历史版本的tag格式
+   * Glob-style pattern for matching historical release tags
    *
-   * @default '${name}@*'
+   * @default `'${name}@*'`
    */
   tagMatch?: string;
 
@@ -164,16 +200,19 @@ const defaultTagMatch = '${name}@*';
 const defautlCompare: ReleaseLabelCompare = (changedFilePath, packagePath) =>
   resolve(changedFilePath).startsWith(resolve(packagePath));
 
+/**
+ * Discovers changed monorepo packages and prepares {@link WorkspaceInterface}
+ * entries for downstream release plugins.
+ */
 export default class Workspaces extends ScriptPlugin<
   ReleaseContext,
   WorkspacesProps
 > {
   /**
-   * 该属性用于表示是否跳过下一个工作区
+   * When true, skip the next plugin hook invocation for this plugin instance.
    *
-   * 当有 publishPath 或 workspace 配置时，会跳过下一个工作区
-   *
-   * 防止插件执行多次
+   * Set after workspaces are resolved (for example when `workspaces` is
+   * pre-configured) to prevent duplicate execution.
    */
   protected nextSkipFlag = false;
 
@@ -286,7 +325,7 @@ export default class Workspaces extends ScriptPlugin<
           {
             name: source.name,
             oldVersion: source.version,
-            // TODO: release 后获取新版本号
+            // TODO: resolve newVersion after changeset version completes
             newVersion: 'new version'
           }
         );
@@ -314,7 +353,7 @@ export default class Workspaces extends ScriptPlugin<
   }
 
   /**
-   * TODO: 移动到需要发布控制的插件中判断
+   * TODO: move npm token validation to the publish-focused plugin
    */
   protected async validateNpmToken(): Promise<void> {
     // if (!this.getConfig('releasePR')) {

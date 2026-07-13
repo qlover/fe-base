@@ -1,3 +1,39 @@
+/**
+ * @module Github
+ * @description GitHub changelog enrichment and release PR plugin
+ *
+ * Third plugin in the default release pipeline (after {@link Workspaces} and
+ * {@link ChangesetVersion}). Extends {@link GitBase} for git operations and
+ * delegates GitHub API calls to {@link GithubManager}.
+ *
+ * Pipeline phases:
+ * - **onBefore**: validate GitHub token; seed {@link ReleaseFormatter} context
+ * - **onExec**: enrich workspace changelogs with PR/commit links via {@link GithubChangelog}
+ * - **onSuccess**: create release branch, commit, push, and open PR (unless skipped)
+ *
+ * Release branch flow:
+ * 1. `ReleaseFormatter.getReleaseBranch()` — derive branch and tag names from templates
+ * 2. Create branch from `sourceBranch`, commit version/changelog changes, push
+ * 3. Open PR with formatted title/body and optional labels
+ * 4. Auto-merge when `autoMergeReleasePr` is enabled
+ *
+ * @example Skip PR creation (local dry-run)
+ * ```bash
+ * fe-release --github.skip-create-release-pr --dry-run
+ * ```
+ *
+ * @example fe-config label and merge settings
+ * ```json
+ * {
+ *   "release": {
+ *     "github": {
+ *       "autoMergeReleasePr": false,
+ *       "label": { "name": "CI-Release" }
+ *     }
+ *   }
+ * }
+ * ```
+ */
 import type ReleaseContext from '../implments/ReleaseContext';
 import { GithubManager } from '../implments/GithubManager';
 import type { GitRepositoryParsedType } from './GitBase';
@@ -71,11 +107,10 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
   /**
    * Plugin work mode
    *
-   * - `changelog`: enrich workspace changelogs only
-   * - `pr`: enrich changelogs and create a release PR
-   * - `release`: push tags and create GitHub releases
+   * Currently only `createPR` is supported: enrich changelogs in `onExec`,
+   * then create release branch and PR in `onSuccess`.
    *
-   * @default 'changelog'
+   * @default `'createPR'`
    */
   mode?: GithubMode;
 
@@ -137,7 +172,7 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
   discussionCategoryName?: string;
 
   /**
-   * 是否自动合并创建的 Release PR
+   * Whether to auto-merge the created release PR
    *
    * @default false
    */
@@ -205,6 +240,13 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
   label?: GithubLabel;
 }
 
+/**
+ * GitHub integration plugin for changelog enrichment and release PR creation.
+ *
+ * Skips `dependencyRelease` workspaces during changelog enrichment because
+ * their changelogs are pre-filled by {@link Workspaces} or intentionally
+ * ignored when `changesetVersion.ignoreNonUpdatedPackages` is enabled.
+ */
 export default class Github extends GitBase<GithubProps> {
   protected releaseFormatter: ReleaseFormatter;
   protected githubManager: GithubManager;
@@ -350,9 +392,7 @@ export default class Github extends GitBase<GithubProps> {
   }
 
   /**
-   * 创建发布分支， 然后将发布分支和tag返回
-   * @param workspaces
-   * @returns
+   * Create the release branch, commit changes, push, and return branch/tag names.
    */
   protected async createReleaseBranch(
     workspaces: WorkspaceInterface[]

@@ -198,7 +198,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
     try {
       await this.context.shell.exec('git rev-parse --git-dir', {
         dryRun: false,
-        silent: true // 避免输出错误信息
+        silent: true // suppress stderr when not in a git repository
       });
       return true;
     } catch {
