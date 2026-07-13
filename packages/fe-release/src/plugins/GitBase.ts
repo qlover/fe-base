@@ -35,7 +35,7 @@
  * }
  * ```
  */
-import isString from 'lodash/isString';
+import { isString } from 'lodash-es';
 import type ReleaseContext from '../implments/ReleaseContext';
 import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 import parse from 'git-url-parse';

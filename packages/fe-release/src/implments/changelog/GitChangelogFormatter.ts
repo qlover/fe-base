@@ -51,7 +51,7 @@ import {
   type CommitValue,
   type GitChangelogOptions
 } from '../../interface/ChangeLog';
-import groupBy from 'lodash/groupBy';
+import { groupBy } from 'lodash-es';
 import { releaseJson } from '../../defaults';
 
 /**

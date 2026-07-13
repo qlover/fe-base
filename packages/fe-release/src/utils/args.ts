@@ -48,7 +48,7 @@
  * ```
  */
 import type { OptionValues } from 'commander';
-import set from 'lodash/set';
+import { set } from 'lodash-es';
 
 /**
  * Processes Commander.js options into a structured object

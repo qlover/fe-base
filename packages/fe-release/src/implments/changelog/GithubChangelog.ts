@@ -48,7 +48,7 @@ import {
 import { GitChangelogFormatter } from '../../implments/changelog/GitChangelogFormatter';
 import { Pather } from '../../utils/pather';
 import type { WorkspaceInterface } from '../../interface/WorkspaceInterface';
-import clone from 'lodash/clone';
+import { clone } from 'lodash-es';
 
 const DOMAIN = 'https://github.com';
 

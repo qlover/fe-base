@@ -49,7 +49,7 @@
  * ```
  */
 import type { ReleaseGlobalConfig, TemplateContext } from '../type';
-import merge from 'lodash/merge';
+import { merge } from 'lodash-es';
 import { releaseJson } from '../defaults';
 import { randomUUID } from 'node:crypto';
 import type { RenderFn } from '@qlover/scripts-context';
