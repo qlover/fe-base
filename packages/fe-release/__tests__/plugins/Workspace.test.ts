@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Workspaces, {
   type WorkspaceValue
-} from '../../src/plugins/workspaces/Workspaces';
+} from '../../src/plugins/Workspaces';
 import { WorkspaceCreator } from '../../src/plugins/workspaces/WorkspaceCreator';
 import { createTestReleaseOptions } from '../helpers';
 import { ReleaseContext } from '../../src';

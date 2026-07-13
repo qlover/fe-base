@@ -205,6 +205,25 @@ export interface GitChangelogOptions {
    * ```
    */
   commitBody?: boolean;
+
+  /**
+   * Template for dependency release entries
+   *
+   * Used for formatting changelog entries related to dependency updates.
+   * Supports variables:
+   * - ${dep.name}: Dependency name
+   * - ${dep.oldVersion}: Previous version
+   * - ${dep.newVersion}: Updated version
+   *
+   * @since 5.0.0
+   * @default '- Update dependency **${name}** from `${oldVersion}` to `${newVersion}`'
+   *
+   * @example
+   * ```typescript
+   * dependencyReleaseTemplate: '- Bump **${dep.name}** from `${dep.oldVersion}` to `${dep.newVersion}`'
+   * ```
+   */
+  dependencyReleaseTemplate?: string;
 }
 
 /**

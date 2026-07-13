@@ -38,7 +38,7 @@ describe('Plugin Class', () => {
   describe('init and config', () => {
     it('should use the correct plugin name and properties to initialize', () => {
       expect(plugin.pluginName).toBe('test-plugin');
-      expect(plugin.options.testValue).toBe('test-value');
+      expect(plugin.config.testValue).toBe('test-value');
     });
 
     it('should set onlyOne to true', () => {
@@ -78,8 +78,8 @@ describe('Plugin Class', () => {
         props
       );
 
-      expect(pluginWithMergedConfig.options.testValue).toBe('prop-value');
-      expect(pluginWithMergedConfig.options.nestedConfig?.value).toBe(
+      expect(pluginWithMergedConfig.config.testValue).toBe('prop-value');
+      expect(pluginWithMergedConfig.config.nestedConfig?.value).toBe(
         'nested-cli-value'
       );
     });

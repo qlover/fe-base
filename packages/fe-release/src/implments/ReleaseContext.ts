@@ -48,38 +48,24 @@
  * await context.runChangesetsCli('version', ['--snapshot', 'alpha']);
  * ```
  */
-import type { TemplateContext } from '../type';
-import get from 'lodash/get';
-import { DEFAULT_SOURCE_BRANCH } from '../defaults';
+import type { ReleaseGlobalConfig, TemplateContext } from '../type';
+import { merge } from 'lodash';
+import { releaseJson } from '../defaults';
+import { randomUUID } from 'node:crypto';
+import type { RenderFn } from '@qlover/scripts-context';
 import {
-  type WorkspacesProps,
-  type WorkspaceValue
-} from '../plugins/workspaces/Workspaces';
-import {
-  type FeReleaseConfig,
   ScriptContext,
   type ScriptContextInterface,
-  type ScriptSharedInterface
+  type ScriptSharedInterface,
+  TemplateEngine
 } from '@qlover/scripts-context';
-import { type GithubPRProps } from '../plugins/githubPR/GithubPR';
-import { type PluginClass, type PluginTuple } from '../utils/tuple';
+import type { PluginClass, PluginTuple } from '../utils/tuple';
+import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 
 export interface ReleaseContextOptions extends ScriptContextInterface<ReleaseContextConfig> {}
 
 export interface ReleaseContextConfig
-  extends FeReleaseConfig, ScriptSharedInterface {
-  /**
-   * The github PR of the project
-   * @private
-   */
-  githubPR?: GithubPRProps;
-
-  /**
-   * The workspaces of the project
-   * @private
-   */
-  workspaces?: WorkspacesProps;
-
+  extends ReleaseGlobalConfig, ScriptSharedInterface {
   /**
    * The environment of the project
    *
@@ -109,6 +95,13 @@ export interface ReleaseContextConfig
    * The current branch of the project
    */
   currentBranch?: string;
+
+  /**
+   * Unique identifier for the current release run
+   *
+   * @private
+   */
+  releaseId?: string;
 }
 
 /**
@@ -145,6 +138,10 @@ export interface ReleaseContextConfig
  * ```
  */
 export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> {
+  protected templateEngine: TemplateEngine = new TemplateEngine();
+
+  protected compileMap: Map<string, RenderFn> = new Map();
+
   /**
    * Creates a new ReleaseContext instance
    *
@@ -155,7 +152,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * - releaseEnv: Uses environment variables or 'development'
    *
    * Environment Variable Priority:
-   * - sourceBranch: FE_RELEASE_BRANCH > FE_RELEASE_SOURCE_BRANCH > DEFAULT_SOURCE_BRANCH
+   * - sourceBranch: FE_RELEASE_BRANCH > FE_RELEASE_SOURCE_BRANCH > release.json
    * - releaseEnv: FE_RELEASE_ENV > NODE_ENV > 'development'
    *
    * @param name - Unique identifier for this release context
@@ -172,28 +169,26 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    */
   constructor(name: string, options: Partial<ReleaseContextOptions>) {
     super(name, options);
+    const releaseId = randomUUID().replace(/-/g, '').slice(0, 16);
 
-    if (!this.options.rootPath) {
-      this.setOptions({ rootPath: process.cwd() });
-    }
+    // Fill missing values from built-in release.json defaults.
+    // User fe-config and constructor options already take precedence via super().
+    const base: ReleaseContextConfig = merge({}, releaseJson, this.parameters);
 
-    if (!this.options.sourceBranch) {
-      this.setOptions({
-        sourceBranch:
-          this.env.get('FE_RELEASE_BRANCH') ||
-          this.env.get('FE_RELEASE_SOURCE_BRANCH') ||
-          DEFAULT_SOURCE_BRANCH
-      });
-    }
+    // Values that must not be overridden externally (releaseId).
+    base.releaseId = releaseId;
 
-    if (!this.options.releaseEnv) {
-      this.setOptions({
-        releaseEnv:
-          this.env.get('FE_RELEASE_ENV') ||
-          this.env.get('NODE_ENV') ||
-          'development'
-      });
-    }
+    base.sourceBranch =
+      this.env.get('FE_RELEASE_BRANCH') ||
+      this.env.get('FE_RELEASE_SOURCE_BRANCH') ||
+      base.sourceBranch;
+
+    base.releaseEnv =
+      this.env.get('FE_RELEASE_ENV') ||
+      this.env.get('NODE_ENV') ||
+      base.releaseEnv;
+
+    this.setParameters(base);
   }
 
   /**
@@ -208,7 +203,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * ```
    */
   public get rootPath(): string {
-    return this.getOptions('rootPath');
+    return this.parameters.rootPath!;
   }
 
   /**
@@ -223,7 +218,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * ```
    */
   public get sourceBranch(): string {
-    return this.getOptions('sourceBranch');
+    return this.parameters.sourceBranch!;
   }
 
   /**
@@ -238,7 +233,14 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * ```
    */
   public get releaseEnv(): string {
-    return this.getOptions('releaseEnv');
+    return this.parameters.releaseEnv!;
+  }
+
+  /**
+   * Gets the unique identifier for the current release run
+   */
+  public get releaseId(): string {
+    return this.parameters.releaseId!;
   }
 
   /**
@@ -252,23 +254,8 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // [{ name: 'pkg-a', version: '1.0.0', ... }]
    * ```
    */
-  public get workspaces(): WorkspaceValue[] | undefined {
-    return this.getOptions('workspaces.workspaces');
-  }
-
-  /**
-   * Gets the current active workspace
-   *
-   * @returns Current workspace configuration or undefined
-   *
-   * @example
-   * ```typescript
-   * const current = context.workspace;
-   * // { name: 'pkg-a', version: '1.0.0', ... }
-   * ```
-   */
-  public get workspace(): WorkspaceValue | undefined {
-    return this.getOptions('workspaces.workspace');
+  public get workspaces(): WorkspaceInterface[] | undefined {
+    return this.parameters.workspaces?.workspaces;
   }
 
   /**
@@ -283,11 +270,12 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * context.setWorkspaces([{
    *   name: 'pkg-a',
    *   version: '1.0.0',
-   *   path: 'packages/a'
+   *   path: 'packages/a',
+   *   lastTag: 'pkg-aV1.0.0'
    * }]);
    * ```
    */
-  public setWorkspaces(workspaces: WorkspaceValue[]): void {
+  public setWorkspaces(workspaces: WorkspaceInterface[]): void {
     this.options.workspaces = {
       ...this.options.workspaces,
       workspaces
@@ -295,43 +283,15 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
   }
 
   /**
-   * Gets package.json data for the current workspace
-   *
-   * Provides type-safe access to package.json fields with optional
-   * path and default value support.
-   *
-   * @param key - Optional dot-notation path to specific field
-   * @param defaultValue - Default value if field not found
-   * @returns Package data of type T
-   * @throws Error if package.json not found
-   *
-   * @example Basic usage
-   * ```typescript
-   * // Get entire package.json
-   * const pkg = context.getPkg();
-   *
-   * // Get specific field
-   * const version = context.getPkg<string>('version');
-   *
-   * // Get nested field with default
-   * const script = context.getPkg<string>(
-   *   'scripts.build',
-   *   'echo "No build script"'
-   * );
-   * ```
+   * @deprecated use `getParameters` or use `context.parameters`(type safe)
+   * @param key
+   * @param defaultValue
    */
-  public getPkg<T>(key?: string, defaultValue?: T): T {
-    const packageJson = this.workspace?.packageJson;
-
-    if (!packageJson) {
-      throw new Error('package.json is not found');
-    }
-
-    if (!key) {
-      return packageJson as T;
-    }
-
-    return get(packageJson, key, defaultValue) as T;
+  public getOptions<T = unknown>(
+    key?: keyof ReleaseContextConfig | (keyof ReleaseContextConfig)[],
+    defaultValue?: T
+  ): T {
+    return this.getParameters(key, defaultValue);
   }
 
   /**
@@ -358,9 +318,10 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    */
   public getTemplateContext(): TemplateContext {
     return {
-      ...this.getOptions(),
-      ...this.workspace!,
-      publishPath: this.workspace?.path || '',
+      // TODO:
+      ...this.getParameters(),
+      // ...this.workspace!,
+      // publishPath: this.workspace?.path || '',
       // deprecated
       env: this.releaseEnv,
       branch: this.sourceBranch
@@ -407,5 +368,55 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
       name,
       ...(args ?? [])
     ]);
+  }
+
+  /**
+   * Gets the workspaces of the project
+   *
+   * If no workspaces are found, throws an error.
+   *
+   * @throws Error if no workspaces are found
+   * @returns The workspaces of the project
+   *
+   * @example
+   * ```typescript
+   * const workspaces = context.requireWorkspaces();
+   * // [{ name: 'pkg-a', version: '1.0.0', ... }]
+   * ```
+   */
+  public requireWorkspaces(): WorkspaceInterface[] {
+    const workspaces = this.workspaces;
+    if (!workspaces || workspaces.length === 0) {
+      throw new Error(
+        'No workspaces found. Run the workspaces plugin first or set the workspaces manually.'
+      );
+    }
+
+    return workspaces;
+  }
+
+  /**
+   * Format a template with the given data
+   *
+   * The template will be compiled only once and cached for future use.
+   *
+   * @param template - The template to format
+   * @param data - The data to format the template with
+   * @returns The formatted template
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public format(template: string, data: Record<string, any>): string {
+    let renderFn = this.compileMap.get(template);
+
+    if (!renderFn) {
+      renderFn = this.templateEngine.compile(template);
+      this.compileMap.set(template, renderFn);
+    }
+
+    return renderFn(data);
+  }
+
+  public getTemplateEngine(): TemplateEngine {
+    return this.templateEngine;
   }
 }
