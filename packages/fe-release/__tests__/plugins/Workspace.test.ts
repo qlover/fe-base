@@ -170,7 +170,46 @@ describe('Workspaces Plugin', () => {
       expect(result).toHaveLength(2);
       expect(result[1].name).toBe('@scope/pkg-b');
       expect(result[1].dependencyRelease).toBe(true);
+      expect(result[1].dependencyReleaseOf).toBe('@scope/pkg-a');
       expect(result[1].changelog).toContain('@scope/pkg-a');
+      expect(result[1].changelog).toContain('1.0.0');
+    });
+
+    it('should use source.newVersion in changelog when already known', async () => {
+      const source = new WorkspaceValue({
+        name: '@scope/pkg-a',
+        version: '1.0.0',
+        newVersion: '1.1.0',
+        path: 'packages/a',
+        root: '/repo/packages/a',
+        packageJson: { name: '@scope/pkg-a', version: '1.0.0' }
+      });
+
+      vi.mocked(getPackages).mockResolvedValue({
+        tool: 'pnpm',
+        packages: [
+          {
+            dir: '/repo/packages/a',
+            packageJson: { name: '@scope/pkg-a', version: '1.0.0' }
+          },
+          {
+            dir: '/repo/packages/b',
+            packageJson: { name: '@scope/pkg-b', version: '2.0.0' }
+          }
+        ]
+      } as never);
+
+      vi.mocked(getDependentsGraph).mockReturnValue(
+        new Map([['@scope/pkg-a', ['@scope/pkg-b']]])
+      );
+
+      // @ts-expect-error access protected method for testing
+      const result = await workspaces.appendDependencyReleaseWorkspaces([
+        source
+      ]);
+
+      expect(result[1].changelog).toContain('1.0.0');
+      expect(result[1].changelog).toContain('1.1.0');
     });
   });
 

@@ -325,8 +325,8 @@ export default class Workspaces extends ScriptPlugin<
           {
             name: source.name,
             oldVersion: source.version,
-            // TODO: resolve newVersion after changeset version completes
-            newVersion: 'new version'
+            // Provisional until ChangesetVersion refreshes after version bump
+            newVersion: source.newVersion || source.version
           }
         );
 
@@ -338,6 +338,7 @@ export default class Workspaces extends ScriptPlugin<
           packageJson: dependentPkg.packageJson,
           changelog: changelogMessage,
           dependencyRelease: true,
+          dependencyReleaseOf: source.name,
           rootPath
         });
 

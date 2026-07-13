@@ -46,6 +46,7 @@ export class WorkspaceValue implements WorkspaceInterface {
   public lastTag?: string;
   public changelog?: string;
   public dependencyRelease?: boolean;
+  public dependencyReleaseOf?: string;
 
   constructor(options: WorkspaceValueOptions) {
     Object.assign(this, options);

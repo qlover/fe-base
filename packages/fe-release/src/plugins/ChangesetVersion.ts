@@ -347,7 +347,9 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   protected syncWorkspaces(workspaces: WorkspaceInterface[]): void {
-    const newWorkspaces = this.mergeWorkspaces(workspaces);
+    const newWorkspaces = this.refreshDependencyReleaseChangelogs(
+      this.mergeWorkspaces(workspaces)
+    );
     const bumpedWorkspaces = newWorkspaces.filter(
       (workspace) =>
         this.shouldProcessWorkspace(workspace) &&
@@ -370,6 +372,61 @@ export default class ChangesetVersion extends ScriptPlugin<
     this.context.setWorkspaces(newWorkspaces);
   }
 
+  /**
+   * Rebuild `dependencyRelease` changelogs after source packages have `newVersion`.
+   *
+   * Workspaces appends dependents before `changeset version`, so the template can
+   * only use a provisional version. Once mergeWorkspaces reads bumped versions
+   * from disk, rewrite each dependent changelog with the real source bump.
+   */
+  protected refreshDependencyReleaseChangelogs(
+    workspaces: WorkspaceInterface[]
+  ): WorkspaceInterface[] {
+    const byName = new Map(
+      workspaces.map((workspace) => [workspace.name, workspace])
+    );
+    const template =
+      this.config.dependencyReleaseTemplate ||
+      this.context.parameters.changesetVersion?.dependencyReleaseTemplate ||
+      releaseJson.changesetVersion.dependencyReleaseTemplate;
+
+    return workspaces.map((workspace) => {
+      if (!workspace.dependencyRelease || !workspace.dependencyReleaseOf) {
+        return workspace;
+      }
+
+      const source = byName.get(workspace.dependencyReleaseOf);
+      if (!source) {
+        return workspace;
+      }
+
+      const changelog = this.context.format(template, {
+        name: source.name,
+        oldVersion: source.version,
+        newVersion: source.newVersion || source.version
+      });
+
+      if (changelog === workspace.changelog) {
+        return workspace;
+      }
+
+      return createWorkspaceValue({
+        name: workspace.name,
+        path: workspace.path,
+        root: workspace.root,
+        version: workspace.version,
+        newVersion: workspace.newVersion,
+        packageJson: workspace.packageJson,
+        rootPath: this.context.rootPath,
+        changelog,
+        dependencyRelease: workspace.dependencyRelease,
+        dependencyReleaseOf: workspace.dependencyReleaseOf,
+        lastTag: workspace.lastTag,
+        tagName: workspace.tagName
+      });
+    });
+  }
+
   public mergeWorkspaces(
     workspaces: WorkspaceInterface[]
   ): WorkspaceInterface[] {
@@ -390,6 +447,7 @@ export default class ChangesetVersion extends ScriptPlugin<
         rootPath: this.context.rootPath,
         changelog: workspace.changelog,
         dependencyRelease: workspace.dependencyRelease,
+        dependencyReleaseOf: workspace.dependencyReleaseOf,
         lastTag: workspace.lastTag
       });
 

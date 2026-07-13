@@ -74,4 +74,13 @@ export interface WorkspaceInterface {
    * @default false
    */
   dependencyRelease?: boolean;
+
+  /**
+   * Package name of the direct dependency that caused this `dependencyRelease`.
+   *
+   * Set by Workspaces when appending dependents. ChangesetVersion uses it after
+   * `changeset version` to fill `dependencyReleaseTemplate` with the source's
+   * real `newVersion`.
+   */
+  dependencyReleaseOf?: string;
 }
