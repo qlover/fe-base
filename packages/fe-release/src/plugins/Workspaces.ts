@@ -352,21 +352,6 @@ export default class Workspaces extends ScriptPlugin<
     return result;
   }
 
-  /**
-   * TODO: move npm token validation to the publish-focused plugin
-   */
-  protected async validateNpmToken(): Promise<void> {
-    // if (!this.getConfig('releasePR')) {
-    //   const npmToken = this.context.getEnv('NPM_TOKEN');
-    //   if (!npmToken) {
-    //     throw new Error('NPM_TOKEN is not set');
-    //   }
-    //   await this.shell.exec(
-    //     `npm config set //registry.npmjs.org/:_authToken=${npmToken}`
-    //   );
-    // }
-  }
-
   protected generateTagName(workspace: WorkspaceInterface): string {
     try {
       const tagTemplate = this.config.tagTemplate || defaultTagTemplate;

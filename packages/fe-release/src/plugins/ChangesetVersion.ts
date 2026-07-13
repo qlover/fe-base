@@ -7,7 +7,7 @@
  * Changesets CLI for monorepo version bumps.
  *
  * Pipeline phases:
- * - **onBefore**: validate `.changeset` directory exists
+ * - **onBefore**: validate `.changeset` directory; validate `NPM_TOKEN` when mode includes publish
  * - **onExec**: generate per-workspace git changelogs (skips `dependencyRelease`
  *   when `ignoreNonUpdatedPackages` is enabled)
  * - **onSuccess**: run version and/or publish flow based on `mode`
@@ -208,6 +208,34 @@ export default class ChangesetVersion extends ScriptPlugin<
 
     this.logger.debug(`${this.changesetRoot} exists`);
     this.logger.info(`Changeset version mode: ${this.mode}`);
+
+    if (this.mode === 'publish' || this.mode === 'both') {
+      await this.validateNpmToken();
+    }
+  }
+
+  /**
+   * Ensure NPM_TOKEN is available and configured before changeset publish.
+   *
+   * Only required for `publish` / `both` modes. Version-only runs (release PR)
+   * do not need an npm auth token.
+   */
+  protected async validateNpmToken(): Promise<void> {
+    const npmToken = this.context.getEnv('NPM_TOKEN');
+    if (!npmToken) {
+      throw new Error('NPM_TOKEN is not set');
+    }
+
+    if (this.context.dryRun) {
+      this.logDryRun(
+        'Would set npm auth token: npm config set //registry.npmjs.org/:_authToken=***'
+      );
+      return;
+    }
+
+    await this.shell.exec(
+      `npm config set //registry.npmjs.org/:_authToken=${npmToken}`
+    );
   }
 
   public override async onExec(_context: ReleaseContext): Promise<void> {
