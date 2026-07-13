@@ -41,16 +41,28 @@ function githubLog(value: unknown, key = 'githubLog'): void {
   console.log(`${key}=${value}`);
 }
 
-function getWorkspacePackages(
+const DEFAULT_CHANGE_PACKAGES_LABEL = 'changes:${name}';
+
+/** fe-config.json → release.workspaces (owned by fe-release, not FeConfig) */
+interface CheckPackagesReleaseWorkspaces {
+  changePackagesLabel?: string;
+}
+
+function getReleaseWorkspaces(
   context: ScriptContextInterface<CheckPackagesOptions>
+): CheckPackagesReleaseWorkspaces | undefined {
+  const { release } = context.feConfig as {
+    release?: { workspaces?: CheckPackagesReleaseWorkspaces };
+  };
+  return release?.workspaces;
+}
+
+function getWorkspacePackages(
+  _context: ScriptContextInterface<CheckPackagesOptions>
 ): string[] {
-  const packagesDirectories =
-    context.feConfig.release?.packagesDirectories || [];
-
-  if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
-    return packagesDirectories;
-  }
-
+  // Always resolve individual workspaces via find-workspaces.
+  // fe-config release.workspaces.packagesDirectories is for fe-release scope only;
+  // a value like ["packages"] would label every change as changes:packages.
   const root = process.cwd();
 
   return (findWorkspaces(root) || []).map((workspace) =>
@@ -86,7 +98,8 @@ async function addChangePackagePRLables(
   const [owner, repo] = repository.split('/');
 
   const changePackagesLabel =
-    context.feConfig.release?.changePackagesLabel || '${name}';
+    getReleaseWorkspaces(context)?.changePackagesLabel ||
+    DEFAULT_CHANGE_PACKAGES_LABEL;
 
   const labels = changePackageNames.map((name) =>
     changePackagesLabel.replace('${name}', name)

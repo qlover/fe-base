@@ -50,18 +50,17 @@
     "type-check": "tsc --noEmit",
     "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix",
     "release": "node dist/cli.js",
-    "release-pr": "node dist/cli.js -P",
+    "release-pr": "node dist/cli.js",
     "dryrun:release": "node dist/cli.js --dry-run -V",
-    "dryrun:release-pr": "node dist/cli.js -P --dry-run -V"
+    "dryrun:release-pr": "node dist/cli.js --dry-run -V"
   },
   "devDependencies": {
-    "@octokit/rest": "^21.0.2",
-    "@types/semver": "^7.7.0",
-    "p-limit": "^6.2.0",
-    "lodash": "^4.17.21",
-    "semver": "^7.5.4"
+    "@types/lodash-es": "^4.17.12",
+    "@types/semver": "^7.7.0"
   },
   "dependencies": {
+    "@changesets/get-dependents-graph": "^2.1.4",
+    "@manypkg/get-packages": "^1.1.3",
     "@octokit/rest": "^21.0.2",
     "@qlover/env-loader": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
@@ -69,6 +68,10 @@
     "@qlover/scripts-context": "workspace:*",
     "commander": "^11.0.0",
     "find-workspaces": "^0.3.1",
-    "gitlog": "^5.1.0"
+    "git-url-parse": "^16.1.0",
+    "gitlog": "^5.1.0",
+    "lodash-es": "^4.17.22",
+    "p-limit": "^6.2.0",
+    "semver": "^7.5.4"
   }
 }

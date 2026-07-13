@@ -18,7 +18,7 @@ and integrated logging capabilities.
 Main features:
 
 - Template formatting: Dynamic command generation with context
-  - Uses lodash template for string interpolation
+  - Uses TemplateEngine for string interpolation
   - Supports complex template expressions
   - Provides error handling for template failures
   - Enables dynamic command construction
@@ -71,7 +71,7 @@ const output = await shell.exec('npm install');
 
 ```typescript
 const shell = new Shell({ logger: myLogger });
-const output = await shell.exec('git clone <%= repo %>', {
+const output = await shell.exec('git clone ${repo}', {
   context: { repo: 'https://github.com/user/repo.git' }
 });
 ```
@@ -178,7 +178,7 @@ Promise resolving to command output
 **Example:** String command with template
 
 ```typescript
-const output = await shell.exec('git clone <%= repo %>', {
+const output = await shell.exec('git clone ${repo}', {
   context: { repo: 'https://github.com/user/repo.git' }
 });
 ```
@@ -367,7 +367,7 @@ Error if template formatting fails with detailed logging
 **Example:** Basic formatting
 
 ```typescript
-const result = shell.format('Hello <%= name %>!', { name: 'World' });
+const result = shell.format('Hello ${name}!', { name: 'World' });
 // Returns: 'Hello World!'
 ```
 
@@ -375,7 +375,7 @@ const result = shell.format('Hello <%= name %>!', { name: 'World' });
 
 ```typescript
 try {
-  const result = shell.format('Hello <%= name %>!', {});
+  const result = shell.format('Hello ${name}!', {});
 } catch (error) {
   // Error is logged with template and context information
   console.error('Template formatting failed:', error.message);
@@ -455,14 +455,14 @@ const output = await shell.exec('npm install', { silent: true });
 
 #### `format` (Method)
 
-**Type:** `(template: string, context: Record<string, unknown>) => string`
+**Type:** `(template: string, context: Record<string, any>) => string`
 
 #### Parameters
 
-| Name       | Type                      | Optional | Default | Since | Deprecated | Description                                       |
-| ---------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `template` | `string`                  | ✅       | `''`    | -     | -          | Template string with interpolation placeholders   |
-| `context`  | `Record<string, unknown>` | ✅       | `{}`    | -     | -          | Context object for template variable substitution |
+| Name       | Type                  | Optional | Default | Since | Deprecated | Description                                       |
+| ---------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `template` | `string`              | ✅       | `''`    | -     | -          | Template string with interpolation placeholders   |
+| `context`  | `Record<string, any>` | ✅       | `{}`    | -     | -          | Context object for template variable substitution |
 
 ---
 
@@ -470,68 +470,36 @@ const output = await shell.exec('npm install', { silent: true });
 
 **Type:** `string`
 
-Formats a template string with context using lodash template
+Formats a template string with context using <a href="./TemplateEngine.md#templateengine-class" class="tsd-kind-class">TemplateEngine</a>.
 
-Core concept:
-Provides static template formatting functionality using
-lodash template for string interpolation with context data.
-
-Template features:
-
-- Uses lodash template for powerful string interpolation
-- Supports complex template expressions and logic
-- Handles undefined and null context values gracefully
-- Returns formatted string with context values substituted
-
-Template syntax:
-
-- `<%= variable %>` for escaped output
-- `<%- variable %>` for unescaped output
-- `<% code %>` for JavaScript code execution
-- Supports nested object access and function calls
-
-Context handling:
-
-- Accepts any object with string/number/boolean values
-- Handles undefined and null values safely
-- Supports nested object property access
-- Provides fallback for missing context values
+Uses ES6-style `${ path }` placeholders via <a href="./TemplateEngine.md#templateengine-class" class="tsd-kind-class">TemplateEngine</a>.
 
 **Returns:**
 
 Formatted string with context values substituted
 
-**Example:** Basic template formatting
+**Example:** Basic formatting
 
 ```typescript
-const result = Shell.format('Hello <%= name %>!', { name: 'World' });
+const result = Shell.format('Hello ${name}!', { name: 'World' });
 // Returns: 'Hello World!'
 ```
 
 **Example:** Complex template with nested objects
 
 ```typescript
-const result = Shell.format('git clone <%= repo.url %> <%= repo.branch %>', {
+const result = Shell.format('git clone ${repo.url} ${repo.branch}', {
   repo: { url: 'https://github.com/user/repo.git', branch: 'main' }
 });
 // Returns: 'git clone https://github.com/user/repo.git main'
 ```
 
-**Example:** Template with conditional logic
-
-```typescript
-const result = Shell.format('npm install<% if (dev) { %> --save-dev<% } %>', {
-  dev: true
-});
-// Returns: 'npm install --save-dev'
-```
-
 #### Parameters
 
-| Name       | Type                      | Optional | Default | Since | Deprecated | Description                                       |
-| ---------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `template` | `string`                  | ✅       | `''`    | -     | -          | Template string with interpolation placeholders   |
-| `context`  | `Record<string, unknown>` | ✅       | `{}`    | -     | -          | Context object for template variable substitution |
+| Name       | Type                  | Optional | Default | Since | Deprecated | Description                                       |
+| ---------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `template` | `string`              | ✅       | `''`    | -     | -          | Template string with interpolation placeholders   |
+| `context`  | `Record<string, any>` | ✅       | `{}`    | -     | -          | Context object for template variable substitution |
 
 ---
 

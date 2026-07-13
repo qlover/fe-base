@@ -204,7 +204,7 @@ export abstract class ScriptPlugin<
     // command line config, first priority
     const pluginConfig = this.context.options[this.pluginName];
 
-    const fileConfig = this.context.getOptions(this.pluginName);
+    const fileConfig = this.context.getParameters(this.pluginName);
 
     // Determine base config: command line config takes priority over file config
     const baseConfig = pluginConfig || fileConfig;
@@ -277,8 +277,8 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public get options(): Props {
-    return this.context.getOptions(this.pluginName, {} as Props);
+  public get config(): Props {
+    return this.context.getParameters(this.pluginName, {} as Props);
   }
 
   /**
@@ -306,16 +306,22 @@ export abstract class ScriptPlugin<
    * plugin.enabled('onExec', context);   // Returns true
    * ```
    */
-  public enabled(_name: string, _context: Context): boolean {
+  public enabled(name: string, _context: Context): boolean {
     const skip = this.getConfig('skip');
 
-    // if skip is true, then return false
-    if (skip === true) {
+    // if skip is a string, and the name is the same as the skip, then return false
+    if (typeof skip === 'string' && name === skip) {
+      this.logger.debug(
+        `Skip ${this.pluginName}.${name}, ${this.pluginName}.skip is set to '${skip}'`
+      );
       return false;
     }
 
-    // if skip is a string, and the name is the same as the skip, then return false
-    if (typeof skip === 'string' && _name === skip) {
+    // if skip is true, then return false
+    if (skip === true) {
+      this.logger.debug(
+        `Skip ${this.pluginName}.${name}, ${this.pluginName}.skip is set to true`
+      );
       return false;
     }
 
@@ -353,13 +359,16 @@ export abstract class ScriptPlugin<
    * const plugins = this.getConfig<string[]>('plugins', []);
    * ```
    */
-  public getConfig<T>(keys?: string | string[], defaultValue?: T): T {
+  public getConfig<T>(
+    keys?: keyof Props | (keyof Props)[],
+    defaultValue?: T
+  ): T {
     if (!keys) {
-      return this.context.getOptions(this.pluginName, defaultValue);
+      return this.context.getParameters(this.pluginName, defaultValue);
     }
 
-    return this.context.getOptions(
-      [this.pluginName, ...(Array.isArray(keys) ? keys : [keys])],
+    return this.context.getParameters(
+      [this.pluginName, ...((Array.isArray(keys) ? keys : [keys]) as string[])],
       defaultValue
     );
   }
@@ -396,7 +405,7 @@ export abstract class ScriptPlugin<
    * ```
    */
   public setConfig(config: Partial<Props>): void {
-    this.context.setOptions({
+    this.context.setParameters({
       [this.pluginName]: config
     });
   }
@@ -434,13 +443,7 @@ export abstract class ScriptPlugin<
     _context: Context
   ): Context extends ExecutorContextInterface<infer P>
     ? P | Promise<P> | void | Promise<void>
-    : unknown | Promise<unknown> | void | Promise<void> {
-    return undefined as unknown as Context extends ExecutorContextInterface<
-      infer P
-    >
-      ? P | Promise<P> | void | Promise<void>
-      : unknown | Promise<unknown> | void | Promise<void>;
-  }
+    : unknown | Promise<unknown> | void | Promise<void>;
 
   /**
    * Lifecycle method called during script execution
@@ -475,7 +478,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onExec?(_context: Context): void | Promise<void> {}
+  public onExec?(context: Context): void | Promise<void>;
 
   /**
    * Lifecycle method called after successful script execution
@@ -507,9 +510,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onSuccess?(_context: Context): void | Promise<void> {
-    return undefined;
-  }
+  public onSuccess?(context: Context): void | Promise<void>;
 
   /**
    * Lifecycle method called when script execution fails
@@ -544,8 +545,8 @@ export abstract class ScriptPlugin<
    * ```
    */
   public onError?(
-    _context: Context
-  ): Promise<ExecutorError | void> | ExecutorError | Error | void {}
+    context: Context
+  ): Promise<ExecutorError | void> | ExecutorError | Error | void;
 
   /**
    * Lifecycle method called after script execution
@@ -567,9 +568,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onFinally?(_context: Context): void | Promise<void> {
-    return undefined;
-  }
+  public onFinally?(_context: Context): void | Promise<void>;
 
   /**
    * Executes a step with structured logging and error handling
@@ -631,17 +630,26 @@ export abstract class ScriptPlugin<
    * ```
    */
   public async step<T>(options: StepOption<T>): Promise<T> {
-    this.logger.log();
-    this.logger.info(options.label);
-    this.logger.log();
+    const stepBase = this.createStepLabel(options.label);
+
+    this.logger.info(`${stepBase} - beginning`);
 
     try {
       const res = await options.task();
-      this.logger.info(`${options.label} - success`);
+      this.logger.info(`${stepBase} - success`);
       return res;
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error(`${stepBase} - failed\n`, e);
       throw e;
     }
+  }
+
+  /**
+   * Builds the shared step log prefix (plugin context + dry-run)
+   */
+  protected createStepLabel(label: string): string {
+    const stepLabel = `${this.pluginName}: ${label}`;
+
+    return this.context.dryRun ? `[dry-run] ${stepLabel}` : stepLabel;
   }
 }

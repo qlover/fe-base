@@ -134,6 +134,28 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
   public readonly verbose: boolean;
 
   /**
+   * 该属性只是一个 parameters 的别名
+   *
+   * 当你需要设置最新的参数时可以直接使用 setParameters 方法
+   *
+   * @override
+   * @example
+   * ```ts
+   * context.setParameters({
+   *   target: 'production'
+   * });
+   *
+   * console.log(context.options);
+   * // { target: 'production' }
+   * console.log(context.parameters);
+   * // { target: 'production' }
+   * ```
+   */
+  public get options(): Opt {
+    return this.parameters;
+  }
+
+  /**
    * Creates a new ScriptContext instance with the specified configuration
    *
    * Core concept:
@@ -199,14 +221,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
     this.verbose = verbose;
 
     // Initialize options with configuration extraction and default values
-    this.setOptions(initializeOptions(name, feConfig, options, logger));
-  }
-
-  /**
-   * @override
-   */
-  public get options(): Opt {
-    return this.parameters;
+    this.setParameters(initializeOptions(name, feConfig, options, logger));
   }
 
   /**
@@ -251,10 +266,10 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * ```
    */
   public get env(): Env {
-    if (!this.options.env) {
+    if (!this.parameters.env) {
       throw new Error('Environment is not initialized');
     }
-    return this.options.env;
+    return this.parameters.env;
   }
 
   /**
@@ -300,9 +315,10 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * });
    * // Merges nested build configuration
    * ```
+   *
    */
-  public setOptions(options: Partial<Opt>): void {
-    this.setParameters(merge(this.options, options));
+  public override setParameters(params: Partial<Opt>): void {
+    super.setParameters(merge(this.parameters, params));
   }
 
   /**
@@ -407,11 +423,14 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * // Returns the complete options object
    * ```
    */
-  public getOptions<T = unknown>(key?: string | string[], defaultValue?: T): T {
+  public getParameters<T = unknown>(
+    key?: string | string[],
+    defaultValue?: T
+  ): T {
     if (!key) {
-      return this.options as unknown as T;
+      return this.parameters as unknown as T;
     }
 
-    return get(this.options, key, defaultValue);
+    return get(this.parameters, key, defaultValue);
   }
 }

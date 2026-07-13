@@ -66,7 +66,7 @@ describe('ReleaseLabel', () => {
         'change:packages/fe-corekit'
       ]);
     });
-    it('Pick 也可以获取其他数据，不一定是路径', () => {
+    it('pick can match non-path values', () => {
       const releaseLabel = new ReleaseLabel({
         changePackagesLabel: 'change:${name}',
         packagesDirectories: []
@@ -80,7 +80,7 @@ describe('ReleaseLabel', () => {
       expect(result).toEqual(['change:packages/fe-release']);
     });
 
-    it('Pick 也可以获取其他数据，不一定是路径', () => {
+    it('pick supports prefix matching on arbitrary strings', () => {
       const releaseLabel = new ReleaseLabel({
         changePackagesLabel: 'change:${name}',
         packagesDirectories: []
@@ -96,7 +96,7 @@ describe('ReleaseLabel', () => {
   });
 
   describe('toChangeLabels', () => {
-    it('应该在未来版本可以支持 workspace 转标签', () => {
+    it('should support converting workspaces to labels in a future version', () => {
       const releaseLabel = new ReleaseLabel({
         changePackagesLabel: 'change:${name}',
         packagesDirectories: ['packages/fe-release', 'packages/fe-corekit']

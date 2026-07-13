@@ -21,21 +21,18 @@ A professional front-end release automation tool built on top of [@changesets/cl
 ## ✨ Features
 
 - **Automated Version Management**
-
   - Powered by `@changesets/cli` for reliable version control
   - Automatic version bumping based on changes
   - Configurable version increment strategies
   - Support for Semantic Versioning
 
 - **Flexible Release Workflows**
-
   - Manual release process for direct control
   - PR-based automated release workflow (GitHub)
   - Customizable release strategies
   - Multi-environment release support (dev, test, prod)
 
 - **GitHub Integration**
-
   - Automated PR creation and management
   - Smart PR labeling system
   - Automated release notes generation
@@ -43,7 +40,6 @@ A professional front-end release automation tool built on top of [@changesets/cl
   - Support for auto-merge and conflict resolution
 
 - **Workspace Support**
-
   - First-class monorepo support
   - Multi-package release coordination
   - Dependency graph awareness
@@ -71,37 +67,31 @@ pnpm add @qlover/fe-release -D
 
 ## 🏃 Quick Start
 
-1. **Basic Release**
+1. **Create a release PR locally (preview)**
 
 ```bash
-# Create a release PR
-fe-release -P
+# Create release PR from develop to master (dry-run)
+fe-release -d -V -s master --github.push-change-labels
 
-# Preview release (dry run)
-fe-release --dry-run
-
-# Release with specific version type
-fe-release --changelog.increment=major
+# Specify version increment
+fe-release -i patch -s master
+fe-release -i minor -s master
 ```
 
-2. **Workspace Release**
+2. **Monorepo selective release**
 
 ```bash
-# Release multiple packages
-fe-release --workspaces.change-labels=pkg1,pkg2 -P
+# Release only packages matching change labels
+fe-release -l "changes:packages/fe-release" -i patch -s master
 
-# Specify publish directory
-fe-release --publish-path=packages/core
+# Specify package directories
+fe-release --workspaces.packages-directories packages/fe-release,packages/fe-scripts -i patch
 ```
 
-3. **Environment Release**
+3. **Publish only (versions already bumped in release PR)**
 
 ```bash
-# Release to test environment
-fe-release --env=test -P
-
-# Release to production environment
-fe-release --env=prod -P
+fe-release --changesetVersion.skip-changeset --changesetVersion.mode publish
 ```
 
 ## 💻 Usage
@@ -114,107 +104,131 @@ fe-release [options]
 
 #### Core Options
 
-| Option                      | Description                         | Default |
-| --------------------------- | ----------------------------------- | ------- |
-| `-v, --version`             | Show version                        | -       |
-| `-d, --dry-run`             | Preview mode without making changes | `false` |
-| `-V, --verbose`             | Show detailed logs                  | `false` |
-| `-p, --publish-path`        | Package publish path                | -       |
-| `-P, --githubPR.release-PR` | Create release PR                   | `false` |
-| `--env`                     | Release environment                 | `prod`  |
+| Option                             | Description                         | Default  |
+| ---------------------------------- | ----------------------------------- | -------- |
+| `-v, --version`                    | Show version                        | -        |
+| `-d, --dry-run`                    | Preview mode without making changes | `false`  |
+| `-V, --verbose`                    | Show detailed logs                  | `false`  |
+| `-s, --source-branch`              | Target branch for the release PR    | `master` |
+| `-i, --changesetVersion.increment` | Version increment type              | `patch`  |
 
 #### Advanced Options
 
-| Option                           | Description                 | Default                         |
-| -------------------------------- | --------------------------- | ------------------------------- |
-| `-b, --branch-name`              | Release branch template     | `release-${pkgName}-${tagName}` |
-| `-s, --source-branch`            | Source branch               | `master`                        |
-| `-i, --changelog.increment`      | Version increment type      | `patch`                         |
-| `--changelog.skip`               | Skip changelog generation   | `false`                         |
-| `--packages-directories`         | Changed package directories | -                               |
-| `-l, --workspaces.change-labels` | Change labels               | -                               |
+| Option                                           | Description                             | Default                            |
+| ------------------------------------------------ | --------------------------------------- | ---------------------------------- |
+| `-b, --github.branch-name`                       | Release branch name template            | `release/${repoName}-${releaseId}` |
+| `-l, --workspaces.change-labels`                 | Change labels (filter release scope)    | -                                  |
+| `--workspaces.packages-directories`              | Package directories to scan             | `find-workspaces`                  |
+| `--github.push-change-labels`                    | Attach change labels to release PR      | `false`                            |
+| `--github.skip-create-release-pr`                | Skip GitHub PR creation                 | `false`                            |
+| `--changesetVersion.mode`                        | `version` / `publish` / `both`          | `version`                          |
+| `--changesetVersion.skip-changeset`              | Skip changeset file generation          | `false`                            |
+| `--changesetVersion.ignore-non-updated-packages` | Restore dependency-only workspace bumps | `false`                            |
 
 ## ⚙️ Configuration
 
 ### Environment Variables
 
-| Variable            | Description            | Default |
-| ------------------- | ---------------------- | ------- |
-| `FE_RELEASE`        | Enable/disable release | `true`  |
-| `FE_RELEASE_BRANCH` | Source branch          | -       |
-| `FE_RELEASE_ENV`    | Release environment    | -       |
-| `FE_RELEASE_TOKEN`  | GitHub Token           | -       |
+| Variable                            | Description                             | Default  |
+| ----------------------------------- | --------------------------------------- | -------- |
+| `FE_RELEASE`                        | Enable/disable release                  | `true`   |
+| `FE_RELEASE_BRANCH`                 | Working branch (set to `develop` in CI) | `master` |
+| `FE_RELEASE_ENV`                    | Release environment                     | -        |
+| `GITHUB_TOKEN` / `FE_RELEASE_TOKEN` | GitHub Token                            | -        |
+| `NPM_TOKEN`                         | npm publish token                       | -        |
 
 ### fe-config.json
 
 ```json
 {
   "release": {
-    "publishPath": "",
-    "autoMergeReleasePR": false,
-    "autoMergeType": "squash",
-    "branchName": "release-${pkgName}-${tagName}",
-    "PRTitle": "[${pkgName} Release] Branch:${branch}, Tag:${tagName}, Env:${env}",
-    "PRBody": "This PR includes version bump to ${tagName}",
-    "packagesDirectories": ["packages/*"],
-    "githubPR": {
-      "commitArgs": ["--no-verify"],
-      "pushChangedLabels": true,
-      "releaseName": "Release ${name} v${version}",
-      "commitMessage": "chore(tag): ${name} v${version}"
+    "changesetVersion": {
+      "changesetRoot": ".changeset",
+      "ignoreNonUpdatedPackages": false
     },
-    "changelog": {
-      "types": [
-        { "type": "feat", "section": "#### ✨ Features", "hidden": false },
-        { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },
-        { "type": "chore", "section": "#### 🔧 Chores", "hidden": true },
-        {
-          "type": "docs",
-          "section": "#### 📝 Documentation",
-          "hidden": false
-        },
-        {
-          "type": "refactor",
-          "section": "#### ♻️ Refactors",
-          "hidden": false
-        },
-        { "type": "perf", "section": "#### 🚀 Performance", "hidden": false },
-        { "type": "test", "section": "#### 🚨 Tests", "hidden": true },
-        { "type": "style", "section": "#### 🎨 Styles", "hidden": true },
-        { "type": "ci", "section": "#### 🔄 CI", "hidden": true },
-        { "type": "build", "section": "#### 🚧 Build", "hidden": false },
-        { "type": "revert", "section": "#### ⏪ Reverts", "hidden": true },
-        { "type": "release", "section": "#### 🔖 Releases", "hidden": true }
-      ]
+    "github": {
+      "label": { "name": "CI-Release" },
+      "autoMergeReleasePR": false
     }
   }
 }
 ```
 
+Options map to `release.<plugin>.*` in config and `--<plugin>.*` on the CLI.
+See `src/cli.ts` and `src/defaults.ts` for the full reference.
+
 ## 🔄 Workflows
 
-### Manual Release Flow
+fe-base uses a **develop → master** two-stage release aligned with CI workflows.
 
-```mermaid
-graph LR
-    A[Code Changes] --> B[Run fe-release]
-    B --> C[Version Update]
-    C --> D[Generate Changelog]
-    D --> E[Create Git Tag]
-    E --> F[Publish to NPM]
-    F --> G[Create GitHub Release]
+### Branches and phases
+
+```
+feature/*  ──PR──►  develop  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
 ```
 
-### PR-based Release Flow (GitHub)
+| Phase                  | Trigger                                            | CI workflow                         | Tool                                         |
+| ---------------------- | -------------------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| 1. Feature development | PR targets `develop`                               | `general-check.yml`                 | lint / test / build                          |
+| 2. Create release PR | `CI-Release` on develop PR before merge (or `workflow_dispatch`) | `release.yml` → `create-release-pr` | `fe-release` (version mode, git diff) |
+| 3. Publish | Release PR (`release/* → master`) merged | `release.yml` → `publish` | `fe-release` (publish mode, no version bump) |
+
+### Phase 1 — Feature PR (base: `develop`)
+
+1. Branch from `develop`, develop, and commit (Conventional Commits).
+2. Open a PR targeting **`develop`**.
+3. CI runs quality checks (lint / test / build).
+4. Optional: add `increment:major` / `increment:minor` / `increment:patch` on the PR (default: patch).
+
+### Phase 2 — Create release PR (manual `CI-Release` gate)
+
+Add the **`CI-Release`** label **before** merging the feature PR into develop (the label must still be present at merge time):
+
+1. On merge, the `create-release-pr` job runs (`closed` event).
+2. Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode:
+   - Detects changed packages via **git diff**
+   - Generates changelog, updates `CHANGELOG.md`, bumps versions
+3. Pushes `release/<repo>-<id>`, opens a PR to **`master`** (auto-labeled `CI-Release`).
+
+> Merges into `develop` **without** `CI-Release` do **not** create a release PR.  
+> If already merged without the label, run **Release sub packages** manually (`workflow_dispatch`).
+
+Open feature PRs with **`CI-Release`** skip `general-check`.
+
+### Phase 3 — Publish (merge release PR into master)
+
+1. Review and merge the **release PR** (`release/* → master`) into **`master`**.
+2. The `publish` job runs `fe-release --changesetVersion.mode publish`:
+   - Does **not** regenerate changelog or bump versions (`skip-changeset`)
+   - Tags, npm publish, GitHub Release
+
+### Labels
+
+| Label                     | Source                        | Purpose                                                                         |
+| ------------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
+| `CI-Release` | Manual on develop PR (gate); auto on release PR | Triggers version flow; skips general-check; publish on merge to master |
+| `increment:*`             | Manual                        | Overrides semver increment strategy                                             |
+
+> Use a single **`CI-Release`** label for release PRs — no separate `Release` label is needed.
+
+### Manual release trigger
+
+Run the **Release sub packages** workflow manually (`workflow_dispatch`) in GitHub Actions
+to create a release PR from current `develop` without waiting for a feature merge.
+
+### Flow diagram
 
 ```mermaid
-graph LR
-    A[Create PR] --> B[Auto Label]
-    B --> C[Create Release PR]
-    C --> D[Update Version & Changelog]
-    D --> E[CI Release]
-    E --> F[Publish & Tag]
+graph TD
+    A[feature branch] -->|PR| B[develop]
+    B -->|lint test build| B
+    B -->|merge with CI-Release| C[create-release-pr]
+    C -->|fe-release git diff| D[release/* → master PR]
+    D -->|auto-label CI-Release| E[review release PR]
+    E -->|merge to master| F[publish → npm + GitHub Release]
 ```
+
+See the module docblock at the top of `src/index.ts` for the full technical reference.
 
 ## 🔍 Troubleshooting
 
@@ -227,13 +241,11 @@ graph LR
    ```
 
    Solutions:
-
    - Check `FE_RELEASE` environment variable
    - Verify if there are changes to release
    - Validate package version needs update
 
 2. **PR Creation Failed**
-
    - Verify GitHub token permissions
    - Check repository access
    - Confirm branch existence
@@ -252,24 +264,3 @@ Enable verbose logging:
 ```bash
 fe-release -V
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [@changesets/cli](https://github.com/changesets/changesets) team
-- All project contributors
-
----
-
-For more information, please visit our [documentation](https://qlover.github.io/fe-release).

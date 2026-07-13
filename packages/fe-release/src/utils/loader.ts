@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * @module PluginLoader
  * @description Dynamic plugin loading and instantiation
@@ -210,6 +208,7 @@ export async function loaderPluginsFromPluginTuples<
   const loadAndCreatePlugin = async (
     pluginClassOrString: PluginClass | string,
     ...args: unknown[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<ScriptPlugin<ScriptContext<any>, ScriptPluginProps>> => {
     if (typeof pluginClassOrString === 'string') {
       const [, pluginClass] = await load<PluginClass>(pluginClassOrString);

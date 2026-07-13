@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * @module PluginTuple
  * @description Type-safe plugin tuple creation and handling

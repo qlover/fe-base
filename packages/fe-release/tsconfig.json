@@ -4,6 +4,7 @@
     "composite": true,
     "rootDir": ".",
     "outDir": "ts-build",
+    "moduleResolution": "bundler",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo"
   },
   "include": ["src/**/*", "package.json"],

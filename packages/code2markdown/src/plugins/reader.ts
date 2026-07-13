@@ -149,7 +149,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       } as ReaderOutput;
     });
 
-    this.context.setOptions({
+    this.context.setParameters({
       readerOutputs: outputs
     });
   }

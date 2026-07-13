@@ -8,7 +8,7 @@ import {
   LifecycleExecutor
 } from '@qlover/fe-corekit';
 import { createTestReleaseOptions } from '../helpers';
-import { defaultFeConfig } from '@qlover/scripts-context';
+import { releaseJson } from '../../src/defaults';
 
 class MockExecutor extends LifecycleExecutor<ReleaseContext> {
   protected override async run<Result, Params>(
@@ -66,58 +66,73 @@ describe('ReleaseTask basic usage', () => {
 
 describe('ReleaseTask context parameter verification', () => {
   const overrideOptions = {
-    // append from Workspace plugins
     packageJson: {
       name: 'test-package-name',
       version: '1.0.0-test'
     },
-    // append from fe release
     releasePR: true,
-    // append from ReleaseContext.getDefaultShreadOptions
     rootPath: '/test-root-path',
-    releaseEnv: 'test',
+    releaseEnv: 'staging',
     sourceBranch: 'test-source-branch'
   };
 
-  const extendsArgsNames = Object.keys(overrideOptions);
+  const envKeys = [
+    'NODE_ENV',
+    'FE_RELEASE_ENV',
+    'FE_RELEASE_BRANCH',
+    'FE_RELEASE_SOURCE_BRANCH'
+  ] as const;
+
+  let envSnapshot: Partial<Record<(typeof envKeys)[number], string | undefined>>;
+
+  beforeEach(() => {
+    envSnapshot = {};
+    for (const key of envKeys) {
+      envSnapshot[key] = process.env[key];
+      delete process.env[key];
+    }
+  });
+
+  afterEach(() => {
+    for (const key of envKeys) {
+      if (envSnapshot[key] === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = envSnapshot[key];
+      }
+    }
+  });
 
   it('should correctly initialize parameters and context', () => {
     const releaseTask = new ReleaseTask(createTestReleaseOptions());
     expect(releaseTask.getContext()).toBeDefined();
   });
 
-  it('should correctly initialize shared parameters (inherited from feConfig.release)', () => {
+  it('should apply built-in release defaults from releaseJson', () => {
     const releaseTask = new ReleaseTask(createTestReleaseOptions());
 
     const context = releaseTask.getContext();
-    const options = context.options;
 
-    expect(context).toBeDefined();
-
-    extendsArgsNames.forEach((name) => {
-      // compare with defaultFeConfig.release
-      if (!extendsArgsNames.includes(name)) {
-        expect(options[name as keyof typeof options]).toEqual(
-          defaultFeConfig.release![name as keyof typeof defaultFeConfig.release]
-        );
-      }
-    });
+    expect(context.sourceBranch).toBe(releaseJson.sourceBranch);
+    expect(context.releaseEnv).toBe(releaseJson.releaseEnv);
   });
 
   it('should override default shared parameters', () => {
     const releaseTask = new ReleaseTask(
       createTestReleaseOptions({
-        options: overrideOptions
+        options: {
+          ...overrideOptions,
+          env: {
+            get: vi.fn().mockReturnValue(undefined)
+          } as never
+        }
       })
     );
 
     const context = releaseTask.getContext();
-    const options = context.options;
 
-    extendsArgsNames.forEach((name) => {
-      expect(options[name as keyof typeof options]).toEqual(
-        overrideOptions[name as keyof typeof overrideOptions]
-      );
-    });
+    expect(context.sourceBranch).toBe(overrideOptions.sourceBranch);
+    expect(context.releaseEnv).toBe(overrideOptions.releaseEnv);
+    expect(context.rootPath).toBe(overrideOptions.rootPath);
   });
 });

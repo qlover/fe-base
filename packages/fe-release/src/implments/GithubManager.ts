@@ -37,17 +37,14 @@
  * });
  * ```
  */
-import { Shell, type ShellInterface } from '@qlover/scripts-context';
+import type { ShellInterface } from '@qlover/scripts-context';
 import type { LoggerInterface } from '@qlover/logger';
 import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
-import {
-  DEFAULT_AUTO_MERGE_RELEASE_PR,
-  DEFAULT_AUTO_MERGE_TYPE
-} from '../../defaults';
-import { type GithubPRProps } from './GithubPR';
-import { type WorkspaceValue } from '../workspaces/Workspaces';
-import { type ReleaseContextConfig } from '../../implments/ReleaseContext';
-import type ReleaseContext from '../../implments/ReleaseContext';
+import { releaseJson } from '../defaults';
+import type { GithubProps } from '../plugins/Github';
+import type { ReleaseContextConfig } from './ReleaseContext';
+import type ReleaseContext from './ReleaseContext';
+import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 
 export interface PullRequestManagerOptions {
   token: string;
@@ -63,6 +60,9 @@ export type PullRequestInfo =
 
 export type CommitInfo =
   RestEndpointMethodTypes['repos']['getCommit']['response']['data'];
+
+export type PullRequestsForCommit =
+  RestEndpointMethodTypes['repos']['listPullRequestsAssociatedWithCommit']['response']['data'];
 
 export type CreateReleaseOptions =
   RestEndpointMethodTypes['repos']['createRelease']['parameters'];
@@ -127,7 +127,7 @@ type CreatePROptionsArgs = {
  * });
  * ```
  */
-export default class GithubManager {
+export class GithubManager {
   /** Lazy-loaded Octokit instance */
   private _octokit: Octokit | null = null;
 
@@ -160,7 +160,7 @@ export default class GithubManager {
    */
   public getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
     const { authorName, repoName } =
-      this.context.getOptions<ReleaseContextConfig>();
+      this.context.getParameters<ReleaseContextConfig>();
 
     if (!authorName || !repoName) {
       throw new Error('Author name or repo name is not set');
@@ -170,6 +170,31 @@ export default class GithubManager {
       owner: authorName,
       repo: repoName
     };
+  }
+
+  /**
+   * Gets GitHub API token environment variable name
+   *
+   * @returns Environment variable name for GitHub API token
+   *
+   * @example Default token ref
+   * ```typescript
+   * manager.getTokenRef();
+   * // 'GITHUB_TOKEN'
+   * ```
+   *
+   * @example Custom token ref
+   * ```typescript
+   * context.options.github.tokenRef = 'CUSTOM_TOKEN';
+   * manager.getTokenRef();
+   * // 'CUSTOM_TOKEN'
+   * ```
+   */
+  public getTokenRef(): string {
+    const { tokenRef = 'GITHUB_TOKEN' } =
+      this.context.getParameters<GithubProps>('github');
+
+    return tokenRef;
   }
 
   /**
@@ -189,14 +214,13 @@ export default class GithubManager {
    *
    * @example Custom token
    * ```typescript
-   * context.options.githubPR.tokenRef = 'CUSTOM_TOKEN';
+   * context.options.github.tokenRef = 'CUSTOM_TOKEN';
    * const token = manager.getToken();
    * // Uses CUSTOM_TOKEN env var
    * ```
    */
   public getToken(): string {
-    const { tokenRef = 'GITHUB_TOKEN' } =
-      this.context.getOptions<GithubPRProps>('githubPR');
+    const tokenRef = this.getTokenRef();
 
     const token = this.context.env.get(tokenRef);
 
@@ -207,6 +231,34 @@ export default class GithubManager {
     }
 
     return token;
+  }
+
+  /**
+   * Validates GitHub API token availability and repository access
+   *
+   * Ensures the configured token is set and can access the current repository.
+   *
+   * @throws Error if token is missing, invalid, or lacks repository access
+   */
+  public async validateToken(): Promise<void> {
+    const tokenRef = this.getTokenRef();
+
+    this.getToken();
+
+    try {
+      const response = await this.octokit.rest.repos.get({
+        ...this.getGitHubUserInfo()
+      });
+
+      const { html_url } = response.data;
+      this.logger.info(`GitHub repository URL is: ${html_url}`);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+
+      throw new Error(
+        `GitHub token is invalid or lacks access to this repository. Please verify ${tokenRef} environment variable. (${detail})`
+      );
+    }
   }
 
   /**
@@ -232,7 +284,7 @@ export default class GithubManager {
       return this._octokit;
     }
 
-    const { timeout } = this.context.getOptions<GithubPRProps>('githubPR');
+    const { timeout } = this.context.getParameters<GithubProps>('github');
 
     const options = {
       auth: this.getToken(),
@@ -304,18 +356,13 @@ export default class GithubManager {
    * manager.autoMergeType; // 'rebase'
    * ```
    */
-  public get autoMergeType(): ReleaseContextConfig['autoMergeType'] {
+  public get autoMergeType(): GithubProps['mergeType'] {
     return (
-      this.context.getOptions<ReleaseContextConfig>().autoMergeType ||
-      DEFAULT_AUTO_MERGE_TYPE
+      this.context.parameters.github?.mergeType ||
+      (releaseJson.github.mergeType as GithubProps['mergeType'])
     );
   }
 
-  /**
-   * Dry run PR number
-   *
-   * @default `999999`
-   */
   /**
    * Gets pull request number for dry runs
    *
@@ -331,12 +378,14 @@ export default class GithubManager {
    * const prNumber = manager.dryRunPRNumber;
    * // '999999'
    *
-   * context.options.githubPR.dryRunPRNumber = '123456';
+   * context.options.github.dryRunPRNumber = '123456';
    * manager.dryRunPRNumber; // '123456'
    * ```
+   *
+   * @default `999999`
    */
   public get dryRunPRNumber(): string {
-    return this.context.getOptions('githubPR.dryRunPRNumber', '999999');
+    return this.context.getParameters('github.dryRunPRNumber', '999999');
   }
 
   /**
@@ -363,8 +412,9 @@ export default class GithubManager {
    */
   public get autoMergeReleasePR(): boolean {
     return (
-      this.context.getOptions('autoMergeReleasePR') ||
-      DEFAULT_AUTO_MERGE_RELEASE_PR
+      this.context.parameters.github?.autoMergeReleasePr ??
+      releaseJson.github.autoMergeReleasePR ??
+      false
     );
   }
 
@@ -408,7 +458,7 @@ export default class GithubManager {
 
     if (this.context.dryRun) {
       const { repoName, authorName } =
-        this.context.getOptions<ReleaseContextConfig>();
+        this.context.getParameters<ReleaseContextConfig>();
       this.logger.info(
         `[DRY RUN] Would merge PR #${prNumber} with method '${mergeMethod}' in repo ${authorName}/${repoName}, branch ${releaseBranch}`
       );
@@ -468,13 +518,77 @@ export default class GithubManager {
    * console.log(info.files.map(f => f.filename));
    * ```
    */
-  public async getCommitInfo(commitSha: string): Promise<CommitInfo> {
-    const pr = await this.octokit.rest.repos.getCommit({
-      ...this.getGitHubUserInfo(),
-      ref: commitSha
-    });
+  public async getCommitInfo(commitSha: string): Promise<CommitInfo | null> {
+    try {
+      const pr = await this.octokit.rest.repos.getCommit({
+        ...this.getGitHubUserInfo(),
+        ref: commitSha
+      });
 
-    return pr.data;
+      return pr.data;
+    } catch (error) {
+      if (this.isCommitNotFoundOnGitHubError(error)) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Gets pull requests associated with a commit
+   *
+   * Useful when commit messages do not include a PR reference
+   * (e.g. squash merges) but the commit is still linked to a PR.
+   *
+   * @param commitSha - Commit SHA
+   * @returns Promise resolving to associated pull requests
+   */
+  public async getPullRequestsForCommit(
+    commitSha: string,
+    commitMessage?: string
+  ): Promise<PullRequestsForCommit> {
+    try {
+      const response =
+        await this.octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+          ...this.getGitHubUserInfo(),
+          commit_sha: commitSha
+        });
+
+      return response.data;
+    } catch (error) {
+      if (this.isCommitNotFoundOnGitHubError(error)) {
+        this.warnCommitNotFoundOnGitHub(commitSha, commitMessage);
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  private warnCommitNotFoundOnGitHub(
+    commitSha: string,
+    commitMessage: string | undefined
+  ): void {
+    const messageSuffix = commitMessage ? ` "${commitMessage}"` : '';
+    this.logger.warn(
+      `Commit ${commitSha}${messageSuffix} not found on GitHub, using local commit data`
+    );
+  }
+
+  private isCommitNotFoundOnGitHubError(error: unknown): boolean {
+    if (typeof error !== 'object' || error === null) {
+      return false;
+    }
+
+    const httpError = error as { status?: number; message?: string };
+
+    if (
+      typeof httpError.message === 'string' &&
+      httpError.message.includes('No commit found')
+    ) {
+      return true;
+    }
+
+    return httpError.status === 404;
   }
 
   /**
@@ -566,8 +680,12 @@ export default class GithubManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  public async createReleasePRLabel(): Promise<ReleaseContextConfig['label']> {
-    const label = this.context.getOptions<ReleaseContextConfig>().label;
+  public async createReleasePRLabel(): Promise<GithubProps['label']> {
+    const label = Object.assign(
+      {},
+      releaseJson.github.label,
+      this.context.parameters.github?.label
+    );
 
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
@@ -607,9 +725,9 @@ export default class GithubManager {
    * @throws If the creation fails or if the pull request already exists.
    */
   public async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
-    const dryRunCreatePR = this.context.getOptions('githubPR.dryRunCreatePR');
+    const dryRunDelivery = this.context.getParameters('github.dryRunDelivery');
 
-    if (dryRunCreatePR || this.context.dryRun) {
+    if (dryRunDelivery || this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
         ...options,
         labels: options.labels
@@ -719,7 +837,7 @@ export default class GithubManager {
       makeLatest = true,
       releaseNotes,
       discussionCategoryName = undefined
-    } = this.context.getOptions<GithubPRProps>('githubPR');
+    } = this.context.getParameters<GithubProps>('github');
 
     const name = releaseName;
     const body = autoGenerate ? '' : this.truncateBody(String(releaseNotes));
@@ -769,16 +887,15 @@ export default class GithubManager {
    * // Logs release info without creating
    * ```
    */
-  public async createRelease(workspace: WorkspaceValue): Promise<void> {
+  public async createRelease(workspace: WorkspaceInterface): Promise<void> {
     const meragedOptions = this.getOctokitReleaseOptions({
       tag_name: workspace.tagName,
       body: workspace.changelog
     });
 
-    meragedOptions.name = Shell.format(
-      meragedOptions.name,
-      workspace as unknown as Record<string, string>
-    );
+    if (meragedOptions.name) {
+      meragedOptions.name = this.context.format(meragedOptions.name, workspace);
+    }
 
     this.logger.log(
       `[DRY RUN] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
