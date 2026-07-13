@@ -1,72 +1,85 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Workspaces, {
-  type WorkspaceValue
-} from '../../src/plugins/Workspaces';
-import { WorkspaceCreator } from '../../src/plugins/workspaces/WorkspaceCreator';
+import Workspaces from '../../src/plugins/Workspaces';
+import * as createWorkspaceModule from '../../src/utils/createWorkspace';
+import { WorkspaceValue } from '../../src/implments/WorkspaceValue';
 import { createTestReleaseOptions } from '../helpers';
 import { ReleaseContext } from '../../src';
-import type ReleaseTask from '../../src/implments/ReleaseTask';
+import { getPackages } from '@manypkg/get-packages';
+import { getDependentsGraph } from '@changesets/get-dependents-graph';
+
+vi.mock('@manypkg/get-packages', () => ({
+  getPackages: vi.fn().mockResolvedValue({
+    packages: [],
+    tool: 'pnpm'
+  })
+}));
+
+vi.mock('@changesets/get-dependents-graph', () => ({
+  getDependentsGraph: vi.fn().mockReturnValue(new Map())
+}));
 
 describe('Workspaces Plugin', () => {
   let context: ReleaseContext;
   let workspaces: Workspaces;
-  let mockReleaseTask: ReleaseTask;
 
   beforeEach(() => {
     context = new ReleaseContext(
       'release',
       createTestReleaseOptions({
         options: {
-          // @ts-expect-error test case
-          packagesDirectories: ['packages/package-a', 'packages/package-b']
+          workspaces: {
+            packagesDirectories: ['packages/package-a', 'packages/package-b'],
+            includeDependencyReleases: false
+          }
         }
       })
     );
 
     workspaces = new Workspaces(context);
 
-    mockReleaseTask = {
-      run: vi.fn().mockResolvedValue(undefined)
-    } as unknown as ReleaseTask;
+    vi.spyOn(workspaces.shell, 'exec').mockImplementation(async (cmd) => {
+      const command = Array.isArray(cmd) ? cmd.join(' ') : String(cmd);
 
-    workspaces.setReleaseTask(mockReleaseTask);
-
-    vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(
-      'packages/package-a/index.ts\npackages/package-b/package.json'
-    );
-
-    // mock WorkspaceCreator.readJson method for testing getWorkspaces
-    vi.spyOn(WorkspaceCreator, 'readJson').mockImplementation((path) => {
-      if (path.includes('package-a')) {
-        return {
-          name: 'package-a',
-          version: '0.1.0'
-        };
+      if (command.includes('git diff --name-only')) {
+        return 'packages/package-a/index.ts\npackages/package-b/package.json';
       }
-      if (path.includes('package-b')) {
-        return {
-          name: 'package-b',
-          version: '0.2.0'
-        };
+
+      if (command.includes('git for-each-ref')) {
+        return '';
       }
-      return {};
+
+      return '';
     });
+
+    vi.spyOn(createWorkspaceModule, 'createWorkspaceValue').mockImplementation(
+      (partial) => {
+        const path = partial.path || '';
+        const isA = path.includes('package-a');
+
+        return new WorkspaceValue({
+          name: isA ? 'package-a' : 'package-b',
+          version: isA ? '0.1.0' : '0.2.0',
+          path,
+          root: `/repo/${path}`,
+          packageJson: {
+            name: isA ? 'package-a' : 'package-b',
+            version: isA ? '0.1.0' : '0.2.0'
+          },
+          ...partial
+        });
+      }
+    );
   });
 
   describe('basic features', () => {
     it('should be initialized correctly', () => {
       expect(workspaces.pluginName).toBe('workspaces');
-      expect(workspaces.enabled()).toBe(true);
+      expect(workspaces.enabled('onBefore', context)).toBe(true);
     });
 
     it('when skip is set to true, enabled should return false', () => {
       workspaces.setConfig({ skip: true });
-      expect(workspaces.enabled()).toBe(false);
-    });
-
-    it('when internal _skip is true, enabled should return false', () => {
-      workspaces['_skip'] = true;
-      expect(workspaces.enabled()).toBe(false);
+      expect(workspaces.enabled('onBefore', context)).toBe(false);
     });
   });
 
@@ -82,7 +95,7 @@ describe('Workspaces Plugin', () => {
     it('should return changed packages by changeLabels', async () => {
       const result = await workspaces.getChangedPackages(
         ['packages/package-a', 'packages/package-b'],
-        ['changes:packages/package-a']
+        ['change:packages/package-a']
       );
       expect(result).toEqual(['packages/package-a']);
     });
@@ -101,8 +114,7 @@ describe('Workspaces Plugin', () => {
     });
 
     it('when shell.exec returns non-string, should return empty array', async () => {
-      // @ts-expect-error test case
-      vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(null);
+      vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(null as never);
 
       // @ts-expect-error call private method for testing
       const result = await workspaces.getGitWorkspaces();
@@ -115,7 +127,6 @@ describe('Workspaces Plugin', () => {
     it('should return changed workspaces list', async () => {
       const workspacesResult = await workspaces.getWorkspaces();
 
-      // packages-a and packages-b
       expect(workspacesResult).toHaveLength(2);
       expect(workspacesResult[0].name).toBe('package-a');
       expect(workspacesResult[0].version).toBe('0.1.0');
@@ -123,71 +134,60 @@ describe('Workspaces Plugin', () => {
     });
   });
 
-  describe('setCurrentWorkspace', () => {
-    it('should set current workspace and update context shared data', () => {
-      const workspace = {
-        name: 'test-workspace',
-        version: '1.1.0',
-        path: 'path/to/workspace',
-        root: '/absolute/path/to/workspace',
-        packageJson: {
-          name: 'test-workspace',
-          version: '1.1.0'
-        }
-      };
-
-      workspaces.setCurrentWorkspace(workspace);
-
-      expect(workspaces.getConfig('workspace')).toEqual(workspace);
-      expect(context.getOptions('publishPath')).toBe('path/to/workspace');
-      expect(context.workspace!.packageJson).toEqual({
-        name: 'test-workspace',
-        version: '1.1.0'
+  describe('appendDependencyReleaseWorkspaces', () => {
+    it('should append internal dependents with dependencyRelease flag', async () => {
+      const source = new WorkspaceValue({
+        name: '@scope/pkg-a',
+        version: '1.0.0',
+        path: 'packages/a',
+        root: '/repo/packages/a',
+        packageJson: { name: '@scope/pkg-a', version: '1.0.0' }
       });
+
+      vi.mocked(getPackages).mockResolvedValue({
+        tool: 'pnpm',
+        packages: [
+          {
+            dir: '/repo/packages/a',
+            packageJson: { name: '@scope/pkg-a', version: '1.0.0' }
+          },
+          {
+            dir: '/repo/packages/b',
+            packageJson: { name: '@scope/pkg-b', version: '2.0.0' }
+          }
+        ]
+      } as never);
+
+      vi.mocked(getDependentsGraph).mockReturnValue(
+        new Map([['@scope/pkg-a', ['@scope/pkg-b']]])
+      );
+
+      // @ts-expect-error access protected method for testing
+      const result = await workspaces.appendDependencyReleaseWorkspaces([
+        source
+      ]);
+
+      expect(result).toHaveLength(2);
+      expect(result[1].name).toBe('@scope/pkg-b');
+      expect(result[1].dependencyRelease).toBe(true);
+      expect(result[1].changelog).toContain('@scope/pkg-a');
     });
   });
 
   describe('lifecycle methods', () => {
-    it('onBefore: when a workspace is specified, should use that workspace', async () => {
-      const workspace = {
-        name: 'specified-workspace',
-        version: '2.0.0',
-        path: 'path/to/specified',
-        root: '/absolute/path/to/specified',
-        packageJson: {
-          name: 'specified-workspace',
-          version: '2.0.0'
-        }
-      };
-
-      workspaces.setConfig({ workspace });
-
+    it('onBefore: should set workspaces on context', async () => {
       await workspaces.onBefore();
 
-      expect(workspaces.getConfig('workspace')).toEqual(workspace);
+      expect(context.workspaces).toHaveLength(2);
+      expect(context.workspaces![0].name).toBe('package-a');
     });
 
-    it('onBefore: when there is no changed workspace and skipCheckPackage is true, should not set current workspace', async () => {
-      vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(
-        'other/path/file.js'
-      );
-      workspaces.setConfig({ skipCheckPackage: true });
+    it('onBefore: when there is no changed workspace, should throw', async () => {
+      vi.spyOn(workspaces.shell, 'exec').mockResolvedValue('other/path/file.js');
 
       await expect(workspaces.onBefore()).rejects.toThrow(
         'No changes to publish packages'
       );
-
-      expect(workspaces.getConfig('workspace')).toBeUndefined();
-    });
-
-    it('onBefore: when there is a changed workspace, should set the first workspace as the current workspace', async () => {
-      await workspaces.onBefore();
-
-      const currentWorkspace = workspaces.getConfig(
-        'workspace'
-      ) as WorkspaceValue;
-      expect(currentWorkspace).toBeDefined();
-      expect(currentWorkspace?.name).toBe('package-a');
     });
   });
 });

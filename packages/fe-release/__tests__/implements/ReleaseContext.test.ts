@@ -2,11 +2,11 @@ import ReleaseContext, {
   type ReleaseContextOptions
 } from '../../src/implments/ReleaseContext';
 import { defaultFeConfig } from '@qlover/scripts-context';
-import { type WorkspaceValue } from '../../src/plugins/Workspaces';
+import type { WorkspaceInterface } from '../../src/interface/WorkspaceInterface';
 
 describe('ReleaseContext', () => {
   const contextName = 'release';
-  const defaultWorkspace: WorkspaceValue = {
+  const defaultWorkspace: WorkspaceInterface = {
     name: 'test-package-name',
     version: '99.1020-test',
     path: 'test-package-path',
@@ -56,10 +56,10 @@ describe('ReleaseContext', () => {
     it('should create a unique releaseId on initialization', () => {
       const context = new ReleaseContext(contextName, contextOptions);
 
-      expect(context.releaseId).toMatch(/^[a-f0-9]{8}$/);
+      expect(context.releaseId).toMatch(/^[a-f0-9]{16}$/);
     });
 
-    it('should preserve a provided releaseId', () => {
+    it('should always generate releaseId internally', () => {
       const context = new ReleaseContext(contextName, {
         ...contextOptions,
         options: {
@@ -68,7 +68,8 @@ describe('ReleaseContext', () => {
         }
       });
 
-      expect(context.releaseId).toBe('custom-id');
+      expect(context.releaseId).toMatch(/^[a-f0-9]{16}$/);
+      expect(context.releaseId).not.toBe('custom-id');
     });
   });
 });
