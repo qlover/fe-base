@@ -21,21 +21,18 @@
 ## ✨ 特性
 
 - **自动化版本管理**
-
   - 基于 `@changesets/cli` 的可靠版本控制
   - 根据变更自动进行版本更新
   - 可配置的版本递增策略
   - 支持语义化版本（Semantic Versioning）
 
 - **灵活的发布工作流**
-
   - 手动发布流程，提供直接控制
   - 基于 PR 的自动化发布工作流（GitHub）
   - 可自定义的发布策略
   - 支持多环境发布（开发、测试、生产）
 
 - **GitHub 集成**
-
   - 自动化 PR 创建和管理
   - 智能 PR 标签系统
   - 自动生成发布说明
@@ -43,7 +40,6 @@
   - 支持自动合并和冲突解决
 
 - **工作区支持**
-
   - 一流的 monorepo 支持
   - 多包发布协调
   - 依赖图感知
@@ -71,37 +67,31 @@ pnpm add @qlover/fe-release -D
 
 ## 🏃 快速开始
 
-1. **基础发布**
+1. **本地创建发布 PR（预览）**
 
 ```bash
-# 创建发布 PR
-fe-release -P
+# 从 develop 向 master 创建发布 PR（dry-run）
+fe-release -d -V -s master --github.push-change-labels
 
-# 预览发布（不实际执行）
-fe-release --dry-run
-
-# 指定版本类型发布
-fe-release --changelog.increment=major
+# 指定版本递增
+fe-release -i patch -s master
+fe-release -i minor -s master
 ```
 
-2. **工作区发布**
+2. **Monorepo 选择性发布**
 
 ```bash
-# 发布多个包
-fe-release --workspaces.change-labels=pkg1,pkg2 -P
+# 只发布带 changes 标签的包
+fe-release -l "changes:packages/fe-release" -i patch -s master
 
-# 指定发布目录
-fe-release --publish-path=packages/core
+# 指定包目录
+fe-release --workspaces.packages-directories packages/fe-release,packages/fe-scripts -i patch
 ```
 
-3. **环境发布**
+3. **仅发布（版本已在 release PR 中更新）**
 
 ```bash
-# 发布到测试环境
-fe-release --env=test -P
-
-# 发布到生产环境
-fe-release --env=prod -P
+fe-release --changesetVersion.skip-changeset --changesetVersion.mode publish
 ```
 
 ## 💻 使用方法
@@ -114,107 +104,131 @@ fe-release [options]
 
 #### 核心选项
 
-| 选项                        | 描述                     | 默认值  |
-| --------------------------- | ------------------------ | ------- |
-| `-v, --version`             | 显示版本号               | -       |
-| `-d, --dry-run`             | 预览模式，不实际执行更改 | `false` |
-| `-V, --verbose`             | 显示详细日志             | `false` |
-| `-p, --publish-path`        | 包发布路径               | -       |
-| `-P, --githubPR.release-PR` | 创建发布 PR              | `false` |
-| `--env`                     | 发布环境                 | `prod`  |
+| 选项                               | 描述                     | 默认值   |
+| ---------------------------------- | ------------------------ | -------- |
+| `-v, --version`                    | 显示版本号               | -        |
+| `-d, --dry-run`                    | 预览模式，不实际执行更改 | `false`  |
+| `-V, --verbose`                    | 显示详细日志             | `false`  |
+| `-s, --source-branch`              | 发布 PR 的目标分支       | `master` |
+| `-i, --changesetVersion.increment` | 版本递增类型             | `patch`  |
 
 #### 高级选项
 
-| 选项                             | 描述             | 默认值                          |
-| -------------------------------- | ---------------- | ------------------------------- |
-| `-b, --branch-name`              | 发布分支模板     | `release-${pkgName}-${tagName}` |
-| `-s, --source-branch`            | 源分支           | `master`                        |
-| `-i, --changelog.increment`      | 版本递增类型     | `patch`                         |
-| `--changelog.skip`               | 跳过更新日志生成 | `false`                         |
-| `--packages-directories`         | 变更包目录       | -                               |
-| `-l, --workspaces.change-labels` | 变更标签         | -                               |
+| 选项                                             | 描述                           | 默认值                             |
+| ------------------------------------------------ | ------------------------------ | ---------------------------------- |
+| `-b, --github.branch-name`                       | 发布分支名模板                 | `release/${repoName}-${releaseId}` |
+| `-l, --workspaces.change-labels`                 | 变更标签（过滤发布范围）       | -                                  |
+| `--workspaces.packages-directories`              | 扫描的包目录                   | `find-workspaces`                  |
+| `--github.push-change-labels`                    | 将 changes 标签附加到发布 PR   | `false`                            |
+| `--github.skip-create-release-pr`                | 跳过创建 GitHub PR             | `false`                            |
+| `--changesetVersion.mode`                        | `version` / `publish` / `both` | `version`                          |
+| `--changesetVersion.skip-changeset`              | 跳过 changeset 文件生成        | `false`                            |
+| `--changesetVersion.ignore-non-updated-packages` | 恢复仅因依赖而变更的包         | `false`                            |
 
 ## ⚙️ 配置
 
 ### 环境变量
 
-| 变量                | 描述          | 默认值 |
-| ------------------- | ------------- | ------ |
-| `FE_RELEASE`        | 启用/禁用发布 | `true` |
-| `FE_RELEASE_BRANCH` | 源分支        | -      |
-| `FE_RELEASE_ENV`    | 发布环境      | -      |
-| `FE_RELEASE_TOKEN`  | GitHub Token  | -      |
+| 变量                                | 描述                                | 默认值   |
+| ----------------------------------- | ----------------------------------- | -------- |
+| `FE_RELEASE`                        | 启用/禁用发布                       | `true`   |
+| `FE_RELEASE_BRANCH`                 | 当前工作分支（CI 中设为 `develop`） | `master` |
+| `FE_RELEASE_ENV`                    | 发布环境                            | -        |
+| `GITHUB_TOKEN` / `FE_RELEASE_TOKEN` | GitHub Token                        | -        |
+| `NPM_TOKEN`                         | npm 发布令牌                        | -        |
 
 ### fe-config.json
 
 ```json
 {
   "release": {
-    "publishPath": "",
-    "autoMergeReleasePR": false,
-    "autoMergeType": "squash",
-    "branchName": "release-${pkgName}-${tagName}",
-    "PRTitle": "[${pkgName} Release] Branch:${branch}, Tag:${tagName}, Env:${env}",
-    "PRBody": "This PR includes version bump to ${tagName}",
-    "packagesDirectories": ["packages/*"],
-    "githubPR": {
-      "commitArgs": ["--no-verify"],
-      "pushChangedLabels": true,
-      "releaseName": "Release ${name} v${version}",
-      "commitMessage": "chore(tag): ${name} v${version}"
+    "workspaces": {
+      "packagesDirectories": ["packages"],
+      "changePackagesLabel": "changes:${name}"
     },
-    "changelog": {
-      "types": [
-        { "type": "feat", "section": "#### ✨ Features", "hidden": false },
-        { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },
-        { "type": "chore", "section": "#### 🔧 Chores", "hidden": true },
-        {
-          "type": "docs",
-          "section": "#### 📝 Documentation",
-          "hidden": false
-        },
-        {
-          "type": "refactor",
-          "section": "#### ♻️ Refactors",
-          "hidden": false
-        },
-        { "type": "perf", "section": "#### 🚀 Performance", "hidden": false },
-        { "type": "test", "section": "#### 🚨 Tests", "hidden": true },
-        { "type": "style", "section": "#### 🎨 Styles", "hidden": true },
-        { "type": "ci", "section": "#### 🔄 CI", "hidden": true },
-        { "type": "build", "section": "#### 🚧 Build", "hidden": false },
-        { "type": "revert", "section": "#### ⏪ Reverts", "hidden": true },
-        { "type": "release", "section": "#### 🔖 Releases", "hidden": true }
-      ]
+    "changesetVersion": {
+      "changesetRoot": ".changeset",
+      "ignoreNonUpdatedPackages": false
+    },
+    "github": {
+      "label": { "name": "CI-Release" },
+      "autoMergeReleasePR": false
     }
   }
 }
 ```
 
+配置项通过 `release.<plugin>.*` 与 CLI 的 `--<plugin>.*` 对应，详见 `src/cli.ts` 与 `src/defaults.ts`。
+
 ## 🔄 工作流程
 
-### 手动发布流程
+fe-base 采用 **develop → master** 两阶段发布，与 CI 工作流一一对应。
 
-```mermaid
-graph LR
-    A[代码变更] --> B[运行 fe-release]
-    B --> C[版本更新]
-    C --> D[生成更新日志]
-    D --> E[创建 Git 标签]
-    E --> F[发布到 NPM]
-    F --> G[创建 GitHub Release]
+### 分支与阶段
+
+```
+feature/*  ──PR──►  develop  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
 ```
 
-### PR 发布流程（GitHub）
+| 阶段           | 触发条件                                    | CI 工作流                           | 工具                                         |
+| -------------- | ------------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| 1. 功能开发    | PR 目标为 `develop`                         | `general-check.yml`                 | lint / test / build + `check-packages`       |
+| 2. 创建发布 PR | 合并到 `develop` 或手动 `workflow_dispatch` | `release.yml` → `create-release-pr` | `fe-release`                                 |
+| 3. 发布        | 带 `CI-Release` 的 PR 合并到 `master`       | `release.yml` → `publish`           | `fe-release --changesetVersion.mode publish` |
+
+### 阶段 1：功能 PR（目标分支 `develop`）
+
+1. 从 `develop` 拉功能分支，开发并提交（遵循 Conventional Commits）。
+2. 创建 PR，目标分支为 **`develop`**。
+3. CI 自动执行质量检查；`check-packages` 为有改动的包打上标签，例如：
+   - `changes:packages/fe-release`
+   - `changes:packages/fe-scripts`
+4. 可选：在 PR 上添加版本递增标签 `increment:major` / `increment:minor` / `increment:patch`（默认 patch）。
+
+### 阶段 2：创建发布 PR（develop → master）
+
+当功能 PR **合并到 develop** 后（或手动触发 Release 工作流）：
+
+1. `release.yml` 的 `create-release-pr` job 检出 `develop`。
+2. 运行 `fe-release`：生成 changelog、更新版本号、推送 `release/<repo>-<id>` 分支。
+3. 自动创建指向 **`master`** 的 PR，并打上 **`CI-Release`** 标签。
+4. 功能 PR 上的 `changes:*` 标签会传递到发布 PR，用于限定发布范围。
+
+带 **`CI-Release`** 标签的 PR 会跳过 `general-check`（版本与 changelog 已在发布 PR 中准备好）。
+
+### 阶段 3：发布（合并 CI-Release PR 到 master）
+
+1. 审核并合并带 `CI-Release` 的发布 PR 到 **`master`**。
+2. `release.yml` 的 `publish` job 自动执行：打 tag、发布 npm、创建 GitHub Release。
+
+### 标签说明
+
+| 标签                      | 来源                        | 作用                                                      |
+| ------------------------- | --------------------------- | --------------------------------------------------------- |
+| `changes:packages/<name>` | `check-packages`（功能 PR） | 标记哪些包有变更，过滤发布范围                            |
+| `CI-Release`              | `fe-release`（发布 PR）     | 标识发布 PR；跳过 general-check；合并到 master 后触发发布 |
+| `increment:*`             | 手动添加                    | 覆盖 semver 递增策略                                      |
+
+> 发布 PR 统一使用 **`CI-Release`** 一个标签即可，无需再单独创建 `Release` 标签。
+
+### 手动触发发布
+
+在 GitHub Actions 中手动运行 **Release sub packages** 工作流（`workflow_dispatch`），
+会从当前 `develop` 创建发布 PR，无需等待某次功能合并。
+
+### 流程图
 
 ```mermaid
-graph LR
-    A[创建 PR] --> B[自动添加标签]
-    B --> C[创建发布 PR]
-    C --> D[更新版本和日志]
-    D --> E[CI 发布]
-    E --> F[发布和打标签]
+graph TD
+    A[feature 分支] -->|PR| B[develop]
+    B -->|check-packages 打 changes 标签| B
+    B -->|合并| C[create-release-pr]
+    C -->|fe-release| D[release/* → master PR]
+    D -->|自动打 CI-Release| E[审核发布 PR]
+    E -->|合并到 master| F[publish → npm + GitHub Release]
 ```
+
+更完整的模块说明见 `src/index.ts` 顶部注释。
 
 ## 🔍 常见问题
 
@@ -227,13 +241,11 @@ graph LR
    ```
 
    解决方案：
-
    - 检查 `FE_RELEASE` 环境变量
    - 确认是否有需要发布的变更
    - 验证包版本是否需要更新
 
 2. **PR 创建失败**
-
    - 验证 GitHub token 权限
    - 检查仓库访问权限
    - 确认分支是否存在
@@ -252,24 +264,3 @@ graph LR
 ```bash
 fe-release -V
 ```
-
-## 🤝 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支
-3. 提交变更
-4. 推送到分支
-5. 创建 Pull Request
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
-
-## 🙏 致谢
-
-- [@changesets/cli](https://github.com/changesets/changesets) 团队
-- 所有项目贡献者
-
----
-
-更多信息，请访问我们的[文档](https://qlover.github.io/fe-release)。
