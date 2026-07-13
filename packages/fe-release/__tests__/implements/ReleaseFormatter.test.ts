@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { TemplateEngine } from '@qlover/scripts-context';
 import { ReleaseFormatter } from '../../src/implments/ReleaseFormatter';
 import type { WorkspaceInterface } from '../../src/interface/WorkspaceInterface';
@@ -37,7 +37,11 @@ describe('ReleaseFormatter', () => {
       PRTitle: 'Release ${repoName} ${tagName} (${releaseId})'
     });
 
-    const title = formatter.getPRTitle(releaseBranchResult, context, workspaces);
+    const title = formatter.getPRTitle(
+      releaseBranchResult,
+      context,
+      workspaces
+    );
 
     expect(title).toBe(
       'Release fe-base release-tag-1-patch-a1b2c3d4 (a1b2c3d4)'
@@ -51,7 +55,9 @@ describe('ReleaseFormatter', () => {
 
     const body = formatter.getPRBody(workspaces, releaseBranchResult, context);
 
-    expect(body).toBe('Tag: release-tag-1-patch-a1b2c3d4\n\n- feat: add feature');
+    expect(body).toBe(
+      'Tag: release-tag-1-patch-a1b2c3d4\n\n- feat: add feature'
+    );
   });
 
   it('should use default PR body template', () => {
