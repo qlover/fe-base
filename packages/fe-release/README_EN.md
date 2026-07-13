@@ -174,8 +174,8 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 | Phase                  | Trigger                                            | CI workflow                         | Tool                                         |
 | ---------------------- | -------------------------------------------------- | ----------------------------------- | -------------------------------------------- |
 | 1. Feature development | PR targets `develop`                               | `general-check.yml`                 | lint / test / build + `check-packages`       |
-| 2. Create release PR   | Merge into `develop` or manual `workflow_dispatch` | `release.yml` → `create-release-pr` | `fe-release`                                 |
-| 3. Publish             | `CI-Release` PR merged into `master`               | `release.yml` → `publish`           | `fe-release --changesetVersion.mode publish` |
+| 2. Create release PR | `CI-Release` on merged develop PR (or `workflow_dispatch`) | `release.yml` → `create-release-pr` | `fe-release` (version mode) |
+| 3. Publish | Release PR (`release/* → master`) merged | `release.yml` → `publish` | `fe-release` (publish mode, no version bump) |
 
 ### Phase 1 — Feature PR (base: `develop`)
 
@@ -186,28 +186,33 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
    - `changes:packages/fe-scripts`
 4. Optional: add `increment:major` / `increment:minor` / `increment:patch` on the PR (default: patch).
 
-### Phase 2 — Create release PR (develop → master)
+### Phase 2 — Create release PR (manual `CI-Release` gate)
 
-After a feature PR is **merged into develop** (or when the Release workflow is triggered manually):
+After a feature PR is **merged into develop**, add the **`CI-Release`** label on that PR (or add it before merge):
 
-1. The `create-release-pr` job in `release.yml` checks out `develop`.
-2. Runs `fe-release`: generates changelogs, bumps versions, pushes `release/<repo>-<id>`.
-3. Opens a PR to **`master`** and labels it **`CI-Release`**.
-4. `changes:*` labels from the merged feature PR are forwarded to scope the release.
+1. The `create-release-pr` job runs (`closed` on merge, or `labeled` when `CI-Release` is added after merge).
+2. Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode:
+   - Generates changelog, updates `CHANGELOG.md`, bumps versions
+3. Pushes `release/<repo>-<id>`, opens a PR to **`master`** (auto-labeled `CI-Release`).
+4. `changes:*` labels from the feature PR are forwarded to scope the release.
 
-PRs with the **`CI-Release`** label skip `general-check` (versions and changelogs are already prepared).
+> Merges into `develop` **without** `CI-Release` do **not** create a release PR.
 
-### Phase 3 — Publish (merge CI-Release PR into master)
+Open feature PRs with **`CI-Release`** skip `general-check`.
 
-1. Review and merge the `CI-Release` release PR into **`master`**.
-2. The `publish` job in `release.yml` runs: tags, npm publish, GitHub Release.
+### Phase 3 — Publish (merge release PR into master)
+
+1. Review and merge the **release PR** (`release/* → master`) into **`master`**.
+2. The `publish` job runs `fe-release --changesetVersion.mode publish`:
+   - Does **not** regenerate changelog or bump versions (`skip-changeset`)
+   - Tags, npm publish, GitHub Release
 
 ### Labels
 
 | Label                     | Source                        | Purpose                                                                         |
 | ------------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
 | `changes:packages/<name>` | `check-packages` (feature PR) | Marks changed packages; filters release scope                                   |
-| `CI-Release`              | `fe-release` (release PR)     | Identifies release PR; skips general-check; triggers publish on merge to master |
+| `CI-Release` | Manual on merged develop PR (gate); auto on release PR | Triggers version flow; skips general-check; publish on merge to master |
 | `increment:*`             | Manual                        | Overrides semver increment strategy                                             |
 
 > Use a single **`CI-Release`** label for release PRs — no separate `Release` label is needed.

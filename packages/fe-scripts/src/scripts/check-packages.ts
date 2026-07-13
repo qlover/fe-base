@@ -45,7 +45,6 @@ const DEFAULT_CHANGE_PACKAGES_LABEL = 'changes:${name}';
 
 /** fe-config.json → release.workspaces (owned by fe-release, not FeConfig) */
 interface CheckPackagesReleaseWorkspaces {
-  packagesDirectories?: string[];
   changePackagesLabel?: string;
 }
 
@@ -59,15 +58,11 @@ function getReleaseWorkspaces(
 }
 
 function getWorkspacePackages(
-  context: ScriptContextInterface<CheckPackagesOptions>
+  _context: ScriptContextInterface<CheckPackagesOptions>
 ): string[] {
-  const packagesDirectories =
-    getReleaseWorkspaces(context)?.packagesDirectories || [];
-
-  if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
-    return packagesDirectories;
-  }
-
+  // Always resolve individual workspaces via find-workspaces.
+  // fe-config release.workspaces.packagesDirectories is for fe-release scope only;
+  // a value like ["packages"] would label every change as changes:packages.
   const root = process.cwd();
 
   return (findWorkspaces(root) || []).map((workspace) =>

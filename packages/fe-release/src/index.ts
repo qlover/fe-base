@@ -33,14 +33,16 @@
  * - Config: `fe-config.json` → `release.workspaces.packagesDirectories` and
  *   `release.workspaces.changePackagesLabel` (default template: `changes:${name}`).
  *
- * ### Phase 2 — Create release PR (trigger: merge into `develop`)
+ * ### Phase 2 — Create release PR (trigger: `CI-Release` on merged develop PR)
  *
  * - **CI** (`.github/workflows/release.yml` → `create-release-pr`):
- *   - Runs when a non-`CI-Release` PR is merged into `develop`, or via `workflow_dispatch`.
- *   - Checks out `develop`, runs `fe-release` with `-s master`.
- *   - Bumps versions, writes changelogs, pushes `release/<repo>-<id>`, opens PR to `master`.
- *   - The release PR is labeled **`CI-Release`** (see `release.github.label.name`).
- *   - Change labels from the merged feature PR are forwarded via `--workspaces.change-labels`.
+ *   - Runs when a **merged** PR into `develop` has the **`CI-Release`** label
+ *     (label before merge, or add after merge via `labeled` event), or via `workflow_dispatch`.
+ *   - Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
+ *   - Bumps versions, updates `CHANGELOG.md`, pushes `release/<repo>-<id>`, opens PR to `master`.
+ *   - The new release PR is also labeled **`CI-Release`** (see `release.github.label.name`).
+ *   - Change labels from the feature PR are forwarded via `--workspaces.change-labels`.
+ *   - Merges into `develop` **without** `CI-Release` do **not** create a release PR (manual gate).
  *
  * ```bash
  * # Equivalent local / CI command (create release PR)
@@ -50,12 +52,13 @@
  *   --workspaces.change-labels=changes:packages/fe-release
  * ```
  *
- * PRs with the **`CI-Release`** label skip `general-check` (version/changelog already prepared).
+ * Open feature PRs with **`CI-Release`** skip `general-check`.
  *
- * ### Phase 3 — Publish (trigger: `CI-Release` PR merged into `master`)
+ * ### Phase 3 — Publish (trigger: release PR merged into `master`)
  *
  * - **CI** (`.github/workflows/release.yml` → `publish`):
- *   - Runs when a PR with label `CI-Release` is merged into `master`.
+ *   - Runs when the **`release/* → master`** PR with `CI-Release` is merged.
+ *   - Runs `fe-release` in **publish** mode only — no changelog or version bump (`skip-changeset`).
  *   - Publishes packages to npm and creates GitHub releases/tags.
  *
  * ```bash
@@ -71,7 +74,7 @@
  * | Label | Added by | Purpose |
  * |-------|----------|---------|
  * | `changes:packages/<name>` | `check-packages` on feature PRs | Marks which packages changed; filters release scope |
- * | `CI-Release` | `fe-release` Github plugin | Marks the release PR to `master`; skips general-check; triggers publish on merge |
+ * | `CI-Release` | Manual on merged develop PR (gate); auto on release PR | Triggers version + release PR; skips general-check; publish on merge to master |
  * | `increment:major` / `increment:minor` / `increment:patch` | Manual on PR | Override semver bump (default: patch) |
  *
  * Use a single **`CI-Release`** label for release PRs — do not add a separate `Release` label.

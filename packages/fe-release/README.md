@@ -173,8 +173,8 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 | 阶段           | 触发条件                                    | CI 工作流                           | 工具                                         |
 | -------------- | ------------------------------------------- | ----------------------------------- | -------------------------------------------- |
 | 1. 功能开发    | PR 目标为 `develop`                         | `general-check.yml`                 | lint / test / build + `check-packages`       |
-| 2. 创建发布 PR | 合并到 `develop` 或手动 `workflow_dispatch` | `release.yml` → `create-release-pr` | `fe-release`                                 |
-| 3. 发布        | 带 `CI-Release` 的 PR 合并到 `master`       | `release.yml` → `publish`           | `fe-release --changesetVersion.mode publish` |
+| 2. 创建发布 PR | 合并到 `develop` 后打上 `CI-Release`（或合并前已有） | `release.yml` → `create-release-pr` | `fe-release`（version 模式） |
+| 3. 发布 | 发布 PR（`release/* → master`）合并到 `master` | `release.yml` → `publish` | `fe-release`（publish 模式，不再 bump 版本） |
 
 ### 阶段 1：功能 PR（目标分支 `develop`）
 
@@ -185,28 +185,33 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
    - `changes:packages/fe-scripts`
 4. 可选：在 PR 上添加版本递增标签 `increment:major` / `increment:minor` / `increment:patch`（默认 patch）。
 
-### 阶段 2：创建发布 PR（develop → master）
+### 阶段 2：创建发布 PR（手动打 `CI-Release` 触发）
 
-当功能 PR **合并到 develop** 后（或手动触发 Release 工作流）：
+功能 PR **合并到 develop 之后**，在该 PR 上手动添加 **`CI-Release`** 标签（合并前打好也可以）：
 
-1. `release.yml` 的 `create-release-pr` job 检出 `develop`。
-2. 运行 `fe-release`：生成 changelog、更新版本号、推送 `release/<repo>-<id>` 分支。
-3. 自动创建指向 **`master`** 的 PR，并打上 **`CI-Release`** 标签。
-4. 功能 PR 上的 `changes:*` 标签会传递到发布 PR，用于限定发布范围。
+1. `release.yml` 的 `create-release-pr` job 被触发（支持 `closed` 合并事件，或合并后补打 `CI-Release` 的 `labeled` 事件）。
+2. 检出 `develop`，运行 `fe-release`（默认 **`changesetVersion` version 模式**）：
+   - 生成 changelog、更新 `CHANGELOG.md`、 bump 版本号
+3. 推送 `release/<repo>-<id>` 分支，创建指向 **`master`** 的发布 PR（自动带 `CI-Release`）。
+4. 原功能 PR 上的 `changes:*` 标签会传递到发布 PR，用于限定发布范围。
 
-带 **`CI-Release`** 标签的 PR 会跳过 `general-check`（版本与 changelog 已在发布 PR 中准备好）。
+> 合并到 develop 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。这是刻意的「手动闸门」。
 
-### 阶段 3：发布（合并 CI-Release PR 到 master）
+带 **`CI-Release`** 的功能 PR 在打开期间会跳过 `general-check`。
 
-1. 审核并合并带 `CI-Release` 的发布 PR 到 **`master`**。
-2. `release.yml` 的 `publish` job 自动执行：打 tag、发布 npm、创建 GitHub Release。
+### 阶段 3：发布（合并发布 PR 到 master）
+
+1. 审核并合并带 `CI-Release` 的**发布 PR**（`release/* → master`）到 **`master`**。
+2. `release.yml` 的 `publish` job 运行 `fe-release --changesetVersion.mode publish`：
+   - **不再**生成 changelog 或 bump 版本（`skip-changeset`）
+   - 打 tag、发布 npm、创建 GitHub Release
 
 ### 标签说明
 
 | 标签                      | 来源                        | 作用                                                      |
 | ------------------------- | --------------------------- | --------------------------------------------------------- |
 | `changes:packages/<name>` | `check-packages`（功能 PR） | 标记哪些包有变更，过滤发布范围                            |
-| `CI-Release`              | `fe-release`（发布 PR）     | 标识发布 PR；跳过 general-check；合并到 master 后触发发布 |
+| `CI-Release` | 手动打在 develop 功能 PR 上（触发创建发布 PR）；发布 PR 上由 `fe-release` 自动添加 | 触发 version 流程；跳过 general-check；master 合并后触发 publish |
 | `increment:*`             | 手动添加                    | 覆盖 semver 递增策略                                      |
 
 > 发布 PR 统一使用 **`CI-Release`** 一个标签即可，无需再单独创建 `Release` 标签。

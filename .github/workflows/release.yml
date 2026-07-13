@@ -8,18 +8,26 @@ on:
       - master
     types:
       - closed
+      - labeled
     paths:
       - packages/**
 
 jobs:
-  # develop merge -> version bump + create release PR to master (CI-Release label)
+  # develop PR with CI-Release -> version bump + create release PR to master
   create-release-pr:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (
-        github.event.pull_request.merged == true &&
         github.event.pull_request.base.ref == 'develop' &&
-        !contains(github.event.pull_request.labels.*.name, 'CI-Release')
+        github.event.pull_request.merged == true &&
+        contains(github.event.pull_request.labels.*.name, 'CI-Release') &&
+        (
+          github.event.action == 'closed' ||
+          (
+            github.event.action == 'labeled' &&
+            github.event.label.name == 'CI-Release'
+          )
+        )
       )
     runs-on: ubuntu-latest
     env:
