@@ -55,11 +55,7 @@
     "dryrun:release-pr": "node dist/cli.js --dry-run -V"
   },
   "devDependencies": {
-    "@octokit/rest": "^21.0.2",
-    "@types/semver": "^7.7.0",
-    "lodash": "^4.17.21",
-    "p-limit": "^6.2.0",
-    "semver": "^7.5.4"
+    "@types/semver": "^7.7.0"
   },
   "dependencies": {
     "@changesets/get-dependents-graph": "^2.1.4",
@@ -72,6 +68,9 @@
     "commander": "^11.0.0",
     "find-workspaces": "^0.3.1",
     "git-url-parse": "^16.1.0",
-    "gitlog": "^5.1.0"
+    "gitlog": "^5.1.0",
+    "lodash": "^4.17.21",
+    "p-limit": "^6.2.0",
+    "semver": "^7.5.4"
   }
 }
