@@ -1,5 +1,25 @@
 # @qlover/fe-release
 
+## 5.0.0
+
+### Major Changes
+
+#### 🐞 Bug Fixes
+
+- **fe-release:** honor increment:\* labels on release PRs ([7e03012](https://github.com/qlover/fe-base/commit/7e0301208317380d0aff9b56870311ce0bf71835)) ([#642](https://github.com/qlover/fe-base/pull/642))
+
+- **fe-release:** detect changed packages after merge to master ([e25b6ad](https://github.com/qlover/fe-base/commit/e25b6adeee3cebed8610f8393952aca942d94c32)) ([#640](https://github.com/qlover/fe-base/pull/640))
+
+#### ♻️ Refactors
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+
+- **fe-release:** improve test readability in ReleaseFormatter tests ([72f09be](https://github.com/qlover/fe-base/commit/72f09be48ae1a6e5c799ae33761a54d0ae5fb7e4)) ([#639](https://github.com/qlover/fe-base/pull/639))
+
+### Patch Changes
+
+- Update dependency **@qlover/scripts-context** from `2.2.1` to `2.3.0`
+
 ## 4.3.0
 
 ### Minor Changes
