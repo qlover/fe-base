@@ -119,7 +119,7 @@
     "stylelint-config-standard": "^38.0.0",
     "tailwindcss": "^4.2.1",
     "terser": "^5.30.4",
-    "typescript": "^5.4.5",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^4.2.0",
     "weapp-tailwindcss": "^4.10.3"

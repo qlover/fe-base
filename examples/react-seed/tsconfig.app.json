@@ -23,7 +23,6 @@
     "noUncheckedSideEffectImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": ".",
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
