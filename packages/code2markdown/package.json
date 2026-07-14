@@ -50,6 +50,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "peerDependencies": {
+    "typescript": ">=5.0.0 <6.1.0"
+  },
   "devDependencies": {
     "@qlover/fe-corekit": "workspace:*",
     "@types/fs-extra": "^11.0.4",
@@ -62,7 +65,7 @@
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
     "lodash-es": "^4.17.22",
-    "typedoc": "~0.25.0",
-    "typescript": "~5.4.0"
+    "typedoc": "~0.28.20",
+    "typescript": "~6.0.3"
   }
 }

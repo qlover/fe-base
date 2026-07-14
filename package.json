@@ -98,8 +98,8 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "tsup": "^8.4.0",
-    "typescript": "~5.4.5",
-    "typescript-eslint": "^8.18.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.60.1",
     "vite": "^7.2.4",
     "vitest": "^3.2.4"
   },
@@ -111,7 +111,13 @@
   "pnpm": {
     "overrides": {
       "@types/react": "19.2.13",
-      "@types/react-dom": "19.2.3"
+      "@types/react-dom": "19.2.3",
+      "typescript": "~6.0.3",
+      "@typescript-eslint/types": "^8.60.1",
+      "@typescript-eslint/utils": "^8.60.1",
+      "@typescript-eslint/scope-manager": "^8.60.1",
+      "@typescript-eslint/typescript-estree": "^8.60.1",
+      "@typescript-eslint/parser": "^8.60.1"
     },
     "patchedDependencies": {
       "@qlover/corekit-bridge": "examples/browser-plugin-seed/patches/@qlover__corekit-bridge.patch",

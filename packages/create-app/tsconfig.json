@@ -6,7 +6,6 @@
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo",
     "skipLibCheck": true,
-    "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,

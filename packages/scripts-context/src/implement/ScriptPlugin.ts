@@ -360,7 +360,7 @@ export abstract class ScriptPlugin<
    * ```
    */
   public getConfig<T>(
-    keys?: keyof Props | (keyof Props)[],
+    keys?: keyof Props | string | Array<keyof Props | string>,
     defaultValue?: T
   ): T {
     if (!keys) {

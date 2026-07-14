@@ -16,6 +16,7 @@ import { type Env } from '@qlover/env-loader';
 import { type Logger } from '@qlover/logger';
 import { type Shell } from '../../src/implement/Shell';
 import type { ScriptSharedInterface } from '../../src/interface/ScriptSharedInterface';
+import type { FeConfig } from '../../src/feConfig';
 
 interface TestOptions extends ScriptSharedInterface {
   testValue?: string;
@@ -285,7 +286,7 @@ describe('ScriptContext', () => {
         feConfig: {
           protectedBranches: ['main', 'develop'],
           customOption: 'custom-value'
-        },
+        } as FeConfig,
         options: {
           env: mockEnv
         }
@@ -294,7 +295,10 @@ describe('ScriptContext', () => {
       // feConfig merges with defaults, so it includes default protectedBranches
       expect(customContext.feConfig.protectedBranches).toContain('main');
       expect(customContext.feConfig.protectedBranches).toContain('develop');
-      expect(customContext.feConfig.customOption).toBe('custom-value');
+      expect(
+        (customContext.feConfig as FeConfig & { customOption?: string })
+          .customOption
+      ).toBe('custom-value');
     });
 
     it('should access feConfig through context', () => {
