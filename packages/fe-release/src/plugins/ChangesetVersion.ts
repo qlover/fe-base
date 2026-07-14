@@ -279,19 +279,29 @@ export default class ChangesetVersion extends ScriptPlugin<
     this.context.setWorkspaces(newWorkspaces);
   }
 
+  protected printWorksapces(): void {
+    const workspaces = this.context.workspaces;
+    this.logger.info(
+      `ChangesetVersion Workspaces (${workspaces?.length}):\n${workspaces?.map((workspace) => workspace.toString()).join('\n')}`
+    );
+  }
+
   public override async onSuccess(): Promise<void> {
     if (this.mode === 'publish') {
       await this.runChangesetPublish();
+      this.printWorksapces();
       return;
     }
 
     if (this.mode === 'both') {
       await this.runVersionFlow();
       await this.runChangesetPublish();
+      this.printWorksapces();
       return;
     }
 
     await this.runVersionFlow();
+    this.printWorksapces();
   }
 
   protected logDryRun(message: string): void {
@@ -698,7 +708,9 @@ export default class ChangesetVersion extends ScriptPlugin<
   protected getIncrementLabels(): string[] {
     const fromConfig = this.context.parameters.workspaces?.changeLabels;
     if (Array.isArray(fromConfig) && fromConfig.length > 0) {
-      return fromConfig.filter((label): label is string => typeof label === 'string');
+      return fromConfig.filter(
+        (label): label is string => typeof label === 'string'
+      );
     }
 
     return this.readGithubEventLabelNames();
@@ -721,7 +733,9 @@ export default class ChangesetVersion extends ScriptPlugin<
 
       return labels
         .map((label) => label?.name)
-        .filter((name): name is string => typeof name === 'string' && name.length > 0);
+        .filter(
+          (name): name is string => typeof name === 'string' && name.length > 0
+        );
     } catch (error) {
       this.logger.debug('Failed to read labels from GITHUB_EVENT_PATH', error);
       return [];
