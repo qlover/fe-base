@@ -1,5 +1,5 @@
 {
-  "protectedBranches": ["master", "develop"],
+  "protectedBranches": ["master"],
   "release": {
     "changesetVersion": {
       "changesetRoot": ".changeset",

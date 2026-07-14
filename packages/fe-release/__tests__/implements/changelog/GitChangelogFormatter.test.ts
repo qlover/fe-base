@@ -2,19 +2,19 @@ import { GitChangelogFormatter } from '../../../src/implments/changelog/GitChang
 import { createTestShell } from '../../helpers';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import type { CommitValue } from '../../../src/interface/ChangeLog';
-import lodashTemplate from 'lodash/template';
+import { TemplateEngine } from '@qlover/scripts-context';
 
 describe('GitChangelogFormatter', () => {
   const mockShell = createTestShell();
   let formatter: GitChangelogFormatter;
+  const templateEngine = new TemplateEngine();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Initialize shell.format mock implementation using lodash template for proper variable substitution
+    // Initialize shell.format mock implementation using TemplateEngine for ${} substitution
     (mockShell.format as any).mockImplementation(
       (templateStr: string, context: Record<string, unknown>) => {
-        // Use lodash template to properly handle nested properties
-        return lodashTemplate(templateStr)(context);
+        return templateEngine.render(templateStr, context);
       }
     );
 

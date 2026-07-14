@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - develop
       - master
     types:
       - closed
@@ -16,13 +15,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # develop PR merged with CI-Release -> version bump + create release PR to master
+  # PR merged to master with CI-Release (non-release head) -> version bump + create release PR
   create-release-pr:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (
         github.event.pull_request.merged == true &&
-        github.event.pull_request.base.ref == 'develop' &&
+        github.event.pull_request.base.ref == 'master' &&
+        !startsWith(github.event.pull_request.head.ref, 'release/') &&
         contains(github.event.pull_request.labels.*.name, 'CI-Release')
       )
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: master
           fetch-depth: 0
           fetch-tags: true
 
@@ -65,31 +65,21 @@ jobs:
 
       - run: pnpm rebuild
 
-      - name: Create release PR to master (from develop merge)
-        if: github.event_name == 'pull_request'
+      - name: Create release PR to master
         run: |
           node packages/fe-release/dist/cli.js -V \
             -s master \
             --changesetVersion.ignore-non-updated-packages
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          FE_RELEASE_BRANCH: develop
+          FE_RELEASE_BRANCH: master
 
-      - name: Create release PR to master (manual)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          node packages/fe-release/dist/cli.js -V \
-            -s master \
-            --changesetVersion.ignore-non-updated-packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          FE_RELEASE_BRANCH: develop
-
-  # CI-Release PR merged to master -> publish to npm and GitHub
+  # release/* PR merged to master with CI-Release -> publish to npm and GitHub
   publish:
     if: |
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'master' &&
+      startsWith(github.event.pull_request.head.ref, 'release/') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:

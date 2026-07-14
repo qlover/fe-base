@@ -70,7 +70,7 @@ pnpm add @qlover/fe-release -D
 1. **Create a release PR locally (preview)**
 
 ```bash
-# Create release PR from develop to master (dry-run)
+# Create release PR from master (dry-run)
 fe-release -d -V -s master --github.push-change-labels
 
 # Specify version increment
@@ -132,7 +132,7 @@ fe-release [options]
 | Variable                            | Description                             | Default  |
 | ----------------------------------- | --------------------------------------- | -------- |
 | `FE_RELEASE`                        | Enable/disable release                  | `true`   |
-| `FE_RELEASE_BRANCH`                 | Working branch (set to `develop` in CI) | `master` |
+| `FE_RELEASE_BRANCH`                 | Working branch (set to `master` in CI)  | `master` |
 | `FE_RELEASE_ENV`                    | Release environment                     | -        |
 | `GITHUB_TOKEN` / `FE_RELEASE_TOKEN` | GitHub Token                            | -        |
 | `NPM_TOKEN`                         | npm publish token                       | -        |
@@ -159,38 +159,39 @@ See `src/cli.ts` and `src/defaults.ts` for the full reference.
 
 ## 🔄 Workflows
 
-fe-base uses a **develop → master** two-stage release aligned with CI workflows.
+fe-base uses a **master-only** release line: merge features into `master`, and add `CI-Release` when you want to ship.
 
 ### Branches and phases
 
 ```
-feature/*  ──PR──►  develop  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+feature/*  ──PR──►  master  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+                 (+ CI-Release)
 ```
 
-| Phase                  | Trigger                                            | CI workflow                         | Tool                                         |
-| ---------------------- | -------------------------------------------------- | ----------------------------------- | -------------------------------------------- |
-| 1. Feature development | PR targets `develop`                               | `general-check.yml`                 | lint / test / build                          |
-| 2. Create release PR | `CI-Release` on develop PR before merge (or `workflow_dispatch`) | `release.yml` → `create-release-pr` | `fe-release` (version mode, git diff) |
-| 3. Publish | Release PR (`release/* → master`) merged | `release.yml` → `publish` | `fe-release` (publish mode, no version bump) |
+| Phase                  | Trigger                                                              | CI workflow                         | Tool                                         |
+| ---------------------- | -------------------------------------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| 1. Feature development | PR targets `master`                                                  | `general-check.yml`                 | lint / test / build                          |
+| 2. Create release PR   | Merged into `master` with `CI-Release` (head is not `release/*`)     | `release.yml` → `create-release-pr` | `fe-release` (version mode, git diff)        |
+| 3. Publish             | Release PR (`release/* → master`) merged with `CI-Release`          | `release.yml` → `publish`           | `fe-release` (publish mode, no version bump) |
 
-### Phase 1 — Feature PR (base: `develop`)
+### Phase 1 — Feature PR (base: `master`)
 
-1. Branch from `develop`, develop, and commit (Conventional Commits).
-2. Open a PR targeting **`develop`**.
+1. Branch from `master`, develop, and commit (Conventional Commits).
+2. Open a PR targeting **`master`**.
 3. CI runs quality checks (lint / test / build).
 4. Optional: add `increment:major` / `increment:minor` / `increment:patch` on the PR (default: patch).
 
 ### Phase 2 — Create release PR (manual `CI-Release` gate)
 
-Add the **`CI-Release`** label **before** merging the feature PR into develop (the label must still be present at merge time):
+Add the **`CI-Release`** label **before** merging the feature PR into master (the label must still be present at merge time):
 
 1. On merge, the `create-release-pr` job runs (`closed` event).
-2. Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode:
+2. Checks out `master`, runs `fe-release` in default **`changesetVersion` version** mode:
    - Detects changed packages via **git diff**
    - Generates changelog, updates `CHANGELOG.md`, bumps versions
 3. Pushes `release/<repo>-<id>`, opens a PR to **`master`** (auto-labeled `CI-Release`).
 
-> Merges into `develop` **without** `CI-Release` do **not** create a release PR.  
+> Merges into `master` **without** `CI-Release` do **not** create a release PR.  
 > If already merged without the label, run **Release sub packages** manually (`workflow_dispatch`).
 
 Open feature PRs with **`CI-Release`** skip `general-check`.
@@ -204,23 +205,23 @@ Open feature PRs with **`CI-Release`** skip `general-check`.
 
 ### Labels
 
-| Label                     | Source                        | Purpose                                                                         |
-| ------------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
-| `CI-Release` | Manual on develop PR (gate); auto on release PR | Triggers version flow; skips general-check; publish on merge to master |
-| `increment:*`             | Manual                        | Overrides semver increment strategy                                             |
+| Label                     | Source                                      | Purpose                                                                                   |
+| ------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `CI-Release`              | Manual on feature PR (gate); auto on release PR | Triggers version flow; skips general-check; publish when `release/*` merges to master |
+| `increment:*`             | Manual                                      | Overrides semver increment strategy                                                       |
 
 > Use a single **`CI-Release`** label for release PRs — no separate `Release` label is needed.
 
 ### Manual release trigger
 
 Run the **Release sub packages** workflow manually (`workflow_dispatch`) in GitHub Actions
-to create a release PR from current `develop` without waiting for a feature merge.
+to create a release PR from current `master` without waiting for a feature merge.
 
 ### Flow diagram
 
 ```mermaid
 graph TD
-    A[feature branch] -->|PR| B[develop]
+    A[feature branch] -->|PR| B[master]
     B -->|lint test build| B
     B -->|merge with CI-Release| C[create-release-pr]
     C -->|fe-release git diff| D[release/* → master PR]
