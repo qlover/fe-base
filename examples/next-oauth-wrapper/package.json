@@ -1,6 +1,6 @@
 {
   "name": "examples/next-oauth-wrapper",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "private": true,
   "scripts": {
     "dev": "cross-env APP_ENV=localhost next dev --port 3200",

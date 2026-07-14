@@ -1,5 +1,15 @@
 # @qlover/code2markdown
 
+## 2.1.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+- Update dependency **@qlover/scripts-context** from `2.3.2` to `2.3.3`
+- Update dependency **@qlover/env-loader** from `1.0.2` to `1.0.2`
+
 ## 2.1.0
 
 ### Minor Changes

@@ -1,5 +1,9 @@
 # @qlover/tailwind-theme
 
+## 0.2.1
+
+### Patch Changes
+
 ## 0.1.1
 
 ### Patch Changes

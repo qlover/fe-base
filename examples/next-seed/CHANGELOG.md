@@ -1,5 +1,16 @@
 # examples/next-seed
 
+## 1.2.4
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **user-service:** Update UserService and AppUserGateway to return GatewayResult types for improved error handling ([f9e0b64](https://github.com/qlover/fe-base/commit/f9e0b64dbecd45c1caa3d98a55095972322964b1)) ([#625](https://github.com/qlover/fe-base/pull/625))
+- Update dependency **@qlover/logger** from `1.2.0` to `1.2.1`
+- Update dependency **@qlover/tailwind-theme** from `0.2.0` to `0.2.1`
+- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
+
 ## 1.2.3
 
 ### Patch Changes
