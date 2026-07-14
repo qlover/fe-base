@@ -239,6 +239,13 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   public override async onExec(_context: ReleaseContext): Promise<void> {
+    // Publish-only runs do not need generated changelogs; `changeset publish`
+    // decides what to release from package versions / tags on disk.
+    if (this.mode === 'publish') {
+      this.logger.info('Skip changelog generation in publish mode');
+      return;
+    }
+
     const workspaces = this.context.requireWorkspaces();
 
     const processableWorkspaces = this.getProcessableWorkspaces(workspaces);

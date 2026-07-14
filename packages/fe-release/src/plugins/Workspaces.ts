@@ -35,6 +35,7 @@
  * ```
  */
 import { resolve, relative, isAbsolute } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
 import type ReleaseContext from '../implments/ReleaseContext';
 import type { ReleaseLabelCompare } from '../implments/ReleaseLabel';
 import { ReleaseLabel } from '../implments/ReleaseLabel';
@@ -160,9 +161,9 @@ export interface WorkspacesProps extends ScriptPluginProps {
    * Git ref used as the left side of `git diff <compareRef>...HEAD`
    * when detecting changed packages.
    *
-   * Defaults to `origin/<sourceBranch>`. After a feature PR merges into
-   * `master`, that default is empty (HEAD already is master) — pass the PR
-   * base SHA instead (e.g. `github.event.pull_request.base.sha` in CI).
+   * Defaults to `origin/<sourceBranch>`, then falls back to the merged PR base
+   * SHA from `GITHUB_EVENT_PATH` when running after a GitHub Actions PR merge
+   * into the same branch (where `origin/<sourceBranch>...HEAD` is empty).
    *
    * @optional
    * @example `'abc1234'` or `'origin/master'`
@@ -437,8 +438,7 @@ export default class Workspaces extends ScriptPlugin<
   }
 
   protected async getGitWorkspaces(): Promise<string[]> {
-    const compareRef =
-      this.config.compareRef || `origin/${this.context.sourceBranch}`;
+    const compareRef = this.resolveCompareRef();
 
     this.logger.debug(`git diff --name-only ${compareRef}...HEAD`);
 
@@ -459,6 +459,57 @@ export default class Workspaces extends ScriptPlugin<
     this.logger.debug(`Git changed files count: ${files.length}`);
 
     return files;
+  }
+
+  /**
+   * Left side of `git diff <compareRef>...HEAD` for changed package detection.
+   *
+   * Priority:
+   * 1. Explicit `workspaces.compareRef` / `--workspaces.compare-ref`
+   * 2. Merged PR base SHA from `GITHUB_EVENT_PATH` (needed after merge-to-master,
+   *    where `origin/master...HEAD` is empty)
+   * 3. `origin/<sourceBranch>`
+   */
+  protected resolveCompareRef(): string {
+    if (this.config.compareRef) {
+      return this.config.compareRef;
+    }
+
+    const prBaseSha = this.readGithubEventBaseSha();
+    if (prBaseSha) {
+      this.logger.debug(
+        `Using pull_request.base.sha from GITHUB_EVENT_PATH as compareRef: ${prBaseSha}`
+      );
+      return prBaseSha;
+    }
+
+    return `origin/${this.context.sourceBranch}`;
+  }
+
+  protected readGithubEventBaseSha(): string | undefined {
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    if (!eventPath || !existsSync(eventPath)) {
+      return undefined;
+    }
+
+    try {
+      const event = JSON.parse(readFileSync(eventPath, 'utf8')) as {
+        pull_request?: { base?: { sha?: string }; merged?: boolean };
+      };
+
+      if (event.pull_request?.merged !== true) {
+        return undefined;
+      }
+
+      const sha = event.pull_request.base?.sha;
+      return typeof sha === 'string' && sha.length > 0 ? sha : undefined;
+    } catch (error) {
+      this.logger.debug(
+        'Failed to read pull_request.base.sha from GITHUB_EVENT_PATH',
+        error
+      );
+      return undefined;
+    }
   }
 
   protected async getChangedPackages(
