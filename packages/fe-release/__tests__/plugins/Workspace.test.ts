@@ -104,17 +104,28 @@ describe('Workspaces Plugin', () => {
 
   describe('getGitWorkspaces', () => {
     it('should return git diff result against origin/sourceBranch by default', async () => {
-      // @ts-expect-error call private method for testing
-      const result = await workspaces.getGitWorkspaces();
+      const previous = process.env.GITHUB_EVENT_PATH;
+      delete process.env.GITHUB_EVENT_PATH;
 
-      expect(result).toEqual([
-        'packages/package-a/index.ts',
-        'packages/package-b/package.json'
-      ]);
-      expect(workspaces.shell.exec).toHaveBeenCalledWith(
-        'git diff --name-only origin/master...HEAD',
-        { dryRun: false }
-      );
+      try {
+        // @ts-expect-error call private method for testing
+        const result = await workspaces.getGitWorkspaces();
+
+        expect(result).toEqual([
+          'packages/package-a/index.ts',
+          'packages/package-b/package.json'
+        ]);
+        expect(workspaces.shell.exec).toHaveBeenCalledWith(
+          'git diff --name-only origin/master...HEAD',
+          { dryRun: false }
+        );
+      } finally {
+        if (previous === undefined) {
+          delete process.env.GITHUB_EVENT_PATH;
+        } else {
+          process.env.GITHUB_EVENT_PATH = previous;
+        }
+      }
     });
 
     it('should use workspaces.compareRef when provided', async () => {
