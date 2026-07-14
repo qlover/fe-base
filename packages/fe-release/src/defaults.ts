@@ -32,7 +32,7 @@ export const releaseJson = {
     skipCreateReleasePR: false,
     PRTitle: 'Release ${env} ${pkgName} ${tagName}',
     PRBody: '## Changelog\n\n${changelog}',
-    batchPRBody: '\n## ${name} ${version}\n${changelog}\n',
+    batchPRBody: '\n## ${name} ${newVersion}\n${changelog}\n',
     branchName: 'release/${repoName}-${releaseId}',
     releaseTagName: 'release-tag-${count}-patch-${releaseId}',
     commitMessage: 'chore(release): ${spaces}',

@@ -131,8 +131,8 @@ export interface ChangesetVersionProps
    * 2. **Changelog / changeset**: skip processing for `dependencyRelease` workspaces
    * 3. **`changeset version`**: runs as usual (changesets may still touch dependents)
    * 4. **Restore**: `git restore` all `dependencyRelease` workspace paths
-   * 5. **Result**: only directly changed packages remain bumped; logs show their
-   *    version changes only
+   * 5. **Result**: only directly changed packages remain bumped; they are the only
+   *    workspaces left for GitHub PR title/body/`release-tag-${count}-*` naming
    *
    * @see {@link shouldProcessWorkspace} for the per-workspace processing gate
    *
@@ -347,9 +347,18 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   protected syncWorkspaces(workspaces: WorkspaceInterface[]): void {
-    const newWorkspaces = this.refreshDependencyReleaseChangelogs(
-      this.mergeWorkspaces(workspaces)
-    );
+    let newWorkspaces = this.mergeWorkspaces(workspaces);
+
+    if (this.ignoreNonUpdatedPackages) {
+      // Dependents were only tracked for git restore; drop them so PR title,
+      // body, and release-tag-${count} reflect directly changed packages only.
+      newWorkspaces = newWorkspaces.filter(
+        (workspace) => !workspace.dependencyRelease
+      );
+    } else {
+      newWorkspaces = this.refreshDependencyReleaseChangelogs(newWorkspaces);
+    }
+
     const bumpedWorkspaces = newWorkspaces.filter(
       (workspace) =>
         this.shouldProcessWorkspace(workspace) &&

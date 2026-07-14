@@ -90,9 +90,9 @@ describe('ReleaseFormatter', () => {
     );
 
     expect(body).toContain('pkg-a@1.0.1 pkg-b@2.1.0');
-    expect(body).toContain('## pkg-a 1.0.0');
+    expect(body).toContain('## pkg-a 1.0.1');
     expect(body).toContain('- feat: add feature');
-    expect(body).toContain('## pkg-b 2.0.0');
+    expect(body).toContain('## pkg-b 2.1.0');
     expect(body).toContain('- fix: bug');
   });
 

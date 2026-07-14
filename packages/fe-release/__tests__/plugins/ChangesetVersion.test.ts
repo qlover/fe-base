@@ -164,6 +164,50 @@ describe('ChangesetVersion Plugin', () => {
     });
   });
 
+  describe('syncWorkspaces', () => {
+    it('should drop dependency-release workspaces when ignoreNonUpdatedPackages', () => {
+      plugin.setConfig({ ignoreNonUpdatedPackages: true });
+      vi.spyOn(
+        createWorkspaceModule,
+        'readWorkspacePackageFromDisk'
+      ).mockImplementation(({ path }) => {
+        const isA = String(path).includes('packages/a');
+        return {
+          root: isA ? '/repo/packages/a' : '/repo/packages/b',
+          packagePath: isA
+            ? '/repo/packages/a/package.json'
+            : '/repo/packages/b/package.json',
+          manifestPath: 'package.json',
+          version: isA ? '1.0.1' : '2.0.0',
+          packageJson: {
+            name: isA ? 'pkg-a' : 'pkg-b',
+            version: isA ? '1.0.1' : '2.0.0'
+          }
+        };
+      });
+
+      // @ts-expect-error call protected method for testing
+      plugin.syncWorkspaces([
+        workspace,
+        {
+          ...workspace,
+          name: 'pkg-b',
+          path: 'packages/b',
+          root: '/repo/packages/b',
+          packageJson: { name: 'pkg-b', version: '2.0.0' },
+          dependencyRelease: true,
+          dependencyReleaseOf: 'pkg-a',
+          changelog: '- Update dependency pkg-a'
+        }
+      ]);
+
+      const result = context.workspaces ?? [];
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('pkg-a');
+      expect(result[0].dependencyRelease).toBeFalsy();
+    });
+  });
+
   describe('generateChangesetFile', () => {
     it('should skip dependency-release workspaces', async () => {
       const writeSpy = vi.mocked(writeFileSync);
