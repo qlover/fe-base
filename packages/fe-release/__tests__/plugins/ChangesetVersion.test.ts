@@ -111,38 +111,65 @@ describe('ChangesetVersion Plugin', () => {
       expect(result[0].newVersion).toBe('1.0.1');
       expect(result[0].tagName).toBe('pkg-a@1.0.1');
     });
-  });
 
-  describe('pushNewReleaseTags', () => {
-    it('should push only tags created after publish', async () => {
-      const exec = vi.spyOn(plugin.shell, 'exec').mockImplementation(async (cmd) => {
-        const command = Array.isArray(cmd) ? cmd.join(' ') : String(cmd);
-        if (command.includes('for-each-ref')) {
-          return ['pkg-a@1.0.0', 'pkg-a@1.0.1', 'pkg-b@2.0.0'].join('\n');
-        }
-        return '';
+    it('should still set tagName in publish mode when version is unchanged', () => {
+      const alreadyBumped: WorkspaceInterface = {
+        ...workspace,
+        version: '5.0.3'
+      };
+
+      vi.spyOn(
+        createWorkspaceModule,
+        'readWorkspacePackageFromDisk'
+      ).mockReturnValue({
+        root: '/repo/packages/a',
+        packagePath: '/repo/packages/a/package.json',
+        manifestPath: 'package.json',
+        version: '5.0.3',
+        packageJson: { name: 'pkg-a', version: '5.0.3' }
       });
 
-      await plugin.pushNewReleaseTags(new Set(['pkg-a@1.0.0']));
+      vi.spyOn(context, 'format').mockReturnValue('pkg-a@5.0.3');
+
+      const result = plugin.mergeWorkspaces([alreadyBumped]);
+
+      expect(result[0].newVersion).toBe('5.0.3');
+      expect(result[0].tagName).toBe('pkg-a@5.0.3');
+    });
+  });
+
+  describe('pushWorkspaceReleaseTags', () => {
+    it('should push tagName from synced workspaces', async () => {
+      const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('');
+
+      await plugin.pushWorkspaceReleaseTags([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.1'
+        },
+        {
+          ...workspace,
+          name: 'pkg-b',
+          path: 'packages/b',
+          dependencyRelease: true,
+          tagName: 'pkg-b@2.0.0'
+        }
+      ]);
 
       expect(exec).toHaveBeenCalledWith([
         'git',
         'push',
         'origin',
-        'refs/tags/pkg-a@1.0.1',
-        'refs/tags/pkg-b@2.0.0'
+        '"refs/tags/pkg-a@1.0.1"'
       ]);
     });
 
-    it('should skip push when no new tags exist', async () => {
-      const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('pkg-a@1.0.0\n');
+    it('should skip push when no tagName is present', async () => {
+      const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('');
 
-      await plugin.pushNewReleaseTags(new Set(['pkg-a@1.0.0']));
+      await plugin.pushWorkspaceReleaseTags([workspace]);
 
-      expect(exec).toHaveBeenCalledTimes(1);
-      expect(exec).not.toHaveBeenCalledWith(
-        expect.arrayContaining(['git', 'push', 'origin'])
-      );
+      expect(exec).not.toHaveBeenCalled();
     });
   });
 
