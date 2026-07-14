@@ -7,20 +7,16 @@
  * repository information retrieval, and commit operations.
  *
  * Core Features:
- * - Git repository information retrieval
+ * - Git repository information retrieval (generic, supports GitHub/GitLab/Gitee etc.)
  * - Branch management
  * - Commit operations
- * - GitHub remote URL parsing
  * - Error handling
  *
  * @example Basic usage
  * ```typescript
  * class MyGitPlugin extends GitBase<GitBaseProps> {
  *   async onExec() {
- *     // Get current branch
  *     const branch = await this.getCurrentBranch();
- *
- *     // Create commit
  *     await this.commit('feat: new feature');
  *   }
  * }
@@ -30,50 +26,64 @@
  * ```typescript
  * class RepoPlugin extends GitBase<GitBaseProps> {
  *   async onExec() {
- *     const info = await this.getUserInfo();
+ *     const info = await this.getGitRepositoryInfo();
  *     // {
  *     //   repoName: 'my-repo',
- *     //   authorName: 'org-name'
+ *     //   authorName: 'org-or-group'
  *     // }
  *   }
  * }
  * ```
  */
-import isString from 'lodash/isString';
+import { isString } from 'lodash-es';
 import type ReleaseContext from '../implments/ReleaseContext';
 import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
+import parse from 'git-url-parse';
+
+/**
+ * Type guard for valid string values
+ *
+ * Checks if a value is a non-empty string. Used for validating
+ * repository information and other string inputs.
+ *
+ * @param value - Value to check
+ * @returns True if value is a non-empty string
+ */
+function isValidString(value: unknown): value is string {
+  return !!value && isString(value);
+}
 
 /**
  * Repository information type
  *
- * Contains essential information about a GitHub repository,
- * including repository name and owner/organization name.
+ * Contains essential information about a Git repository,
+ * including repository name and owner/organization/namespace.
  *
  * @example
  * ```typescript
- * const info: UserInfoType = {
+ * const info: GitRepositoryInfoType = {
  *   repoName: 'my-project',
- *   authorName: 'my-org'
+ *   authorName: 'my-org' // or 'my-group/subgroup'
  * };
  * ```
  */
-type UserInfoType = {
+type GitRepositoryInfoType = {
   /** Repository name without owner */
   repoName: string;
-  /** Repository owner or organization name */
+  /** Repository owner, organization, or namespace (e.g., for GitLab subgroups) */
   authorName: string;
 };
+
+export type GitRepositoryParsedType = parse.GitUrl;
 
 /**
  * Base configuration for Git-related plugins
  *
- * Extends ScriptPluginProps with GitHub-specific configuration
- * options for API access and timeouts.
+ * Extends ScriptPluginProps with generic options.
  *
  * @example
  * ```typescript
  * const config: GitBaseProps = {
- *   tokenRef: 'CUSTOM_TOKEN',
  *   timeout: 5000
  * };
  * ```
@@ -81,30 +91,12 @@ type UserInfoType = {
 export interface GitBaseProps extends ScriptPluginProps {
   /**
    * Environment variable name for GitHub API token
-   *
-   * The value of this environment variable will be used
-   * for GitHub API authentication.
-   *
-   * @default 'GITHUB_TOKEN'
-   *
-   * @example
-   * ```typescript
-   * process.env.CUSTOM_TOKEN = 'ghp_123...';
-   * const config = { tokenRef: 'CUSTOM_TOKEN' };
-   * ```
+   * @deprecated This property is GitHub-specific, use a subclass if needed.
    */
   tokenRef?: string;
 
   /**
-   * Timeout for GitHub API requests in milliseconds
-   *
-   * Controls how long to wait for GitHub API responses
-   * before timing out.
-   *
-   * @example
-   * ```typescript
-   * const config = { timeout: 5000 }; // 5 seconds
-   * ```
+   * Timeout for API requests in milliseconds (generic)
    */
   timeout?: number;
 }
@@ -113,11 +105,11 @@ export interface GitBaseProps extends ScriptPluginProps {
  * Base class for Git-related plugins
  *
  * Provides common functionality for plugins that interact with
- * Git repositories and GitHub. Handles repository information,
+ * Git repositories. Handles repository information,
  * branch management, and commit operations.
  *
  * Features:
- * - Automatic repository info detection
+ * - Automatic repository info detection (generic)
  * - Branch management
  * - Commit creation
  * - Error handling
@@ -134,16 +126,14 @@ export interface GitBaseProps extends ScriptPluginProps {
  * }
  * ```
  *
- * @example Custom configuration
+ * @example Custom repository parsing (override protected method)
  * ```typescript
- * interface CustomProps extends GitBaseProps {
- *   customOption: string;
- * }
- *
- * class CustomPlugin extends GitBase<CustomProps> {
- *   async onExec() {
- *     const option = this.getConfig('customOption');
- *     // Implementation
+ * class CustomParserPlugin extends GitBase<GitBaseProps> {
+ *   protected parseRemoteUrl(remoteUrl: string) {
+ *     // Custom logic for a private Git server
+ *     const match = remoteUrl.match(/mygit\.com\/([^/]+)\/([^/.]+)/);
+ *     if (!match) throw new Error('Unsupported URL format');
+ *     return { owner: match[1], name: match[2] };
  *   }
  * }
  * ```
@@ -156,50 +146,64 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * Plugin initialization hook
    *
    * Runs before plugin execution to set up repository context:
-   * 1. Retrieves repository information
-   * 2. Gets current branch
-   * 3. Switches to current branch if needed
+   * 1. Checks if the current directory is a Git repository
+   * 2. Retrieves repository information (owner, name)
+   * 3. Gets current branch and switches to it (if needed)
    * 4. Updates context with repository info
    *
    * @throws Error if repository information cannot be retrieved
-   *
-   * @example
-   * ```typescript
-   * class MyPlugin extends GitBase<GitBaseProps> {
-   *   async onExec() {
-   *     // onBefore has already:
-   *     // - Set up repository info
-   *     // - Switched to correct branch
-   *     // - Updated context
-   *     await this.doSomething();
-   *   }
-   * }
-   * ```
    */
   public override async onBefore(): Promise<void> {
-    const repoInfo = await this.getUserInfo();
-
-    if (!repoInfo) {
-      throw new Error('Failed to get repoInfo');
+    // 1. Verify this is a Git repository
+    const isRepo = await this.isGitRepository();
+    if (!isRepo) {
+      throw new Error(
+        'Current directory is not a Git repository. Please run inside a Git repo.'
+      );
     }
 
+    // 2. Retrieve repository info (owner and repo name)
+    const repoInfo = await this.getGitRepositoryInfo();
+    if (!repoInfo) {
+      throw new Error('Failed to retrieve repository information from remote.');
+    }
+
+    // 3. Get current branch (use provided or auto-detect)
     let currentBranch = this.context.options.currentBranch;
     if (!currentBranch) {
       currentBranch = await this.getCurrentBranch();
     }
 
+    // 4. Switch to the current branch (ensure we are on the correct branch)
     if (currentBranch) {
-      // switch to current branch
       await this.context.shell.exec(`git checkout ${currentBranch}`, {
         dryRun: false
       });
     }
 
-    this.context.setOptions({
+    // 5. Store info in context for downstream plugins
+    this.context.setParameters({
       repoName: repoInfo.repoName,
       authorName: repoInfo.authorName,
       currentBranch
     });
+  }
+
+  /**
+   * Checks if the current directory is a Git repository
+   *
+   * @returns Promise resolving to boolean
+   */
+  public async isGitRepository(): Promise<boolean> {
+    try {
+      await this.context.shell.exec('git rev-parse --git-dir', {
+        dryRun: false,
+        silent: true // suppress stderr when not in a git repository
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -210,12 +214,6 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    *
    * @returns Promise resolving to branch name
    * @throws Error if branch name cannot be retrieved
-   *
-   * @example
-   * ```typescript
-   * const branch = await plugin.getCurrentBranch();
-   * // 'main' or 'feature/new-feature'
-   * ```
    */
   public async getCurrentBranch(): Promise<string> {
     // Add a small delay to ensure Git internal state is updated
@@ -230,18 +228,9 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * Gets the Git remote URL
    *
    * Retrieves the URL of the 'origin' remote from Git configuration.
-   * This URL is used to identify the GitHub repository.
    *
    * @returns Promise resolving to remote URL
    * @throws Error if remote URL cannot be retrieved
-   *
-   * @example
-   * ```typescript
-   * const url = await plugin.getRemoteUrl();
-   * // 'https://github.com/org/repo.git'
-   * // or
-   * // 'git@github.com:org/repo.git'
-   * ```
    */
   public async getRemoteUrl(): Promise<string> {
     return (
@@ -254,14 +243,16 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
   /**
    * Retrieves repository owner and name from Git remote URL.
    *
-   * This method gets repository information directly from git remote origin URL.
-   * Requires the project to be a git repository with a valid GitHub remote URL.
+   * This method uses the protected `parseRemoteUrl` to extract the owner and name.
+   * By default, it uses the `git-url-parse` library, which supports GitHub, GitLab,
+   * Gitee, Bitbucket, and many other Git hosting services.
    *
-   * @param shell - The shell instance for executing commands
+   * Subclasses can override `parseRemoteUrl` to implement custom parsing logic.
+   *
    * @returns An object containing repository name and owner name
    * @throws Will throw an error if repository information cannot be determined
    */
-  public async getUserInfo(): Promise<UserInfoType> {
+  public async getGitRepositoryInfo(): Promise<GitRepositoryInfoType> {
     let repoUrl: string;
     try {
       repoUrl = await this.getRemoteUrl();
@@ -273,60 +264,51 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
 
     if (!repoUrl) {
       throw new Error(
-        'Git remote URL is empty. Please set a valid GitHub remote URL.'
+        'Git remote URL is empty. Please set a valid Git remote URL.'
       );
     }
 
-    this.context.logger.debug('repoUrl: ', repoUrl);
+    this.logger.debug(`Git Repository URL: ${repoUrl}`);
 
-    // Parse GitHub URL to get owner and repo name
-    const githubUrlPattern = /github\.com[:/]([^/]+)\/([^/.]+)(?:\.git)?$/;
-    const match = repoUrl.match(githubUrlPattern);
-
-    if (!match) {
+    let owner: string;
+    let name: string;
+    try {
+      const parsed = this.parseRemoteUrl(repoUrl);
+      owner = parsed.owner;
+      name = parsed.name;
+    } catch (err) {
       throw new Error(
-        'Invalid GitHub repository URL format. Please ensure the remote URL is from GitHub.'
+        `Failed to parse Git remote URL: ${err instanceof Error ? err.message : String(err)}`
       );
     }
 
-    const [, authorName, repoName] = match;
-
-    if (!this.isValidString(authorName) || !this.isValidString(repoName)) {
+    if (!isValidString(owner) || !isValidString(name)) {
       throw new Error(
-        'Failed to extract owner or repository name from GitHub URL'
+        'Failed to extract owner or repository name from Git URL.'
       );
     }
 
-    return { repoName, authorName };
+    return { repoName: name, authorName: owner };
   }
 
   /**
-   * Checks if the provided value is a valid string.
+   * Parses a Git remote URL to extract repository owner and name.
    *
-   * A valid string is defined as a non-empty string.
+   * This method is protected and can be overridden by subclasses to provide
+   * custom parsing logic for private Git servers or other edge cases.
    *
-   * @param value - The value to check.
-   * @returns True if the value is a valid string, otherwise false.
+   * The default implementation uses `git-url-parse` which supports most common
+   * Git hosting services (GitHub, GitLab, Gitee, Bitbucket, etc.).
+   *
+   * @param remoteUrl - The full remote URL (e.g., https://github.com/owner/repo.git)
+   * @returns An object containing `owner` and `name` of the repository.
+   * @throws Error if the URL cannot be parsed.
    */
-  /**
-   * Type guard for valid string values
-   *
-   * Checks if a value is a non-empty string. Used for validating
-   * repository information and other string inputs.
-   *
-   * @param value - Value to check
-   * @returns True if value is a non-empty string
-   *
-   * @example
-   * ```typescript
-   * if (plugin.isValidString(value)) {
-   *   // value is definitely a non-empty string
-   *   console.log(value.toUpperCase());
-   * }
-   * ```
-   */
-  public isValidString(value: unknown): value is string {
-    return !!value && isString(value);
+  protected parseRemoteUrl(remoteUrl: string): GitRepositoryParsedType {
+    const parsed = parse(remoteUrl);
+    // For GitLab subgroups, parsed.owner may contain the full path (e.g., 'group/subgroup')
+    // For GitHub, it's just the user/organization name.
+    return parsed;
   }
 
   /**
@@ -357,12 +339,48 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * ```
    */
   public commit(message: string, args: string[] = []): Promise<string> {
-    return this.context.shell.exec([
+    return this.shell.exec([
       'git',
       'commit',
       '--message',
       JSON.stringify(message),
       ...args
     ]);
+  }
+
+  /**
+   * Checks whether the working tree has staged or unstaged changes
+   */
+  public async hasWorkingTreeChanges(): Promise<boolean> {
+    const output = await this.shell.exec('git status --porcelain', {
+      dryRun: false,
+      silent: true
+    });
+    return output.trim().length > 0;
+  }
+
+  /**
+   * Creates a local branch from the current branch
+   *
+   * @param newBranch - The name of the new branch
+   * @param sourceBranch - The name of the source branch
+   * @param currentBranch - The name of the current branch
+   */
+  public async createBranch(
+    newBranch: string,
+    sourceBranch: string,
+    currentBranch: string
+  ): Promise<void> {
+    await this.shell.exec(`git fetch origin ${sourceBranch} ${currentBranch}`);
+    await this.shell.exec(`git checkout -b ${newBranch} ${currentBranch}`);
+  }
+
+  /**
+   * Pushes a branch to the origin remote
+   *
+   * @param branch - The name of the branch to push
+   */
+  public async pushBranch(branch: string): Promise<void> {
+    await this.shell.exec(`git push origin ${branch}`);
   }
 }

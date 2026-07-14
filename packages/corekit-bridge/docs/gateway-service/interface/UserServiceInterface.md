@@ -776,7 +776,7 @@ class UserGateway implements UserServiceGateway<User, TokenCredential> {
 
 #### `getUserInfo` (Method)
 
-**Type:** `(params: unknown) => Promise<User>`
+**Type:** `(params: unknown) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -794,7 +794,7 @@ Common parameters include:
 
 ##### `getUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Get current user information
 
@@ -854,7 +854,7 @@ Common parameters include:
 
 ##### `getUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -867,7 +867,7 @@ Common parameters include:
 
 #### `login` (Method)
 
-**Type:** `(params: LoginParams) => Promise<Credential>`
+**Type:** `(params: LoginParams) => Promise<GatewayResult<Credential>>`
 
 #### Parameters
 
@@ -879,7 +879,7 @@ Common parameters include:
 
 ##### `login` (CallSignature)
 
-**Type:** `Promise<Credential>`
+**Type:** `Promise<GatewayResult<Credential>>`
 
 Authenticate user with credentials
 
@@ -935,7 +935,7 @@ await authService.login(
 
 ##### `login` (CallSignature)
 
-**Type:** `Promise<Credential>`
+**Type:** `Promise<GatewayResult<Credential>>`
 
 #### Parameters
 
@@ -1008,7 +1008,7 @@ await authService.logout(null, {
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: unknown, config: GatewayConfig) => Promise<User>`
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1027,7 +1027,7 @@ Common parameters include:
 
 ##### `refreshUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Refresh user information
 
@@ -1088,7 +1088,7 @@ Common parameters include:
 
 #### `register` (Method)
 
-**Type:** `(params: unknown) => Promise<User>`
+**Type:** `(params: unknown) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1108,7 +1108,7 @@ Common parameters include:
 
 ##### `register` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Register a new user
 
@@ -1189,7 +1189,7 @@ Common parameters include:
 
 ##### `register` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1306,7 +1306,7 @@ The current user information, or `null` if not available
 
 #### `getUserInfo` (Method)
 
-**Type:** `(params: unknown) => Promise<User>`
+**Type:** `(params: unknown) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1324,7 +1324,7 @@ Common parameters include:
 
 ##### `getUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Get current user information
 
@@ -1384,7 +1384,7 @@ Common parameters include:
 
 ##### `getUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1516,7 +1516,7 @@ if (isValid) {
 
 #### `login` (Method)
 
-**Type:** `(params: LoginParams) => Promise<Credential>`
+**Type:** `(params: LoginParams) => Promise<GatewayResult<Credential>>`
 
 #### Parameters
 
@@ -1528,7 +1528,7 @@ if (isValid) {
 
 ##### `login` (CallSignature)
 
-**Type:** `Promise<Credential>`
+**Type:** `Promise<GatewayResult<Credential>>`
 
 Authenticate user with credentials
 
@@ -1584,7 +1584,7 @@ await authService.login(
 
 ##### `login` (CallSignature)
 
-**Type:** `Promise<Credential>`
+**Type:** `Promise<GatewayResult<Credential>>`
 
 #### Parameters
 
@@ -1657,7 +1657,7 @@ await authService.logout(null, {
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: unknown, config: GatewayConfig) => Promise<User>`
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1676,7 +1676,7 @@ Common parameters include:
 
 ##### `refreshUserInfo` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Refresh user information
 
@@ -1737,7 +1737,7 @@ Common parameters include:
 
 #### `register` (Method)
 
-**Type:** `(params: unknown) => Promise<User>`
+**Type:** `(params: unknown) => Promise<GatewayResult<User>>`
 
 #### Parameters
 
@@ -1757,7 +1757,7 @@ Common parameters include:
 
 ##### `register` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 Register a new user
 
@@ -1838,7 +1838,7 @@ Common parameters include:
 
 ##### `register` (CallSignature)
 
-**Type:** `Promise<User>`
+**Type:** `Promise<GatewayResult<User>>`
 
 #### Parameters
 

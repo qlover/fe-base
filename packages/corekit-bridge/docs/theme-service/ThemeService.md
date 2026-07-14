@@ -74,30 +74,6 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 
 ---
 
-#### `cloneState` (Method)
-
-**Type:** `(patch: Partial<ThemeServiceState>) => ThemeServiceState`
-
-#### Parameters
-
-| Name    | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `patch` | `Partial<ThemeServiceState>` | ✅       | `{}`    | -     | -          |             |
-
----
-
-##### `cloneState` (CallSignature)
-
-**Type:** `ThemeServiceState`
-
-#### Parameters
-
-| Name    | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `patch` | `Partial<ThemeServiceState>` | ✅       | `{}`    | -     | -          |             |
-
----
-
 #### `emit` (Method)
 
 **Type:** `(patch: Partial<ThemeServiceState>) => void`
@@ -128,9 +104,13 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 
 ---
 
-##### `getSupportedThemes` (CallSignature)
+##### `getSupportedThemes` (CallSignature)⚠️
 
 **Type:** `string[]`
+
+This only get the supported themes from the config
+
+**Returns:**
 
 ---
 
@@ -143,6 +123,74 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 ##### `getTarget` (CallSignature)
 
 **Type:** `HTMLElement`
+
+---
+
+#### `getTheme` (Method)
+
+**Type:** `() => string`
+
+---
+
+##### `getTheme` (CallSignature)
+
+**Type:** `string`
+
+---
+
+#### `getThemeTokens` (Method)
+
+**Type:** `(theme: string) => ThemeTokens`
+
+#### Parameters
+
+| Name    | Type     | Optional | Default | Since | Deprecated | Description |
+| ------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `theme` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `getThemeTokens` (CallSignature)
+
+**Type:** `ThemeTokens`
+
+#### Parameters
+
+| Name    | Type     | Optional | Default | Since | Deprecated | Description |
+| ------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `theme` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `getThemeTokens` (CallSignature)
+
+**Type:** `Record<string, ThemeTokens>`
+
+---
+
+#### `getThemes` (Method)
+
+**Type:** `() => string[]`
+
+---
+
+##### `getThemes` (CallSignature)
+
+**Type:** `string[]`
+
+Get the supported themes, from the store state
+
+---
+
+#### `getTokenMapping` (Method)
+
+**Type:** `() => TokenMapping`
+
+---
+
+##### `getTokenMapping` (CallSignature)
+
+**Type:** `TokenMapping`
 
 ---
 

@@ -494,6 +494,12 @@ const config: ReleaseConfig = {
 
 ---
 
+#### `changesetVersion` (Property)
+
+**Type:** `ChangesetVersionProps`
+
+---
+
 #### `env` (Property)
 
 **Type:** `Env`
@@ -554,9 +560,9 @@ if (!shared.env?.get('REQUIRED_VAR')) {
 
 ---
 
-#### `githubPR` (Property)
+#### `github` (Property)
 
-**Type:** `GithubPRProps`
+**Type:** `GithubProps`
 
 ---
 
@@ -955,6 +961,12 @@ if (context.verbose) {
 
 ---
 
+### `ReleaseGlobalConfig` (Interface)
+
+**Type:** `interface ReleaseGlobalConfig`
+
+---
+
 ### `TemplateContext` (Interface)
 
 **Type:** `interface TemplateContext`
@@ -981,6 +993,33 @@ const context: TemplateContext = {
 #### `branch` (Property)⚠️
 
 **Type:** `string`
+
+---
+
+#### `changelog` (Property)
+
+**Type:** `string`
+
+The changelog of the workspace
+
+---
+
+#### `dependencyRelease` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+Whether this workspace is an internal dependent bumped only because a
+dependency was released (not directly changed in git).
+
+Set by the Workspaces plugin when `includeDependencyReleases` is enabled.
+Processing rules depend on `changesetVersion.ignoreNonUpdatedPackages`:
+
+- `false`: included in changelog template flow and version bump logs
+- `true`: tracked for restore only; skipped in changelog generation
 
 ---
 
@@ -1063,6 +1102,14 @@ const envOrder = context.feConfig.envOrder;
 
 ---
 
+#### `lastTag` (Property)
+
+**Type:** `string`
+
+Previous release tag used as the git changelog baseline
+
+---
+
 #### `logger` (Property)
 
 **Type:** `LoggerInterface<unknown>`
@@ -1102,6 +1149,19 @@ context.logger.error('Build failed:', error);
 #### `name` (Property)
 
 **Type:** `string`
+
+Package name from package.json
+
+---
+
+#### `newVersion` (Property)
+
+**Type:** `string`
+
+Version after `changeset version`, read from package.json on disk.
+
+- Before bump: usually undefined
+- After bump: latest version on disk; may equal `version` if unchanged
 
 ---
 
@@ -1225,6 +1285,17 @@ await context.shell.exec('git clone <%= repo %>', {
 
 ---
 
+#### `tagName` (Property)
+
+**Type:** `string`
+
+Release tag name after version bump (for example `pkg@1.0.1`).
+
+Set by ChangesetVersion.mergeWorkspaces only when `newVersion` differs
+from `version`. Not available before `changeset version` completes.
+
+---
+
 #### `verbose` (Property)
 
 **Type:** `boolean`
@@ -1265,6 +1336,8 @@ if (context.verbose) {
 #### `version` (Property)
 
 **Type:** `string`
+
+Current version from package.json before bump
 
 ---
 

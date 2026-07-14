@@ -84,30 +84,21 @@ describe('Shell', () => {
       expect(result).toBe('Hello, !');
     });
 
-    it('should throw an error when the context is an invalid parameter', () => {
-      try {
-        // @ts-expect-error
-        shellInstance.format('Hello, ${name}!', null);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
+    it('should handle null context gracefully', () => {
+      const result = Shell.format('Hello, ${name}!', null as never);
+      expect(result).toBe('Hello, !');
     });
 
-    it('should throw an error when the context does not have multi-level properties', () => {
-      try {
-        const result = shellInstance.format(
-          'Hello, ${name}! ${name.invalid.property}?',
-          // @ts-expect-error
-          900
-        );
-        expect(result).toBe('Hello, ! ${name.invalid.property}?');
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
+    it('should handle non-object context gracefully', () => {
+      const result = shellInstance.format(
+        'Hello, ${name}! ${missing}!',
+        900 as never
+      );
+      expect(result).toBe('Hello, ! !');
     });
 
-    it('should handle lodash template syntax with <%= %>', () => {
-      const template = 'git clone <%= repo %>';
+    it('should handle ES6 template syntax with ${}', () => {
+      const template = 'git clone ${repo}';
       const context = { repo: 'https://github.com/user/repo.git' };
 
       const result = Shell.format(template, context);
@@ -116,7 +107,7 @@ describe('Shell', () => {
     });
 
     it('should handle nested object access in templates', () => {
-      const template = 'Server: <%= server.host %>:<%= server.port %>';
+      const template = 'Server: ${server.host}:${server.port}';
       const context = {
         server: { host: 'localhost', port: 3000 }
       };
@@ -126,17 +117,17 @@ describe('Shell', () => {
       expect(result).toBe('Server: localhost:3000');
     });
 
-    it('should handle conditional logic in templates', () => {
-      const template = 'npm install<% if (dev) { %> --save-dev<% } %>';
+    it('should leave plain text without placeholders unchanged', () => {
+      const template = 'npm install --save-dev';
       const context = { dev: true };
 
       const result = Shell.format(template, context);
 
-      expect(result).toBe('npm install --save-dev');
+      expect(result).toBe(template);
     });
 
     it('should handle multiple variables in template', () => {
-      const template = '<%= cmd %> <%= arg1 %> <%= arg2 %>';
+      const template = '${cmd} ${arg1} ${arg2}';
       const context = { cmd: 'git', arg1: 'commit', arg2: '-m "Update"' };
 
       const result = Shell.format(template, context);
@@ -156,7 +147,7 @@ describe('Shell', () => {
     });
 
     it('should handle undefined context values', () => {
-      const template = 'Value: <%= value %>';
+      const template = 'Value: ${value}';
       const context = { value: undefined };
 
       const result = Shell.format(template, context);
@@ -164,15 +155,14 @@ describe('Shell', () => {
       expect(result).toBe('Value: ');
     });
 
-    it('should log error when template formatting fails', () => {
-      const invalidTemplate = 'Hello, <%= name.invalid.property %>';
+    it('should not throw when nested property is missing', () => {
+      const invalidTemplate = 'Hello, ${name.invalid.property}';
       const context = { name: 'World' };
 
-      try {
-        shellInstance.format(invalidTemplate, context);
-      } catch {
-        expect(logger.error).toHaveBeenCalled();
-      }
+      const result = shellInstance.format(invalidTemplate, context);
+
+      expect(result).toBe('Hello, ');
+      expect(logger.error).not.toHaveBeenCalled();
     });
   });
 
@@ -224,16 +214,11 @@ describe('Shell', () => {
     expect(result).not.toBe('123');
   });
 
-  it('should log error when format fails', () => {
+  it('should handle null context in format without throwing', () => {
     const template = 'Hello, ${name}!';
-    const context = null; // Invalid context
-
-    try {
-      // @ts-expect-error
-      shellInstance.format(template, context);
-    } catch {
-      expect(logger.error).toHaveBeenCalled();
-    }
+    const result = shellInstance.format(template, null as never);
+    expect(result).toBe('Hello, !');
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   describe('exec with cache', () => {
@@ -302,7 +287,7 @@ describe('Shell', () => {
 
   describe('exec with template context', () => {
     it('should format command with context before execution', async () => {
-      const command = 'git clone <%= repo %>';
+      const command = 'git clone ${repo}';
       const context = { repo: 'https://github.com/user/repo.git' };
       execPromiseMock.mockResolvedValue('Cloned successfully');
 
@@ -325,7 +310,7 @@ describe('Shell', () => {
 
     it('should handle complex template context', async () => {
       const command =
-        'npm run build --mode <%= mode %> --output <%= output.dir %>';
+        'npm run build --mode ${mode} --output ${output.dir}';
       const context = {
         mode: 'production',
         output: { dir: './dist' }

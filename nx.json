@@ -24,9 +24,10 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "@qlover/eslint-plugin:build"],
       "inputs": [
         "default",
+        "{workspaceRoot}/eslint.config.js",
         "{workspaceRoot}/.eslint.config.js",
         "{workspaceRoot}/.eslint.config.mjs",
         "{projectRoot}/.eslint.config.js",

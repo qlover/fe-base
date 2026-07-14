@@ -6,8 +6,8 @@
  * 2. env              - Environment variable management
  * 3. options          - Options management and defaults
  * 4. getEnv           - Environment variable retrieval
- * 5. getOptions       - Options retrieval with path support
- * 6. setOptions       - Options update functionality
+ * 5. getParameters    - Options retrieval with path support
+ * 6. setParameters    - Options update functionality
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -152,9 +152,9 @@ describe('ScriptContext', () => {
     });
   });
 
-  describe('getOptions', () => {
+  describe('getParameters', () => {
     beforeEach(() => {
-      context.setOptions({
+      context.setParameters({
         testValue: 'test',
         nested: {
           value: 'nested-value'
@@ -163,28 +163,28 @@ describe('ScriptContext', () => {
     });
 
     it('should return all options when no key provided', () => {
-      const options = context.getOptions();
+      const options = context.getParameters();
       expect(options).toEqual(context.options);
     });
 
     it('should return specific option value by key', () => {
-      const value = context.getOptions('testValue');
+      const value = context.getParameters('testValue');
       expect(value).toBe('test');
     });
 
     it('should return nested option value by path', () => {
-      const value = context.getOptions(['nested', 'value']);
+      const value = context.getParameters(['nested', 'value']);
       expect(value).toBe('nested-value');
     });
 
     it('should return default value when option not found', () => {
       const defaultValue = 'default';
-      const value = context.getOptions('nonExistent', defaultValue);
+      const value = context.getParameters('nonExistent', defaultValue);
       expect(value).toBe(defaultValue);
     });
   });
 
-  describe('setOptions', () => {
+  describe('setParameters', () => {
     it('should merge new options with existing ones', () => {
       const newOptions = {
         testValue: 'updated',
@@ -193,7 +193,7 @@ describe('ScriptContext', () => {
         }
       };
 
-      context.setOptions(newOptions);
+      context.setParameters(newOptions);
 
       expect(context.options.testValue).toBe('updated');
       expect(context.options.nested?.value).toBe('new-nested');
@@ -203,7 +203,7 @@ describe('ScriptContext', () => {
 
     it('should handle partial updates', () => {
       const initialValue = context.options.testValue;
-      context.setOptions({
+      context.setParameters({
         nested: {
           value: 'partial-update'
         }
@@ -217,19 +217,19 @@ describe('ScriptContext', () => {
   describe('integration tests', () => {
     it('should handle complete workflow with options and env', () => {
       // Setup initial state
-      context.setOptions({
+      context.setParameters({
         testValue: 'initial',
         rootPath: '/test/path'
       });
 
       // Update options
-      context.setOptions({
+      context.setParameters({
         testValue: 'updated'
       });
 
       // Verify environment and options interaction
       const envValue = context.getEnv('TEST_VAR');
-      const optionValue = context.getOptions('testValue');
+      const optionValue = context.getParameters('testValue');
 
       expect(envValue).toBe('test_value');
       expect(optionValue).toBe('updated');
@@ -352,9 +352,9 @@ describe('ScriptContext', () => {
     });
   });
 
-  describe('getOptions with string path', () => {
+  describe('getParameters with string path', () => {
     beforeEach(() => {
-      context.setOptions({
+      context.setParameters({
         build: {
           target: 'production',
           minify: true
@@ -363,12 +363,12 @@ describe('ScriptContext', () => {
     });
 
     it('should access nested options with string path', () => {
-      const target = context.getOptions('build.target');
+      const target = context.getParameters('build.target');
       expect(target).toBe('production');
     });
 
     it('should access deeply nested options', () => {
-      context.setOptions({
+      context.setParameters({
         deploy: {
           aws: {
             region: 'us-east-1'
@@ -376,27 +376,27 @@ describe('ScriptContext', () => {
         }
       });
 
-      const region = context.getOptions('deploy.aws.region');
+      const region = context.getParameters('deploy.aws.region');
       expect(region).toBe('us-east-1');
     });
   });
 
-  describe('setOptions deep merge', () => {
+  describe('setParameters deep merge', () => {
     it('should deep merge nested objects', () => {
-      context.setOptions({
+      context.setParameters({
         build: {
           target: 'production',
           minify: true
         }
       });
 
-      context.setOptions({
+      context.setParameters({
         build: {
           sourcemap: false
         }
       });
 
-      const buildOptions = context.getOptions('build');
+      const buildOptions = context.getParameters('build');
       expect(buildOptions).toEqual({
         target: 'production',
         minify: true,
@@ -405,18 +405,18 @@ describe('ScriptContext', () => {
     });
 
     it('should preserve unrelated options', () => {
-      context.setOptions({
+      context.setParameters({
         option1: 'value1',
         option2: 'value2'
       });
 
-      context.setOptions({
+      context.setParameters({
         option3: 'value3'
       });
 
-      expect(context.getOptions('option1')).toBe('value1');
-      expect(context.getOptions('option2')).toBe('value2');
-      expect(context.getOptions('option3')).toBe('value3');
+      expect(context.getParameters('option1')).toBe('value1');
+      expect(context.getParameters('option2')).toBe('value2');
+      expect(context.getParameters('option3')).toBe('value3');
     });
   });
 });

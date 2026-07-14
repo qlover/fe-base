@@ -110,6 +110,38 @@ The target element
 
 ---
 
+#### `themeTokens` (Property)
+
+**Type:** `Record<string, ThemeTokens>`
+
+Per-theme token sets
+
+**Example:**
+
+```ts
+{
+   *   light: { 'color-primary': '246 248 250' },
+   * }
+```
+
+---
+
+#### `tokenMapping` (Property)
+
+**Type:** `TokenMapping`
+
+The token mapping
+
+**Example:**
+
+```ts
+{
+   *   'color-primary': 'rgb(var(--fe-color-primary))',
+   * }
+```
+
+---
+
 ### `ThemeServiceState` (Interface)
 
 **Type:** `interface ThemeServiceState`
@@ -134,6 +166,52 @@ class ChatStoreState implements StoreStateInterface {
 #### `theme` (Property)
 
 **Type:** `string`
+
+The current theme
+
+**Example:**
+
+```ts
+'light';
+```
+
+---
+
+#### `themeTokens` (Property)
+
+**Type:** `Record<string, ThemeTokens>`
+
+Per-theme token sets (theme id → tokens)
+
+---
+
+#### `themes` (Property)
+
+**Type:** `string[]`
+
+The supported themes
+
+**Example:**
+
+```ts
+['light', 'dark'];
+```
+
+---
+
+#### `tokenMapping` (Property)
+
+**Type:** `TokenMapping`
+
+The token mapping
+
+**Example:**
+
+```ts
+{
+   *   'color-primary': 'rgb(var(--fe-color-primary))',
+   * }
+```
 
 ---
 
@@ -234,5 +312,37 @@ The target element
 - Dom id(# startwith)
 - Dom Element
 - Dom Tag name
+
+---
+
+#### `themeTokens` (Property)
+
+**Type:** `Record<ThemeId, ThemeTokens>`
+
+Per-theme token sets
+
+**Example:**
+
+```ts
+{
+   *   light: { 'color-primary': '246 248 250' },
+   * }
+```
+
+---
+
+#### `tokenMapping` (Property)
+
+**Type:** `TokenMapping`
+
+The token mapping
+
+**Example:**
+
+```ts
+{
+   *   'color-primary': 'rgb(var(--fe-color-primary))',
+   * }
+```
 
 ---

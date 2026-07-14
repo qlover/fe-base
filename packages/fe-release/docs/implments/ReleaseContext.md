@@ -112,6 +112,14 @@ const context = new ReleaseContext('my-package', {});
 
 ---
 
+#### `compileMap` (Property)
+
+**Type:** `Map<string, RenderFn>`
+
+**Default:** `{}`
+
+---
+
 #### `dryRun` (Property)
 
 **Type:** `boolean`
@@ -162,6 +170,14 @@ error handling, and integrated logging.
 
 ---
 
+#### `templateEngine` (Property)
+
+**Type:** `TemplateEngine`
+
+**Default:** `{}`
+
+---
+
 #### `verbose` (Property)
 
 **Type:** `boolean`
@@ -209,6 +225,12 @@ detailed information display.
 
 ---
 
+#### `releaseId` (Accessor)
+
+**Type:** `accessor releaseId`
+
+---
+
 #### `returnValue` (Accessor)
 
 **Type:** `accessor returnValue`
@@ -227,15 +249,43 @@ detailed information display.
 
 ---
 
-#### `workspace` (Accessor)
-
-**Type:** `accessor workspace`
-
----
-
 #### `workspaces` (Accessor)
 
 **Type:** `accessor workspaces`
+
+---
+
+#### `format` (Method)
+
+**Type:** `(template: string, data: Record<string, any>) => string`
+
+#### Parameters
+
+| Name       | Type                  | Optional | Default | Since | Deprecated | Description                          |
+| ---------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
+| `template` | `string`              | ❌       | -       | -     | -          | The template to format               |
+| `data`     | `Record<string, any>` | ❌       | -       | -     | -          | The data to format the template with |
+
+---
+
+##### `format` (CallSignature)
+
+**Type:** `string`
+
+Format a template with the given data
+
+The template will be compiled only once and cached for future use.
+
+**Returns:**
+
+The formatted template
+
+#### Parameters
+
+| Name       | Type                  | Optional | Default | Since | Deprecated | Description                          |
+| ---------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
+| `template` | `string`              | ❌       | -       | -     | -          | The template to format               |
+| `data`     | `Record<string, any>` | ❌       | -       | -     | -          | The data to format the template with |
 
 ---
 
@@ -314,143 +364,27 @@ const isDebug = debug === 'true';
 
 #### `getOptions` (Method)
 
-**Type:** `(key: string \| string[], defaultValue: T) => T`
+**Type:** `(key: unknown \| unknown[], defaultValue: T) => T`
 
 #### Parameters
 
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                        |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `key`          | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific option (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if option not found                  |
+| Name           | Type                   | Optional | Default | Since | Deprecated | Description |
+| -------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`          | `unknown \| unknown[]` | ✅       | -       | -     | -          |             |
+| `defaultValue` | `T`                    | ✅       | -       | -     | -          |             |
 
 ---
 
-##### `getOptions` (CallSignature)
+##### `getOptions` (CallSignature)⚠️
 
 **Type:** `T`
 
-Retrieves configuration options with nested path support
-
-Core concept:
-Provides safe access to configuration options using
-lodash get for nested path support, with type-safe
-return values and default value fallback.
-
-Access features:
-
-- Safe nested object access using lodash get
-- Type-safe return values with generic constraints
-- Default value support for missing keys
-- Full options object access when no key provided
-- Support for both string and array path formats
-
-Path formats:
-
-- String: 'build.target' for nested access
-- Array: ['build', 'target'] for explicit path
-- Empty: Returns full options object
-- Invalid: Returns default value or undefined
-
-Type safety:
-
-- Generic type parameter for return type
-- Type inference from default values
-- Runtime type validation
-- Consistent return type handling
-
-**Returns:**
-
-Option value or default, full options if no key provided
-
-**Example:** Basic access
-
-```typescript
-const debug = this.getOptions('debug', false);
-// Returns debug option or false if not found
-```
-
-**Example:** Nested access
-
-```typescript
-const target = this.getOptions('build.target', 'development');
-// Returns build.target or 'development' if not found
-```
-
-**Example:** Array path
-
-```typescript
-const region = this.getOptions(['deploy', 'region'], 'us-east-1');
-// Returns deploy.region or 'us-east-1' if not found
-```
-
-**Example:** Full options
-
-```typescript
-const allOptions = this.getOptions();
-// Returns the complete options object
-```
-
 #### Parameters
 
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                        |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `key`          | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific option (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if option not found                  |
-
----
-
-#### `getPkg` (Method)
-
-**Type:** `(key: string, defaultValue: T) => T`
-
-#### Parameters
-
-| Name           | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `key`          | `string` | ✅       | -       | -     | -          | Optional dot-notation path to specific field |
-| `defaultValue` | `T`      | ✅       | -       | -     | -          | Default value if field not found             |
-
----
-
-##### `getPkg` (CallSignature)
-
-**Type:** `T`
-
-Gets package.json data for the current workspace
-
-Provides type-safe access to package.json fields with optional
-path and default value support.
-
-**Returns:**
-
-Package data of type T
-
-**Throws:**
-
-Error if package.json not found
-
-**Example:** Basic usage
-
-```typescript
-// Get entire package.json
-const pkg = context.getPkg();
-
-// Get specific field
-const version = context.getPkg<string>('version');
-
-// Get nested field with default
-const script = context.getPkg<string>(
-  'scripts.build',
-  'echo "No build script"'
-);
-```
-
-#### Parameters
-
-| Name           | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `key`          | `string` | ✅       | -       | -     | -          | Optional dot-notation path to specific field |
-| `defaultValue` | `T`      | ✅       | -       | -     | -          | Default value if field not found             |
+| Name           | Type                   | Optional | Default | Since | Deprecated | Description |
+| -------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`          | `unknown \| unknown[]` | ✅       | -       | -     | -          |             |
+| `defaultValue` | `T`                    | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -486,6 +420,49 @@ const context = releaseContext.getTemplateContext();
 //   sourceBranch: 'main',    // use this instead
 //   ...other options
 // }
+```
+
+---
+
+#### `getTemplateEngine` (Method)
+
+**Type:** `() => TemplateEngine`
+
+---
+
+##### `getTemplateEngine` (CallSignature)
+
+**Type:** `TemplateEngine`
+
+---
+
+#### `requireWorkspaces` (Method)
+
+**Type:** `() => WorkspaceInterface[]`
+
+---
+
+##### `requireWorkspaces` (CallSignature)
+
+**Type:** `WorkspaceInterface[]`
+
+Gets the workspaces of the project
+
+If no workspaces are found, throws an error.
+
+**Throws:**
+
+Error if no workspaces are found
+
+**Returns:**
+
+The workspaces of the project
+
+**Example:**
+
+```typescript
+const workspaces = context.requireWorkspaces();
+// [{ name: 'pkg-a', version: '1.0.0', ... }]
 ```
 
 ---
@@ -875,13 +852,13 @@ Set return value in context
 
 #### `setWorkspaces` (Method)
 
-**Type:** `(workspaces: WorkspaceValue[]) => void`
+**Type:** `(workspaces: WorkspaceInterface[]) => void`
 
 #### Parameters
 
-| Name         | Type               | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ------------------ | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `workspaces` | `WorkspaceValue[]` | ❌       | -       | -     | -          | Array of workspace configurations |
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          | Array of workspace configurations |
 
 ---
 
@@ -900,16 +877,17 @@ context.setWorkspaces([
   {
     name: 'pkg-a',
     version: '1.0.0',
-    path: 'packages/a'
+    path: 'packages/a',
+    lastTag: 'pkg-aV1.0.0'
   }
 ]);
 ```
 
 #### Parameters
 
-| Name         | Type               | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ------------------ | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `workspaces` | `WorkspaceValue[]` | ❌       | -       | -     | -          | Array of workspace configurations |
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          | Array of workspace configurations |
 
 ---
 
@@ -1037,301 +1015,11 @@ True if the hook should be skipped, false otherwise
 
 ---
 
-#### `PRBody` (Property)
-
-**Type:** `string`
-
-**Default:** `ts
-Comprehensive PR body template with changelog
-`
-
-Template for release pull request body content
-
-Core concept:
-Defines the content template for release pull request
-descriptions, providing comprehensive release information
-and automated content generation.
-
-Content sections:
-
-- Release details and metadata
-- Generated changelog content
-- Review checklist and notes
-- Environment and version information
-- Automated process notifications
-
-Template variables:
-
-- `${tagName}`: Release version tag
-- `${branch}`: Source branch name
-- `${env}`: Release environment
-- `${changelog}`: Generated changelog content
-- `${pkgName}`: Package name
-
-**Example:** Simple PR body
-
-```typescript
-const config: FeReleaseConfig = {
-  PRBody: 'Release ${pkgName} v${tagName}\n\n${changelog}'
-};
-```
-
-**Example:** Detailed PR body
-
-```typescript
-const config: FeReleaseConfig = {
-  PRBody: `
-## Release ${pkgName} v${tagName}
-
-**Environment:** ${env}
-**Branch:** ${branch}
-
-### Changes
-${changelog}
-
-### Checklist
-- [ ] Version number is correct
-- [ ] All tests pass
-- [ ] Documentation updated
-`
-};
-```
-
----
-
-#### `PRTitle` (Property)
-
-**Type:** `string`
-
-**Default:** `'[${pkgName} Release] Branch:${branch}, Tag:${tagName}, Env:${env}'`
-
-Template for release pull request titles
-
-Core concept:
-Defines the title format for release pull requests using
-template variables, providing clear and informative
-PR titles for release management.
-
-Title components:
-
-- Package name for identification
-- Release version for version tracking
-- Environment for deployment context
-- Source branch for change tracking
-- Consistent formatting for automation
-
-Template variables:
-
-- `${pkgName}`: Package name from package.json
-- `${tagName}`: Release version tag
-- `${env}`: Release environment
-- `${branch}`: Source branch name
-
-**Example:** Basic PR title
-
-```typescript
-const config: FeReleaseConfig = {
-  PRTitle: '[${pkgName} Release] v${tagName}'
-};
-```
-
-**Example:** Detailed PR title
-
-```typescript
-const config: FeReleaseConfig = {
-  PRTitle: '🚀 Release ${pkgName} v${tagName} (${env})'
-};
-```
-
----
-
 #### `authorName` (Property)
 
 **Type:** `string`
 
 The name of the author
-
----
-
-#### `autoMergeReleasePR` (Property)
-
-**Type:** `boolean`
-
-**Default:** `false`
-
-Whether to automatically merge PR when creating and publishing
-
-Core concept:
-Controls whether release pull requests should be automatically
-merged after successful validation, enabling fully automated
-release workflows.
-
-Auto-merge behavior:
-
-- Merges PR after all checks pass
-- Uses specified auto-merge type (merge/squash/rebase)
-- Triggers post-merge release actions
-- Enables continuous deployment workflows
-- Reduces manual intervention in release process
-
-Workflow integration:
-
-- Integrates with GitHub auto-merge features
-- Supports CI/CD pipeline automation
-- Enables fully automated release processes
-- Reduces release cycle time
-- Maintains release quality through automated checks
-
-**Example:** Enable auto-merge
-
-```typescript
-const config: FeReleaseConfig = {
-  autoMergeReleasePR: true,
-  autoMergeType: 'squash'
-};
-```
-
-**Example:** Manual review required
-
-```typescript
-const config: FeReleaseConfig = {
-  autoMergeReleasePR: false
-};
-```
-
----
-
-#### `autoMergeType` (Property)
-
-**Type:** `"squash" \| "merge" \| "rebase"`
-
-**Default:** `'squash'`
-
-PR auto-merge strategy for release pull requests
-
-Core concept:
-Defines the merge strategy used when automatically merging
-release pull requests, affecting commit history and
-repository structure.
-
-Merge strategies:
-
-- merge: Creates merge commit with branch history
-- squash: Combines all commits into single commit
-- rebase: Replays commits on target branch
-
-Strategy considerations:
-
-- merge: Preserves complete branch history
-- squash: Creates clean, linear history
-- rebase: Maintains chronological order
-- Affects commit message and history structure
-- Influences repository maintenance and debugging
-
-**Example:** Squash merge
-
-```typescript
-const config: FeReleaseConfig = {
-  autoMergeType: 'squash'
-};
-```
-
-**Example:** Preserve history
-
-```typescript
-const config: FeReleaseConfig = {
-  autoMergeType: 'merge'
-};
-```
-
----
-
-#### `branchName` (Property)
-
-**Type:** `string`
-
-**Default:** `'release-${pkgName}-${tagName}'`
-
-Template for creating release branch names
-
-Core concept:
-Defines the naming pattern for release branches using
-template variables, enabling consistent and descriptive
-branch naming across different packages and environments.
-
-Template variables:
-
-- `${pkgName}`: Package name from package.json
-- `${tagName}`: Release version tag
-- `${env}`: Release environment
-- `${branch}`: Source branch name
-
-Branch naming patterns:
-
-- Descriptive names for easy identification
-- Consistent format across all releases
-- Environment and package-specific naming
-- Supports Git branch naming conventions
-- Enables automated branch management
-
-**Example:** Basic branch naming
-
-```typescript
-const config: FeReleaseConfig = {
-  branchName: 'release-${pkgName}-${tagName}'
-};
-```
-
-**Example:** Environment-aware naming
-
-```typescript
-const config: FeReleaseConfig = {
-  branchName: 'release/${env}/${pkgName}-${tagName}'
-};
-```
-
----
-
-#### `changePackagesLabel` (Property)
-
-**Type:** `string`
-
-**Default:** `'changes:${name}'`
-
-Template for package change labels in monorepos
-
-Core concept:
-Defines the naming pattern for labels that identify
-which packages have changed in monorepo releases,
-enabling targeted review and deployment.
-
-Label usage:
-
-- Applied to PRs when specific packages change
-- Enables package-specific review processes
-- Supports selective deployment strategies
-- Improves monorepo change tracking
-- Facilitates team collaboration and review
-
-Template variables:
-
-- `${name}`: Package name for label identification
-
-**Example:** Basic change label
-
-```typescript
-const config: FeReleaseConfig = {
-  changePackagesLabel: 'changes:${name}'
-};
-```
-
-**Example:** Custom change label
-
-```typescript
-const config: FeReleaseConfig = {
-  changePackagesLabel: 'package:${name}'
-};
-```
 
 ---
 
@@ -1403,222 +1091,11 @@ if (!shared.env?.get('REQUIRED_VAR')) {
 
 ---
 
-#### `label` (Property)
-
-**Type:** `Object`
-
-Configuration for release pull request labels
-
-Core concept:
-Defines the label configuration for release pull requests,
-enabling automated categorization and visual identification
-of release-related PRs.
-
-Label features:
-
-- Automated label application
-- Customizable label appearance
-- Consistent release identification
-- Integration with GitHub labeling system
-- Support for custom label descriptions
-
-Label properties:
-
-- name: Label identifier and display name
-- color: Hexadecimal color code for visual distinction
-- description: Label description for documentation
-
-**Example:** Basic label configuration
-
-```typescript
-const config: FeReleaseConfig = {
-  label: {
-    name: 'release',
-    color: '1A7F37',
-    description: 'Automated release PR'
-  }
-};
-```
-
-**Example:** Custom label
-
-```typescript
-const config: FeReleaseConfig = {
-  label: {
-    name: 'CI-Release',
-    color: '0366D6',
-    description: 'Release created by CI/CD'
-  }
-};
-```
-
----
-
-##### `color` (Property)
-
-**Type:** `string`
-
-**Default:** `'1A7F37'`
-
-Hexadecimal color code for label appearance
-
-Color format: 6-character hex string without '#'
-Used for visual distinction in GitHub interface
-Supports standard web color codes
-
-**Example:** Green color
-
-```typescript
-color: '1A7F37';
-```
-
-**Example:** Blue color
-
-```typescript
-color: '0366D6';
-```
-
----
-
-##### `description` (Property)
-
-**Type:** `string`
-
-**Default:** `'Release PR'`
-
-Descriptive text for label documentation
-
-Provides context about the label's purpose
-Used in GitHub label management interface
-Helps team members understand label usage
-
-**Example:**
-
-```typescript
-description: 'Automated release pull request';
-```
-
----
-
-##### `name` (Property)
-
-**Type:** `string`
-
-**Default:** `'CI-Release'`
-
-Label name for identification and display
-
-Used as the primary identifier for the label
-Displayed in GitHub PR interface
-Should be descriptive and consistent
-
-**Example:**
-
-```typescript
-name: 'release';
-```
-
----
-
-#### `packagesDirectories` (Property)
-
-**Type:** `string[]`
-
-**Default:** `[]`
-
-Directories containing packages for monorepo releases
-
-Core concept:
-Specifies the directories that contain packages for
-monorepo release management, enabling selective
-package discovery and release coordination.
-
-Directory patterns:
-
-- Supports glob patterns for flexible matching
-- Enables selective package inclusion
-- Supports nested directory structures
-- Facilitates monorepo organization
-- Enables workspace-specific configurations
-
-Use cases:
-
-- Monorepo package discovery
-- Selective package releases
-- Workspace-specific configurations
-- Multi-package coordination
-- Dependency-aware releases
-
-**Example:** Basic package directories
-
-```typescript
-const config: FeReleaseConfig = {
-  packagesDirectories: ['packages/*']
-};
-```
-
-**Example:** Multiple package directories
-
-```typescript
-const config: FeReleaseConfig = {
-  packagesDirectories: ['packages/*', 'apps/*', 'libs/*']
-};
-```
-
----
-
 #### `plugins` (Property)
 
 **Type:** `unknown[]`
 
 Plugins
-
----
-
-#### `publishPath` (Property)
-
-**Type:** `string`
-
-**Default:** `''`
-
-The path to publish the package
-
-Core concept:
-Specifies the directory path where the package should be
-published, allowing for custom distribution locations
-and environment-specific publishing strategies.
-
-Publishing behavior:
-
-- Overrides default package.json publishConfig
-- Supports both relative and absolute paths
-- Used by npm publish and other distribution tools
-- Enables environment-specific publishing locations
-- Supports custom registry and distribution strategies
-
-Use cases:
-
-- Custom npm registry publishing
-- Environment-specific package distribution
-- Private package repository publishing
-- Alternative distribution platforms
-- Testing and staging package distribution
-
-**Example:** Basic publish path
-
-```typescript
-const config: FeReleaseConfig = {
-  publishPath: './dist'
-};
-```
-
-**Example:** Custom registry
-
-```typescript
-const config: FeReleaseConfig = {
-  publishPath: '@myorg/registry'
-};
-```
 
 ---
 

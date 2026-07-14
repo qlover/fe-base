@@ -6,9 +6,8 @@ import type {
 } from '../src/type';
 import type { LoggerInterface } from '@qlover/logger';
 import type { ScriptContextInterface, Shell } from '@qlover/scripts-context';
-import merge from 'lodash/merge';
-import { defaultFeConfig } from '@qlover/scripts-context';
-import template from 'lodash/template';
+import { merge } from 'lodash-es';
+import { defaultFeConfig, TemplateEngine } from '@qlover/scripts-context';
 
 /**
  * Create a testable ReleaseContext instance
@@ -70,10 +69,12 @@ export function createTestLogger(): LoggerInterface {
  * @returns Mocked Shell instance
  */
 export function createTestShell(): Shell {
+  const templateEngine = new TemplateEngine();
+
   return {
     exec: vi.fn(),
     format: vi.fn().mockImplementation((templateString, context) => {
-      return template(templateString)(context);
+      return templateEngine.render(templateString, context);
     })
   } as unknown as Shell;
 }

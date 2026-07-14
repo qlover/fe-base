@@ -38,7 +38,7 @@ describe('Plugin Class', () => {
   describe('init and config', () => {
     it('should use the correct plugin name and properties to initialize', () => {
       expect(plugin.pluginName).toBe('test-plugin');
-      expect(plugin.options.testValue).toBe('test-value');
+      expect(plugin.config.testValue).toBe('test-value');
     });
 
     it('should set onlyOne to true', () => {
@@ -78,8 +78,8 @@ describe('Plugin Class', () => {
         props
       );
 
-      expect(pluginWithMergedConfig.options.testValue).toBe('prop-value');
-      expect(pluginWithMergedConfig.options.nestedConfig?.value).toBe(
+      expect(pluginWithMergedConfig.config.testValue).toBe('prop-value');
+      expect(pluginWithMergedConfig.config.nestedConfig?.value).toBe(
         'nested-cli-value'
       );
     });
@@ -151,11 +151,11 @@ describe('Plugin Class', () => {
       expect(plugin.enabled('onBefore', {})).toBe(true);
     });
 
-    it('should have optional lifecycle methods', () => {
-      expect(typeof plugin.onBefore).toBe('function');
-      expect(typeof plugin.onExec).toBe('function');
-      expect(typeof plugin.onSuccess).toBe('function');
-      expect(typeof plugin.onError).toBe('function');
+    it('should not define lifecycle hooks on the base test plugin', () => {
+      expect(plugin.onBefore).toBeUndefined();
+      expect(plugin.onExec).toBeUndefined();
+      expect(plugin.onSuccess).toBeUndefined();
+      expect(plugin.onError).toBeUndefined();
     });
   });
 
@@ -168,8 +168,12 @@ describe('Plugin Class', () => {
 
       expect(result).toBe(expectedResult);
       expect(task).toHaveBeenCalled();
-      expect(plugin.logger.info).toHaveBeenCalledWith('Test Step');
-      expect(plugin.logger.info).toHaveBeenCalledWith('Test Step - success');
+      expect(plugin.logger.info).toHaveBeenCalledWith(
+        'test-plugin: Test Step - beginning'
+      );
+      expect(plugin.logger.info).toHaveBeenCalledWith(
+        'test-plugin: Test Step - success'
+      );
     });
 
     it('should handle task failure and record error', async () => {
@@ -181,8 +185,13 @@ describe('Plugin Class', () => {
       );
 
       expect(task).toHaveBeenCalled();
-      expect(plugin.logger.info).toHaveBeenCalledWith('Failing Step');
-      expect(plugin.logger.error).toHaveBeenCalledWith(taskError);
+      expect(plugin.logger.info).toHaveBeenCalledWith(
+        'test-plugin: Failing Step - beginning'
+      );
+      expect(plugin.logger.error).toHaveBeenCalledWith(
+        'test-plugin: Failing Step - failed\n',
+        taskError
+      );
     });
   });
 });

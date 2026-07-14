@@ -70,29 +70,23 @@ import type {
 import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
 import { LifecycleExecutor } from '@qlover/fe-corekit';
 import ReleaseContext, { type ReleaseContextOptions } from './ReleaseContext';
-import GithubPR from '../plugins/githubPR/GithubPR';
-import Workspaces from '../plugins/workspaces/Workspaces';
+import Workspaces from '../plugins/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
-import Changelog from '../plugins/Changelog';
+import ChangesetVersion from '../plugins/ChangesetVersion';
+import Github from '../plugins/Github';
+import { defaultReleaaseName } from '../defaults';
 
 /**
  * Default plugin configuration tuples
  *
  * Defines the core plugins and their default configurations:
  * - Workspaces: For monorepo management
- * - Changelog: For version and changelog handling
- * - GithubPR: For pull request automation
  */
 const innerTuples: PluginTuple<PluginClass>[] = [
   tuple(Workspaces),
-  tuple(Changelog, {}),
-  tuple(GithubPR, {})
+  tuple(ChangesetVersion),
+  tuple(Github)
 ];
-
-/**
- * Default name for the release task context
- */
-const defaultName = 'release';
 
 /**
  * Core task class for managing release operations
@@ -169,10 +163,10 @@ export default class ReleaseTask {
    */
   constructor(
     options: Partial<ReleaseContextOptions> = {},
-    private executor: LifecycleExecutor<ReleaseContext> = new LifecycleExecutor<ReleaseContext>(),
-    private defaultTuples: PluginTuple<PluginClass>[] = innerTuples
+    protected executor: LifecycleExecutor<ReleaseContext> = new LifecycleExecutor<ReleaseContext>(),
+    protected defaultTuples: PluginTuple<PluginClass>[] = innerTuples
   ) {
-    this.context = new ReleaseContext(defaultName, options);
+    this.context = new ReleaseContext(defaultReleaaseName, options);
   }
 
   /**
@@ -234,10 +228,10 @@ export default class ReleaseTask {
     ]);
 
     plugins.forEach((plugin) => {
-      // set executor to workspaces plugin
-      if (plugin instanceof Workspaces) {
-        plugin.setReleaseTask(this);
-      }
+      // // set executor to workspaces plugin
+      // if (plugin instanceof Workspaces) {
+      //   plugin.setReleaseTask(this);
+      // }
 
       this.executor.use(plugin);
     });

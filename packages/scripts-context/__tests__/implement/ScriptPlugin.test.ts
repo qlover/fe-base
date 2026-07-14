@@ -127,7 +127,7 @@ describe('ScriptPlugin', () => {
       //     }
       //   }
       // });
-      context.setOptions({
+      context.setParameters({
         'test-plugin': {
           outputDir: './cmd-dist'
         }
@@ -152,7 +152,7 @@ describe('ScriptPlugin', () => {
       //     }
       //   }
       // });
-      context.setOptions({
+      context.setParameters({
         'test-plugin': {
           outputDir: './cmd-dist'
         }
@@ -202,9 +202,12 @@ describe('ScriptPlugin', () => {
       });
 
       expect(result).toBe('success');
-      expect(mockLogger.log).toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith('Test step');
-      expect(mockLogger.info).toHaveBeenCalledWith('Test step - success');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Test step - beginning'
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Test step - success'
+      );
     });
 
     it('should handle and log errors', async () => {
@@ -218,7 +221,10 @@ describe('ScriptPlugin', () => {
         })
       ).rejects.toThrow('Test error');
 
-      expect(mockLogger.error).toHaveBeenCalledWith(error);
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'test-plugin: Error step - failed\n',
+        error
+      );
     });
   });
 
@@ -227,8 +233,12 @@ describe('ScriptPlugin', () => {
       const execContext = {} as ScriptContext<TestScriptShared>;
       await plugin.onExec?.(execContext);
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Test step');
-      expect(mockLogger.info).toHaveBeenCalledWith('Test step - success');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Test step - beginning'
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Test step - success'
+      );
     });
 
     it('should call onBefore if defined', async () => {
@@ -312,7 +322,7 @@ describe('ScriptPlugin', () => {
 
   describe('getConfig', () => {
     beforeEach(() => {
-      context.setOptions({
+      context.setParameters({
         'test-plugin': {
           outputDir: './dist',
           verbose: true,
@@ -363,7 +373,7 @@ describe('ScriptPlugin', () => {
     });
 
     it('should merge with existing configuration', () => {
-      context.setOptions({
+      context.setParameters({
         'test-plugin': {
           outputDir: './dist',
           verbose: true
@@ -391,13 +401,13 @@ describe('ScriptPlugin', () => {
 
   describe('options access', () => {
     it('should return plugin options from context', () => {
-      context.setOptions({
+      context.setParameters({
         'test-plugin': {
           outputDir: './dist'
         }
       });
 
-      const options = plugin.options;
+      const options = plugin.config;
       expect(options).toEqual({
         outputDir: './dist'
       });
@@ -413,7 +423,9 @@ describe('ScriptPlugin', () => {
       });
 
       expect(result).toBe('success');
-      expect(mockLogger.info).toHaveBeenCalledWith('Enabled step');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Enabled step - beginning'
+      );
     });
 
     it('should execute step when enabled is undefined (default true)', async () => {
@@ -423,7 +435,12 @@ describe('ScriptPlugin', () => {
       });
 
       expect(result).toBe('success');
-      expect(mockLogger.info).toHaveBeenCalledWith('Default enabled step');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Default enabled step - beginning'
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'test-plugin: Default enabled step - success'
+      );
     });
   });
 });

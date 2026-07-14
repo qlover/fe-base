@@ -45,25 +45,14 @@
  * // * add user authentication (#124)
  * ```
  */
-import { Shell, type ShellInterface } from '@qlover/scripts-context';
+import { TemplateEngine, type ShellInterface } from '@qlover/scripts-context';
 import {
   type ChangelogFormatter,
   type CommitValue,
   type GitChangelogOptions
 } from '../../interface/ChangeLog';
-import groupBy from 'lodash/groupBy';
-
-/**
- * Default template for formatting commit entries
- *
- * Variables available:
- * - ${scopeHeader}: Formatted scope (e.g., "**api:**")
- * - ${commitlint.message}: Commit message
- * - ${commitLink}: Formatted commit hash link
- * - ${prLink}: Formatted PR link
- */
-const DEFAULT_TEMPLATE =
-  '\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}';
+import { groupBy } from 'lodash-es';
+import { releaseJson } from '../../defaults';
 
 /**
  * Configuration options for changelog formatting
@@ -115,7 +104,10 @@ export interface Options extends GitChangelogOptions {
  * });
  * ```
  */
+
 export class GitChangelogFormatter implements ChangelogFormatter {
+  protected templateEngine: TemplateEngine = new TemplateEngine();
+
   /**
    * Creates a new GitChangelogFormatter instance
    *
@@ -267,7 +259,10 @@ export class GitChangelogFormatter implements ChangelogFormatter {
       base: { hash },
       prNumber
     } = commit;
-    const { repoUrl, formatTemplate = DEFAULT_TEMPLATE } = {
+    const {
+      repoUrl,
+      formatTemplate = releaseJson.changesetVersion.formatTemplate
+    } = {
       ...this.options,
       ...options
     };
@@ -288,7 +283,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
         )
       : '';
 
-    return Shell.format(formatTemplate, {
+    return this.templateEngine.render(formatTemplate, {
       ...commit,
       scopeHeader: scopeHeader,
       commitLink: hashLink,

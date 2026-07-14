@@ -2,124 +2,10 @@
 
 **Type:** `module FeReleaseDefaults`
 
-Default configuration values for fe-release
+Internal constants for fe-release
 
-This module provides default values and constants used throughout
-the fe-release framework. These values define the default behavior
-for version increments, branch names, PR settings, and workspace
-configuration.
-
-Categories:
-
-- Version Management: Increment types and branch names
-- PR Configuration: Titles, merge settings, and templates
-- Workspace Settings: Limits and separators
-- Template Configuration: Delimiters and formats
-
----
-
-### `BATCH_PR_BODY` (Variable)
-
-**Type:** `"
-
-## ${name} ${version}
-
-${changelog}
-"`
-
-**Default:** `'\n## ${name} ${version}\n${changelog}\n'`
-
-Template for batch PR body sections
-
-Variables:
-
-- ${name}: Package name
-- ${version}: Release version
-- ${changelog}: Package changelog
-
-**Example:**
-
-```ts
-// With variables:
-// ## my-package 1.0.0
-// - Feature: Added new functionality
-// - Fix: Fixed bug
-```
-
----
-
-### `DEFAULT_AUTO_MERGE_RELEASE_PR` (Variable)
-
-**Type:** `false`
-
-**Default:** `false`
-
-Whether to automatically merge release PRs
-
-Disabled by default for safety
-Enable via configuration for automated workflows
-
----
-
-### `DEFAULT_AUTO_MERGE_TYPE` (Variable)
-
-**Type:** `"squash"`
-
-**Default:** `'squash'`
-
-Default merge strategy for auto-merged PRs
-
-Uses 'squash' to maintain clean history
-Options: 'merge', 'squash', 'rebase'
-
----
-
-### `DEFAULT_INCREMENT` (Variable)
-
-**Type:** `"patch"`
-
-**Default:** `'patch'`
-
-Default version increment type
-
-Uses 'patch' for minimal version changes (0.0.x)
-Following semver conventions for backward compatibility
-
----
-
-### `DEFAULT_PR_TITLE` (Variable)
-
-**Type:** `"Release ${env} ${pkgName} ${tagName}"`
-
-**Default:** `'Release ${env} ${pkgName} ${tagName}'`
-
-Default PR title template
-
-Variables:
-
-- ${env}: Release environment
-- ${pkgName}: Package name
-- ${tagName}: Release tag
-
-**Example:**
-
-```ts
-// With variables:
-// Release production my-package v1.0.0
-```
-
----
-
-### `DEFAULT_SOURCE_BRANCH` (Variable)
-
-**Type:** `"master"`
-
-**Default:** `'master'`
-
-Default source branch for releases
-
-Uses 'master' as the default source branch
-Can be overridden via configuration or CLI options
+User-facing default configuration lives in `release.json` and is
+injected into <a href="./implments/ReleaseContext.md#releasecontext-module" class="tsd-kind-module">ReleaseContext</a> at construction time.
 
 ---
 
@@ -131,48 +17,6 @@ Can be overridden via configuration or CLI options
 
 Path to package manifest file
 
-Standard location for npm package metadata
-Used for version management and workspace detection
-
----
-
-### `MAX_WORKSPACE` (Variable)
-
-**Type:** `3`
-
-**Default:** `3`
-
-Maximum number of workspaces to process
-
-Limits concurrent workspace operations
-Prevents resource exhaustion in large monorepos
-
----
-
-### `MULTI_WORKSPACE_SEPARATOR` (Variable)
-
-**Type:** `"_"`
-
-**Default:** `'_'`
-
-Separator for multi-workspace identifiers
-
-Used when combining multiple workspace names
-Example: workspace1_workspace2_workspace3
-
----
-
-### `TEMPLATE_CLOSE` (Variable)
-
-**Type:** `"}}"`
-
-**Default:** `'}}'`
-
-Template closing delimiter
-
-Used for variable substitution in templates
-Paired with TEMPLATE_OPEN
-
 ---
 
 ### `TEMPLATE_OPEN` (Variable)
@@ -183,20 +27,269 @@ Paired with TEMPLATE_OPEN
 
 Template opening delimiter
 
-Used for variable substitution in templates
-Paired with TEMPLATE_CLOSE
+---
+
+### `defaultReleaaseName` (Variable)
+
+**Type:** `"release"`
+
+**Default:** `'release'`
+
+Default name for the release task context (fe-config.json key)
 
 ---
 
-### `WORKSPACE_VERSION_SEPARATOR` (Variable)
+### `releaseJson` (Variable)
 
-**Type:** `"@"`
+**Type:** `Object`
 
-**Default:** `'@'`
+**Default:** `{}`
 
-Separator for workspace version strings
+---
 
-Used in workspace@version format
-Example: my-package@1.0.0
+#### `changesetVersion` (Property)
+
+**Type:** `Object`
+
+**Default:** `{}`
+
+---
+
+##### `changesetRoot` (Property)
+
+**Type:** `".changeset"`
+
+**Default:** `'.changeset'`
+
+---
+
+##### `dependencyReleaseTemplate` (Property)
+
+**Type:** `"- Update dependency **${name}** from `${oldVersion}` to `${newVersion}`"`
+
+**Default:** `'- Update dependency **${name}** from `${oldVersion}` to `${newVersion}`'`
+
+---
+
+##### `formatTemplate` (Property)
+
+**Type:** `"
+
+- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}"`
+
+**Default:** `'\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}'`
+
+---
+
+##### `ignoreNonUpdatedPackages` (Property)
+
+**Type:** `false`
+
+**Default:** `false`
+
+---
+
+##### `increment` (Property)
+
+**Type:** `"patch"`
+
+**Default:** `'patch'`
+
+---
+
+##### `mode` (Property)
+
+**Type:** `"version"`
+
+**Default:** `'version'`
+
+---
+
+##### `types` (Property)
+
+**Type:** `property types`
+
+---
+
+#### `github` (Property)
+
+**Type:** `Object`
+
+**Default:** `{}`
+
+---
+
+##### `PRBody` (Property)
+
+**Type:** `"## Changelog
+
+${changelog}"`
+
+**Default:** `'## Changelog\n\n${changelog}'`
+
+---
+
+##### `PRTitle` (Property)
+
+**Type:** `"Release ${env} ${pkgName} ${tagName}"`
+
+**Default:** `'Release ${env} ${pkgName} ${tagName}'`
+
+---
+
+##### `autoMergeReleasePR` (Property)
+
+**Type:** `false`
+
+**Default:** `false`
+
+---
+
+##### `batchPRBody` (Property)
+
+**Type:** `"
+
+## ${name} ${version}
+
+${changelog}
+"`
+
+**Default:** `'\n## ${name} ${version}\n${changelog}\n'`
+
+---
+
+##### `branchName` (Property)
+
+**Type:** `"release/${repoName}-${releaseId}"`
+
+**Default:** `'release/${repoName}-${releaseId}'`
+
+---
+
+##### `commitMessage` (Property)
+
+**Type:** `"chore(release): ${spaces}"`
+
+**Default:** `'chore(release): ${spaces}'`
+
+---
+
+##### `label` (Property)
+
+**Type:** `Object`
+
+**Default:** `{}`
+
+---
+
+###### `color` (Property)
+
+**Type:** `"1A7F37"`
+
+**Default:** `'1A7F37'`
+
+---
+
+###### `description` (Property)
+
+**Type:** `"Release PR"`
+
+**Default:** `'Release PR'`
+
+---
+
+###### `name` (Property)
+
+**Type:** `"CI-Release"`
+
+**Default:** `'CI-Release'`
+
+---
+
+##### `mergeType` (Property)
+
+**Type:** `"squash"`
+
+**Default:** `'squash'`
+
+---
+
+##### `mode` (Property)
+
+**Type:** `"createPR"`
+
+**Default:** `'createPR'`
+
+---
+
+##### `pushChangeLabels` (Property)
+
+**Type:** `false`
+
+**Default:** `false`
+
+---
+
+##### `releaseTagName` (Property)
+
+**Type:** `"release-tag-${count}-patch-${releaseId}"`
+
+**Default:** `'release-tag-${count}-patch-${releaseId}'`
+
+---
+
+##### `skipCreateReleasePR` (Property)
+
+**Type:** `false`
+
+**Default:** `false`
+
+---
+
+#### `releaseEnv` (Property)
+
+**Type:** `"development"`
+
+**Default:** `'development'`
+
+---
+
+#### `sourceBranch` (Property)
+
+**Type:** `"master"`
+
+**Default:** `'master'`
+
+---
+
+#### `workspaces` (Property)
+
+**Type:** `Object`
+
+**Default:** `{}`
+
+---
+
+##### `includeDependencyReleases` (Property)
+
+**Type:** `true`
+
+**Default:** `true`
+
+---
+
+##### `tagMatch` (Property)
+
+**Type:** `"${name}@*"`
+
+**Default:** `'${name}@*'`
+
+---
+
+##### `tagTemplate` (Property)
+
+**Type:** `"${name}@${version}"`
+
+**Default:** `'${name}@${version}'`
 
 ---

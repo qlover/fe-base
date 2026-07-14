@@ -21,15 +21,15 @@
  */
 import type { ExecutorContextInterface } from '@qlover/fe-corekit';
 import type ReleaseContext from './implments/ReleaseContext';
-import type { GithubPRProps } from './plugins/githubPR/GithubPR';
+import type { GithubProps } from './plugins/Github';
+import type { ChangesetVersionProps } from './plugins/ChangesetVersion';
 import type {
   ScriptContextInterface,
   ScriptSharedInterface
 } from '@qlover/scripts-context';
-import type {
-  WorkspacesProps,
-  WorkspaceValue
-} from './plugins/workspaces/Workspaces';
+import type { WorkspacesProps } from './plugins/Workspaces';
+import type { WorkspaceInterface } from './interface/WorkspaceInterface';
+import type { defaultReleaaseName } from './defaults';
 
 /**
  * Extended execution context for release tasks
@@ -118,7 +118,8 @@ export type DeepPartial<T> = {
  * ```
  */
 export interface ReleaseConfig extends ScriptSharedInterface {
-  githubPR?: GithubPRProps;
+  changesetVersion?: ChangesetVersionProps;
+  github?: GithubProps;
   workspaces?: WorkspacesProps;
 }
 
@@ -207,7 +208,8 @@ export type PackageJson = Record<string, unknown>;
  * };
  * ```
  */
-export interface TemplateContext extends ReleaseContextOptions, WorkspaceValue {
+export interface TemplateContext
+  extends ReleaseContextOptions, WorkspaceInterface {
   publishPath: string;
 
   /**
@@ -219,4 +221,30 @@ export interface TemplateContext extends ReleaseContextOptions, WorkspaceValue {
    * @deprecated  use `sourceBranch` from `shared`
    */
   branch: string;
+}
+
+export interface ReleaseGlobalConfig {
+  /**
+   * The github PR of the project
+   * @private
+   */
+  github?: GithubProps;
+
+  /**
+   * Changeset version/publish plugin options
+   * @private
+   */
+  changesetVersion?: ChangesetVersionProps;
+
+  /**
+   * The workspaces of the project
+   * @private
+   */
+  workspaces?: WorkspacesProps;
+}
+
+declare module '@qlover/scripts-context' {
+  export interface FeConfig {
+    [defaultReleaaseName]?: ReleaseGlobalConfig;
+  }
 }

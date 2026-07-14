@@ -3,7 +3,7 @@ import type {
   ShellExecOptions,
   ShellInterface
 } from '../interface/ShellInterface';
-import { template as lodashTemplate } from 'lodash-es';
+import { TemplateEngine } from './TemplateEngine';
 
 /**
  * Function type for executing shell commands
@@ -115,7 +115,7 @@ export interface ShellConfig extends ShellExecOptions {
  *
  * Main features:
  * - Template formatting: Dynamic command generation with context
- *   - Uses lodash template for string interpolation
+ *   - Uses TemplateEngine for string interpolation
  *   - Supports complex template expressions
  *   - Provides error handling for template failures
  *   - Enables dynamic command construction
@@ -164,7 +164,7 @@ export interface ShellConfig extends ShellExecOptions {
  * @example With template formatting
  * ```typescript
  * const shell = new Shell({ logger: myLogger });
- * const output = await shell.exec('git clone <%= repo %>', {
+ * const output = await shell.exec('git clone ${repo}', {
  *   context: { repo: 'https://github.com/user/repo.git' }
  * });
  * ```
@@ -188,6 +188,8 @@ export interface ShellConfig extends ShellExecOptions {
  * ```
  */
 export class Shell implements ShellInterface {
+  private static readonly templateEngine = new TemplateEngine();
+
   /**
    * Creates a new Shell instance with the specified configuration
    *
@@ -262,63 +264,40 @@ export class Shell implements ShellInterface {
   }
 
   /**
-   * Formats a template string with context using lodash template
+   * Formats a template string with context using {@link TemplateEngine}.
    *
-   * Core concept:
-   * Provides static template formatting functionality using
-   * lodash template for string interpolation with context data.
-   *
-   * Template features:
-   * - Uses lodash template for powerful string interpolation
-   * - Supports complex template expressions and logic
-   * - Handles undefined and null context values gracefully
-   * - Returns formatted string with context values substituted
-   *
-   * Template syntax:
-   * - `<%= variable %>` for escaped output
-   * - `<%- variable %>` for unescaped output
-   * - `<% code %>` for JavaScript code execution
-   * - Supports nested object access and function calls
-   *
-   * Context handling:
-   * - Accepts any object with string/number/boolean values
-   * - Handles undefined and null values safely
-   * - Supports nested object property access
-   * - Provides fallback for missing context values
+   * Uses ES6-style `${ path }` placeholders via {@link TemplateEngine}.
    *
    * @param template - Template string with interpolation placeholders
    * @param context - Context object for template variable substitution
    * @returns Formatted string with context values substituted
    *
-   * @example Basic template formatting
+   * @example Basic formatting
    * ```typescript
-   * const result = Shell.format('Hello <%= name %>!', { name: 'World' });
+   * const result = Shell.format('Hello ${name}!', { name: 'World' });
    * // Returns: 'Hello World!'
    * ```
    *
    * @example Complex template with nested objects
    * ```typescript
    * const result = Shell.format(
-   *   'git clone <%= repo.url %> <%= repo.branch %>',
+   *   'git clone ${repo.url} ${repo.branch}',
    *   { repo: { url: 'https://github.com/user/repo.git', branch: 'main' } }
    * );
    * // Returns: 'git clone https://github.com/user/repo.git main'
    * ```
-   *
-   * @example Template with conditional logic
-   * ```typescript
-   * const result = Shell.format(
-   *   'npm install<% if (dev) { %> --save-dev<% } %>',
-   *   { dev: true }
-   * );
-   * // Returns: 'npm install --save-dev'
-   * ```
    */
   public static format(
     template: string = '',
-    context: Record<string, unknown> = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: Record<string, any> = {}
   ): string {
-    return lodashTemplate(template)(context);
+    const data =
+      context !== null && typeof context === 'object'
+        ? context
+        : ({} as Record<string, unknown>);
+
+    return Shell.templateEngine.render(template, data);
   }
 
   /**
@@ -354,14 +333,14 @@ export class Shell implements ShellInterface {
    *
    * @example Basic formatting
    * ```typescript
-   * const result = shell.format('Hello <%= name %>!', { name: 'World' });
+   * const result = shell.format('Hello ${name}!', { name: 'World' });
    * // Returns: 'Hello World!'
    * ```
    *
    * @example Error handling
    * ```typescript
    * try {
-   *   const result = shell.format('Hello <%= name %>!', {});
+   *   const result = shell.format('Hello ${name}!', {});
    * } catch (error) {
    *   // Error is logged with template and context information
    *   console.error('Template formatting failed:', error.message);
@@ -417,7 +396,7 @@ export class Shell implements ShellInterface {
    *
    * @example String command with template
    * ```typescript
-   * const output = await shell.exec('git clone <%= repo %>', {
+   * const output = await shell.exec('git clone ${repo}', {
    *   context: { repo: 'https://github.com/user/repo.git' }
    * });
    * ```

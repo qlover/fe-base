@@ -4,6 +4,42 @@
 
 ---
 
+### `GatewayResultFailedInterface` (Interface)
+
+**Type:** `interface GatewayResultFailedInterface<ErrorType>`
+
+---
+
+#### `data` (Property)
+
+**Type:** `null`
+
+---
+
+#### `error` (Property)
+
+**Type:** `ErrorType`
+
+---
+
+### `GatewayResultSuccessInterface` (Interface)
+
+**Type:** `interface GatewayResultSuccessInterface<T>`
+
+---
+
+#### `data` (Property)
+
+**Type:** `T`
+
+---
+
+#### `error` (Property)
+
+**Type:** `null`
+
+---
+
 ### `GatewayServiceInterface` (Interface)
 
 **Type:** `interface GatewayServiceInterface<Store, Gateway>`
@@ -161,8 +197,66 @@ asyncStore.getStore().subscribe((state) => {
 
 ---
 
+### `GatewayResult` (TypeAlias)
+
+**Type:** `GatewayResultSuccessInterface<T> \| GatewayResultFailedInterface<ErrorType>`
+
+**Since:** `3.3.0`
+
+Gateway Service Return Result type
+
+---
+
 ### `ServiceGatewayType` (TypeAlias)
 
 **Type:** `object`
+
+---
+
+### `createGatewayResultFailed` (Function)
+
+**Type:** `(error: ErrorType) => GatewayResultFailedInterface<ErrorType>`
+
+#### Parameters
+
+| Name    | Type        | Optional | Default | Since | Deprecated | Description |
+| ------- | ----------- | -------- | ------- | ----- | ---------- | ----------- |
+| `error` | `ErrorType` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `createGatewayResultFailed` (CallSignature)
+
+**Type:** `GatewayResultFailedInterface<ErrorType>`
+
+#### Parameters
+
+| Name    | Type        | Optional | Default | Since | Deprecated | Description |
+| ------- | ----------- | -------- | ------- | ----- | ---------- | ----------- |
+| `error` | `ErrorType` | ❌       | -       | -     | -          |             |
+
+---
+
+### `createGatewayResultSuccess` (Function)
+
+**Type:** `(data: T) => GatewayResultSuccessInterface<T>`
+
+#### Parameters
+
+| Name   | Type | Optional | Default | Since | Deprecated | Description |
+| ------ | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `data` | `T`  | ❌       | -       | -     | -          |             |
+
+---
+
+#### `createGatewayResultSuccess` (CallSignature)
+
+**Type:** `GatewayResultSuccessInterface<T>`
+
+#### Parameters
+
+| Name   | Type | Optional | Default | Since | Deprecated | Description |
+| ------ | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `data` | `T`  | ❌       | -       | -     | -          |             |
 
 ---

@@ -115,6 +115,14 @@ Configuration options including shell interface
 
 ---
 
+#### `templateEngine` (Property)
+
+**Type:** `TemplateEngine`
+
+**Default:** `{}`
+
+---
+
 #### `foramtLink` (Method)
 
 **Type:** `(target: string, url: string) => string`
@@ -418,6 +426,31 @@ in the changelog entry.
 
 ```typescript
 commitBody: true; // Include full commit message
+```
+
+---
+
+#### `dependencyReleaseTemplate` (Property)
+
+**Type:** `string`
+
+**Since:** `5.0.0`
+
+**Default:** `'- Update dependency **${name}** from `
+
+Template for dependency release entries
+
+Used for formatting changelog entries related to dependency updates.
+Supports variables:
+
+- ${dep.name}: Dependency name
+- ${dep.oldVersion}: Previous version
+- ${dep.newVersion}: Updated version
+
+**Example:**
+
+```typescript
+dependencyReleaseTemplate: '- Bump **${dep.name}** from `${dep.oldVersion}` to `${dep.newVersion}`';
 ```
 
 ---

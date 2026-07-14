@@ -184,7 +184,7 @@ export default class TypeDocJson extends ScriptPlugin<
       this.writeJSON(formatProject, tplPath);
     }
 
-    this.context.setOptions({ formatProject });
+    this.context.setParameters({ formatProject });
   }
 
   /**

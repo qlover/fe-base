@@ -4,9 +4,97 @@
 
 Frontend package release automation framework
 
-This module provides a comprehensive framework for automating the release
-process of frontend packages. It includes tools for version management,
-changelog generation, GitHub integration, and workspace management.
+Automates monorepo releases: detect changed packages, generate changelogs,
+bump versions via Changesets, open GitHub release PRs, and publish to npm.
+
+## Default pipeline
+
+Plugins run in order:
+
+1. **Workspaces** — detect changed packages (by git diff or `changes:*` labels)
+2. **ChangesetVersion** — write changesets, run `changeset version`, update CHANGELOG.md
+3. **Github** — enrich changelogs with PR/commit links, push release branch, open PR
+
+Configuration lives in `fe-config.json` under the `release` key (merged with
+built-in defaults in `release.json`). CLI flags use dot notation, e.g.
+`--changesetVersion.increment patch`, `--github.push-change-labels`.
+
+## fe-base workflow (master-only)
+
+Feature work merges into `master`. When a merge carries the `CI-Release` label,
+CI creates a release PR; merging that release PR publishes.
+
+```
+feature/*  ──PR──►  master  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+                 (+ CI-Release)
+```
+
+### Phase 1 — Feature PR (base: `master`)
+
+- **CI** (`.github/workflows/general-check.yml`): lint, test, build on every PR.
+- Changed packages are detected later by `fe-release` via **git diff** (no `changes:*` labels).
+
+### Phase 2 — Create release PR (trigger: `CI-Release` on merged master PR)
+
+- **CI** (`.github/workflows/release.yml` → `create-release-pr`):
+  - Runs when a **merged** PR into `master` has the **`CI-Release`** label at merge time,
+    and the PR head is **not** a `release/*` branch, or via `workflow_dispatch`.
+  - Checks out `master`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
+  - Detects changed packages with git diff, bumps versions, updates `CHANGELOG.md`,
+    pushes `release/<repo>-<id>`, opens PR to `master`.
+  - The new release PR is labeled **`CI-Release`** (see `release.github.label.name`).
+  - Merges into `master` **without** `CI-Release` do **not** create a release PR (manual gate).
+
+```bash
+# Equivalent local / CI command (create release PR)
+fe-release -V -s master \
+  --changesetVersion.ignore-non-updated-packages
+```
+
+Open feature PRs with **`CI-Release`** skip `general-check`.
+
+### Phase 3 — Publish (trigger: release PR merged into `master`)
+
+- **CI** (`.github/workflows/release.yml` → `publish`):
+  - Runs when the **`release/* → master`** PR with `CI-Release` is merged.
+  - Runs `fe-release` in **publish** mode only — no changelog or version bump (`skip-changeset`).
+  - Publishes packages to npm and creates GitHub releases/tags.
+
+```bash
+# Equivalent CI command (publish only, versions already bumped in release PR)
+fe-release -V \
+  --changesetVersion.skip-changeset \
+  --changesetVersion.mode publish
+```
+
+### Labels
+
+| Label                                                     | Added by                                            | Purpose                                                                                        |
+| --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `CI-Release`                                              | Manual on feature PR (gate); auto on release PR     | Triggers version + release PR; skips general-check; publish when `release/*` merges to master |
+| `increment:major` / `increment:minor` / `increment:patch` | Manual on PR                                        | Override semver bump (default: patch)                                                          |
+
+Use a single **`CI-Release`** label for release PRs — do not add a separate `Release` label.
+
+### fe-config.json (minimal example)
+
+```json
+{
+  "release": {
+    "changesetVersion": {
+      "changesetRoot": ".changeset",
+      "ignoreNonUpdatedPackages": false
+    }
+  }
+}
+```
+
+### Manual release
+
+Run the **Release sub packages** workflow manually (`workflow_dispatch`) to create a
+release PR from current `master` without waiting for a feature merge.
+
+## Programmatic API
 
 Core Components:
 
@@ -24,13 +112,6 @@ Core Components:
   - ScriptPlugin: Base plugin infrastructure
   - GitHub PR integration
   - Workspace management
-
-- Utility Functions:
-  - Type definitions and helpers
-  - Tuple manipulation
-  - Resource loading
-  - Factory functions
-  - Argument processing
 
 **Example:** Basic usage
 
