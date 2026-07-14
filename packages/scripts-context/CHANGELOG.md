@@ -1,8 +1,8 @@
 # @qlover/scripts-context
 
-## 3.0.0
+## 2.3.0
 
-### Major Changes
+### Minor Changes
 
 #### ♻️ Refactors
 
