@@ -19,30 +19,31 @@ Configuration lives in `fe-config.json` under the `release` key (merged with
 built-in defaults in `release.json`). CLI flags use dot notation, e.g.
 `--changesetVersion.increment patch`, `--github.push-change-labels`.
 
-## fe-base workflow (develop → master)
+## fe-base workflow (master-only)
 
-This repository uses a two-stage branch flow. Feature work lands on `develop`;
-releases go to `master` through an automated release PR.
+Feature work merges into `master`. When a merge carries the `CI-Release` label,
+CI creates a release PR; merging that release PR publishes.
 
 ```
-feature/*  ──PR──►  develop  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+feature/*  ──PR──►  master  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+                 (+ CI-Release)
 ```
 
-### Phase 1 — Feature PR (base: `develop`)
+### Phase 1 — Feature PR (base: `master`)
 
 - **CI** (`.github/workflows/general-check.yml`): lint, test, build on every PR.
 - Changed packages are detected later by `fe-release` via **git diff** (no `changes:*` labels).
 
-### Phase 2 — Create release PR (trigger: `CI-Release` on merged develop PR)
+### Phase 2 — Create release PR (trigger: `CI-Release` on merged master PR)
 
 - **CI** (`.github/workflows/release.yml` → `create-release-pr`):
-  - Runs when a **merged** PR into `develop` has the **`CI-Release`** label at merge time,
-    or via `workflow_dispatch`.
-  - Checks out `develop`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
+  - Runs when a **merged** PR into `master` has the **`CI-Release`** label at merge time,
+    and the PR head is **not** a `release/*` branch, or via `workflow_dispatch`.
+  - Checks out `master`, runs `fe-release` in default **`changesetVersion` version** mode (`-s master`).
   - Detects changed packages with git diff, bumps versions, updates `CHANGELOG.md`,
     pushes `release/<repo>-<id>`, opens PR to `master`.
   - The new release PR is labeled **`CI-Release`** (see `release.github.label.name`).
-  - Merges into `develop` **without** `CI-Release` do **not** create a release PR (manual gate).
+  - Merges into `master` **without** `CI-Release` do **not** create a release PR (manual gate).
 
 ```bash
 # Equivalent local / CI command (create release PR)
@@ -68,10 +69,10 @@ fe-release -V \
 
 ### Labels
 
-| Label                                                     | Added by                                        | Purpose                                                                        |
-| --------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------ |
-| `CI-Release`                                              | Manual on develop PR (gate); auto on release PR | Triggers version + release PR; skips general-check; publish on merge to master |
-| `increment:major` / `increment:minor` / `increment:patch` | Manual on PR                                    | Override semver bump (default: patch)                                          |
+| Label                                                     | Added by                                            | Purpose                                                                                        |
+| --------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `CI-Release`                                              | Manual on feature PR (gate); auto on release PR     | Triggers version + release PR; skips general-check; publish when `release/*` merges to master |
+| `increment:major` / `increment:minor` / `increment:patch` | Manual on PR                                        | Override semver bump (default: patch)                                                          |
 
 Use a single **`CI-Release`** label for release PRs — do not add a separate `Release` label.
 
@@ -91,7 +92,7 @@ Use a single **`CI-Release`** label for release PRs — do not add a separate `R
 ### Manual release
 
 Run the **Release sub packages** workflow manually (`workflow_dispatch`) to create a
-release PR from current `develop` without waiting for a feature merge.
+release PR from current `master` without waiting for a feature merge.
 
 ## Programmatic API
 

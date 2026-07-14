@@ -24,7 +24,7 @@ jobs:
       - name: Set SHAs for Nx affected
         uses: nrwl/nx-set-shas@v4
         with:
-          main-branch-name: develop
+          main-branch-name: master
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -48,7 +48,6 @@ jobs:
           key: nx-cache-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
             nx-cache-${{ github.ref_name }}-
-            nx-cache-develop-
             nx-cache-master-
       
       - name: Build packages (exclude examples)

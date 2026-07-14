@@ -70,7 +70,7 @@ pnpm add @qlover/fe-release -D
 1. **本地创建发布 PR（预览）**
 
 ```bash
-# 从 develop 向 master 创建发布 PR（dry-run）
+# 从 master 创建发布 PR（dry-run）
 fe-release -d -V -s master --github.push-change-labels
 
 # 指定版本递增
@@ -132,7 +132,7 @@ fe-release [options]
 | 变量                                | 描述                                | 默认值   |
 | ----------------------------------- | ----------------------------------- | -------- |
 | `FE_RELEASE`                        | 启用/禁用发布                       | `true`   |
-| `FE_RELEASE_BRANCH`                 | 当前工作分支（CI 中设为 `develop`） | `master` |
+| `FE_RELEASE_BRANCH`                 | 当前工作分支（CI 中设为 `master`）  | `master` |
 | `FE_RELEASE_ENV`                    | 发布环境                            | -        |
 | `GITHUB_TOKEN` / `FE_RELEASE_TOKEN` | GitHub Token                        | -        |
 | `NPM_TOKEN`                         | npm 发布令牌                        | -        |
@@ -158,38 +158,39 @@ fe-release [options]
 
 ## 🔄 工作流程
 
-fe-base 采用 **develop → master** 两阶段发布，与 CI 工作流一一对应。
+fe-base 采用 **master 单线** 发布：功能合入 `master`，需要发版时打上 `CI-Release`。
 
 ### 分支与阶段
 
 ```
-feature/*  ──PR──►  develop  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+feature/*  ──PR──►  master  ──fe-release──►  release/*  ──PR──►  master  ──►  npm
+                 (+ CI-Release)
 ```
 
-| 阶段           | 触发条件                                    | CI 工作流                           | 工具                                         |
-| -------------- | ------------------------------------------- | ----------------------------------- | -------------------------------------------- |
-| 1. 功能开发    | PR 目标为 `develop`                         | `general-check.yml`                 | lint / test / build                          |
-| 2. 创建发布 PR | 合并到 `develop` 前打上 `CI-Release`        | `release.yml` → `create-release-pr` | `fe-release`（version 模式，git diff 找包） |
-| 3. 发布 | 发布 PR（`release/* → master`）合并到 `master` | `release.yml` → `publish` | `fe-release`（publish 模式，不再 bump 版本） |
+| 阶段           | 触发条件                                                       | CI 工作流                           | 工具                                              |
+| -------------- | -------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------- |
+| 1. 功能开发    | PR 目标为 `master`                                             | `general-check.yml`                 | lint / test / build                               |
+| 2. 创建发布 PR | 合入 `master` 且带 `CI-Release`（且 head 不是 `release/*`）    | `release.yml` → `create-release-pr` | `fe-release`（version 模式，git diff 找包）       |
+| 3. 发布        | 发布 PR（`release/* → master`）合并且带 `CI-Release`           | `release.yml` → `publish`           | `fe-release`（publish 模式，不再 bump 版本）      |
 
-### 阶段 1：功能 PR（目标分支 `develop`）
+### 阶段 1：功能 PR（目标分支 `master`）
 
-1. 从 `develop` 拉功能分支，开发并提交（遵循 Conventional Commits）。
-2. 创建 PR，目标分支为 **`develop`**。
+1. 从 `master` 拉功能分支，开发并提交（遵循 Conventional Commits）。
+2. 创建 PR，目标分支为 **`master`**。
 3. CI 自动执行质量检查（lint / test / build）。
 4. 可选：在 PR 上添加版本递增标签 `increment:major` / `increment:minor` / `increment:patch`（默认 patch）。
 
 ### 阶段 2：创建发布 PR（手动打 `CI-Release` 触发）
 
-功能 PR **合并到 develop 之前**，在 PR 上添加 **`CI-Release`** 标签（合并时必须仍保留该标签）：
+功能 PR **合并到 master 之前**，在 PR 上添加 **`CI-Release`** 标签（合并时必须仍保留该标签）：
 
 1. 合并时触发 `release.yml` 的 `create-release-pr` job（`closed` 事件）。
-2. 检出 `develop`，运行 `fe-release`（默认 **`changesetVersion` version 模式**）：
+2. 检出 `master`，运行 `fe-release`（默认 **`changesetVersion` version 模式**）：
    - 通过 **git diff** 检测变更包
    - 生成 changelog、更新 `CHANGELOG.md`、 bump 版本号
 3. 推送 `release/<repo>-<id>` 分支，创建指向 **`master`** 的发布 PR（自动带 `CI-Release`）。
 
-> 合并到 develop 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。  
+> 合入 master 时**没有** `CI-Release` 标签 → **不会**自动创建发布 PR。  
 > 若已合并但未打标签，可在 Actions 里手动运行 **Release sub packages**（`workflow_dispatch`）。
 
 带 **`CI-Release`** 的功能 PR 在打开期间会跳过 `general-check`。
@@ -203,23 +204,23 @@ feature/*  ──PR──►  develop  ──fe-release──►  release/*  ─
 
 ### 标签说明
 
-| 标签                      | 来源                        | 作用                                                      |
-| ------------------------- | --------------------------- | --------------------------------------------------------- |
-| `CI-Release` | 手动打在 develop 功能 PR 上（触发创建发布 PR）；发布 PR 上由 `fe-release` 自动添加 | 触发 version 流程；跳过 general-check；master 合并后触发 publish |
-| `increment:*`             | 手动添加                    | 覆盖 semver 递增策略                                      |
+| 标签          | 来源                                                                  | 作用                                                                      |
+| ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `CI-Release`  | 手动打在功能 PR 上（触发创建发布 PR）；发布 PR 上由 `fe-release` 自动添加 | 触发 version 流程；跳过 general-check；`release/*` 合入 master 后触发 publish |
+| `increment:*` | 手动添加                                                              | 覆盖 semver 递增策略                                                      |
 
 > 发布 PR 统一使用 **`CI-Release`** 一个标签即可，无需再单独创建 `Release` 标签。
 
 ### 手动触发发布
 
 在 GitHub Actions 中手动运行 **Release sub packages** 工作流（`workflow_dispatch`），
-会从当前 `develop` 创建发布 PR，无需等待某次功能合并。
+会从当前 `master` 创建发布 PR，无需等待某次功能合并。
 
 ### 流程图
 
 ```mermaid
 graph TD
-    A[feature 分支] -->|PR| B[develop]
+    A[feature 分支] -->|PR| B[master]
     B -->|lint test build| B
     B -->|合并且带 CI-Release| C[create-release-pr]
     C -->|fe-release git diff| D[release/* → master PR]
