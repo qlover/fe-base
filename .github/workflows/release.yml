@@ -68,8 +68,16 @@ jobs:
       - name: Create release PR to master
         if: github.event_name == 'pull_request'
         run: |
+          INCREMENT=patch
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'increment:major') }}" == "true" ]]; then
+            INCREMENT=major
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'increment:minor') }}" == "true" ]]; then
+            INCREMENT=minor
+          fi
+          echo "Using version increment: $INCREMENT"
           node packages/fe-release/dist/cli.js -V \
             -s master \
+            -i "$INCREMENT" \
             --workspaces.compare-ref "${{ github.event.pull_request.base.sha }}" \
             --changesetVersion.ignore-non-updated-packages
         env:

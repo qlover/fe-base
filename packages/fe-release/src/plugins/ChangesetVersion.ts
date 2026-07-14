@@ -588,16 +588,18 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   public getIncrement(): string {
-    const labels = this.context.parameters.workspaces?.changeLabels;
+    const labels = this.getIncrementLabels();
 
-    if (Array.isArray(labels) && labels.length > 0) {
-      if (labels.includes('increment:major')) {
-        return 'major';
-      }
+    if (labels.includes('increment:major')) {
+      return 'major';
+    }
 
-      if (labels.includes('increment:minor')) {
-        return 'minor';
-      }
+    if (labels.includes('increment:minor')) {
+      return 'minor';
+    }
+
+    if (labels.includes('increment:patch')) {
+      return 'patch';
     }
 
     return (
@@ -605,6 +607,45 @@ export default class ChangesetVersion extends ScriptPlugin<
       this.context.parameters.changesetVersion?.increment ||
       releaseJson.changesetVersion.increment
     );
+  }
+
+  /**
+   * Labels that can override semver increment.
+   *
+   * Prefer explicit `workspaces.changeLabels`, then fall back to the PR labels
+   * from `GITHUB_EVENT_PATH` when running in GitHub Actions after a PR merge.
+   */
+  protected getIncrementLabels(): string[] {
+    const fromConfig = this.context.parameters.workspaces?.changeLabels;
+    if (Array.isArray(fromConfig) && fromConfig.length > 0) {
+      return fromConfig.filter((label): label is string => typeof label === 'string');
+    }
+
+    return this.readGithubEventLabelNames();
+  }
+
+  protected readGithubEventLabelNames(): string[] {
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    if (!eventPath || !existsSync(eventPath)) {
+      return [];
+    }
+
+    try {
+      const event = JSON.parse(readFileSync(eventPath, 'utf8')) as {
+        pull_request?: { labels?: Array<{ name?: string }> };
+      };
+      const labels = event.pull_request?.labels;
+      if (!Array.isArray(labels)) {
+        return [];
+      }
+
+      return labels
+        .map((label) => label?.name)
+        .filter((name): name is string => typeof name === 'string' && name.length > 0);
+    } catch (error) {
+      this.logger.debug('Failed to read labels from GITHUB_EVENT_PATH', error);
+      return [];
+    }
   }
 
   public async generateChangesetFile(
