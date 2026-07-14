@@ -14,7 +14,8 @@
  *
  * Publish flow (`mode: 'publish'` or second half of `'both'`):
  * 1. Run `changeset publish` (npm publish + local `git tag` only)
- * 2. Push newly created tags to `origin` (changesets never push tags itself)
+ * 2. Sync workspaces from disk so `tagName` is set from the release version
+ * 3. Push `workspace.tagName` refs to `origin`
  *
  * Version flow (`mode: 'version'` or first half of `'both'`):
  * 1. Write `.changeset/*.md` files for directly changed packages only
@@ -351,79 +352,86 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   protected async runChangesetPublish(): Promise<void> {
+    const workspaces = this.context.workspaces ?? [];
+
     if (this.context.dryRun) {
       this.logDryRun('Would run: changeset publish, publish packages and tags');
-      this.logDryRun('Would push newly created git tags to origin');
+      // Publish does not bump package.json; tagName comes from the current version.
+      const preview = this.mergeWorkspaces(workspaces);
+      this.context.setWorkspaces(preview);
+      const previewTags = preview
+        .filter(
+          (workspace) =>
+            this.shouldProcessWorkspace(workspace) &&
+            !workspace.dependencyRelease &&
+            workspace.tagName
+        )
+        .map((workspace) => workspace.tagName as string);
+
+      this.logDryRun(
+        previewTags.length === 0
+          ? 'Would push release tag(s) from workspace.tagName: none'
+          : `Would push release tag(s) from workspace.tagName:\n${previewTags
+              .map((tag) => `  ${tag}`)
+              .join('\n')}`
+      );
       return;
     }
-
-    // changeset publish only creates tags locally — it never pushes them.
-    const tagsBeforePublish = await this.listLocalTags();
 
     await this.step({
       label: 'Changeset Publish',
       task: () => this.context.runChangesetsCli('publish')
     });
 
-    await this.step({
-      label: 'Push Release Tags',
-      task: () => this.pushNewReleaseTags(tagsBeforePublish)
-    });
-
-    const workspaces = this.context.workspaces;
-    if (workspaces && workspaces.length > 0) {
+    // Sync disk versions first so mergeWorkspaces fills workspace.tagName.
+    if (workspaces.length > 0) {
       this.syncWorkspaces(workspaces);
     }
+
+    await this.step({
+      label: 'Push Release Tags',
+      task: () =>
+        this.pushWorkspaceReleaseTags(this.context.workspaces ?? workspaces)
+    });
   }
 
   /**
-   * List local git tag names (short refs under `refs/tags/`).
-   */
-  protected async listLocalTags(): Promise<Set<string>> {
-    const output = await this.shell.exec(
-      'git for-each-ref --format=%(refname:short) refs/tags/',
-      { dryRun: false, silent: true }
-    );
-
-    const tags = output
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    return new Set(tags);
-  }
-
-  /**
-   * Push tags created by `changeset publish` to `origin`.
+   * Push release tags from synced workspaces' `tagName` fields.
    *
-   * Changesets CLI only runs `git tag` locally after a successful npm publish.
-   * Without an explicit push, CI never updates remote tags, so the next
-   * release still uses the previous tag as the changelog baseline.
+   * `changeset publish` only creates tags locally. After {@link syncWorkspaces},
+   * each publishable workspace should already have `tagName` (e.g. `pkg@1.2.3`).
    */
-  protected async pushNewReleaseTags(
-    tagsBeforePublish: Set<string>
+  protected async pushWorkspaceReleaseTags(
+    workspaces: WorkspaceInterface[]
   ): Promise<void> {
-    const tagsAfterPublish = await this.listLocalTags();
-    const newTags = [...tagsAfterPublish].filter(
-      (tag) => !tagsBeforePublish.has(tag)
-    );
+    const tags = workspaces
+      .filter(
+        (workspace) =>
+          this.shouldProcessWorkspace(workspace) &&
+          !workspace.dependencyRelease &&
+          !!workspace.tagName
+      )
+      .map((workspace) => workspace.tagName as string);
 
-    if (newTags.length === 0) {
+    const uniqueTags = [...new Set(tags)];
+
+    if (uniqueTags.length === 0) {
       this.logger.warn(
-        'No new git tags found after changeset publish; skip tag push'
+        'No workspace.tagName found after publish sync; skip tag push'
       );
       return;
     }
 
     this.logger.info(
-      `Pushing ${newTags.length} release tag(s) to origin:\n${newTags.map((tag) => `  ${tag}`).join('\n')}`
+      `Pushing ${uniqueTags.length} release tag(s) to origin:\n${uniqueTags.map((tag) => `  ${tag}`).join('\n')}`
     );
 
+    // Quote refs: Shell.exec runs through /bin/sh after joining argv.
     await this.shell.exec([
       'git',
       'push',
       'origin',
-      ...newTags.map((tag) => `refs/tags/${tag}`)
+      ...uniqueTags.map((tag) => `"refs/tags/${tag}"`)
     ]);
   }
 
@@ -541,13 +549,15 @@ export default class ChangesetVersion extends ScriptPlugin<
         lastTag: workspace.lastTag
       });
 
-      if (
-        newWorkspace.newVersion &&
-        newWorkspace.newVersion !== newWorkspace.version
-      ) {
+      // Always derive tagName from the on-disk release version.
+      // Version mode: disk was bumped (newVersion may differ from version).
+      // Publish mode: disk is already the release version (newVersion === version).
+      const releaseVersion =
+        newWorkspace.newVersion || newWorkspace.version;
+      if (releaseVersion) {
         newWorkspace.tagName = this.generateTagName({
           ...newWorkspace,
-          version: newWorkspace.newVersion
+          version: releaseVersion
         });
       }
 
