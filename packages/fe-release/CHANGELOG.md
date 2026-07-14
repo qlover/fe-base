@@ -1,5 +1,30 @@
 # @qlover/fe-release
 
+## 5.0.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **fe-release:** enhance GitHub Actions release workflow and improve package detection ([c245fea](https://github.com/qlover/fe-base/commit/c245fea933169a0a0d363931c84b2665397e659c)) ([#644](https://github.com/qlover/fe-base/pull/644))
+
+#### 🐞 Bug Fixes
+
+- **fe-release:** exclude restored dependency packages from release PR ([ed431ab](https://github.com/qlover/fe-base/commit/ed431abdfaa449eb987a696a01fd7d8713cc43b4)) ([#644](https://github.com/qlover/fe-base/pull/644))
+
+- **fe-release:** honor increment:\* labels on release PRs ([7e03012](https://github.com/qlover/fe-base/commit/7e0301208317380d0aff9b56870311ce0bf71835)) ([#642](https://github.com/qlover/fe-base/pull/642))
+
+- **fe-release:** detect changed packages after merge to master ([e25b6ad](https://github.com/qlover/fe-base/commit/e25b6adeee3cebed8610f8393952aca942d94c32)) ([#640](https://github.com/qlover/fe-base/pull/640))
+
+#### ♻️ Refactors
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+
+- **fe-release:** improve test readability in ReleaseFormatter tests ([72f09be](https://github.com/qlover/fe-base/commit/72f09be48ae1a6e5c799ae33761a54d0ae5fb7e4)) ([#639](https://github.com/qlover/fe-base/pull/639))
+- Update dependency **@qlover/logger** from `1.2.0` to `1.2.1`
+- Update dependency **@qlover/scripts-context** from `2.3.2` to `2.3.3`
+- Update dependency **@qlover/env-loader** from `1.0.2` to `1.0.2`
+
 ## 5.0.1
 
 ### Patch Changes

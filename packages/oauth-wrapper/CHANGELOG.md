@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.3
+
+### Patch Changes
+
+- Update dependency **@qlover/logger** from `1.2.0` to `1.2.1`
+- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
+
 ## 0.2.1
 
 ### Patch Changes
