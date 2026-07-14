@@ -323,7 +323,12 @@ export class ReleaseFormatter {
       .map((workspace) =>
         this.templateEngine.render(
           this.config.batchPRBody || releaseJson.github.batchPRBody,
-          workspace
+          {
+            ...workspace,
+            // Prefer bumped version in PR changelog section headers
+            version: workspace.newVersion || workspace.version,
+            newVersion: workspace.newVersion || workspace.version
+          }
         )
       )
       .join('\n');

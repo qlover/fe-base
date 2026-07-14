@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { join } from 'node:path';
 import Workspaces from '../../src/plugins/Workspaces';
 import * as createWorkspaceModule from '../../src/utils/createWorkspace';
 import { WorkspaceValue } from '../../src/implments/WorkspaceValue';
@@ -126,6 +127,41 @@ describe('Workspaces Plugin', () => {
         'git diff --name-only abc1234...HEAD',
         { dryRun: false }
       );
+    });
+
+    it('should fall back to pull_request.base.sha from GITHUB_EVENT_PATH', async () => {
+      const eventPath = join(process.cwd(), '.tmp-github-pr-event.json');
+      const { writeFileSync, unlinkSync, existsSync } = await import('node:fs');
+      writeFileSync(
+        eventPath,
+        JSON.stringify({
+          pull_request: {
+            merged: true,
+            base: { sha: 'pr-base-sha-001' }
+          }
+        }),
+        'utf8'
+      );
+
+      const previous = process.env.GITHUB_EVENT_PATH;
+      process.env.GITHUB_EVENT_PATH = eventPath;
+      try {
+        // @ts-expect-error call private method for testing
+        await workspaces.getGitWorkspaces();
+        expect(workspaces.shell.exec).toHaveBeenCalledWith(
+          'git diff --name-only pr-base-sha-001...HEAD',
+          { dryRun: false }
+        );
+      } finally {
+        if (previous === undefined) {
+          delete process.env.GITHUB_EVENT_PATH;
+        } else {
+          process.env.GITHUB_EVENT_PATH = previous;
+        }
+        if (existsSync(eventPath)) {
+          unlinkSync(eventPath);
+        }
+      }
     });
 
     it('when shell.exec returns non-string, should return empty array', async () => {
