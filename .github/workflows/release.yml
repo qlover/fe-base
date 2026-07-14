@@ -102,16 +102,20 @@ jobs:
       startsWith(github.event.pull_request.head.ref, 'release/') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NX_DAEMON: 'false'
 
     steps:
+      # PAT is required: default GITHUB_TOKEN from pull_request may not push tags
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Config Git
         run: |

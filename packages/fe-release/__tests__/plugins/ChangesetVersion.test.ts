@@ -113,6 +113,39 @@ describe('ChangesetVersion Plugin', () => {
     });
   });
 
+  describe('pushNewReleaseTags', () => {
+    it('should push only tags created after publish', async () => {
+      const exec = vi.spyOn(plugin.shell, 'exec').mockImplementation(async (cmd) => {
+        const command = Array.isArray(cmd) ? cmd.join(' ') : String(cmd);
+        if (command.includes('for-each-ref')) {
+          return ['pkg-a@1.0.0', 'pkg-a@1.0.1', 'pkg-b@2.0.0'].join('\n');
+        }
+        return '';
+      });
+
+      await plugin.pushNewReleaseTags(new Set(['pkg-a@1.0.0']));
+
+      expect(exec).toHaveBeenCalledWith([
+        'git',
+        'push',
+        'origin',
+        'refs/tags/pkg-a@1.0.1',
+        'refs/tags/pkg-b@2.0.0'
+      ]);
+    });
+
+    it('should skip push when no new tags exist', async () => {
+      const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('pkg-a@1.0.0\n');
+
+      await plugin.pushNewReleaseTags(new Set(['pkg-a@1.0.0']));
+
+      expect(exec).toHaveBeenCalledTimes(1);
+      expect(exec).not.toHaveBeenCalledWith(
+        expect.arrayContaining(['git', 'push', 'origin'])
+      );
+    });
+  });
+
   describe('restoreIgnorePackages', () => {
     it('should git restore dependency-release workspace paths', async () => {
       context.setParameters({

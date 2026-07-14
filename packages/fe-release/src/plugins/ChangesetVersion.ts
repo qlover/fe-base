@@ -12,6 +12,10 @@
  *   when `ignoreNonUpdatedPackages` is enabled)
  * - **onSuccess**: run version and/or publish flow based on `mode`
  *
+ * Publish flow (`mode: 'publish'` or second half of `'both'`):
+ * 1. Run `changeset publish` (npm publish + local `git tag` only)
+ * 2. Push newly created tags to `origin` (changesets never push tags itself)
+ *
  * Version flow (`mode: 'version'` or first half of `'both'`):
  * 1. Write `.changeset/*.md` files for directly changed packages only
  * 2. Run `changeset version` (optionally with `changelog: false` when `onlyVersion`)
@@ -275,19 +279,29 @@ export default class ChangesetVersion extends ScriptPlugin<
     this.context.setWorkspaces(newWorkspaces);
   }
 
+  protected printWorksapces(): void {
+    const workspaces = this.context.workspaces;
+    this.logger.info(
+      `ChangesetVersion Workspaces (${workspaces?.length}):\n${workspaces?.map((workspace) => workspace.toString()).join('\n')}`
+    );
+  }
+
   public override async onSuccess(): Promise<void> {
     if (this.mode === 'publish') {
       await this.runChangesetPublish();
+      this.printWorksapces();
       return;
     }
 
     if (this.mode === 'both') {
       await this.runVersionFlow();
       await this.runChangesetPublish();
+      this.printWorksapces();
       return;
     }
 
     await this.runVersionFlow();
+    this.printWorksapces();
   }
 
   protected logDryRun(message: string): void {
@@ -339,18 +353,78 @@ export default class ChangesetVersion extends ScriptPlugin<
   protected async runChangesetPublish(): Promise<void> {
     if (this.context.dryRun) {
       this.logDryRun('Would run: changeset publish, publish packages and tags');
+      this.logDryRun('Would push newly created git tags to origin');
       return;
     }
+
+    // changeset publish only creates tags locally — it never pushes them.
+    const tagsBeforePublish = await this.listLocalTags();
 
     await this.step({
       label: 'Changeset Publish',
       task: () => this.context.runChangesetsCli('publish')
     });
 
+    await this.step({
+      label: 'Push Release Tags',
+      task: () => this.pushNewReleaseTags(tagsBeforePublish)
+    });
+
     const workspaces = this.context.workspaces;
     if (workspaces && workspaces.length > 0) {
       this.syncWorkspaces(workspaces);
     }
+  }
+
+  /**
+   * List local git tag names (short refs under `refs/tags/`).
+   */
+  protected async listLocalTags(): Promise<Set<string>> {
+    const output = await this.shell.exec(
+      'git for-each-ref --format=%(refname:short) refs/tags/',
+      { dryRun: false, silent: true }
+    );
+
+    const tags = output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    return new Set(tags);
+  }
+
+  /**
+   * Push tags created by `changeset publish` to `origin`.
+   *
+   * Changesets CLI only runs `git tag` locally after a successful npm publish.
+   * Without an explicit push, CI never updates remote tags, so the next
+   * release still uses the previous tag as the changelog baseline.
+   */
+  protected async pushNewReleaseTags(
+    tagsBeforePublish: Set<string>
+  ): Promise<void> {
+    const tagsAfterPublish = await this.listLocalTags();
+    const newTags = [...tagsAfterPublish].filter(
+      (tag) => !tagsBeforePublish.has(tag)
+    );
+
+    if (newTags.length === 0) {
+      this.logger.warn(
+        'No new git tags found after changeset publish; skip tag push'
+      );
+      return;
+    }
+
+    this.logger.info(
+      `Pushing ${newTags.length} release tag(s) to origin:\n${newTags.map((tag) => `  ${tag}`).join('\n')}`
+    );
+
+    await this.shell.exec([
+      'git',
+      'push',
+      'origin',
+      ...newTags.map((tag) => `refs/tags/${tag}`)
+    ]);
   }
 
   protected syncWorkspaces(workspaces: WorkspaceInterface[]): void {
@@ -634,7 +708,9 @@ export default class ChangesetVersion extends ScriptPlugin<
   protected getIncrementLabels(): string[] {
     const fromConfig = this.context.parameters.workspaces?.changeLabels;
     if (Array.isArray(fromConfig) && fromConfig.length > 0) {
-      return fromConfig.filter((label): label is string => typeof label === 'string');
+      return fromConfig.filter(
+        (label): label is string => typeof label === 'string'
+      );
     }
 
     return this.readGithubEventLabelNames();
@@ -657,7 +733,9 @@ export default class ChangesetVersion extends ScriptPlugin<
 
       return labels
         .map((label) => label?.name)
-        .filter((name): name is string => typeof name === 'string' && name.length > 0);
+        .filter(
+          (name): name is string => typeof name === 'string' && name.length > 0
+        );
     } catch (error) {
       this.logger.debug('Failed to read labels from GITHUB_EVENT_PATH', error);
       return [];

@@ -55,7 +55,7 @@
  * - **CI** (`.github/workflows/release.yml` → `publish`):
  *   - Runs when the **`release/* → master`** PR with `CI-Release` is merged.
  *   - Runs `fe-release` in **publish** mode only — no changelog or version bump (`skip-changeset`).
- *   - Publishes packages to npm and creates GitHub releases/tags.
+ *   - Publishes packages to npm, then pushes git tags created by `changeset publish`.
  *
  * ```bash
  * # Equivalent CI command (publish only, versions already bumped in release PR)
