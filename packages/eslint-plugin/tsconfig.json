@@ -5,7 +5,8 @@
     "rootDir": ".",
     "moduleResolution": "bundler",
     "outDir": "ts-build",
-    "tsBuildInfoFile": "ts-build/.tsbuildinfo"
+    "tsBuildInfoFile": "ts-build/.tsbuildinfo",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"]
