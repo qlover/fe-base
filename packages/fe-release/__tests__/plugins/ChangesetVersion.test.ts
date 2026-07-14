@@ -62,6 +62,33 @@ describe('ChangesetVersion Plugin', () => {
       });
       expect(plugin.getIncrement()).toBe('major');
     });
+
+    it('should read increment label from GITHUB_EVENT_PATH', () => {
+      const eventPath = join(process.cwd(), '.tmp-github-event.json');
+      vi.mocked(existsSync).mockImplementation((path) => path === eventPath);
+      vi.mocked(readFileSync).mockImplementation((path) => {
+        if (path === eventPath) {
+          return JSON.stringify({
+            pull_request: {
+              labels: [{ name: 'CI-Release' }, { name: 'increment:major' }]
+            }
+          });
+        }
+        return JSON.stringify({ changelog: ['@changesets/cli/changelog'] });
+      });
+
+      const previous = process.env.GITHUB_EVENT_PATH;
+      process.env.GITHUB_EVENT_PATH = eventPath;
+      try {
+        expect(plugin.getIncrement()).toBe('major');
+      } finally {
+        if (previous === undefined) {
+          delete process.env.GITHUB_EVENT_PATH;
+        } else {
+          process.env.GITHUB_EVENT_PATH = previous;
+        }
+      }
+    });
   });
 
   describe('mergeWorkspaces', () => {
