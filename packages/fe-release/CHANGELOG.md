@@ -1,5 +1,13 @@
 # @qlover/fe-release
 
+## 5.0.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **fe-release:** enhance ChangesetVersion plugin to sync and push workspace tags ([a3b6135](https://github.com/qlover/fe-base/commit/a3b61351be70d3d649631fe844ed219e3296a9bc)) ([#651](https://github.com/qlover/fe-base/pull/651))
+
 ## 5.0.3
 
 ### Patch Changes
