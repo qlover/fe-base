@@ -60,13 +60,13 @@ describe('Workspaces Plugin', () => {
         return new WorkspaceValue({
           name: isA ? 'package-a' : 'package-b',
           version: isA ? '0.1.0' : '0.2.0',
-          path,
           root: `/repo/${path}`,
           packageJson: {
             name: isA ? 'package-a' : 'package-b',
             version: isA ? '0.1.0' : '0.2.0'
           },
-          ...partial
+          ...partial,
+          path
         });
       }
     );
@@ -86,15 +86,26 @@ describe('Workspaces Plugin', () => {
 
   describe('getChangedPackages', () => {
     it('should return changed packages', async () => {
-      const result = await workspaces.getChangedPackages([
-        'packages/package-a',
-        'packages/package-b'
-      ]);
+      const result = await (
+        workspaces as unknown as {
+          getChangedPackages: (
+            paths: string[],
+            labels?: string[]
+          ) => Promise<string[]>;
+        }
+      ).getChangedPackages(['packages/package-a', 'packages/package-b']);
       expect(result).toEqual(['packages/package-a', 'packages/package-b']);
     });
 
     it('should return changed packages by changeLabels', async () => {
-      const result = await workspaces.getChangedPackages(
+      const result = await (
+        workspaces as unknown as {
+          getChangedPackages: (
+            paths: string[],
+            labels?: string[]
+          ) => Promise<string[]>;
+        }
+      ).getChangedPackages(
         ['packages/package-a', 'packages/package-b'],
         ['change:packages/package-a']
       );
@@ -187,7 +198,11 @@ describe('Workspaces Plugin', () => {
 
   describe('getWorkspaces', () => {
     it('should return changed workspaces list', async () => {
-      const workspacesResult = await workspaces.getWorkspaces();
+      const workspacesResult = await (
+        workspaces as unknown as {
+          getWorkspaces: () => Promise<WorkspaceValue[]>;
+        }
+      ).getWorkspaces();
 
       expect(workspacesResult).toHaveLength(2);
       expect(workspacesResult[0].name).toBe('package-a');

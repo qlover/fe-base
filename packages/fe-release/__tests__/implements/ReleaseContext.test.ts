@@ -41,7 +41,7 @@ describe('ReleaseContext', () => {
       },
       options: {
         workspaces: {
-          workspace: defaultWorkspace
+          workspaces: [defaultWorkspace]
         }
       }
     };

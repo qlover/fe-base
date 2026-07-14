@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { TemplateEngine } from '@qlover/scripts-context';
 import { ReleaseFormatter } from '../../src/implments/ReleaseFormatter';
 import type { WorkspaceInterface } from '../../src/interface/WorkspaceInterface';
+import type { TemplateContext } from '../../src/type';
 
 describe('ReleaseFormatter', () => {
   const engine = new TemplateEngine();
@@ -16,7 +17,7 @@ describe('ReleaseFormatter', () => {
     releaseEnv: 'production',
     sourceBranch: 'master',
     publishPath: ''
-  };
+  } as unknown as TemplateContext;
 
   const workspaces: WorkspaceInterface[] = [
     {

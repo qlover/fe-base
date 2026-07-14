@@ -6,7 +6,6 @@
     "moduleResolution": "bundler",
     "removeComments": false,
     "preserveConstEnums": true,
-    "baseUrl": ".",
     "experimentalDecorators": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,

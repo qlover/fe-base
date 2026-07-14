@@ -5,7 +5,7 @@
     "rootDir": ".",
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo",
-    "downlevelIteration": true,
+    "moduleResolution": "bundler",
     "strict": true,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,

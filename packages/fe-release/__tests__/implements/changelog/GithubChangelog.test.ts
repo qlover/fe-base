@@ -33,10 +33,10 @@ describe('GithubChangelog', () => {
       createTestReleaseOptions({
         options: {
           authorName: 'org',
-          repoName: 'repo',
-          shell: mockShell,
-          logger: mockLogger
-        }
+          repoName: 'repo'
+        },
+        shell: mockShell,
+        logger: mockLogger
       })
     );
 
@@ -74,7 +74,7 @@ describe('GithubChangelog', () => {
 
       const commits: CommitValue[] = [
         {
-          base: { hash: 'abc123', subject: 'feat: add feature' },
+          base: { hash: 'abc123', subject: 'feat: add feature' } as CommitValue['base'],
           commitlint: { message: 'add feature' }
         }
       ];
@@ -102,7 +102,7 @@ describe('GithubChangelog', () => {
 
       const commits: CommitValue[] = [
         {
-          base: { hash: 'abc123', subject: 'feat: add feature' },
+          base: { hash: 'abc123', subject: 'feat: add feature' } as CommitValue['base'],
           commitlint: { message: 'add feature' }
         }
       ];
@@ -131,7 +131,7 @@ describe('GithubChangelog', () => {
 
       const commits: CommitValue[] = [
         {
-          base: { hash: 'abc123', subject: 'feat: other package' },
+          base: { hash: 'abc123', subject: 'feat: other package' } as CommitValue['base'],
           commitlint: { message: 'other package' }
         }
       ];
@@ -160,7 +160,7 @@ describe('GithubChangelog', () => {
 
       vi.spyOn(changelog, 'getFullCommit').mockResolvedValue([
         {
-          base: { hash: 'abc123', subject: 'feat: add feature' },
+          base: { hash: 'abc123', subject: 'feat: add feature' } as CommitValue['base'],
           commitlint: { type: 'feat', message: 'add feature' }
         }
       ]);

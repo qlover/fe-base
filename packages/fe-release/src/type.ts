@@ -94,7 +94,11 @@ export type ReleaseReturnValue = {
  * ```
  */
 export type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
+  [P in keyof T]?: string extends keyof T[P]
+    ? T[P]
+    : T[P] extends object
+      ? DeepPartial<T[P]>
+      : T[P];
 };
 
 /**
@@ -121,6 +125,13 @@ export interface ReleaseConfig extends ScriptSharedInterface {
   changesetVersion?: ChangesetVersionProps;
   github?: GithubProps;
   workspaces?: WorkspacesProps;
+  /** Repository name without owner */
+  repoName?: string;
+  /** Repository owner / org / namespace */
+  authorName?: string;
+  releaseEnv?: string;
+  currentBranch?: string;
+  releaseId?: string;
 }
 
 /**

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Application,
-  Comment,
   type CommentDisplayPart,
+  normalizePath,
   type ParameterReflection,
   type ProjectReflection,
   type Reflection,
@@ -158,12 +158,14 @@ export default class TypeDocJson extends ScriptPlugin<
    * ```
    */
   public override async onBefore(): Promise<void> {
-    const entryPoints = this.context.options.readerOutputs!.map(
-      (output) => output.relativePath
+    const basePath = resolve(this.getConfig('basePath', process.cwd()));
+    // TypeDoc 0.28 rejects Windows separators in entry point globs.
+    const entryPoints = this.context.options.readerOutputs!.map((output) =>
+      output.relativePath.replace(/\\/g, '/')
     );
 
     const [project, app] = await this.getTypeDocsProject({
-      basePath: resolve(this.getConfig('basePath', process.cwd())),
+      basePath,
       entryPoints: entryPoints,
       skipErrorChecking: true,
       includeVersion: true,
@@ -174,7 +176,10 @@ export default class TypeDocJson extends ScriptPlugin<
 
     const outputPath = this.getConfig('outputJSONFilePath', '');
     if (outputPath) {
-      this.writeJSON(app.serializer.projectToObject(project, './'), outputPath);
+      this.writeJSON(
+        app.serializer.projectToObject(project, normalizePath(basePath)),
+        outputPath
+      );
     }
 
     const formatProject = this.formats(project);
@@ -1186,6 +1191,8 @@ export default class TypeDocJson extends ScriptPlugin<
   /**
    * Renders TypeDoc comment parts as a single string: no broken lines between segments,
    * and inline `@link` tags with resolved targets become same-file or cross-file links.
+   *
+   * Reimplements TypeDoc 0.25 `Comment.displayPartsToMarkdown` (removed in 0.28).
    */
   private renderDisplayPartsMarkdown(
     parts: CommentDisplayPart[] | undefined,
@@ -1195,9 +1202,55 @@ export default class TypeDocJson extends ScriptPlugin<
     if (!normalized.length) {
       return '';
     }
-    return Comment.displayPartsToMarkdown(normalized, (ref) =>
-      this.resolveLinkHref(ref, ownerSourceFile)
-    );
+
+    const result: string[] = [];
+    for (const part of normalized) {
+      switch (part.kind) {
+        case 'text':
+        case 'code':
+          result.push(part.text);
+          break;
+        case 'relative-link':
+          result.push(part.text);
+          break;
+        case 'inline-tag':
+          switch (part.tag) {
+            case '@label':
+            case '@inheritdoc':
+              break;
+            case '@link':
+            case '@linkcode':
+            case '@linkplain': {
+              if (part.target) {
+                let url: string | undefined;
+                if (typeof part.target === 'string') {
+                  url = part.target;
+                } else if ('id' in part.target) {
+                  url = this.resolveLinkHref(
+                    part.target,
+                    ownerSourceFile
+                  );
+                }
+                const text =
+                  part.tag === '@linkcode'
+                    ? `\`${part.text}\``
+                    : part.text;
+                result.push(url ? `[${text}](${url})` : part.text);
+              } else {
+                result.push(part.text);
+              }
+              break;
+            }
+            default:
+              result.push(`{${part.tag} ${part.text}}`);
+              break;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    return result.join('');
   }
 
   /**

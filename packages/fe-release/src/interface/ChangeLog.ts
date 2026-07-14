@@ -319,7 +319,7 @@ export interface CommitValue {
   commitlint: Commitlint;
 
   /** Sub-commits (for merge commits) */
-  commits: CommitValue[];
+  commits?: CommitValue[];
 
   /** Associated pull request number */
   prNumber?: string;
