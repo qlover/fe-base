@@ -8,7 +8,7 @@ import { OAuthWrapperError } from '../utils/OAuthWrapperError';
 import type * as Types from '../../core';
 import type { OAuthWrapperAccessToken } from './OAuthTokenService';
 import { OAuthTokenService } from './OAuthTokenService';
-import type { LoginParams } from '@qlover/corekit-bridge/core';
+import type { LoginParams } from '@qlover/corekit-bridge/gateway-service';
 import {
   isRedirectUriAllowed,
   normalizeQuery,

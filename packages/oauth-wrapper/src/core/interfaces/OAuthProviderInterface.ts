@@ -5,8 +5,8 @@ import type {
 import type { OAuthTokenRequest } from '../schema/OAuthTokenSchema';
 import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryInterface';
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
-import type { LoginParams } from '@qlover/corekit-bridge/core';
-import type { SignWithOtpSchema } from '@qlover/oauth-wrapper';
+import type { LoginParams } from '@qlover/corekit-bridge/gateway-service';
+import type { SignWithOtpSchema } from '../schema/OAuthAuthorizeSchema';
 
 /**
  * OAuth authorize page data shared by server rendering and client UI.

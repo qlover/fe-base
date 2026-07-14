@@ -31,6 +31,7 @@
     "test": "nx affected:test",
     "test:force": "vitest run",
     "clean": "fe-clean",
+    "clean:build": "rimraf **/**/dist **/**/ts-build -g",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",

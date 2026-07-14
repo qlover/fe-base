@@ -18,6 +18,7 @@
     "checkJs": false,
     "incremental": true,
     "strict": true,
+    "ignoreDeprecations": "6.0",
     "types": ["vitest/globals"],
     "paths": {
       "@qlover/code2markdown": ["./packages/code2markdown/src"],

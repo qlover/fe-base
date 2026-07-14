@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "lint": "eslint src --fix",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc --build",
     "type-check": "tsc --noEmit"
   },
   "repository": {

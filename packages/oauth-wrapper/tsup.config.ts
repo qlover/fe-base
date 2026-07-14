@@ -35,7 +35,7 @@ export default defineConfig([
     dts: {
       compilerOptions: {
         composite: false,
-        rootDir: undefined
+        rootDir: '.'
       }
     },
     bundle: true,
