@@ -157,6 +157,19 @@ export interface WorkspacesProps extends ScriptPluginProps {
   packagesDirectories?: string[];
 
   /**
+   * Git ref used as the left side of `git diff <compareRef>...HEAD`
+   * when detecting changed packages.
+   *
+   * Defaults to `origin/<sourceBranch>`. After a feature PR merges into
+   * `master`, that default is empty (HEAD already is master) — pass the PR
+   * base SHA instead (e.g. `github.event.pull_request.base.sha` in CI).
+   *
+   * @optional
+   * @example `'abc1234'` or `'origin/master'`
+   */
+  compareRef?: string;
+
+  /**
    * Template for package change labels in monorepos
    *
    * Core concept:
@@ -424,10 +437,13 @@ export default class Workspaces extends ScriptPlugin<
   }
 
   protected async getGitWorkspaces(): Promise<string[]> {
-    const sourceBranch = this.context.sourceBranch;
+    const compareRef =
+      this.config.compareRef || `origin/${this.context.sourceBranch}`;
+
+    this.logger.debug(`git diff --name-only ${compareRef}...HEAD`);
 
     const result = await this.shell.exec(
-      `git diff --name-only origin/${sourceBranch}...HEAD`,
+      `git diff --name-only ${compareRef}...HEAD`,
       { dryRun: false }
     );
 

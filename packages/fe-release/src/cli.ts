@@ -230,6 +230,10 @@ function programArgs() {
       splitWithComma
     )
     .option(
+      '--workspaces.compare-ref <compareRef>',
+      'Left side of git diff <compareRef>...HEAD for changed packages (default: origin/<sourceBranch>; use PR base.sha after merge-to-master)'
+    )
+    .option(
       '-l, --workspaces.change-labels <changeLabels>',
       'Change labels used to detect changed packages, comma-separated',
       splitWithComma

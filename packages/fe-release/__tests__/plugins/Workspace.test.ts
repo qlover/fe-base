@@ -102,7 +102,7 @@ describe('Workspaces Plugin', () => {
   });
 
   describe('getGitWorkspaces', () => {
-    it('should return git diff result', async () => {
+    it('should return git diff result against origin/sourceBranch by default', async () => {
       // @ts-expect-error call private method for testing
       const result = await workspaces.getGitWorkspaces();
 
@@ -110,7 +110,22 @@ describe('Workspaces Plugin', () => {
         'packages/package-a/index.ts',
         'packages/package-b/package.json'
       ]);
-      expect(workspaces.shell.exec).toHaveBeenCalled();
+      expect(workspaces.shell.exec).toHaveBeenCalledWith(
+        'git diff --name-only origin/master...HEAD',
+        { dryRun: false }
+      );
+    });
+
+    it('should use workspaces.compareRef when provided', async () => {
+      workspaces.setConfig({ compareRef: 'abc1234' });
+
+      // @ts-expect-error call private method for testing
+      await workspaces.getGitWorkspaces();
+
+      expect(workspaces.shell.exec).toHaveBeenCalledWith(
+        'git diff --name-only abc1234...HEAD',
+        { dryRun: false }
+      );
     });
 
     it('when shell.exec returns non-string, should return empty array', async () => {

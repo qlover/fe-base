@@ -66,6 +66,18 @@ jobs:
       - run: pnpm rebuild
 
       - name: Create release PR to master
+        if: github.event_name == 'pull_request'
+        run: |
+          node packages/fe-release/dist/cli.js -V \
+            -s master \
+            --workspaces.compare-ref "${{ github.event.pull_request.base.sha }}" \
+            --changesetVersion.ignore-non-updated-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          FE_RELEASE_BRANCH: master
+
+      - name: Create release PR to master (manual)
+        if: github.event_name == 'workflow_dispatch'
         run: |
           node packages/fe-release/dist/cli.js -V \
             -s master \
