@@ -1,5 +1,13 @@
 # @qlover/scripts-context
 
+## 2.3.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+
 ## 2.2.0
 
 ### Minor Changes
