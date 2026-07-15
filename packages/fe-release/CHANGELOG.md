@@ -1,5 +1,13 @@
 # @qlover/fe-release
 
+## 5.0.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **fe-release:** friendlier release PR titles/bodies and preRelease trigger ([bfe9ddf](https://github.com/qlover/fe-base/commit/bfe9ddf9675440df3eccf462feef9986120e1754)) ([#653](https://github.com/qlover/fe-base/pull/653))
+
 ## 5.0.4
 
 ### Patch Changes
