@@ -29,7 +29,10 @@ export function ZustandCounterCard() {
               <Button variant="primary" onClick={() => counterService.inc()}>
                 +1
               </Button>
-              <Button variant="secondary" onClick={() => counterService.reset()}>
+              <Button
+                variant="secondary"
+                onClick={() => counterService.reset()}
+              >
                 Reset
               </Button>
             </div>
