@@ -1,7 +1,6 @@
 'use client';
 
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-import { Tooltip } from 'antd';
 import { clsx } from 'clsx';
 import { useCallback } from 'react';
 import { headerActionButtonClassName } from '@config/component';
@@ -10,6 +9,7 @@ import {
   COMMON_LOGOUT_DIALOG_TITLE
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
+import { Tooltip } from '../components/Tooltip';
 import { useI18nMapping } from '../hook/useI18nMapping';
 import { useIOC } from '../hook/useIOC';
 
@@ -35,34 +35,27 @@ export function LogoutButton(props: { showLabel?: boolean }) {
     });
   }, [tt, dialogHandler, userService, routerService]);
 
-  const control = (
-    <button
-      type="button"
-      data-testid="LogoutIcon"
-      className={clsx(
-        showLabel
-          ? clsx(
-              headerActionButtonClassName,
-              'hover:text-red-500 hover:border-red-500/40'
-            )
-          : 'text-primary-text hover:text-red-500 cursor-pointer text-lg transition-colors border-0 bg-transparent p-0'
-      )}
-      onClick={onClick}
-    >
-      <ArrowRightOnRectangleIcon
-        className={showLabel ? 'h-4 w-4' : 'h-5 w-5'}
-      />
-      {showLabel && <span className="hidden sm:inline">{tt.title}</span>}
-    </button>
-  );
-
-  if (showLabel) {
-    return control;
-  }
-
   return (
     <Tooltip title={tt.title} placement="bottom">
-      {control}
+      <button
+        type="button"
+        data-testid="LogoutIcon"
+        aria-label={tt.title}
+        className={clsx(
+          showLabel
+            ? clsx(
+                headerActionButtonClassName,
+                'hover:text-red-500 hover:border-red-500/40'
+              )
+            : 'text-primary-text hover:text-red-500 cursor-pointer text-lg transition-colors border-0 bg-transparent p-0'
+        )}
+        onClick={onClick}
+      >
+        <ArrowRightOnRectangleIcon
+          className={showLabel ? 'h-4 w-4' : 'h-5 w-5'}
+        />
+        {showLabel && <span className="hidden sm:inline">{tt.title}</span>}
+      </button>
     </Tooltip>
   );
 }
