@@ -36,20 +36,19 @@ export class DialogHandler
   protected confirmHost: DialogConfirmHost | null = null;
 
   /**
-   * Kept for AntdThemeProvider compatibility; no longer used for toasts.
-
+   * @deprecated App shell no longer mounts AntdThemeProvider; kept for interface compat.
    * @override
-      */
+   */
   public setMessage(_message: MessageApi): void {}
 
   /**
-   * Kept for AntdThemeProvider compatibility; confirm uses {@link bindConfirmHost}.
-
+   * @deprecated App shell no longer mounts AntdThemeProvider; kept for interface compat.
    * @override
-      */
+   */
   public setModal(_modal: ModalApi): void {}
 
   /**
+   * @deprecated App shell no longer mounts AntdThemeProvider; kept for interface compat.
    * @override
    */
   public setNotification(_notification: NotificationApi): void {}

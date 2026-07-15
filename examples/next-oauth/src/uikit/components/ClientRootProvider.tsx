@@ -1,43 +1,19 @@
 'use client';
-import '@ant-design/v5-patch-for-react-19';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
+
 import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { DialogUIHost } from '@/uikit/components/DialogUIHost';
-import { I } from '@config/ioc-identifiter';
-import type { CommonThemeConfig } from '@config/theme';
-import { useIOC } from '../hook/useIOC';
 
 /**
- * ClientRootProvider is a provider for the client components
- *
- * - ThemeProvider
- * - AntdProvider (legacy Table theme; toast/confirm already detached)
- *
- * @param themeConfig - The theme config
- * @param children - The children components
- * @returns
+ * Client root shell: bootstraps + toast/confirm host.
+ * Ant Design theme/registry are scoped to demo-ui via {@link AntdDemoProvider}.
  */
-export function ClientRootProvider(props: {
-  themeConfig: CommonThemeConfig;
-  children: React.ReactNode;
-}) {
-  const { themeConfig, children } = props;
-
-  const IOC = useIOC();
+export function ClientRootProvider(props: { children: React.ReactNode }) {
+  const { children } = props;
 
   return (
-    <AntdThemeProvider
-      data-testid="ComboProvider"
-      theme={themeConfig.antdTheme}
-      staticApi={IOC(I.DialogHandler)}
-    >
-      <AntdRegistry layer>
-        <BootstrapsProvider>
-          <DialogUIHost />
-          {children}
-        </BootstrapsProvider>
-      </AntdRegistry>
-    </AntdThemeProvider>
+    <BootstrapsProvider>
+      <DialogUIHost />
+      {children}
+    </BootstrapsProvider>
   );
 }
