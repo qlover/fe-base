@@ -7,8 +7,8 @@ import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
+import { Button } from '@/uikit/components/Button';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
-import { headerActionButtonClassName } from '@config/component';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import type { ItemType } from 'antd/es/menu/interface';
@@ -89,16 +89,15 @@ export function LanguageSwitcher() {
         }
       }}
     >
-      <button
-        type="button"
+      <Button
+        variant="header"
         data-testid="LanguageSwitcher"
-        className={headerActionButtonClassName}
         disabled={!mounted || isPending}
         onClick={() => handleLanguageChange(nextLocale)}
       >
         <LanguageIcon className="h-4 w-4 shrink-0" />
         <span className="hidden sm:inline">{currentLocaleLabel}</span>
-      </button>
+      </Button>
     </Dropdown>
   );
 }

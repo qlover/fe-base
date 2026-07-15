@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button } from '@/uikit/components/Button';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useStore } from '@/uikit/hook/useStore';
 import { I } from '@config/ioc-identifiter';
@@ -12,8 +12,8 @@ export function ZustandCounterCard() {
   return (
     <section data-testid="ZustandCounterCard" className="py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="rounded-xl border border-c-border bg-secondary p-4 md:p-6">
-          <div className="flex items-center justify-between gap-4">
+        <div className="rounded-xl border border-primary-border bg-secondary p-4 md:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="text-sm text-secondary-text">
                 Zustand adapter demo
@@ -22,12 +22,16 @@ export function ZustandCounterCard() {
                 {count}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button onClick={() => counterService.dec()}>-1</Button>
-              <Button type="primary" onClick={() => counterService.inc()}>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" onClick={() => counterService.dec()}>
+                -1
+              </Button>
+              <Button variant="primary" onClick={() => counterService.inc()}>
                 +1
               </Button>
-              <Button onClick={() => counterService.reset()}>Reset</Button>
+              <Button variant="secondary" onClick={() => counterService.reset()}>
+                Reset
+              </Button>
             </div>
           </div>
         </div>

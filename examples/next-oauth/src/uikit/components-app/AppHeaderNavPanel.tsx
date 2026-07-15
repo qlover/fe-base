@@ -3,7 +3,7 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
-import { headerActionButtonClassName } from '@config/component';
+import { Button } from '@/uikit/components/Button';
 import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
 import type { ReactNode } from 'react';
 
@@ -82,13 +82,10 @@ export function AppHeaderNavPanel({
         </NavLink>
       </nav>
 
-      <button
-        type="button"
+      <Button
+        variant="header"
         data-testid="AppHeaderNavMenuToggle"
-        className={clsx(
-          headerActionButtonClassName,
-          'md:hidden ml-2 shrink-0 px-2.5'
-        )}
+        className="md:hidden ml-2 shrink-0 px-2.5"
         aria-expanded={menuOpen}
         aria-controls="AppHeaderNavMobilePanel"
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -99,7 +96,7 @@ export function AppHeaderNavPanel({
         ) : (
           <Bars3Icon className="h-4 w-4" />
         )}
-      </button>
+      </Button>
 
       <div
         id="AppHeaderNavMobilePanel"

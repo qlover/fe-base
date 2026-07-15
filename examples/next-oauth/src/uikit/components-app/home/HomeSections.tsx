@@ -10,21 +10,15 @@ import {
   ShareIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
-import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
 import { GithubIcon } from '@/uikit/components/icons';
+import { buttonClassName } from '@/uikit/components/Button';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
 import {
   API_OAUTH_VERIFY,
   ROUTE_DEVELOPER_APPS,
   ROUTE_DOCS_OAUTH
 } from '@config/route';
-
-const primaryButtonClassName =
-  'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-md';
-
-const secondaryButtonClassName =
-  'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-primary-border bg-primary text-primary-text font-medium hover:bg-elevated transition shadow-sm';
 
 const featureIconWrapClassName =
   'w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-3 text-brand';
@@ -56,14 +50,22 @@ export function HomeHero({ tt }: HomeSectionProps) {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full max-w-md sm:max-w-none mx-auto">
           <Link
             href={ROUTE_DEVELOPER_APPS}
-            className={clsx(primaryButtonClassName, 'w-full sm:w-auto')}
+            className={buttonClassName({
+              variant: 'primary',
+              size: 'lg',
+              className: 'w-full sm:w-auto shadow-md'
+            })}
           >
             <GithubIcon className="h-5 w-5" />
             {tt.heroStart}
           </Link>
           <Link
             href={ROUTE_DOCS_OAUTH}
-            className={clsx(secondaryButtonClassName, 'w-full sm:w-auto')}
+            className={buttonClassName({
+              variant: 'secondary',
+              size: 'lg',
+              className: 'w-full sm:w-auto shadow-sm'
+            })}
           >
             <BookOpenIcon className="h-5 w-5" />
             {tt.heroDocs}
@@ -200,10 +202,11 @@ export function HomeCta({ tt }: HomeSectionProps) {
       <p className="text-secondary-text mb-6">{tt.ctaDesc}</p>
       <Link
         href={ROUTE_DEVELOPER_APPS}
-        className={clsx(
-          primaryButtonClassName,
-          'px-5 py-2.5 text-sm font-medium'
-        )}
+        className={buttonClassName({
+          variant: 'primary',
+          size: 'sm',
+          className: 'px-5 py-2.5 shadow-md'
+        })}
       >
         {tt.ctaButton}
         <ArrowRightIcon className="h-4 w-4" />

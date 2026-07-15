@@ -17,7 +17,7 @@ import { useTheme } from '@wrksz/themes/client';
 import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useEffect, useMemo } from 'react';
-import { headerActionButtonClassName } from '@config/component';
+import { Button } from '@/uikit/components/Button';
 import {
   COMMON_THEME_DARK,
   COMMON_THEME_DEFAULT,
@@ -146,10 +146,9 @@ export function ThemeSwitcher() {
         }
       }}
     >
-      <button
-        type="button"
+      <Button
+        variant="header"
         data-testid="ThemeSwitcher"
-        className={headerActionButtonClassName}
         disabled={!mounted}
         onClick={() => {
           if (!mounted) return;
@@ -157,7 +156,7 @@ export function ThemeSwitcher() {
         }}
       >
         <ThemeIcon className="h-4 w-4" />
-      </button>
+      </Button>
     </Dropdown>
   );
 }

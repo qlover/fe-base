@@ -5,11 +5,7 @@ import {
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-import {
-  oauthDangerButtonClass,
-  oauthPrimaryButtonClass,
-  oauthSecondaryButtonClass
-} from '@config/component';
+import { Button } from '@/uikit/components/Button';
 import { DeveloperOverlayModal } from './DeveloperOverlayModal';
 
 export type DeveloperConfirmOptions = {
@@ -49,11 +45,6 @@ export function DeveloperConfirmDialog({
 
   if (!options) return null;
 
-  const okClass =
-    options.variant === 'danger'
-      ? oauthDangerButtonClass
-      : oauthPrimaryButtonClass;
-
   return (
     <DeveloperOverlayModal
       open={open}
@@ -63,23 +54,17 @@ export function DeveloperConfirmDialog({
       closeOnBackdrop={!pending}
       footer={
         <div className="flex flex-wrap justify-end gap-2">
-          <button
-            type="button"
-            className={oauthSecondaryButtonClass}
-            disabled={pending}
-            onClick={onClose}
-          >
+          <Button variant="secondary" disabled={pending} onClick={onClose}>
             {options.cancelText}
-          </button>
-          <button
-            type="button"
-            className={okClass}
+          </Button>
+          <Button
+            variant={options.variant === 'danger' ? 'danger' : 'primary'}
             disabled={pending}
             onClick={() => void handleConfirm()}
           >
             {pending && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
             {options.okText}
-          </button>
+          </Button>
         </div>
       }
     >

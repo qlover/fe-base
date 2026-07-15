@@ -19,23 +19,15 @@ import {
   type FormEvent
 } from 'react';
 import { Link } from '@/i18n/routing';
+import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
   DeveloperConfirmDialog,
   type DeveloperConfirmOptions
 } from '@/uikit/components-app/developer/DeveloperConfirmDialog';
 import { DeveloperOverlayModal } from '@/uikit/components-app/developer/DeveloperOverlayModal';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
-import {
-  oauthCardClass,
-  oauthDangerButtonClass,
-  oauthElevatedPanelClass,
-  oauthGhostActionClass,
-  oauthPrimaryButtonClass,
-  oauthSecondaryButtonClass,
-  oauthWarningButtonClass
-} from '@config/component';
-import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
-import {
+import { oauthCardClass, oauthElevatedPanelClass } from '@config/component';
+import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';import {
   API_CLIENTS,
   apiClientDetail,
   apiClientRotateSecret,
@@ -461,19 +453,15 @@ export function DeveloperAppsPageComponent({
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
                   <Link
                     href={ROUTE_OAUTH_PLAYGROUND}
-                    className={oauthSecondaryButtonClass}
+                    className={buttonClassName({ variant: 'secondary' })}
                   >
                     <BeakerIcon className="h-4 w-4" />
                     {tt.playgroundLink || 'OAuth playground'}
                   </Link>
-                  <button
-                    type="button"
-                    className={oauthPrimaryButtonClass}
-                    onClick={openCreateModal}
-                  >
+                  <Button variant="primary" onClick={openCreateModal}>
                     <PlusIcon className="h-4 w-4" />
                     {tt.createButton || 'Create New App'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -532,18 +520,17 @@ export function DeveloperAppsPageComponent({
                             <code className="text-sm bg-secondary text-primary-text px-2 py-1 rounded-lg font-mono border border-primary-border/40 break-all">
                               {tt.clientIdLabel || 'Client ID'}: {app.client_id}
                             </code>
-                            <button
-                              type="button"
+                            <Button
+                              variant="ghost"
                               onClick={() =>
                                 void handleCopyClientId(app.client_id)
                               }
-                              className={oauthGhostActionClass}
                               aria-label={
                                 tt.copyClientIdSuccess || 'Copy Client ID'
                               }
                             >
                               <ClipboardDocumentIcon className="h-4 w-4" />
-                            </button>
+                            </Button>
                           </div>
                           <p className="text-sm text-secondary-text break-words">
                             {tt.redirectUrisLabel || 'Redirect URIs'}:{' '}
@@ -557,20 +544,16 @@ export function DeveloperAppsPageComponent({
                           </p>
                         </div>
                         <div className="flex flex-wrap gap-1 shrink-0">
-                          <button
-                            type="button"
-                            className={oauthGhostActionClass}
+                          <Button
+                            variant="ghost"
                             onClick={() => openEditModal(app)}
                           >
                             <PencilSquareIcon className="h-4 w-4" />
                             {tt.editButton || 'Edit'}
-                          </button>
-                          <button
-                            type="button"
-                            className={clsx(
-                              oauthGhostActionClass,
-                              'text-amber-700 dark:text-amber-300 hover:bg-amber-500/10'
-                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="text-amber-700 dark:text-amber-300 hover:bg-amber-500/10"
                             onClick={() =>
                               handleRotateSecret(
                                 app.client_id,
@@ -586,18 +569,15 @@ export function DeveloperAppsPageComponent({
                           >
                             <KeyIcon className="h-4 w-4" />
                             {tt.rotateSecretButton || 'Rotate Secret'}
-                          </button>
-                          <button
-                            type="button"
-                            className={clsx(
-                              oauthGhostActionClass,
-                              'text-red-600 dark:text-red-400 hover:bg-red-500/10'
-                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="text-red-600 dark:text-red-400 hover:bg-red-500/10"
                             onClick={() => handleDeleteApp(app.client_id)}
                           >
                             <TrashIcon className="h-4 w-4" />
                             {tt.deleteButton || 'Delete'}
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </article>
@@ -642,23 +622,18 @@ export function DeveloperAppsPageComponent({
         maxWidthClass="max-w-xl"
         footer={
           <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              className={oauthSecondaryButtonClass}
+            <Button
+              variant="secondary"
               onClick={() => {
                 setCreateModalVisible(false);
                 resetCreateForm();
               }}
             >
               {tt.cancelButton || 'Cancel'}
-            </button>
-            <button
-              type="submit"
-              form="create-oauth-client"
-              className={oauthPrimaryButtonClass}
-            >
+            </Button>
+            <Button type="submit" form="create-oauth-client" variant="primary">
               {tt.createSubmitButton || 'Create Application'}
-            </button>
+            </Button>
           </div>
         }
       >
@@ -698,9 +673,8 @@ export function DeveloperAppsPageComponent({
             <div className="flex flex-wrap gap-2">
               {editingApp && (
                 <>
-                  <button
-                    type="button"
-                    className={oauthWarningButtonClass}
+                  <Button
+                    variant="warning"
                     onClick={() =>
                       void handleRotateSecret(
                         editingApp.client_id,
@@ -711,10 +685,9 @@ export function DeveloperAppsPageComponent({
                   >
                     <KeyIcon className="h-4 w-4" />
                     {tt.rotateSecretButton || 'Rotate Secret'}
-                  </button>
-                  <button
-                    type="button"
-                    className={oauthDangerButtonClass}
+                  </Button>
+                  <Button
+                    variant="danger"
                     onClick={() => {
                       const clientId = editingApp.client_id;
                       setEditModalVisible(false);
@@ -725,14 +698,13 @@ export function DeveloperAppsPageComponent({
                   >
                     <TrashIcon className="h-4 w-4" />
                     {tt.deleteButton || 'Delete'}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
             <div className="flex gap-3">
-              <button
-                type="button"
-                className={oauthSecondaryButtonClass}
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setEditModalVisible(false);
                   setEditingApp(null);
@@ -740,14 +712,10 @@ export function DeveloperAppsPageComponent({
                 }}
               >
                 {tt.cancelButton || 'Cancel'}
-              </button>
-              <button
-                type="submit"
-                form="edit-oauth-client"
-                className={oauthPrimaryButtonClass}
-              >
+              </Button>
+              <Button type="submit" form="edit-oauth-client" variant="primary">
                 {tt.saveSubmitButton || 'Save Changes'}
-              </button>
+              </Button>
             </div>
           </div>
         }

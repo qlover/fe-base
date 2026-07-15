@@ -13,6 +13,7 @@ import {
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
+import { Button } from '@/uikit/components/Button';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';
@@ -210,25 +211,25 @@ export function OAuthAuthorizeCard({
       </div>
 
       <div className="p-6 border-t border-primary-border bg-elevated flex flex-col sm:flex-row gap-3">
-        <button
-          type="button"
+        <Button
           id="denyBtn"
+          variant="secondary"
+          className="flex-1"
           disabled={loading}
           onClick={handleDeny}
-          className="flex-1 px-4 py-2 rounded-lg border border-primary-border hover:bg-secondary transition font-medium text-primary-text disabled:opacity-60"
         >
           {tt.deny}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           id="allowBtn"
+          variant="primary"
+          className="flex-1"
           disabled={loading}
           onClick={handleAllow}
-          className="flex-1 px-4 py-2 rounded-lg bg-brand text-on-brand hover:bg-brand-hover transition font-medium shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {tt.allow}
           {loading && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
-        </button>
+        </Button>
       </div>
     </div>
   );

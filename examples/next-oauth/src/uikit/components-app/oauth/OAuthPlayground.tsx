@@ -27,6 +27,7 @@ import { readAppApiJson } from '@/uikit/components-app/developer/apps/readAppApi
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
+import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
   buildAuthorizeUrl,
   parseOAuthCallbackUrl,
@@ -51,10 +52,8 @@ const labelClass =
   'text-secondary-text mb-1.5 block text-xs font-medium uppercase tracking-wide';
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-lg border bg-bg-container px-3 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
-const primaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed';
-const secondaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-primary-border bg-primary text-primary-text font-medium hover:bg-elevated transition disabled:opacity-60 disabled:cursor-not-allowed';
+const primaryButtonClass = buttonClassName({ variant: 'primary' });
+const secondaryButtonClass = buttonClassName({ variant: 'secondary' });
 const iconClassName = 'h-4 w-4';
 
 type ValidateResult =
@@ -574,14 +573,14 @@ export function OAuthPlayground() {
             title={tt.stepClient}
             step={2}
             extra={
-              <button
+              <Button
                 type="button"
-                className={clsx(secondaryButtonClass, 'text-sm py-1.5 px-3')}
+                variant="secondary" size="sm" className="px-3"
                 onClick={() => void loadClients()}
                 disabled={!success || clientsLoading}
               >
                 <ArrowPathIcon className="h-4 w-4" />
-              </button>
+              </Button>
             }
           >
             <div>
@@ -679,9 +678,9 @@ export function OAuthPlayground() {
                           className={clsx(inputClass, 'font-mono text-xs')}
                         />
                       </div>
-                      <button
+                      <Button
                         type="button"
-                        className={secondaryButtonClass}
+                        variant="secondary"
                         disabled={pkceLoading}
                         onClick={() => void regeneratePkce()}
                       >
@@ -689,7 +688,7 @@ export function OAuthPlayground() {
                           <ArrowPathIcon className="h-4 w-4 animate-spin" />
                         )}
                         {tt.pkceRegenerate}
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <p className="text-xs text-secondary-text">
@@ -760,19 +759,19 @@ export function OAuthPlayground() {
                       onChange={(e) => setState(e.target.value)}
                       placeholder="optional"
                     />
-                    <button
+                    <Button
                       type="button"
-                      className={secondaryButtonClass}
+                      variant="secondary"
                       onClick={() => setState(randomStateValue())}
                     >
                       {tt.randomState}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
-                  className={secondaryButtonClass}
+                  variant="secondary"
                   disabled={
                     !success || validating || (pkceActive && !pkceChallenge)
                   }
@@ -782,7 +781,7 @@ export function OAuthPlayground() {
                     <ArrowPathIcon className="h-4 w-4 animate-spin" />
                   )}
                   {tt.validate}
-                </button>
+                </Button>
 
                 {validateResult?.valid && (
                   <PlaygroundAlert variant="success">
@@ -811,14 +810,13 @@ export function OAuthPlayground() {
                           'font-mono text-xs resize-y'
                         )}
                       />
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
                         title={tt.copy}
-                        className={secondaryButtonClass}
                         onClick={() => void copyText(authorizeUrl)}
                       >
                         <ClipboardDocumentIcon className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -833,9 +831,9 @@ export function OAuthPlayground() {
                 : tt.validate}
             </p>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
-                className={primaryButtonClass}
+                variant="primary"
                 disabled={!success || !validateResult?.valid || consentLoading}
                 onClick={() => void submitConsent('allow')}
               >
@@ -843,15 +841,15 @@ export function OAuthPlayground() {
                   <ArrowPathIcon className="h-4 w-4 animate-spin" />
                 )}
                 {tt.allow}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className={secondaryButtonClass}
+                variant="secondary"
                 disabled={!success || !validateResult?.valid || consentLoading}
                 onClick={() => void submitConsent('deny')}
               >
                 {tt.deny}
-              </button>
+              </Button>
             </div>
 
             {redirectPreview && (
@@ -898,9 +896,9 @@ export function OAuthPlayground() {
                 />
               </div>
             )}
-            <button
+            <Button
               type="button"
-              className={primaryButtonClass}
+              variant="primary"
               disabled={
                 !callback?.code ||
                 tokenLoading ||
@@ -912,7 +910,7 @@ export function OAuthPlayground() {
                 <ArrowPathIcon className="h-4 w-4 animate-spin" />
               )}
               {tt.exchange}
-            </button>
+            </Button>
             {tokenResponse != null && (
               <div>
                 <p className={labelClass}>{tt.response}</p>
@@ -922,9 +920,9 @@ export function OAuthPlayground() {
           </PlaygroundSection>
 
           <PlaygroundSection title={tt.stepUserinfo} step={5}>
-            <button
+            <Button
               type="button"
-              className={primaryButtonClass}
+              variant="primary"
               disabled={!hasAccessToken || userinfoLoading}
               onClick={() => void fetchUserinfo()}
             >
@@ -932,7 +930,7 @@ export function OAuthPlayground() {
                 <ArrowPathIcon className="h-4 w-4 animate-spin" />
               )}
               {tt.fetchUserinfo}
-            </button>
+            </Button>
             {userinfoResponse != null && (
               <div>
                 <p className={labelClass}>{tt.response}</p>

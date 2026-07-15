@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
+import { buttonClassName } from '@/uikit/components/Button';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import type { OAuthDocsI18nInterface } from '@config/i18n-mapping/oauthDocsI18n';
 import {
@@ -95,8 +96,7 @@ function EndpointTable({
   );
 }
 
-const linkButtonClass =
-  'inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary-border bg-primary text-primary-text text-sm font-medium hover:bg-elevated transition';
+const linkButtonClass = buttonClassName({ variant: 'secondary' });
 
 export function OAuthDocsContent() {
   const tt = usePageI18nMapping<OAuthDocsI18nInterface>();

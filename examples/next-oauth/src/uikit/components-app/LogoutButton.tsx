@@ -3,7 +3,7 @@
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback } from 'react';
-import { headerActionButtonClassName } from '@config/component';
+import { Button } from '@/uikit/components/Button';
 import {
   COMMON_LOGOUT_DIALOG_CONTENT,
   COMMON_LOGOUT_DIALOG_TITLE
@@ -37,17 +37,14 @@ export function LogoutButton(props: { showLabel?: boolean }) {
 
   return (
     <Tooltip title={tt.title} placement="bottom">
-      <button
-        type="button"
-        data-testid="LogoutIcon"
+      <Button
+        variant={showLabel ? 'header' : 'ghost'}
         aria-label={tt.title}
+        data-testid="LogoutIcon"
         className={clsx(
-          showLabel
-            ? clsx(
-                headerActionButtonClassName,
-                'hover:text-red-500 hover:border-red-500/40'
-              )
-            : 'text-primary-text hover:text-red-500 cursor-pointer text-lg transition-colors border-0 bg-transparent p-0'
+          !showLabel &&
+            'text-primary-text hover:text-red-500 hover:bg-transparent border-0 bg-transparent p-0 shadow-none',
+          showLabel && 'hover:text-red-500 hover:border-red-500/40'
         )}
         onClick={onClick}
       >
@@ -55,7 +52,7 @@ export function LogoutButton(props: { showLabel?: boolean }) {
           className={showLabel ? 'h-4 w-4' : 'h-5 w-5'}
         />
         {showLabel && <span className="hidden sm:inline">{tt.title}</span>}
-      </button>
+      </Button>
     </Tooltip>
   );
 }
