@@ -1,80 +1,47 @@
 'use client';
 
-import { clsx } from 'clsx';
-import { useEffect, type ReactNode } from 'react';
+import { Modal, type ModalProps } from '@/uikit/components/Modal';
+import type { ReactNode } from 'react';
 
-export function DeveloperOverlayModal(props: {
+export type DeveloperOverlayModalProps = {
   open: boolean;
   title: ReactNode;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Desktop max-width utility, e.g. `sm:max-w-md`. */
   maxWidthClass?: string;
   closeOnBackdrop?: boolean;
-}) {
-  const {
-    open,
-    title,
-    onClose,
-    children,
-    footer,
-    maxWidthClass = 'max-w-xl',
-    closeOnBackdrop = true
-  } = props;
+  showFullscreenToggle?: boolean;
+};
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
-
+/**
+ * App modal shell — wraps responsive {@link Modal} (PAM-style).
+ */
+export function DeveloperOverlayModal({
+  open,
+  title,
+  onClose,
+  children,
+  footer,
+  maxWidthClass = 'sm:max-w-xl',
+  closeOnBackdrop = true,
+  showFullscreenToggle = true
+}: DeveloperOverlayModalProps) {
   return (
-    <div
-      data-testid="DeveloperOverlayModal"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
-      role="dialog"
-      aria-modal="true"
+    <Modal
+      open={open}
+      title={title}
+      onClose={onClose}
+      footer={footer}
+      closeOnBackdrop={closeOnBackdrop}
+      showFullscreenToggle={showFullscreenToggle}
+      className={maxWidthClass}
+      bodyClassName="px-0 py-0 sm:px-0 sm:py-0"
     >
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/45 dark:bg-black/70 backdrop-blur-[2px]"
-        aria-label="Close"
-        tabIndex={-1}
-        onClick={closeOnBackdrop ? onClose : undefined}
-      />
-      <div
-        className={clsx(
-          'relative w-full bg-primary rounded-2xl shadow-xl border border-primary-border overflow-hidden',
-          maxWidthClass
-        )}
-      >
-        <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-primary-border bg-elevated/50">
-          <h2 className="text-lg font-semibold text-primary-text">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-secondary-text hover:text-primary-text text-2xl leading-none px-2 py-1 rounded-lg hover:bg-elevated transition"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-        <div className="px-5 sm:px-6 py-5 text-primary-text">{children}</div>
-        {footer != null && (
-          <div className="px-5 sm:px-6 py-4 border-t border-primary-border bg-elevated/30">
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>
+      <div className="px-4 py-4 sm:px-6 sm:py-5">{children}</div>
+    </Modal>
   );
 }
+
+export type { ModalProps };

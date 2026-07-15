@@ -9,7 +9,6 @@ import {
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
-import { message } from 'antd';
 import { clsx } from 'clsx';
 import {
   useCallback,
@@ -18,6 +17,7 @@ import {
   useState,
   type FormEvent
 } from 'react';
+import type { DialogHandler } from '@/impls/DialogHandler';
 import { Link } from '@/i18n/routing';
 import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
@@ -26,8 +26,10 @@ import {
 } from '@/uikit/components-app/developer/DeveloperConfirmDialog';
 import { DeveloperOverlayModal } from '@/uikit/components-app/developer/DeveloperOverlayModal';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
+import { useIOC } from '@/uikit/hook/useIOC';
 import { oauthCardClass, oauthElevatedPanelClass } from '@config/component';
-import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';import {
+import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
+import { I } from '@config/ioc-identifiter';import {
   API_CLIENTS,
   apiClientDetail,
   apiClientRotateSecret,
@@ -71,6 +73,7 @@ export function DeveloperAppsPageComponent({
   initialApps
 }: DeveloperAppsPageProps) {
   const tt = useI18nMapping(developerAppsI18n);
+  const dialogHandler = useIOC(I.DialogHandler) as DialogHandler;
   const [apps, setApps] = useState<OAuthClientListItem[]>(initialApps);
   const [loading, setLoading] = useState(true);
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -155,13 +158,13 @@ export function DeveloperAppsPageComponent({
       setApps(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Load apps error:', error);
-      message.error(
+      dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
     } finally {
       setLoading(false);
     }
-  }, [tt.toastError]);
+  }, [dialogHandler, tt.toastError]);
 
   useEffect(() => {
     void loadApps();
@@ -175,9 +178,9 @@ export function DeveloperAppsPageComponent({
   const handleCopyClientId = async (clientId: string) => {
     try {
       await copyText(clientId);
-      message.success(tt.copyClientIdSuccess || 'Client ID copied');
+      dialogHandler.success(tt.copyClientIdSuccess || 'Client ID copied');
     } catch {
-      message.error(
+      dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
     }
@@ -188,13 +191,13 @@ export function DeveloperAppsPageComponent({
     try {
       if (field === 'id') {
         await copyText(credentials.clientId);
-        message.success(tt.copyClientIdSuccess || 'Client ID copied');
+        dialogHandler.success(tt.copyClientIdSuccess || 'Client ID copied');
       } else if (credentials.clientSecret) {
         await copyText(credentials.clientSecret);
-        message.success(tt.copySecretSuccess || 'Client Secret copied');
+        dialogHandler.success(tt.copySecretSuccess || 'Client Secret copied');
       }
     } catch {
-      message.error(
+      dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
     }
@@ -257,7 +260,7 @@ export function DeveloperAppsPageComponent({
       });
     } catch (error) {
       console.error('Create app error:', error);
-      message.error(
+      dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
     }
@@ -313,12 +316,12 @@ export function DeveloperAppsPageComponent({
       setEditingApp(null);
       resetEditForm();
 
-      message.success(
+      dialogHandler.success(
         tt.toastUpdateSuccess || 'Application updated successfully'
       );
     } catch (error) {
       console.error('Update app error:', error);
-      message.error(
+      dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
     }
@@ -326,7 +329,7 @@ export function DeveloperAppsPageComponent({
 
   const handleRotateSecret = (clientId: string, confidential = true) => {
     if (!confidential) {
-      message.warning(
+      dialogHandler.warn(
         tt.publicClientNote ||
           'Public clients do not have a client_secret to rotate.'
       );
@@ -360,7 +363,7 @@ export function DeveloperAppsPageComponent({
           });
         } catch (error) {
           console.error('Rotate secret error:', error);
-          message.error(
+          dialogHandler.error(
             tt.toastError || 'Operation failed, please try again later'
           );
           throw error;
@@ -390,10 +393,10 @@ export function DeveloperAppsPageComponent({
           }
 
           setApps((prev) => prev.filter((app) => app.client_id !== clientId));
-          message.success(tt.toastDeleteSuccess || 'Application deleted');
+          dialogHandler.success(tt.toastDeleteSuccess || 'Application deleted');
         } catch (error) {
           console.error('Delete app error:', error);
-          message.error(
+          dialogHandler.error(
             tt.toastError || 'Operation failed, please try again later'
           );
           throw error;

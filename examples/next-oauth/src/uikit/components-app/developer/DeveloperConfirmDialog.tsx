@@ -37,7 +37,7 @@ export function DeveloperConfirmDialog({
       await options.onConfirm();
       onClose();
     } catch {
-      // Keep dialog open; caller shows toast via message.*
+      // Keep dialog open; caller shows toast via dialogHandler
     } finally {
       setPending(false);
     }
@@ -50,8 +50,9 @@ export function DeveloperConfirmDialog({
       open={open}
       title={options.title}
       onClose={onClose}
-      maxWidthClass="max-w-md"
+      maxWidthClass="sm:max-w-md"
       closeOnBackdrop={!pending}
+      showFullscreenToggle={false}
       footer={
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="secondary" disabled={pending} onClick={onClose}>

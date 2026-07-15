@@ -1,3 +1,4 @@
+import { toast, type ExternalToast } from 'sonner';
 import type {
   AntdStaticApiInterface,
   MessageApi,
@@ -8,109 +9,120 @@ import type {
   UIDialogInterface,
   NotificationOptions
 } from '@qlover/corekit-bridge';
-import type { ModalFuncProps } from 'antd';
+import type { ReactNode } from 'react';
 
-export interface DialogHandlerOptions
-  extends NotificationOptions, ModalFuncProps {
+export interface DialogHandlerOptions extends NotificationOptions {
+  title?: ReactNode;
   content: string;
+  onOk?: () => void | Promise<void>;
+  onCancel?: () => void;
+  okText?: string;
+  cancelText?: string;
+  /** Maps to confirm button style. */
+  okType?: 'danger' | 'primary' | 'default';
 }
 
+export type DialogConfirmHost = {
+  open: (options: DialogHandlerOptions) => void;
+};
+
 /**
- * Dialog Handler Implementation
- *
- * Implements the InteractionHubInterface using Ant Design components.
- * Provides concrete implementations for displaying notifications and confirmation dialogs.
- *
- * Features:
- * - Uses Ant Design's message component for notifications
- * - Uses Ant Design's Modal component for confirmations
- * - Supports customizable display durations
- * - Handles error objects appropriately
- *
- * @example
- * const dialog = new DialogHandler();
- * dialog.success('Data saved successfully');
- * dialog.confirm({
- *   title: 'Confirm Delete',
- *   content: 'Are you sure you want to delete this item?',
- *   onOk: () => handleDelete(),
- * });
+ * Dialog / toast facade.
+ * Toasts: sonner. Confirm: registered React host (PAM-style modal).
  */
 export class DialogHandler
   implements UIDialogInterface<DialogHandlerOptions>, AntdStaticApiInterface
 {
-  protected antds: {
-    message?: MessageApi;
-    modal?: ModalApi;
-    notification?: NotificationApi;
-  } = {};
+  protected confirmHost: DialogConfirmHost | null = null;
 
   /**
+   * Kept for AntdThemeProvider compatibility; no longer used for toasts.
+
    * @override
-   */
-  public setMessage(message: MessageApi): void {
-    this.antds.message = message;
-  }
-
-  /**
-   * @override
-   */
-  public setModal(modal: ModalApi): void {
-    this.antds.modal = modal;
-  }
-
-  /**
-   * @override
-   */
-  public setNotification(notification: NotificationApi): void {
-    this.antds.notification = notification;
-  }
-
-  /**
-   * Formats error message from various error types
-
       */
+  public setMessage(_message: MessageApi): void {}
+
+  /**
+   * Kept for AntdThemeProvider compatibility; confirm uses {@link bindConfirmHost}.
+
+   * @override
+      */
+  public setModal(_modal: ModalApi): void {}
+
+  /**
+   * @override
+   */
+  public setNotification(_notification: NotificationApi): void {}
+
+  public bindConfirmHost(host: DialogConfirmHost): () => void {
+    this.confirmHost = host;
+    return () => {
+      if (this.confirmHost === host) {
+        this.confirmHost = null;
+      }
+    };
+  }
+
   protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
     if (typeof error === 'string') return error;
     return 'An unknown error occurred';
   }
 
+  protected toastOptions(options?: NotificationOptions): ExternalToast {
+    return {
+      duration: options?.duration,
+      onDismiss: options?.onClose,
+      onAutoClose: options?.onClose
+    };
+  }
+
   /**
    * @override
    */
   public success(msg: string, options?: NotificationOptions): void {
-    this.antds.message?.success({ content: msg, ...options });
+    toast.success(msg, this.toastOptions(options));
   }
 
   /**
    * @override
    */
   public error(msg: string, options?: NotificationOptions): void {
-    this.antds.message?.error({
-      content: options?.error ? this.formatErrorMessage(options.error) : msg,
-      ...options
-    });
+    toast.error(
+      options?.error ? this.formatErrorMessage(options.error) : msg,
+      this.toastOptions(options)
+    );
   }
 
   /**
    * @override
    */
   public info(msg: string, options?: NotificationOptions): void {
-    this.antds.message?.info({ content: msg, ...options });
+    toast.message(msg, this.toastOptions(options));
   }
 
   /**
    * @override
    */
   public warn(msg: string, options?: NotificationOptions): void {
-    this.antds.message?.warning({ content: msg, ...options });
+    toast.warning(msg, this.toastOptions(options));
+  }
+
+  /** Alias for antd `message.warning` call sites. */
+  public warning(msg: string, options?: NotificationOptions): void {
+    this.warn(msg, options);
   }
 
   /**
    * @override
    */
   public confirm(options: DialogHandlerOptions): void {
-    this.antds.modal?.confirm(options);
+    if (!this.confirmHost) {
+      console.warn(
+        '[DialogHandler] confirm host is not registered; call ignored.'
+      );
+      return;
+    }
+    this.confirmHost.open(options);
   }
 }
