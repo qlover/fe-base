@@ -4,7 +4,10 @@ export default class MyDocument extends Document {
   public override render(): React.ReactElement {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        </Head>
         <body>
           <Main />
           <NextScript />

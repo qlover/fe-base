@@ -1,5 +1,6 @@
 'use client';
 
+import { BrandMark } from '@/uikit/components/icons';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -73,6 +74,11 @@ export function RoutePageLayout({
                   locale={locale}
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 shrink"
                 >
+                  <BrandMark
+                    className="h-7 w-7 shrink-0"
+                    title={tt.title}
+                    titleId="base-header-brand-mark"
+                  />
                   <span
                     data-testid="base-header-app-name"
                     className={clsx(
