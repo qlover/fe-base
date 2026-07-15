@@ -4,6 +4,7 @@ import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
   ROUTE_CALLBACK_EMAIL_LOGIN,
+  ROUTE_DEMO_UI,
   ROUTE_DEVELOPER_APPS,
   ROUTE_LOGIN,
   ROUTE_OAUTH_AUTHORIZE,
@@ -60,6 +61,10 @@ export const routing = defineRouting({
     [ROUTE_DOCS_OAUTH]: {
       en: '/docs/oauth',
       zh: '/docs/oauth'
+    },
+    [ROUTE_DEMO_UI]: {
+      en: '/demo-ui',
+      zh: '/demo-ui'
     },
     '/about': {
       en: '/about',

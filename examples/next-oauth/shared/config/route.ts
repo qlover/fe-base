@@ -47,6 +47,9 @@ export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
 
 export const ROUTE_ABOUT = '/about' as const;
 
+/** UI showcase / kit preview (Pages Router). */
+export const ROUTE_DEMO_UI = '/demo-ui' as const;
+
 /** OAuth integration guide (public documentation). */
 export const ROUTE_DOCS_OAUTH = '/docs/oauth' as const;
 
@@ -83,7 +86,8 @@ export const AUTH_ROUTES = [
   ROUTE_REGISTER,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DOCS_OAUTH,
-  ROUTE_ABOUT
+  ROUTE_ABOUT,
+  ROUTE_DEMO_UI
 ] as const;
 
 /** 需要登陆才能访问的页面 */

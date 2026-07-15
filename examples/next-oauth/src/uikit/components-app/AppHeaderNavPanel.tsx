@@ -4,19 +4,25 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/uikit/components/Button';
-import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
+import {
+  ROUTE_DEMO_UI,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_DOCS_OAUTH
+} from '@config/route';
 import type { ReactNode } from 'react';
 
 export interface AppHeaderNavTT {
   navDocs: string;
   navAbout: string;
   navDeveloper: string;
+  navDemoUi: string;
 }
 
 type HeaderNavHref =
   | typeof ROUTE_DOCS_OAUTH
   | '/about'
-  | typeof ROUTE_DEVELOPER_APPS;
+  | typeof ROUTE_DEVELOPER_APPS
+  | typeof ROUTE_DEMO_UI;
 
 const navLinkClassName =
   'block py-2 text-sm font-medium text-secondary-text hover:text-primary-text transition';
@@ -80,6 +86,13 @@ export function AppHeaderNavPanel({
         >
           {tt.navDeveloper}
         </NavLink>
+        <NavLink
+          href={ROUTE_DEMO_UI}
+          className={desktopNavLinkClassName}
+          title={tt.navDemoUi}
+        >
+          {tt.navDemoUi}
+        </NavLink>
       </nav>
 
       <Button
@@ -133,6 +146,13 @@ export function AppHeaderNavPanel({
             title={tt.navDeveloper}
           >
             {tt.navDeveloper}
+          </NavLink>
+          <NavLink
+            href={ROUTE_DEMO_UI}
+            className={navLinkClassName}
+            title={tt.navDemoUi}
+          >
+            {tt.navDemoUi}
           </NavLink>
         </nav>
       </div>
