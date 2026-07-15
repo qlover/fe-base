@@ -23,11 +23,11 @@ import {
 } from 'react';
 import { Link } from '@/i18n/routing';
 import { AppUserGateway } from '@/impls/AppUserGateway';
+import { Button, buttonClassName } from '@/uikit/components/Button';
 import { readAppApiJson } from '@/uikit/components-app/developer/apps/readAppApiJson';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
-import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
   buildAuthorizeUrl,
   parseOAuthCallbackUrl,
@@ -53,7 +53,6 @@ const labelClass =
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-lg border bg-bg-container px-3 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 const primaryButtonClass = buttonClassName({ variant: 'primary' });
-const secondaryButtonClass = buttonClassName({ variant: 'secondary' });
 const iconClassName = 'h-4 w-4';
 
 type ValidateResult =
@@ -86,16 +85,22 @@ function PlaygroundAlert(props: {
       )}
     >
       {variant === 'error' && (
-        <ExclamationCircleIcon className={clsx(iconClassName, 'mt-0.5 shrink-0')} />
+        <ExclamationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
       )}
       {variant === 'success' && (
         <CheckCircleIcon className={clsx(iconClassName, 'mt-0.5 shrink-0')} />
       )}
       {variant === 'warning' && (
-        <ExclamationCircleIcon className={clsx(iconClassName, 'mt-0.5 shrink-0')} />
+        <ExclamationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
       )}
       {variant === 'info' && (
-        <InformationCircleIcon className={clsx(iconClassName, 'mt-0.5 shrink-0')} />
+        <InformationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
       )}
       <div className="flex-1 min-w-0">{children}</div>
       {onClose && (
@@ -575,7 +580,9 @@ export function OAuthPlayground() {
             extra={
               <Button
                 type="button"
-                variant="secondary" size="sm" className="px-3"
+                variant="secondary"
+                size="sm"
+                className="px-3"
                 onClick={() => void loadClients()}
                 disabled={!success || clientsLoading}
               >

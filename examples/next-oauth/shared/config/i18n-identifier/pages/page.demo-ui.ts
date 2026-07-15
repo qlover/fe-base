@@ -112,8 +112,7 @@ export const PAGE_DEMO_UI_SECTION_ANTD = 'page_demo-ui:section_antd';
  * @localZh AntdThemeProvider 与 AntdRegistry 仅挂在此区块。
  * @localEn AntdThemeProvider + AntdRegistry are scoped to this block only.
  */
-export const PAGE_DEMO_UI_SECTION_ANTD_DESC =
-  'page_demo-ui:section_antd_desc';
+export const PAGE_DEMO_UI_SECTION_ANTD_DESC = 'page_demo-ui:section_antd_desc';
 
 /**
  * @description Open modal button

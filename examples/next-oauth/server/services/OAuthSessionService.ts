@@ -140,7 +140,9 @@ export class OAuthSessionService
   /**
    * Lightweight session check for middleware (e.g. guest-only auth pages).
    * Only verifies the app-session JWT cookie is present and parseable.
-   */
+
+   * @override
+      */
   public hasSessionFromRequest(request: NextRequest): boolean {
     const raw = request.cookies.get(this.sessionKey)?.value;
     if (!raw) {

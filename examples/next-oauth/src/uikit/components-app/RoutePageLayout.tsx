@@ -1,8 +1,8 @@
 'use client';
 
-import { BrandMark } from '@/uikit/components/icons';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
+import { BrandMark } from '@/uikit/components/icons';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { LocaleLink } from '../components/LocaleLink';
 import type { AppRoutePageTT } from './AppRoutePage';
@@ -82,7 +82,7 @@ export function RoutePageLayout({
                   <span
                     data-testid="base-header-app-name"
                     className={clsx(
-                      'text-base sm:text-lg font-semibold truncate max-w-[8.5rem] min-[380px]:max-w-[10rem] sm:max-w-none',
+                      'text-base sm:text-lg font-semibold truncate max-w-34 min-[380px]:max-w-40 sm:max-w-none',
                       headerTitleClassName ?? 'text-primary-text'
                     )}
                   >

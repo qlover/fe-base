@@ -11,15 +11,15 @@ import { clsx } from 'clsx';
 import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useState, type ComponentType } from 'react';
+import { Button } from '@/uikit/components/Button';
+import { BrandMark } from '@/uikit/components/icons';
 import type { NavItemInterface } from '@config/adminNavs';
 import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
-import { BrandMark } from '@/uikit/components/icons';
-import { Button } from '@/uikit/components/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ClientSeo } from '../components/ClientSeo';
 import { LocaleLink } from '../components/LocaleLink';
-import { ThemeSwitcher } from '../components-app/ThemeSwitcher';
 import { LogoutButton } from '../components-app/LogoutButton';
+import { ThemeSwitcher } from '../components-app/ThemeSwitcher';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 export interface AdminLayoutTT {
@@ -107,8 +107,14 @@ export function AdminLayout({
     };
   }, [mobileOpen]);
 
-  const renderNav = (opts: { collapsedRail: boolean; onNavigate?: () => void }) => (
-    <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
+  const renderNav = (opts: {
+    collapsedRail: boolean;
+    onNavigate?: () => void;
+  }) => (
+    <nav
+      data-testid="renderNav"
+      className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3"
+    >
       {navItems.map((item) => {
         const active = isActive(item);
         const href = linkHref(item);
@@ -137,7 +143,9 @@ export function AdminLayout({
               <Icon
                 className={clsx(
                   'h-5 w-5 shrink-0',
-                  active ? 'text-brand' : 'text-tertiary-text group-hover:text-secondary-text'
+                  active
+                    ? 'text-brand'
+                    : 'text-tertiary-text group-hover:text-secondary-text'
                 )}
               />
             ) : null}
@@ -221,7 +229,6 @@ export function AdminLayout({
       </header>
 
       <div className="relative flex min-h-0 flex-1">
-        {/* Desktop sidebar — stays put; only main scrolls */}
         <aside
           data-testid="AdminLayoutSidebar"
           className={clsx(
@@ -232,7 +239,6 @@ export function AdminLayout({
           {renderNav({ collapsedRail: collapsed })}
         </aside>
 
-        {/* Mobile drawer */}
         {mobileOpen && (
           <>
             <button

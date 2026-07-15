@@ -8,6 +8,7 @@ export const GithubIcon = forwardRef<SVGSVGElement, IconProps>(
   function GithubIcon({ title, titleId, ...props }, ref) {
     return (
       <svg
+        data-testid="GithubIcon"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"

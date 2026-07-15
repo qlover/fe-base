@@ -65,7 +65,7 @@ export function AuthButtonUI(props: {
     >
       <Link
         href={ROUTE_LOGIN}
-        className={`${linkPrimary} max-w-[5.5rem] sm:max-w-none`}
+        className={`${linkPrimary} max-w-22 sm:max-w-none`}
         title={t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN)}
       >
         <span className="truncate sm:whitespace-normal">

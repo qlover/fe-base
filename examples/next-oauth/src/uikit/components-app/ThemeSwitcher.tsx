@@ -1,5 +1,6 @@
 'use client';
 
+import { useMountedClient } from '@brain-toolkit/react-kit';
 import {
   Cog6ToothIcon as Cog6ToothOutlineIcon,
   HeartIcon as HeartOutlineIcon,
@@ -12,7 +13,6 @@ import {
   MoonIcon as MoonSolidIcon,
   SunIcon as SunSolidIcon
 } from '@heroicons/react/24/solid';
-import { useMountedClient } from '@brain-toolkit/react-kit';
 import { useTheme } from '@wrksz/themes/client';
 import { clsx } from 'clsx';
 import { useEffect, useMemo } from 'react';

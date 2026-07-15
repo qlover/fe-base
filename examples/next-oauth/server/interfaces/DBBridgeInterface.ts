@@ -119,8 +119,10 @@ export type RepoInsertGetParams<T> = RepoInsertParams<T> & {
   fields?: (keyof T)[] | string;
 };
 
-export interface RepositoryInterface<Raw, T = Raw>
-  extends RepoSearchInterface<Raw, T> {
+export interface RepositoryInterface<Raw, T = Raw> extends RepoSearchInterface<
+  Raw,
+  T
+> {
   getRepoName(): string;
 
   /**

@@ -1,5 +1,5 @@
-import { buttonClassName } from '@config/button';
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { buttonClassName } from '@config/button';
 import type { ButtonSize, ButtonVariant } from '@config/button';
 
 export type { ButtonSize, ButtonVariant };

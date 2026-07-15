@@ -1,12 +1,12 @@
 'use client';
 
-import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import {
   Table,
   type TableColumn,
   type TablePaginationConfig
 } from '@/uikit/components/Table';
+import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
+import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import { usePageI18nMapping } from '../context/PageI18nContext';
 
 export type RequestLogsTableTt = {

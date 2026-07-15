@@ -17,8 +17,8 @@ import {
   useState,
   type FormEvent
 } from 'react';
-import type { DialogHandler } from '@/impls/DialogHandler';
 import { Link } from '@/i18n/routing';
+import type { DialogHandler } from '@/impls/DialogHandler';
 import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
   DeveloperConfirmDialog,
@@ -29,7 +29,8 @@ import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { oauthCardClass, oauthElevatedPanelClass } from '@config/component';
 import { developerAppsI18n } from '@config/i18n-mapping/developerAppsI18n';
-import { I } from '@config/ioc-identifiter';import {
+import { I } from '@config/ioc-identifiter';
+import {
   API_CLIENTS,
   apiClientDetail,
   apiClientRotateSecret,
@@ -535,7 +536,7 @@ export function DeveloperAppsPageComponent({
                               <ClipboardDocumentIcon className="h-4 w-4" />
                             </Button>
                           </div>
-                          <p className="text-sm text-secondary-text break-words">
+                          <p className="text-sm text-secondary-text wrap-break-word">
                             {tt.redirectUrisLabel || 'Redirect URIs'}:{' '}
                             <code className="bg-secondary text-primary-text px-1.5 py-0.5 rounded text-xs font-mono">
                               {app.redirect_uris.join(', ')}

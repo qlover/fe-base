@@ -11,8 +11,8 @@ import {
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import { Link } from '@/i18n/routing';
-import { GithubIcon } from '@/uikit/components/icons';
 import { buttonClassName } from '@/uikit/components/Button';
+import { GithubIcon } from '@/uikit/components/icons';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
 import {
   API_OAUTH_VERIFY,
@@ -40,7 +40,7 @@ export function HomeHero({ tt }: HomeSectionProps) {
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-primary-text mb-3 sm:mb-4 px-1">
           {tt.heroTitle1}
           <br />
-          <span className="bg-gradient-to-r from-brand to-purple-500 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-brand to-purple-500 bg-clip-text text-transparent">
             {tt.heroTitle2}
           </span>
         </h1>

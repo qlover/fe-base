@@ -99,10 +99,7 @@ export function DemoUiShowcase() {
         </div>
       </Section>
 
-      <Section
-        title={tt.sectionDropdown}
-        description={tt.sectionDropdownDesc}
-      >
+      <Section title={tt.sectionDropdown} description={tt.sectionDropdownDesc}>
         <Dropdown
           selectedKeys={[dropdownKey]}
           onSelect={setDropdownKey}

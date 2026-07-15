@@ -68,7 +68,7 @@ function EndpointTable({
       data-testid="EndpointTable"
       className="overflow-x-auto rounded-xl border border-primary-border"
     >
-      <table className="w-full min-w-[32rem] text-left text-sm">
+      <table className="w-full min-w-lg text-left text-sm">
         <thead className="bg-elevated text-secondary-text">
           <tr>
             <th className="px-4 py-3 font-medium">Method</th>

@@ -1,7 +1,7 @@
 'use client';
 
-import { LanguageIcon } from '@heroicons/react/24/outline';
 import { useMountedClient } from '@brain-toolkit/react-kit';
+import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
