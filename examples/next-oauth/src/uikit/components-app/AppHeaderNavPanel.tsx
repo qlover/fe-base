@@ -1,6 +1,6 @@
 'use client';
 
-import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { headerActionButtonClassName } from '@config/component';
@@ -95,9 +95,9 @@ export function AppHeaderNavPanel({
         onClick={() => setMenuOpen((open) => !open)}
       >
         {menuOpen ? (
-          <CloseOutlined className="text-base" />
+          <XMarkIcon className="h-4 w-4" />
         ) : (
-          <MenuOutlined className="text-base" />
+          <Bars3Icon className="h-4 w-4" />
         )}
       </button>
 

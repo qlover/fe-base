@@ -1,6 +1,9 @@
 'use client';
 
-import { ExclamationCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  ArrowPathIcon,
+  ExclamationCircleIcon
+} from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import {
   oauthDangerButtonClass,
@@ -74,14 +77,14 @@ export function DeveloperConfirmDialog({
             disabled={pending}
             onClick={() => void handleConfirm()}
           >
-            {pending && <LoadingOutlined spin />}
+            {pending && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
             {options.okText}
           </button>
         </div>
       }
     >
       <p className="text-sm text-secondary-text leading-relaxed flex gap-2">
-        <ExclamationCircleOutlined className="text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+        <ExclamationCircleIcon className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
         <span>{options.content}</span>
       </p>
     </DeveloperOverlayModal>

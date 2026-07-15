@@ -1,14 +1,14 @@
 'use client';
 
 import {
-  CopyOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  ExperimentOutlined,
-  KeyOutlined,
-  LoadingOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+  ArrowPathIcon,
+  BeakerIcon,
+  ClipboardDocumentIcon,
+  KeyIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline';
 import { message } from 'antd';
 import { clsx } from 'clsx';
 import {
@@ -463,7 +463,7 @@ export function DeveloperAppsPageComponent({
                     href={ROUTE_OAUTH_PLAYGROUND}
                     className={oauthSecondaryButtonClass}
                   >
-                    <ExperimentOutlined />
+                    <BeakerIcon className="h-4 w-4" />
                     {tt.playgroundLink || 'OAuth playground'}
                   </Link>
                   <button
@@ -471,7 +471,7 @@ export function DeveloperAppsPageComponent({
                     className={oauthPrimaryButtonClass}
                     onClick={openCreateModal}
                   >
-                    <PlusOutlined />
+                    <PlusIcon className="h-4 w-4" />
                     {tt.createButton || 'Create New App'}
                   </button>
                 </div>
@@ -481,7 +481,7 @@ export function DeveloperAppsPageComponent({
             <div className="p-5 sm:p-6">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-secondary-text">
-                  <LoadingOutlined spin className="text-2xl text-brand" />
+                  <ArrowPathIcon className="h-8 w-8 text-brand animate-spin" />
                   <span className="text-sm">
                     {tt.loading || 'Loading applications'}
                   </span>
@@ -542,7 +542,7 @@ export function DeveloperAppsPageComponent({
                                 tt.copyClientIdSuccess || 'Copy Client ID'
                               }
                             >
-                              <CopyOutlined />
+                              <ClipboardDocumentIcon className="h-4 w-4" />
                             </button>
                           </div>
                           <p className="text-sm text-secondary-text break-words">
@@ -562,7 +562,7 @@ export function DeveloperAppsPageComponent({
                             className={oauthGhostActionClass}
                             onClick={() => openEditModal(app)}
                           >
-                            <EditOutlined />
+                            <PencilSquareIcon className="h-4 w-4" />
                             {tt.editButton || 'Edit'}
                           </button>
                           <button
@@ -584,7 +584,7 @@ export function DeveloperAppsPageComponent({
                                 : undefined
                             }
                           >
-                            <KeyOutlined />
+                            <KeyIcon className="h-4 w-4" />
                             {tt.rotateSecretButton || 'Rotate Secret'}
                           </button>
                           <button
@@ -595,7 +595,7 @@ export function DeveloperAppsPageComponent({
                             )}
                             onClick={() => handleDeleteApp(app.client_id)}
                           >
-                            <DeleteOutlined />
+                            <TrashIcon className="h-4 w-4" />
                             {tt.deleteButton || 'Delete'}
                           </button>
                         </div>
@@ -709,7 +709,7 @@ export function DeveloperAppsPageComponent({
                     }
                     disabled={!editValues.confidential}
                   >
-                    <KeyOutlined />
+                    <KeyIcon className="h-4 w-4" />
                     {tt.rotateSecretButton || 'Rotate Secret'}
                   </button>
                   <button
@@ -723,7 +723,7 @@ export function DeveloperAppsPageComponent({
                       handleDeleteApp(clientId);
                     }}
                   >
-                    <DeleteOutlined />
+                    <TrashIcon className="h-4 w-4" />
                     {tt.deleteButton || 'Delete'}
                   </button>
                 </>

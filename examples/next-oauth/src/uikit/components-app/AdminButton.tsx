@@ -1,6 +1,6 @@
 'use client';
 
-import { TeamOutlined } from '@ant-design/icons';
+import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { LocaleLink } from '../components/LocaleLink';
 import { useUserAuth } from '../hook/useUserAuth';
 
@@ -23,7 +23,7 @@ export function AdminButton(props: { adminTitle: string; locale?: string }) {
       locale={locale}
       className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
     >
-      <TeamOutlined className="text-lg text-primary-text" />
+      <UserGroupIcon className="h-5 w-5 text-primary-text" />
     </LocaleLink>
   );
 }

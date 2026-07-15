@@ -1,6 +1,6 @@
 'use client';
 
-import { LogoutOutlined } from '@ant-design/icons';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { Tooltip } from 'antd';
 import { clsx } from 'clsx';
 import { useCallback } from 'react';
@@ -49,7 +49,9 @@ export function LogoutButton(props: { showLabel?: boolean }) {
       )}
       onClick={onClick}
     >
-      <LogoutOutlined className={showLabel ? 'text-base' : undefined} />
+      <ArrowRightOnRectangleIcon
+        className={showLabel ? 'h-4 w-4' : 'h-5 w-5'}
+      />
       {showLabel && <span className="hidden sm:inline">{tt.title}</span>}
     </button>
   );

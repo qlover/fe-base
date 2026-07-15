@@ -1,10 +1,10 @@
 'use client';
 
 import {
-  ApiOutlined,
-  ExperimentOutlined,
-  RocketOutlined
-} from '@ant-design/icons';
+  BeakerIcon,
+  CubeTransparentIcon,
+  RocketLaunchIcon
+} from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
@@ -121,7 +121,7 @@ export function OAuthDocsContent() {
         <p className={proseClass}>{tt.intro}</p>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTE_OAUTH_PLAYGROUND} className={linkButtonClass}>
-            <ExperimentOutlined />
+            <BeakerIcon className="h-4 w-4" />
             {tt.linkPlayground}
           </Link>
           <a
@@ -130,11 +130,11 @@ export function OAuthDocsContent() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <ApiOutlined />
+            <CubeTransparentIcon className="h-4 w-4" />
             {tt.linkApi}
           </a>
           <Link href={ROUTE_DEVELOPER_APPS} className={linkButtonClass}>
-            <RocketOutlined />
+            <RocketLaunchIcon className="h-4 w-4" />
             {tt.linkDeveloper}
           </Link>
         </div>

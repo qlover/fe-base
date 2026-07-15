@@ -1,6 +1,6 @@
 'use client';
 
-import { CopyOutlined } from '@ant-design/icons';
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { oauthGhostActionClass } from '@config/component';
 
@@ -25,7 +25,7 @@ export function CopyableCredential(props: {
         className={clsx(oauthGhostActionClass, 'shrink-0 px-2')}
         aria-label="Copy"
       >
-        <CopyOutlined />
+        <ClipboardDocumentIcon className="h-4 w-4" />
       </button>
     </div>
   );

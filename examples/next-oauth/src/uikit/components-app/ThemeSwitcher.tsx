@@ -1,15 +1,17 @@
 'use client';
 
 import {
-  HeartFilled,
-  SettingOutlined,
-  SunOutlined,
-  MoonOutlined,
-  SettingFilled,
-  SunFilled,
-  MoonFilled,
-  HeartOutlined
-} from '@ant-design/icons';
+  Cog6ToothIcon as Cog6ToothOutlineIcon,
+  HeartIcon as HeartOutlineIcon,
+  MoonIcon as MoonOutlineIcon,
+  SunIcon as SunOutlineIcon
+} from '@heroicons/react/24/outline';
+import {
+  Cog6ToothIcon as Cog6ToothSolidIcon,
+  HeartIcon as HeartSolidIcon,
+  MoonIcon as MoonSolidIcon,
+  SunIcon as SunSolidIcon
+} from '@heroicons/react/24/solid';
 import { useMountedClient } from '@brain-toolkit/react-kit';
 import { useTheme } from '@wrksz/themes/client';
 import { Dropdown } from 'antd';
@@ -34,6 +36,8 @@ const { supportedThemes, storageKey } = themeConfig;
 const defaultTheme = supportedThemes[0] || 'system';
 const themesList = ['system', ...supportedThemes];
 
+const iconClassName = 'h-4 w-4';
+
 const colorMap: Record<
   string,
   {
@@ -48,29 +52,29 @@ const colorMap: Record<
     i18nkey: COMMON_THEME_DEFAULT,
     selectedColor: 'text-primary-text',
     normalColor: 'text-secondary-text',
-    Icon: SettingOutlined,
-    SelectedIcon: SettingFilled
+    Icon: Cog6ToothOutlineIcon,
+    SelectedIcon: Cog6ToothSolidIcon
   },
   light: {
     i18nkey: COMMON_THEME_LIGHT,
     selectedColor: 'text-primary-text',
     normalColor: 'text-secondary-text',
-    Icon: SunOutlined,
-    SelectedIcon: SunFilled
+    Icon: SunOutlineIcon,
+    SelectedIcon: SunSolidIcon
   },
   dark: {
     i18nkey: COMMON_THEME_DARK,
     selectedColor: 'text-[#9333ea]',
     normalColor: 'text-[#a855f7]',
-    Icon: MoonOutlined,
-    SelectedIcon: MoonFilled
+    Icon: MoonOutlineIcon,
+    SelectedIcon: MoonSolidIcon
   },
   pink: {
     i18nkey: COMMON_THEME_PINK,
     selectedColor: 'text-[#f472b6]',
     normalColor: 'text-[#ec4899]',
-    Icon: HeartOutlined,
-    SelectedIcon: HeartFilled
+    Icon: HeartOutlineIcon,
+    SelectedIcon: HeartSolidIcon
   }
 };
 
@@ -105,7 +109,11 @@ export function ThemeSwitcher() {
               isCurrentTheme ? selectedColor : normalColor
             )}
           >
-            {isCurrentTheme ? <SelectedIcon /> : <Icon />}
+            {isCurrentTheme ? (
+              <SelectedIcon className={iconClassName} />
+            ) : (
+              <Icon className={iconClassName} />
+            )}
             <span>{t(i18nkey)}</span>
           </div>
         )
@@ -123,7 +131,7 @@ export function ThemeSwitcher() {
   }, [currentTheme]);
 
   const ThemeIcon =
-    mounted && resolvedTheme === 'dark' ? MoonOutlined : SunOutlined;
+    mounted && resolvedTheme === 'dark' ? MoonOutlineIcon : SunOutlineIcon;
 
   return (
     <Dropdown
@@ -148,7 +156,7 @@ export function ThemeSwitcher() {
           setTheme(nextTheme as DefaultTheme);
         }}
       >
-        <ThemeIcon className="text-base" />
+        <ThemeIcon className="h-4 w-4" />
       </button>
     </Dropdown>
   );

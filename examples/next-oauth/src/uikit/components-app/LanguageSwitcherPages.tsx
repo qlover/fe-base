@@ -1,6 +1,6 @@
 'use client';
 
-import { TranslationOutlined } from '@ant-design/icons';
+import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
 import { Dropdown } from 'antd';
 import { useRouter } from 'next/router';
@@ -91,7 +91,7 @@ export function LanguageSwitcherPages() {
           handleLanguageChange(nextLocale);
         }}
       >
-        <TranslationOutlined className="text-base shrink-0" />
+        <LanguageIcon className="h-4 w-4 shrink-0" />
         <span className="hidden sm:inline">{currentLocaleLabel}</span>
       </button>
     </Dropdown>

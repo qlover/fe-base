@@ -1,18 +1,18 @@
 'use client';
 
 import {
-  ArrowRightOutlined,
-  BookOutlined,
-  CheckCircleOutlined,
-  CloudUploadOutlined,
-  BranchesOutlined,
-  GithubOutlined,
-  SafetyCertificateOutlined,
-  ApiOutlined,
-  CodeOutlined
-} from '@ant-design/icons';
+  ArrowRightIcon,
+  BookOpenIcon,
+  CheckCircleIcon,
+  CloudArrowUpIcon,
+  CodeBracketIcon,
+  CubeTransparentIcon,
+  ShareIcon,
+  ShieldCheckIcon
+} from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
+import { GithubIcon } from '@/uikit/components/icons';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
 import {
   API_OAUTH_VERIFY,
@@ -27,7 +27,9 @@ const secondaryButtonClassName =
   'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-primary-border bg-primary text-primary-text font-medium hover:bg-elevated transition shadow-sm';
 
 const featureIconWrapClassName =
-  'w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-3 text-brand text-xl';
+  'w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-3 text-brand';
+
+const featureIconClassName = 'h-6 w-6';
 
 interface HomeSectionProps {
   tt: HomeI18nInterface;
@@ -38,7 +40,7 @@ export function HomeHero({ tt }: HomeSectionProps) {
     <section data-testid="HomeHero" className="py-10 sm:py-16 md:py-24">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="inline-flex max-w-full items-center gap-2 bg-brand/10 text-brand px-3 py-1 rounded-full text-xs sm:text-sm mb-4 sm:mb-6">
-          <CheckCircleOutlined className="shrink-0" />
+          <CheckCircleIcon className="h-4 w-4 shrink-0" />
           <span className="truncate">{tt.heroBadge}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-primary-text mb-3 sm:mb-4 px-1">
@@ -56,14 +58,14 @@ export function HomeHero({ tt }: HomeSectionProps) {
             href={ROUTE_DEVELOPER_APPS}
             className={clsx(primaryButtonClassName, 'w-full sm:w-auto')}
           >
-            <GithubOutlined />
+            <GithubIcon className="h-5 w-5" />
             {tt.heroStart}
           </Link>
           <Link
             href={ROUTE_DOCS_OAUTH}
             className={clsx(secondaryButtonClassName, 'w-full sm:w-auto')}
           >
-            <BookOutlined />
+            <BookOpenIcon className="h-5 w-5" />
             {tt.heroDocs}
           </Link>
         </div>
@@ -81,8 +83,8 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="rounded-xl border border-primary-border bg-elevated/50 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <span className="text-brand text-lg mt-0.5 shrink-0">
-              <CodeOutlined />
+            <span className="text-brand mt-0.5 shrink-0">
+              <CodeBracketIcon className="h-5 w-5" />
             </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionArchTitle}
@@ -94,8 +96,8 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
         </div>
         <div className="rounded-xl border border-brand/30 bg-brand/5 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <span className="text-brand text-lg mt-0.5 shrink-0">
-              <ApiOutlined />
+            <span className="text-brand mt-0.5 shrink-0">
+              <CubeTransparentIcon className="h-5 w-5" />
             </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionDemoTitle}
@@ -113,17 +115,17 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
 export function HomeFeatures({ tt }: HomeSectionProps) {
   const features = [
     {
-      icon: <SafetyCertificateOutlined />,
+      icon: <ShieldCheckIcon className={featureIconClassName} />,
       title: tt.feature1Title,
       desc: tt.feature1Desc
     },
     {
-      icon: <BranchesOutlined />,
+      icon: <ShareIcon className={featureIconClassName} />,
       title: tt.feature2Title,
       desc: tt.feature2Desc
     },
     {
-      icon: <CloudUploadOutlined />,
+      icon: <CloudArrowUpIcon className={featureIconClassName} />,
       title: tt.feature3Title,
       desc: tt.feature3Desc
     }
@@ -204,7 +206,7 @@ export function HomeCta({ tt }: HomeSectionProps) {
         )}
       >
         {tt.ctaButton}
-        <ArrowRightOutlined className="text-sm" />
+        <ArrowRightIcon className="h-4 w-4" />
       </Link>
     </section>
   );
