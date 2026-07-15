@@ -7,7 +7,9 @@ export const nextApiServerBackstop: BootstrapServerPlugin = {
 
     const appConfig = IOC('SeedConfigInterface');
 
-    logger.log(`appConfig: ${JSON.stringify(appConfig)}`);
+    logger.log(
+      `Running in ${appConfig.env} mode, logging level: ${appConfig.logLevel}`
+    );
   },
 
   onError(ctx) {

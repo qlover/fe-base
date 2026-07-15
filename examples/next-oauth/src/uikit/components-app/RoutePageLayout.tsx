@@ -2,6 +2,7 @@
 
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
+import { BrandMark } from '@/uikit/components/icons';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { LocaleLink } from '../components/LocaleLink';
 import type { AppRoutePageTT } from './AppRoutePage';
@@ -73,10 +74,15 @@ export function RoutePageLayout({
                   locale={locale}
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 shrink"
                 >
+                  <BrandMark
+                    className="h-7 w-7 shrink-0"
+                    title={tt.title}
+                    titleId="base-header-brand-mark"
+                  />
                   <span
                     data-testid="base-header-app-name"
                     className={clsx(
-                      'text-base sm:text-lg font-semibold truncate max-w-[8.5rem] min-[380px]:max-w-[10rem] sm:max-w-none',
+                      'text-base sm:text-lg font-semibold truncate max-w-34 min-[380px]:max-w-40 sm:max-w-none',
                       headerTitleClassName ?? 'text-primary-text'
                     )}
                   >

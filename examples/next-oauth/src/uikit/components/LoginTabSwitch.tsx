@@ -1,39 +1,37 @@
 'use client';
 
-import { GithubOutlined, GoogleOutlined } from '@ant-design/icons';
-import { useCallback, useState } from 'react';
+import {
+  useCallback,
+  useState,
+  type ComponentType,
+  type SVGProps
+} from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
 import { EmailOTPForm } from '@/uikit/components/EmailOTPForm';
+import { GithubIcon, GoogleIcon } from '@/uikit/components/icons';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
 import type { LoginProviderType } from '@config/common';
 import { loginProviders } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { useIOC } from '../hook/useIOC';
-import type { AntdIconProps } from '@ant-design/icons/es/components/AntdIcon';
-import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 
 type LoginTab = 'email' | 'phone';
 type EmailMode = 'password' | 'otp';
+
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 type ProvidersItem = {
   key: LoginProviderType;
   provider: LoginProviderType;
   titleI18nMapKey: keyof LoginI18nInterface;
   disabled: boolean;
-  Icon: ForwardRefExoticComponent<
-    Omit<AntdIconProps, 'ref'> & RefAttributes<HTMLSpanElement>
-  >;
+  Icon: IconComponent;
 };
 
-const providersIcons: Record<
-  LoginProviderType,
-  ForwardRefExoticComponent<
-    Omit<AntdIconProps, 'ref'> & RefAttributes<HTMLSpanElement>
-  >
-> = {
-  [loginProviders.GitHub]: GithubOutlined,
-  [loginProviders.Google]: GoogleOutlined
+const providersIcons: Record<LoginProviderType, IconComponent> = {
+  [loginProviders.GitHub]: GithubIcon,
+  [loginProviders.Google]: GoogleIcon
 };
 
 const providersItems: ProvidersItem[] = Object.values(loginProviders).map(
@@ -101,7 +99,7 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
             title={tt[titleI18nMapKey]}
             className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 mb-6"
           >
-            <Icon className="text-lg" />
+            <Icon className="h-5 w-5" />
             <span>{tt[titleI18nMapKey]}</span>
           </button>
         )

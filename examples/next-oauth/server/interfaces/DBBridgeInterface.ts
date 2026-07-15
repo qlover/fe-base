@@ -74,6 +74,9 @@ export interface RepoSearchParams<T = unknown> extends ResourceSearchParams {
 /**
  * 仓库搜索接口
  *
+ * @template Raw - repository raw row type
+ * @template T - repository mapped return type (defaults to Raw)
+ *
  * 该接口主要为了统一调用方法, 为了后续迁移到非 supabase 数据库时的抽象层
  *
  * 可以做：
@@ -81,7 +84,7 @@ export interface RepoSearchParams<T = unknown> extends ResourceSearchParams {
  * - 实现一个 supabase 的 search
  * - 实现一个 mysql 的 search
  */
-export interface RepoSearchInterface<T> {
+export interface RepoSearchInterface<Raw, T> {
   /**
    * 该方法用于搜索数据, 返回一个 ResourceSearchResult 带分页的数据
    *
@@ -101,7 +104,7 @@ export interface RepoSearchInterface<T> {
    * ```
    * @param params {@link RepoSearchParams}
    */
-  search(params: RepoSearchParams<T>): Promise<ResourceSearchResult<T>>;
+  search(params: RepoSearchParams<Raw>): Promise<ResourceSearchResult<T>>;
 }
 
 export type RepoInsertParams<T> = {
@@ -116,17 +119,20 @@ export type RepoInsertGetParams<T> = RepoInsertParams<T> & {
   fields?: (keyof T)[] | string;
 };
 
-export interface RepositoryInterface<T> extends RepoSearchInterface<T> {
+export interface RepositoryInterface<Raw, T = Raw> extends RepoSearchInterface<
+  Raw,
+  T
+> {
   getRepoName(): string;
 
   /**
    * 插入一条数据
    * @param data
    */
-  insert(params: RepoInsertParams<T>): Promise<void>;
+  insert(params: RepoInsertParams<Raw>): Promise<void>;
   /**
    * 插入一条数据后返回新的数据
    * @param params
    */
-  insert(params: RepoInsertGetParams<T>): Promise<T>;
+  insert(params: RepoInsertGetParams<Raw>): Promise<T>;
 }

@@ -1,12 +1,11 @@
 'use client';
 
-import { ExclamationCircleOutlined, LoadingOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 import {
-  oauthDangerButtonClass,
-  oauthPrimaryButtonClass,
-  oauthSecondaryButtonClass
-} from '@config/component';
+  ArrowPathIcon,
+  ExclamationCircleIcon
+} from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { Button } from '@/uikit/components/Button';
 import { DeveloperOverlayModal } from './DeveloperOverlayModal';
 
 export type DeveloperConfirmOptions = {
@@ -38,7 +37,7 @@ export function DeveloperConfirmDialog({
       await options.onConfirm();
       onClose();
     } catch {
-      // Keep dialog open; caller shows toast via message.*
+      // Keep dialog open; caller shows toast via dialogHandler
     } finally {
       setPending(false);
     }
@@ -46,42 +45,35 @@ export function DeveloperConfirmDialog({
 
   if (!options) return null;
 
-  const okClass =
-    options.variant === 'danger'
-      ? oauthDangerButtonClass
-      : oauthPrimaryButtonClass;
-
   return (
     <DeveloperOverlayModal
       open={open}
       title={options.title}
       onClose={onClose}
-      maxWidthClass="max-w-md"
+      maxWidthClass="sm:max-w-md"
       closeOnBackdrop={!pending}
+      showFullscreenToggle={false}
+      bodyClassName="px-4 py-3 sm:px-5 sm:py-3.5"
+      footerClassName="!px-4 !py-3 sm:!px-5 sm:!py-3.5"
+      headerClassName="!px-4 !py-3 sm:!px-5 sm:!py-3.5"
       footer={
         <div className="flex flex-wrap justify-end gap-2">
-          <button
-            type="button"
-            className={oauthSecondaryButtonClass}
-            disabled={pending}
-            onClick={onClose}
-          >
+          <Button variant="secondary" disabled={pending} onClick={onClose}>
             {options.cancelText}
-          </button>
-          <button
-            type="button"
-            className={okClass}
+          </Button>
+          <Button
+            variant={options.variant === 'danger' ? 'danger' : 'primary'}
             disabled={pending}
             onClick={() => void handleConfirm()}
           >
-            {pending && <LoadingOutlined spin />}
+            {pending && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
             {options.okText}
-          </button>
+          </Button>
         </div>
       }
     >
-      <p className="text-sm text-secondary-text leading-relaxed flex gap-2">
-        <ExclamationCircleOutlined className="text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+      <p className="flex gap-2 text-sm leading-relaxed text-secondary-text">
+        <ExclamationCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
         <span>{options.content}</span>
       </p>
     </DeveloperOverlayModal>

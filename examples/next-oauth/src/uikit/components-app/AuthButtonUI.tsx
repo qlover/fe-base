@@ -1,8 +1,7 @@
 'use client';
 
-import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
-import { headerActionButtonClassName } from '@config/component';
+import { buttonClassName } from '@/uikit/components/Button';
 import {
   COMMON_AUTH_NAV_SIGN_UP,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
@@ -27,14 +26,16 @@ import { useWarnTranslations } from '../hook/useWarnTranslations';
  *   tree as the root layout (IOCProvider → … → AppRoutePage → AuthButtonUI → LogoutButton).
  *   So useIOC() always has access to the IOC context.
  */
-const linkSecondary = clsx(
-  headerActionButtonClassName,
-  'focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
-);
-const linkPrimary = clsx(
-  headerActionButtonClassName,
-  'bg-brand text-on-brand border-transparent hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
-);
+const linkSecondary = buttonClassName({
+  variant: 'header',
+  className:
+    'focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
+});
+const linkPrimary = buttonClassName({
+  variant: 'header',
+  className:
+    'bg-brand text-on-brand border-transparent hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
+});
 
 export function AuthButtonUI(props: {
   hasAuth: boolean;
@@ -64,7 +65,7 @@ export function AuthButtonUI(props: {
     >
       <Link
         href={ROUTE_LOGIN}
-        className={clsx(linkPrimary, 'max-w-[5.5rem] sm:max-w-none')}
+        className={`${linkPrimary} max-w-22 sm:max-w-none`}
         title={t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN)}
       >
         <span className="truncate sm:whitespace-normal">

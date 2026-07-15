@@ -1,11 +1,13 @@
+import { TrashIcon } from '@heroicons/react/24/outline';
 import {
   ResourceSearch,
   type ResourceSearchParams
 } from '@qlover/corekit-bridge';
 import dynamic from 'next/dynamic';
 import { useLocale } from 'next-intl';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { RequestLogsApi } from '@/impls/appApi/RequestLogsApi';
+import { Button } from '@/uikit/components/Button';
 import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
 import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
@@ -18,6 +20,7 @@ import { defaultNavItems } from '@config/adminNavs';
 import { defaultSearchParams } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import { adminRequestLogs18n } from '@config/i18n-mapping/admin18n';
+import { I } from '@config/ioc-identifiter';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
@@ -46,7 +49,9 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
   const locale = useLocale();
   const pageI18n = useMemo(() => adminRequestLogs18n, []);
   const requestLogsApi = useIOC(RequestLogsApi);
+  const dialogHandler = useIOC(I.DialogHandler);
   const seoMetadata = useI18nMapping(pageI18n);
+  const [clearing, setClearing] = useState(false);
 
   const searchResource = useMemo(
     () =>
@@ -88,6 +93,32 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
     [currentPage, pageSize, total, handlePaginationChange]
   );
 
+  const handleClearLogs = useCallback(() => {
+    dialogHandler.confirm({
+      title: seoMetadata.clearConfirmTitle,
+      content: seoMetadata.clearConfirmContent,
+      okText: seoMetadata.clear,
+      cancelText: seoMetadata.cancelButton,
+      okType: 'danger',
+      onOk: async () => {
+        setClearing(true);
+        try {
+          await requestLogsApi.clear();
+          dialogHandler.success(seoMetadata.clearSuccess);
+          searchResource.refresh({ page: 1 });
+        } catch (error) {
+          dialogHandler.error(
+            error instanceof Error ? error.message : seoMetadata.clear,
+            { error }
+          );
+          throw error;
+        } finally {
+          setClearing(false);
+        }
+      }
+    });
+  }, [dialogHandler, requestLogsApi, searchResource, seoMetadata]);
+
   useStrictEffect(() => {
     searchResource.refresh();
   }, [searchResource]);
@@ -97,16 +128,28 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
       <WithUserAuth failedElement={<UserAuthFailed />}>
         <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
           <div>
-            <h1 className="text-2xl font-semibold text-primary-text mb-6">
-              {seoMetadata.title}
-            </h1>
-            <p className="text-secondary-text mb-6">
-              {seoMetadata.description}
-            </p>
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold text-primary-text">
+                  {seoMetadata.title}
+                </h1>
+                <p className="text-secondary-text mt-2">
+                  {seoMetadata.description}
+                </p>
+              </div>
+              <Button
+                variant="danger"
+                disabled={clearing || loading || total === 0}
+                onClick={handleClearLogs}
+              >
+                <TrashIcon className="h-4 w-4" />
+                {seoMetadata.clear}
+              </Button>
+            </div>
             <RequestLogsTable
               rows={rows}
               locale={locale}
-              loading={loading}
+              loading={loading || clearing}
               pagination={tablePagination}
             />
           </div>

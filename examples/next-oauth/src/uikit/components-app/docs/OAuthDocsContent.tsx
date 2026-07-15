@@ -1,12 +1,13 @@
 'use client';
 
 import {
-  ApiOutlined,
-  ExperimentOutlined,
-  RocketOutlined
-} from '@ant-design/icons';
+  BeakerIcon,
+  CubeTransparentIcon,
+  RocketLaunchIcon
+} from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
+import { buttonClassName } from '@/uikit/components/Button';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import type { OAuthDocsI18nInterface } from '@config/i18n-mapping/oauthDocsI18n';
 import {
@@ -67,7 +68,7 @@ function EndpointTable({
       data-testid="EndpointTable"
       className="overflow-x-auto rounded-xl border border-primary-border"
     >
-      <table className="w-full min-w-[32rem] text-left text-sm">
+      <table className="w-full min-w-lg text-left text-sm">
         <thead className="bg-elevated text-secondary-text">
           <tr>
             <th className="px-4 py-3 font-medium">Method</th>
@@ -95,8 +96,7 @@ function EndpointTable({
   );
 }
 
-const linkButtonClass =
-  'inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary-border bg-primary text-primary-text text-sm font-medium hover:bg-elevated transition';
+const linkButtonClass = buttonClassName({ variant: 'secondary' });
 
 export function OAuthDocsContent() {
   const tt = usePageI18nMapping<OAuthDocsI18nInterface>();
@@ -121,7 +121,7 @@ export function OAuthDocsContent() {
         <p className={proseClass}>{tt.intro}</p>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTE_OAUTH_PLAYGROUND} className={linkButtonClass}>
-            <ExperimentOutlined />
+            <BeakerIcon className="h-4 w-4" />
             {tt.linkPlayground}
           </Link>
           <a
@@ -130,11 +130,11 @@ export function OAuthDocsContent() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <ApiOutlined />
+            <CubeTransparentIcon className="h-4 w-4" />
             {tt.linkApi}
           </a>
           <Link href={ROUTE_DEVELOPER_APPS} className={linkButtonClass}>
-            <RocketOutlined />
+            <RocketLaunchIcon className="h-4 w-4" />
             {tt.linkDeveloper}
           </Link>
         </div>

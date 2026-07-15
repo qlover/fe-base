@@ -18,7 +18,10 @@ export const adminTableI18n = {
   action: commonTablesKeys.COMMON_ADMIN_TABLE_ACTION,
   editText: commonTablesKeys.COMMON_ADMIN_TABLE_EDIT,
   deleteText: commonTablesKeys.COMMON_ADMIN_TABLE_DELETE,
-  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL
+  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL,
+  prev: commonTablesKeys.COMMON_ADMIN_TABLE_PREV,
+  next: commonTablesKeys.COMMON_ADMIN_TABLE_NEXT,
+  pageSize: commonTablesKeys.COMMON_ADMIN_TABLE_PAGE_SIZE
 } as const;
 
 export const admin18n = Object.freeze({
@@ -52,7 +55,12 @@ export const adminRequestLogs18n = Object.freeze({
   colIp: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_IP,
   colLoginMethod: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_LOGIN_METHOD,
   colError: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_ERROR,
-  empty: requestLogsKeys.ADMIN_REQUEST_LOGS_EMPTY
+  empty: requestLogsKeys.ADMIN_REQUEST_LOGS_EMPTY,
+  clear: requestLogsKeys.ADMIN_REQUEST_LOGS_CLEAR,
+  clearConfirmTitle: requestLogsKeys.ADMIN_REQUEST_LOGS_CLEAR_CONFIRM_TITLE,
+  clearConfirmContent: requestLogsKeys.ADMIN_REQUEST_LOGS_CLEAR_CONFIRM_CONTENT,
+  clearSuccess: requestLogsKeys.ADMIN_REQUEST_LOGS_CLEAR_SUCCESS,
+  cancelButton: commonKeys.COMMON_CANCEL
 });
 
 export const adminUsers18n = Object.freeze({

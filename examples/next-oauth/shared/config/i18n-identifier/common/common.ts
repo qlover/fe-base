@@ -175,3 +175,10 @@ export const COMMON_HEADER_NAV_ABOUT = 'common:header_nav__about';
  * @localEn Developer
  */
 export const COMMON_HEADER_NAV_DEVELOPER = 'common:header_nav__developer';
+
+/**
+ * @description App header nav - UI showcase
+ * @localZh UI 演示
+ * @localEn Demo UI
+ */
+export const COMMON_HEADER_NAV_DEMO_UI = 'common:header_nav__demo_ui';

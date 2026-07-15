@@ -24,4 +24,10 @@ export interface OAuthSessionServiceInterface {
     request: NextRequest,
     nextResponse?: NextResponse<unknown>
   ): Promise<NextResponse<unknown>>;
+
+  /**
+   * Lightweight request-scoped session check (cookie JWT parse only).
+   * Used by middleware for guest-only auth pages.
+   */
+  hasSessionFromRequest(request: NextRequest): boolean;
 }

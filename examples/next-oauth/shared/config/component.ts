@@ -1,6 +1,11 @@
+import { buttonClassName } from './button';
+
 /**
  * Shared Tailwind class strings for OAuth developer / playground UI.
  * Uses project semantic tokens (works in light and dark).
+ *
+ * Prefer `<Button variant="..." />` for buttons.
+ * Keep using these helpers for non-button surfaces / inputs.
  */
 export const oauthLabelClass =
   'text-secondary-text mb-1.5 block text-xs font-medium uppercase tracking-wide';
@@ -10,20 +15,22 @@ export const oauthInputClass =
 
 export const oauthTextareaClass = `${oauthInputClass} resize-y min-h-[5.5rem]`;
 
-export const oauthPrimaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed';
+/** @deprecated Prefer `<Button variant="primary" />` or `buttonClassName`. */
+export const oauthPrimaryButtonClass = buttonClassName({ variant: 'primary' });
 
-export const oauthSecondaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-primary-border bg-primary text-primary-text font-medium hover:bg-elevated transition disabled:opacity-60 disabled:cursor-not-allowed';
+/** @deprecated Prefer `<Button variant="secondary" />` or `buttonClassName`. */
+export const oauthSecondaryButtonClass = buttonClassName({
+  variant: 'secondary'
+});
 
-export const oauthGhostActionClass =
-  'inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-brand hover:text-brand-hover hover:bg-brand/10 transition';
+/** @deprecated Prefer `<Button variant="ghost" />` or `buttonClassName`. */
+export const oauthGhostActionClass = buttonClassName({ variant: 'ghost' });
 
-export const oauthDangerButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-red-500/40 bg-red-50 dark:bg-red-900/25 text-red-700 dark:text-red-300 font-medium hover:bg-red-100 dark:hover:bg-red-900/40 transition disabled:opacity-60';
+/** @deprecated Prefer `<Button variant="danger" />` or `buttonClassName`. */
+export const oauthDangerButtonClass = buttonClassName({ variant: 'danger' });
 
-export const oauthWarningButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-medium hover:bg-amber-100 dark:hover:bg-amber-950/50 transition disabled:opacity-60';
+/** @deprecated Prefer `<Button variant="warning" />` or `buttonClassName`. */
+export const oauthWarningButtonClass = buttonClassName({ variant: 'warning' });
 
 export const oauthCardClass =
   'bg-primary rounded-2xl shadow-xl border border-primary-border overflow-hidden';
@@ -31,6 +38,7 @@ export const oauthCardClass =
 export const oauthElevatedPanelClass =
   'bg-elevated rounded-xl border border-primary-border';
 
-/** Shared header control styles (language, theme, auth). */
-export const headerActionButtonClassName =
-  'inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-lg px-2 py-1.5 sm:px-3 text-sm font-medium text-primary-text bg-elevated hover:bg-secondary border border-primary-border/60 transition-colors shrink-0';
+/** @deprecated Prefer `<Button variant="header" />` or `buttonClassName`. */
+export const headerActionButtonClassName = buttonClassName({
+  variant: 'header'
+});

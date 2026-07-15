@@ -1,14 +1,13 @@
 'use client';
 
 import {
-  CheckCircleOutlined,
-  CopyOutlined,
-  ExperimentOutlined,
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
-  LoadingOutlined,
-  ReloadOutlined
-} from '@ant-design/icons';
+  ArrowPathIcon,
+  BeakerIcon,
+  CheckCircleIcon,
+  ClipboardDocumentIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon
+} from '@heroicons/react/24/outline';
 import {
   computePkceS256Challenge,
   generatePkceVerifier
@@ -24,6 +23,7 @@ import {
 } from 'react';
 import { Link } from '@/i18n/routing';
 import { AppUserGateway } from '@/impls/AppUserGateway';
+import { Button, buttonClassName } from '@/uikit/components/Button';
 import { readAppApiJson } from '@/uikit/components-app/developer/apps/readAppApiJson';
 import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -52,10 +52,8 @@ const labelClass =
   'text-secondary-text mb-1.5 block text-xs font-medium uppercase tracking-wide';
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-lg border bg-bg-container px-3 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
-const primaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-brand text-on-brand font-medium hover:bg-brand-hover transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed';
-const secondaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-primary-border bg-primary text-primary-text font-medium hover:bg-elevated transition disabled:opacity-60 disabled:cursor-not-allowed';
+const primaryButtonClass = buttonClassName({ variant: 'primary' });
+const iconClassName = 'h-4 w-4';
 
 type ValidateResult =
   | { valid: true; data: OAuthAuthorizePageData }
@@ -87,15 +85,23 @@ function PlaygroundAlert(props: {
       )}
     >
       {variant === 'error' && (
-        <ExclamationCircleOutlined className="mt-0.5 shrink-0" />
+        <ExclamationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
       )}
       {variant === 'success' && (
-        <CheckCircleOutlined className="mt-0.5 shrink-0" />
+        <CheckCircleIcon className={clsx(iconClassName, 'mt-0.5 shrink-0')} />
       )}
       {variant === 'warning' && (
-        <ExclamationCircleOutlined className="mt-0.5 shrink-0" />
+        <ExclamationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
       )}
-      {variant === 'info' && <InfoCircleOutlined className="mt-0.5 shrink-0" />}
+      {variant === 'info' && (
+        <InformationCircleIcon
+          className={clsx(iconClassName, 'mt-0.5 shrink-0')}
+        />
+      )}
       <div className="flex-1 min-w-0">{children}</div>
       {onClose && (
         <button
@@ -104,7 +110,7 @@ function PlaygroundAlert(props: {
           className="text-secondary-text hover:text-primary-text shrink-0"
           aria-label="Close"
         >
-          �?{' '}
+          ×{' '}
         </button>
       )}
     </div>
@@ -496,7 +502,7 @@ export function OAuthPlayground() {
           <div className="p-6 sm:p-8 border-b border-primary-border">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-xl shrink-0">
-                <ExperimentOutlined />
+                <BeakerIcon className="h-6 w-6" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-semibold text-primary-text">
@@ -546,11 +552,11 @@ export function OAuthPlayground() {
           <PlaygroundSection title={tt.stepSession} step={1}>
             {authLoading ? (
               <p className="text-secondary-text text-sm flex items-center gap-2">
-                <LoadingOutlined spin /> Loading...
+                <ArrowPathIcon className="h-4 w-4 animate-spin" /> Loading...
               </p>
             ) : success && user ? (
               <p className="text-primary-text text-sm flex items-center gap-2">
-                <CheckCircleOutlined className="text-green-500 shrink-0" />
+                <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0" />
                 <span>
                   {tt.signedInAs}{' '}
                   <strong className="font-semibold">{user.email}</strong>
@@ -572,14 +578,16 @@ export function OAuthPlayground() {
             title={tt.stepClient}
             step={2}
             extra={
-              <button
+              <Button
                 type="button"
-                className={clsx(secondaryButtonClass, 'text-sm py-1.5 px-3')}
+                variant="secondary"
+                size="sm"
+                className="px-3"
                 onClick={() => void loadClients()}
                 disabled={!success || clientsLoading}
               >
-                <ReloadOutlined />
-              </button>
+                <ArrowPathIcon className="h-4 w-4" />
+              </Button>
             }
           >
             <div>
@@ -677,15 +685,17 @@ export function OAuthPlayground() {
                           className={clsx(inputClass, 'font-mono text-xs')}
                         />
                       </div>
-                      <button
+                      <Button
                         type="button"
-                        className={secondaryButtonClass}
+                        variant="secondary"
                         disabled={pkceLoading}
                         onClick={() => void regeneratePkce()}
                       >
-                        {pkceLoading && <LoadingOutlined spin />}
+                        {pkceLoading && (
+                          <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                        )}
                         {tt.pkceRegenerate}
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <p className="text-xs text-secondary-text">
@@ -756,27 +766,29 @@ export function OAuthPlayground() {
                       onChange={(e) => setState(e.target.value)}
                       placeholder="optional"
                     />
-                    <button
+                    <Button
                       type="button"
-                      className={secondaryButtonClass}
+                      variant="secondary"
                       onClick={() => setState(randomStateValue())}
                     >
                       {tt.randomState}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
-                  className={secondaryButtonClass}
+                  variant="secondary"
                   disabled={
                     !success || validating || (pkceActive && !pkceChallenge)
                   }
                   onClick={() => void validateParams()}
                 >
-                  {validating && <LoadingOutlined spin />}
+                  {validating && (
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                  )}
                   {tt.validate}
-                </button>
+                </Button>
 
                 {validateResult?.valid && (
                   <PlaygroundAlert variant="success">
@@ -805,14 +817,13 @@ export function OAuthPlayground() {
                           'font-mono text-xs resize-y'
                         )}
                       />
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
                         title={tt.copy}
-                        className={secondaryButtonClass}
                         onClick={() => void copyText(authorizeUrl)}
                       >
-                        <CopyOutlined />
-                      </button>
+                        <ClipboardDocumentIcon className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -827,23 +838,25 @@ export function OAuthPlayground() {
                 : tt.validate}
             </p>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
-                className={primaryButtonClass}
+                variant="primary"
                 disabled={!success || !validateResult?.valid || consentLoading}
                 onClick={() => void submitConsent('allow')}
               >
-                {consentLoading && <LoadingOutlined spin />}
+                {consentLoading && (
+                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                )}
                 {tt.allow}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className={secondaryButtonClass}
+                variant="secondary"
                 disabled={!success || !validateResult?.valid || consentLoading}
                 onClick={() => void submitConsent('deny')}
               >
                 {tt.deny}
-              </button>
+              </Button>
             </div>
 
             {redirectPreview && (
@@ -890,9 +903,9 @@ export function OAuthPlayground() {
                 />
               </div>
             )}
-            <button
+            <Button
               type="button"
-              className={primaryButtonClass}
+              variant="primary"
               disabled={
                 !callback?.code ||
                 tokenLoading ||
@@ -900,9 +913,11 @@ export function OAuthPlayground() {
               }
               onClick={() => void exchangeToken()}
             >
-              {tokenLoading && <LoadingOutlined spin />}
+              {tokenLoading && (
+                <ArrowPathIcon className="h-4 w-4 animate-spin" />
+              )}
               {tt.exchange}
-            </button>
+            </Button>
             {tokenResponse != null && (
               <div>
                 <p className={labelClass}>{tt.response}</p>
@@ -912,15 +927,17 @@ export function OAuthPlayground() {
           </PlaygroundSection>
 
           <PlaygroundSection title={tt.stepUserinfo} step={5}>
-            <button
+            <Button
               type="button"
-              className={primaryButtonClass}
+              variant="primary"
               disabled={!hasAccessToken || userinfoLoading}
               onClick={() => void fetchUserinfo()}
             >
-              {userinfoLoading && <LoadingOutlined spin />}
+              {userinfoLoading && (
+                <ArrowPathIcon className="h-4 w-4 animate-spin" />
+              )}
               {tt.fetchUserinfo}
-            </button>
+            </Button>
             {userinfoResponse != null && (
               <div>
                 <p className={labelClass}>{tt.response}</p>
@@ -931,7 +948,7 @@ export function OAuthPlayground() {
 
           <div className="px-5 sm:px-6 py-4 bg-amber-50 dark:bg-amber-950/30 border-t border-primary-border">
             <p className="text-sm text-primary-text flex items-start gap-2">
-              <InfoCircleOutlined className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <InformationCircleIcon className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <span>{tt.simulatedNote}</span>
             </p>
           </div>

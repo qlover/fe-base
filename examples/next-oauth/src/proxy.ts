@@ -1,5 +1,6 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
+import { isAuthGuestOnlyPath, ROUTE_HOME } from '@config/route';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { routing } from './i18n/routing';
@@ -8,6 +9,7 @@ import { routing } from './i18n/routing';
  * 中间件主逻辑
  * 1. 处理国际化路径前缀（使用 next-intl）
  * 2. 检查是否需要登录，若未登录则重定向到登录页
+ * 3. 已登录访问 guest-only auth 页时，重定向到首页
  */
 export default async function proxy(request: NextRequest) {
   // ---------- 第一步：处理国际化 ----------
@@ -24,6 +26,20 @@ export default async function proxy(request: NextRequest) {
   if (oauthSession.hasNeedProxy(request)) {
     // 将国际化响应作为“通过”时的返回值传给 oauthSession
     return await oauthSession.sessionProxy(request, localPathResponse);
+  }
+
+  // ---------- 第三步：已登录用户不应再访问 login / register ----------
+  const pathname = request.nextUrl.pathname;
+  if (
+    isAuthGuestOnlyPath(pathname) &&
+    oauthSession.hasSessionFromRequest(request)
+  ) {
+    const url = request.nextUrl.clone();
+    // Keep locale prefix, e.g. /en/auth/login → /en
+    const localeMatch = pathname.match(/^\/([^/]+)\/auth\//);
+    url.pathname = localeMatch ? `/${localeMatch[1]}` : ROUTE_HOME;
+    url.search = '';
+    return NextResponse.redirect(url);
   }
 
   // 不需要登录：返回国际化处理后的响应

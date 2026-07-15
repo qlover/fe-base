@@ -1,16 +1,15 @@
 'use client';
 
-import { TranslationOutlined } from '@ant-design/icons';
+import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
-import { Dropdown } from 'antd';
 import { useRouter } from 'next/router';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
+import { Button } from '@/uikit/components/Button';
+import { Dropdown } from '@/uikit/components/Dropdown';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
-import { headerActionButtonClassName } from '@config/component';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import type { ItemType } from 'antd/es/menu/interface';
 
 /**
  * Language switcher for Pages Router routes (uses `next/router`).
@@ -30,17 +29,15 @@ export function LanguageSwitcherPages() {
     []
   );
 
-  const options: ItemType[] = useMemo(() => {
-    return i18nConfig.supportedLngs.map(
-      (lang) =>
-        ({
-          type: 'item',
-          key: lang,
-          label:
-            i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
-        }) as ItemType
-    );
-  }, []);
+  const items = useMemo(
+    () =>
+      i18nConfig.supportedLngs.map((lang) => ({
+        key: lang,
+        label:
+          i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
+      })),
+    []
+  );
 
   const handleLanguageChange = useCallback(
     (value: string) => {
@@ -67,33 +64,19 @@ export function LanguageSwitcherPages() {
   return (
     <Dropdown
       data-testid="LanguageSwitcherDropdown"
-      trigger={['click']}
-      menu={{
-        selectedKeys: [currentLocale],
-        items: options,
-        onClick: ({ key }) => {
-          handleLanguageChange(key);
-        }
-      }}
+      items={items}
+      selectedKeys={[currentLocale]}
+      placement="bottom-end"
+      onSelect={handleLanguageChange}
     >
-      <button
-        type="button"
+      <Button
+        variant="header"
         data-testid="LanguageSwitcher"
-        className={headerActionButtonClassName}
         disabled={isPending || !router.isReady}
-        onClick={() => {
-          const targetIndex =
-            i18nConfig.supportedLngs.indexOf(currentLocale) + 1;
-          const nextLocale =
-            i18nConfig.supportedLngs[
-              targetIndex % i18nConfig.supportedLngs.length
-            ];
-          handleLanguageChange(nextLocale);
-        }}
       >
-        <TranslationOutlined className="text-base shrink-0" />
+        <LanguageIcon className="h-4 w-4 shrink-0" />
         <span className="hidden sm:inline">{currentLocaleLabel}</span>
-      </button>
+      </Button>
     </Dropdown>
   );
 }

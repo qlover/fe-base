@@ -68,6 +68,6 @@ import type { NextRequest } from 'next/server';
  */
 export async function GET(req: NextRequest) {
   return await new NextApiServer(API_USER_SESSION, req).runWithJson(
-    async ({ parameters: { IOC } }) => IOC(UserController).getUser()
+    async ({ parameters: { IOC } }) => IOC(UserController).refresh()
   );
 }

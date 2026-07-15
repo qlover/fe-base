@@ -1,18 +1,19 @@
 'use client';
 
 import {
-  AppstoreOutlined,
-  CheckCircleOutlined,
-  DownOutlined,
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
-  LoadingOutlined,
-  LockOutlined,
-  QuestionCircleOutlined
-} from '@ant-design/icons';
+  ArrowPathIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+  LockClosedIcon,
+  QuestionMarkCircleIcon,
+  Squares2X2Icon
+} from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
+import { Button } from '@/uikit/components/Button';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';
@@ -91,14 +92,14 @@ export function OAuthAuthorizeCard({
           role="alert"
           className="mx-6 mt-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-3 rounded text-sm text-red-700 dark:text-red-300"
         >
-          <ExclamationCircleOutlined className="mr-2" />
+          <ExclamationCircleIcon className="inline h-4 w-4 mr-2" />
           {errorMessage}
         </div>
       )}
 
       <div className="p-6 border-b border-primary-border">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-xl overflow-hidden shrink-0">
+          <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand overflow-hidden shrink-0">
             {authorizeData.logoUri ? (
               // eslint-disable-next-line @next/next/no-img-element -- third-party app logos use arbitrary URLs
               <img
@@ -107,7 +108,7 @@ export function OAuthAuthorizeCard({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <AppstoreOutlined />
+              <Squares2X2Icon className="h-6 w-6" />
             )}
           </div>
           <div>
@@ -149,12 +150,12 @@ export function OAuthAuthorizeCard({
             aria-expanded={extraOpen}
           >
             <p className="text-sm font-medium flex items-center gap-1 text-primary-text">
-              <LockOutlined />
+              <LockClosedIcon className="h-4 w-4" />
               {tt.permissionsLabel}
             </p>
-            <DownOutlined
+            <ChevronDownIcon
               className={clsx(
-                'text-secondary-text transition-transform text-xs',
+                'h-3 w-3 text-secondary-text transition-transform',
                 extraOpen && 'rotate-180'
               )}
             />
@@ -166,7 +167,7 @@ export function OAuthAuthorizeCard({
                 key={scope}
                 className="flex items-start gap-2"
               >
-                <CheckCircleOutlined className="text-green-500 text-sm mt-0.5 shrink-0" />
+                <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                 <span className="text-sm text-primary-text">{label}</span>
               </div>
             ))}
@@ -197,38 +198,38 @@ export function OAuthAuthorizeCard({
               {tt.trustOption}
             </label>
           </div>
-          <QuestionCircleOutlined
-            className="text-secondary-text text-xs shrink-0"
+          <QuestionMarkCircleIcon
+            className="h-3.5 w-3.5 text-secondary-text shrink-0"
             title={tt.trustTooltip}
           />
         </div>
 
         <div className="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-3 rounded text-sm text-primary-text">
-          <InfoCircleOutlined className="text-amber-600 mr-2" />
+          <InformationCircleIcon className="inline h-4 w-4 text-amber-600 mr-2" />
           {tt.safetyNote}
         </div>
       </div>
 
       <div className="p-6 border-t border-primary-border bg-elevated flex flex-col sm:flex-row gap-3">
-        <button
-          type="button"
+        <Button
           id="denyBtn"
+          variant="secondary"
+          className="flex-1"
           disabled={loading}
           onClick={handleDeny}
-          className="flex-1 px-4 py-2 rounded-lg border border-primary-border hover:bg-secondary transition font-medium text-primary-text disabled:opacity-60"
         >
           {tt.deny}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           id="allowBtn"
+          variant="primary"
+          className="flex-1"
           disabled={loading}
           onClick={handleAllow}
-          className="flex-1 px-4 py-2 rounded-lg bg-brand text-on-brand hover:bg-brand-hover transition font-medium shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {tt.allow}
-          {loading && <LoadingOutlined spin />}
-        </button>
+          {loading && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
+        </Button>
       </div>
     </div>
   );

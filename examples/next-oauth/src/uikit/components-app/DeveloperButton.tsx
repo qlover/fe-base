@@ -1,6 +1,6 @@
 'use client';
 
-import { CodeOutlined } from '@ant-design/icons';
+import { CodeBracketIcon } from '@heroicons/react/24/outline';
 import { LocaleLink } from '../components/LocaleLink';
 import { useUserAuth } from '../hook/useUserAuth';
 
@@ -26,7 +26,7 @@ export function DeveloperButton(props: {
       locale={locale}
       className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
     >
-      <CodeOutlined className="text-lg text-primary-text" />
+      <CodeBracketIcon className="h-5 w-5 text-primary-text" />
     </LocaleLink>
   );
 }

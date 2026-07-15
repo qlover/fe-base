@@ -9,12 +9,22 @@ import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
 import { getI18nMessages, getLocale } from '@server/render/pageRouteParams';
+import type { Metadata } from 'next';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-inter'
 });
+
+export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.svg', type: 'image/svg+xml' }
+    ]
+  }
+};
 
 export function generateStaticParams() {
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));
@@ -70,9 +80,7 @@ export default async function RootLayout({
               enableColorScheme={false}
               storageKey={themeConfig.storageKey}
             >
-              <ClientRootProvider themeConfig={themeConfig}>
-                {children}
-              </ClientRootProvider>
+              <ClientRootProvider>{children}</ClientRootProvider>
             </ThemeProvider>
           </NextIntlClientProvider>
         </IOCProvider>

@@ -47,6 +47,9 @@ export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
 
 export const ROUTE_ABOUT = '/about' as const;
 
+/** UI showcase / kit preview (Pages Router). */
+export const ROUTE_DEMO_UI = '/demo-ui' as const;
+
 /** OAuth integration guide (public documentation). */
 export const ROUTE_DOCS_OAUTH = '/docs/oauth' as const;
 
@@ -83,7 +86,8 @@ export const AUTH_ROUTES = [
   ROUTE_REGISTER,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DOCS_OAUTH,
-  ROUTE_ABOUT
+  ROUTE_ABOUT,
+  ROUTE_DEMO_UI
 ] as const;
 
 /** 需要登陆才能访问的页面 */
@@ -101,6 +105,9 @@ export function isOAuthMachinePath(pathname: string): boolean {
     (route) => pathname === route || pathname.endsWith(route)
   );
 }
+
+/** Auth pages for unauthenticated users only (signed-in users should redirect away). */
+export const GUEST_ONLY_AUTH_PAGES = [ROUTE_LOGIN, ROUTE_REGISTER] as const;
 
 /**
  * Returns true if pathname is a public route (no auth required).
@@ -157,6 +164,16 @@ export function isOAuthRoutePath(pathname: string): boolean {
  */
 export function hasSessionPath(pathname: string): boolean {
   return LOGINED_PAGES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * Whether the path is an auth page that signed-in users should not visit.
+ * @param pathname
+ */
+export function isAuthGuestOnlyPath(pathname: string): boolean {
+  return GUEST_ONLY_AUTH_PAGES.some(
     (route) => pathname === route || pathname.endsWith(route)
   );
 }

@@ -109,7 +109,7 @@ export class UserController {
   }
 
   public async getUser(): Promise<UserSchema | null> {
-    return await this.userService.getUser();
+    return await this.userService.refresh();
   }
 
   /**
@@ -122,6 +122,12 @@ export class UserController {
     const criteria = await this.searchParamsValidator.getThrow(query);
 
     return await this.requestLogsRepository.search(criteria);
+  }
+
+  /** Clears all request log rows (see repository note). */
+  public async clearRequestLogs(): Promise<{ deleted: number }> {
+    const deleted = await this.requestLogsRepository.clearAll();
+    return { deleted };
   }
 
   public signWithOtp(body: unknown): Promise<SignOtpResult> {

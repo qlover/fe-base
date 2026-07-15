@@ -125,4 +125,19 @@ export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
       data: data as RequestLogRow
     });
   }
+
+  /**
+   * Delete all `request_logs` rows (admin client; matches unfiltered list search).
+   * @returns Number of deleted rows when the driver reports a count.
+   */
+  public async clearAll(): Promise<number> {
+    const client = this.getAdminSupabase();
+    const { error, count } = await client
+      .from(TABLE)
+      .delete({ count: 'exact' })
+      .not('id', 'is', null);
+
+    this.throwIfError({ error });
+    return count ?? 0;
+  }
 }

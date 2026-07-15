@@ -1,22 +1,28 @@
 'use client';
 
-import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
-import { headerActionButtonClassName } from '@config/component';
-import { ROUTE_DEVELOPER_APPS, ROUTE_DOCS_OAUTH } from '@config/route';
+import { Button } from '@/uikit/components/Button';
+import {
+  ROUTE_DEMO_UI,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_DOCS_OAUTH
+} from '@config/route';
 import type { ReactNode } from 'react';
 
 export interface AppHeaderNavTT {
   navDocs: string;
   navAbout: string;
   navDeveloper: string;
+  navDemoUi: string;
 }
 
 type HeaderNavHref =
   | typeof ROUTE_DOCS_OAUTH
   | '/about'
-  | typeof ROUTE_DEVELOPER_APPS;
+  | typeof ROUTE_DEVELOPER_APPS
+  | typeof ROUTE_DEMO_UI;
 
 const navLinkClassName =
   'block py-2 text-sm font-medium text-secondary-text hover:text-primary-text transition';
@@ -80,26 +86,30 @@ export function AppHeaderNavPanel({
         >
           {tt.navDeveloper}
         </NavLink>
+        <NavLink
+          href={ROUTE_DEMO_UI}
+          className={desktopNavLinkClassName}
+          title={tt.navDemoUi}
+        >
+          {tt.navDemoUi}
+        </NavLink>
       </nav>
 
-      <button
-        type="button"
+      <Button
+        variant="header"
         data-testid="AppHeaderNavMenuToggle"
-        className={clsx(
-          headerActionButtonClassName,
-          'md:hidden ml-2 shrink-0 px-2.5'
-        )}
+        className="md:hidden ml-2 shrink-0 px-2.5"
         aria-expanded={menuOpen}
         aria-controls="AppHeaderNavMobilePanel"
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         onClick={() => setMenuOpen((open) => !open)}
       >
         {menuOpen ? (
-          <CloseOutlined className="text-base" />
+          <XMarkIcon className="h-4 w-4" />
         ) : (
-          <MenuOutlined className="text-base" />
+          <Bars3Icon className="h-4 w-4" />
         )}
-      </button>
+      </Button>
 
       <div
         id="AppHeaderNavMobilePanel"
@@ -136,6 +146,13 @@ export function AppHeaderNavPanel({
             title={tt.navDeveloper}
           >
             {tt.navDeveloper}
+          </NavLink>
+          <NavLink
+            href={ROUTE_DEMO_UI}
+            className={navLinkClassName}
+            title={tt.navDemoUi}
+          >
+            {tt.navDemoUi}
           </NavLink>
         </nav>
       </div>
