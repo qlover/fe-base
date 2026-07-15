@@ -1,10 +1,13 @@
 'use client';
 
-import { Table, type TableProps } from 'antd';
 import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
+import {
+  Table,
+  type TableColumn,
+  type TablePaginationConfig
+} from '@/uikit/components/Table';
 import { usePageI18nMapping } from '../context/PageI18nContext';
-import type { ColumnsType } from 'antd/es/table';
 
 export type RequestLogsTableTt = {
   colTime: string;
@@ -58,20 +61,20 @@ export function RequestLogsTable(props: {
   locale: string;
   loading?: boolean;
   /** Server-driven pagination; when set, `rows` should be the current page only. */
-  pagination?: TableProps<RequestLogRow>['pagination'];
+  pagination?: TablePaginationConfig | false;
 }) {
   const tt = usePageI18nMapping<AdminRequestLogsI18nInterface>();
   const { rows, locale, loading, pagination } = props;
   const localeTag = locale === 'zh' ? 'zh-CN' : 'en-US';
 
-  const columns: ColumnsType<RequestLogRow> = [
+  const columns: TableColumn<RequestLogRow>[] = [
     {
       title: tt.colTime,
       dataIndex: 'created_at',
       key: 'created_at',
       width: 188,
-      render: (iso: string) =>
-        new Date(iso).toLocaleString(localeTag, {
+      render: (iso) =>
+        new Date(String(iso)).toLocaleString(localeTag, {
           dateStyle: 'medium',
           timeStyle: 'short'
         })
@@ -82,9 +85,9 @@ export function RequestLogsTable(props: {
       key: 'request_id',
       width: 200,
       ellipsis: true,
-      render: (v: string | null) =>
+      render: (v) =>
         v != null && v !== '' ? (
-          <span className="font-mono text-xs">{v}</span>
+          <span className="font-mono text-xs">{String(v)}</span>
         ) : (
           '—'
         )
@@ -106,7 +109,7 @@ export function RequestLogsTable(props: {
       dataIndex: 'success',
       key: 'success',
       width: 72,
-      render: (v: boolean) => (v ? '✓' : '✗')
+      render: (v) => (v ? '✓' : '✗')
     },
     {
       title: tt.colHttp,
@@ -158,9 +161,9 @@ export function RequestLogsTable(props: {
       columns={columns}
       dataSource={rows}
       loading={loading}
+      emptyText={tt.empty}
       pagination={pagination ?? { pageSize: 15, showSizeChanger: true }}
-      locale={{ emptyText: tt.empty }}
-      scroll={{ x: true }}
+      minWidthClass="min-w-[72rem]"
     />
   );
 }

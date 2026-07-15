@@ -18,7 +18,10 @@ export const adminTableI18n = {
   action: commonTablesKeys.COMMON_ADMIN_TABLE_ACTION,
   editText: commonTablesKeys.COMMON_ADMIN_TABLE_EDIT,
   deleteText: commonTablesKeys.COMMON_ADMIN_TABLE_DELETE,
-  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL
+  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL,
+  prev: commonTablesKeys.COMMON_ADMIN_TABLE_PREV,
+  next: commonTablesKeys.COMMON_ADMIN_TABLE_NEXT,
+  pageSize: commonTablesKeys.COMMON_ADMIN_TABLE_PAGE_SIZE
 } as const;
 
 export const admin18n = Object.freeze({
