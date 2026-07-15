@@ -109,7 +109,7 @@ export class UserController {
   }
 
   public async getUser(): Promise<UserSchema | null> {
-    return await this.userService.getUser();
+    return await this.userService.refresh();
   }
 
   /**

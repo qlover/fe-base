@@ -6,3 +6,7 @@
 
 /* Antd variable overrides - keep last so they win over tailwind layers and any earlier CSS */
 @import './antd-themes/index.css';
+
+button {
+  cursor: pointer;
+}

@@ -60,7 +60,9 @@ function supabaseSessionToUserSchema(session: Session): UserSchema {
   );
 }
 
-export interface SupabaseSession extends OAuthSessionPayload {}
+export interface SupabaseSession extends OAuthSessionPayload {
+  user?: UserSchema;
+}
 
 /**
  * Demo reference provider: Supabase Auth (`@supabase/supabase-js`).
@@ -97,19 +99,53 @@ export class SupabaseOAuthProvider
     return shouldMd5Password() ? this.encryptor.encrypt(password) : password;
   }
 
-  protected async retrieveNewSession(refreshToken: string): Promise<Session> {
-    const supabase = await this.supabaseRepo.getSupabase();
-    const result = await supabase.auth.refreshSession({
-      refresh_token: refreshToken
-    });
-    this.supabaseRepo.throwIfError(result);
-
-    const session = result.data.session;
-    if (!session) {
-      throw new Error('Failed to refresh Supabase session');
+  protected getErrorCode(error: unknown): string | undefined {
+    if (!error || typeof error !== 'object') {
+      return undefined;
     }
 
-    return session;
+    const anyError = error as { id?: string; code?: string; cause?: unknown };
+    if (typeof anyError.id === 'string') {
+      return anyError.id;
+    }
+    if (typeof anyError.code === 'string') {
+      return anyError.code;
+    }
+
+    return this.getErrorCode(anyError.cause);
+  }
+
+  protected isRefreshTokenAlreadyUsedError(error: unknown): boolean {
+    return this.getErrorCode(error) === 'refresh_token_already_used';
+  }
+
+  protected async retrieveNewSession(refreshToken: string): Promise<Session> {
+    const supabase = await this.supabaseRepo.getSupabase();
+
+    try {
+      const result = await supabase.auth.refreshSession({
+        refresh_token: refreshToken
+      });
+      this.supabaseRepo.throwIfError(result);
+
+      const session = result.data.session;
+      if (!session) {
+        throw new Error('Failed to refresh Supabase session');
+      }
+
+      return session;
+    } catch (error) {
+      if (this.isRefreshTokenAlreadyUsedError(error)) {
+        this.logger.warn(
+          'Supabase refresh token already used, clearing app session',
+          {
+            refreshToken: refreshToken ? '[REDACTED]' : null
+          }
+        );
+        await this.oauthSession.clearSession();
+      }
+      throw error;
+    }
   }
 
   /**
@@ -118,13 +154,13 @@ export class SupabaseOAuthProvider
   public async refreshUser(): Promise<
     WithUserSession<SupabaseSession, UserSchema>
   > {
-    const supabase = await this.supabaseRepo.getSupabase();
+    const payload = await this.oauthSession.getSession();
+    const refreshToken = payload?.providerRefreshToken?.trim();
+    if (!refreshToken) {
+      throw new Error('No refresh token in app session');
+    }
 
-    const refreshed = await supabase.auth.refreshSession();
-
-    this.supabaseRepo.throwIfError(refreshed);
-
-    const session = refreshed.data.session!;
+    const session = await this.retrieveNewSession(refreshToken);
     await this.syncUserSession(session);
 
     const user = supabaseSessionToUserSchema(session);
@@ -211,6 +247,8 @@ export class SupabaseOAuthProvider
       throw new Error('Failed to load Supabase user profile');
     }
 
+    await this.syncUserSession(session);
+
     return supabaseSessionToUserSchema(session);
   }
 
@@ -241,7 +279,7 @@ export class SupabaseOAuthProvider
    * @override
    */
   public async getUserSchema(
-    session?: OAuthSessionPayload
+    session?: SupabaseSession
   ): Promise<UserSchema | null> {
     const session2 = session ?? (await this.oauthSession.getSession());
 
@@ -249,12 +287,27 @@ export class SupabaseOAuthProvider
       return null;
     }
 
+    if (session2.user) {
+      return session2.user as UserSchema;
+    }
+
     const token = session2.providerRefreshToken?.trim();
     if (!token) {
       return null;
     }
 
-    return await this.providerGetUserInfo(token);
+    try {
+      return await this.providerGetUserInfo(token);
+    } catch (error) {
+      if (this.isRefreshTokenAlreadyUsedError(error)) {
+        this.logger.warn(
+          'Supabase refresh token invalid during getUserSchema, returning null',
+          { error }
+        );
+        return null;
+      }
+      throw error;
+    }
   }
 
   /**

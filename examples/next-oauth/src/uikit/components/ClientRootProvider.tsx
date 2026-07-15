@@ -49,7 +49,7 @@ export function ClientRootProvider(props: {
       theme={themeConfig.antdTheme}
       staticApi={IOC(I.DialogHandler)}
     >
-      <AntdRegistry>
+      <AntdRegistry layer>
         <BootstrapsProvider>{children}</BootstrapsProvider>
       </AntdRegistry>
     </AntdThemeProvider>

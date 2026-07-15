@@ -102,6 +102,9 @@ export function isOAuthMachinePath(pathname: string): boolean {
   );
 }
 
+/** Auth pages for unauthenticated users only (signed-in users should redirect away). */
+export const GUEST_ONLY_AUTH_PAGES = [ROUTE_LOGIN, ROUTE_REGISTER] as const;
+
 /**
  * Returns true if pathname is a public route (no auth required).
  * Handles locale-prefixed paths (e.g. /en/auth/login).
@@ -157,6 +160,16 @@ export function isOAuthRoutePath(pathname: string): boolean {
  */
 export function hasSessionPath(pathname: string): boolean {
   return LOGINED_PAGES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * Whether the path is an auth page that signed-in users should not visit.
+ * @param pathname
+ */
+export function isAuthGuestOnlyPath(pathname: string): boolean {
+  return GUEST_ONLY_AUTH_PAGES.some(
     (route) => pathname === route || pathname.endsWith(route)
   );
 }

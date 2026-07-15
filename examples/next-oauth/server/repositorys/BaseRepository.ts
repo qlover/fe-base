@@ -9,8 +9,18 @@ import type { ResourceSearchResult } from '@qlover/corekit-bridge';
 /**
  * 一个抽象的中间层，可扩展一些通用能力
  */
-export abstract class BaseRepository<T> implements RepositoryInterface<T> {
+export abstract class BaseRepository<Raw, T = Raw>
+  implements RepositoryInterface<Raw, T>
+{
   constructor(protected repoName: string = '') {}
+
+  protected isRaw(value: unknown): value is Raw {
+    return true;
+  }
+
+  protected is(value: unknown): value is T {
+    return true;
+  }
 
   /**
    * @override
@@ -28,7 +38,7 @@ export abstract class BaseRepository<T> implements RepositoryInterface<T> {
    * @override
    */
   public abstract search(
-    params: RepoSearchParams<T>
+    params: RepoSearchParams<Raw>
   ): Promise<ResourceSearchResult<T>>;
 
   /**
@@ -36,11 +46,11 @@ export abstract class BaseRepository<T> implements RepositoryInterface<T> {
    * @override
    * @param data
    */
-  public abstract insert(params: RepoInsertParams<T>): Promise<void>;
+  public abstract insert(params: RepoInsertParams<Raw>): Promise<void>;
   /**
    * 插入一条数据后返回新的数据
    * @override
    * @param params
    */
-  public abstract insert(params: RepoInsertGetParams<T>): Promise<T>;
+  public abstract insert(params: RepoInsertGetParams<Raw>): Promise<T>;
 }
