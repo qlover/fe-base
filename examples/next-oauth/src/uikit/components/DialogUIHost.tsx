@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
+import type {
+  DialogHandler,
+  DialogHandlerOptions
+} from '@/impls/DialogHandler';
 import {
   DeveloperConfirmDialog,
   type DeveloperConfirmOptions
 } from '@/uikit/components-app/developer/DeveloperConfirmDialog';
 import { I } from '@config/ioc-identifiter';
-import type { DialogHandler, DialogHandlerOptions } from '@/impls/DialogHandler';
 import { useIOC } from '../hook/useIOC';
 
 /**
  * Bridges imperative {@link DialogHandler} confirm/toast to React UI.
  */
 export function DialogUIHost() {
-  const dialogHandler = useIOC(I.DialogHandler) as DialogHandler;
+  const dialogHandler = useIOC(I.DialogHandler);
   const [confirmOptions, setConfirmOptions] =
     useState<DeveloperConfirmOptions | null>(null);
 

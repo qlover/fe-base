@@ -13,6 +13,10 @@ export type DeveloperOverlayModalProps = {
   maxWidthClass?: string;
   closeOnBackdrop?: boolean;
   showFullscreenToggle?: boolean;
+  /** Overrides the default content padding. */
+  bodyClassName?: string;
+  footerClassName?: string;
+  headerClassName?: string;
 };
 
 /**
@@ -26,7 +30,10 @@ export function DeveloperOverlayModal({
   footer,
   maxWidthClass = 'sm:max-w-xl',
   closeOnBackdrop = true,
-  showFullscreenToggle = true
+  showFullscreenToggle = true,
+  bodyClassName = 'px-4 py-3 sm:px-5 sm:py-4',
+  footerClassName,
+  headerClassName
 }: DeveloperOverlayModalProps) {
   return (
     <Modal
@@ -37,9 +44,11 @@ export function DeveloperOverlayModal({
       closeOnBackdrop={closeOnBackdrop}
       showFullscreenToggle={showFullscreenToggle}
       className={maxWidthClass}
-      bodyClassName="px-0 py-0 sm:px-0 sm:py-0"
+      bodyClassName="!p-0"
+      footerClassName={footerClassName}
+      headerClassName={headerClassName}
     >
-      <div className="px-4 py-4 sm:px-6 sm:py-5">{children}</div>
+      <div className={bodyClassName}>{children}</div>
     </Modal>
   );
 }

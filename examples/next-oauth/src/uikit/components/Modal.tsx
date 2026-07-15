@@ -30,6 +30,8 @@ export interface ModalProps {
   /** Applied to the panel (e.g. `sm:max-w-xl`). */
   className?: string;
   bodyClassName?: string;
+  footerClassName?: string;
+  headerClassName?: string;
 }
 
 /**
@@ -55,7 +57,9 @@ export function Modal({
   expandLabel = 'Expand',
   collapseLabel = 'Collapse',
   className,
-  bodyClassName
+  bodyClassName,
+  footerClassName,
+  headerClassName
 }: ModalProps) {
   const [internalFullscreen, setInternalFullscreen] =
     useState(defaultFullscreen);
@@ -102,7 +106,10 @@ export function Modal({
     return (
       <div
         data-testid="ModalHeader"
-        className="border-primary-border bg-elevated flex shrink-0 items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4"
+        className={clsx(
+          'border-primary-border bg-elevated flex shrink-0 items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4',
+          headerClassName
+        )}
       >
         <div className="min-w-0 text-base font-semibold text-primary-text sm:text-lg">
           {title ?? (
@@ -145,7 +152,7 @@ export function Modal({
       data-testid="Modal"
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex flex-col justify-end pt-10 sm:items-center sm:justify-center sm:p-4 sm:pt-4"
+      className="fixed inset-0 z-100 flex flex-col justify-end pt-10 sm:items-center sm:justify-center sm:p-4 sm:pt-4"
     >
       <button
         type="button"
@@ -159,8 +166,8 @@ export function Modal({
         className={clsx(
           'border-primary-border bg-primary overflow-hidden shadow-2xl ring-1 ring-primary-border/40',
           isFullscreen
-            ? 'fixed inset-x-0 bottom-0 top-14 z-[1] flex flex-col rounded-t-3xl sm:inset-4 sm:rounded-2xl'
-            : 'relative z-[1] flex w-full max-h-[92vh] flex-col rounded-t-3xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl',
+            ? 'fixed inset-x-0 bottom-0 top-14 z-1 flex flex-col rounded-t-3xl sm:inset-4 sm:rounded-2xl'
+            : 'relative z-1 flex w-full max-h-[92vh] flex-col rounded-t-3xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl',
           className
         )}
       >
@@ -168,7 +175,8 @@ export function Modal({
 
         <div
           className={clsx(
-            'flex-1 overflow-y-auto px-4 py-4 text-primary-text sm:px-6 sm:py-5',
+            'overflow-y-auto px-4 py-4 text-primary-text sm:px-6 sm:py-5',
+            isFullscreen ? 'min-h-0 flex-1' : 'shrink-0',
             bodyClassName
           )}
         >
@@ -176,7 +184,12 @@ export function Modal({
         </div>
 
         {footer != null && (
-          <div className="border-primary-border bg-elevated/40 shrink-0 border-t px-4 py-4 sm:px-6 sm:py-5">
+          <div
+            className={clsx(
+              'border-primary-border bg-elevated/40 shrink-0 border-t px-4 py-3 sm:px-6 sm:py-4',
+              footerClassName
+            )}
+          >
             {footer}
           </div>
         )}

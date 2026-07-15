@@ -53,6 +53,9 @@ export function DeveloperConfirmDialog({
       maxWidthClass="sm:max-w-md"
       closeOnBackdrop={!pending}
       showFullscreenToggle={false}
+      bodyClassName="px-4 py-3 sm:px-5 sm:py-3.5"
+      footerClassName="!px-4 !py-3 sm:!px-5 sm:!py-3.5"
+      headerClassName="!px-4 !py-3 sm:!px-5 sm:!py-3.5"
       footer={
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="secondary" disabled={pending} onClick={onClose}>
@@ -69,8 +72,8 @@ export function DeveloperConfirmDialog({
         </div>
       }
     >
-      <p className="text-sm text-secondary-text leading-relaxed flex gap-2">
-        <ExclamationCircleIcon className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+      <p className="flex gap-2 text-sm leading-relaxed text-secondary-text">
+        <ExclamationCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
         <span>{options.content}</span>
       </p>
     </DeveloperOverlayModal>
