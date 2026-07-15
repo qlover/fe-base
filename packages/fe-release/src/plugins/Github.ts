@@ -273,7 +273,10 @@ export default class Github extends GitBase<GithubProps> {
       repoName: this.context.options.repoName,
       authorName: this.context.options.authorName,
       env: this.context.options.releaseEnv,
-      releaseId: this.context.releaseId
+      releaseId: this.context.releaseId,
+      increment:
+        this.context.parameters.changesetVersion?.increment ||
+        releaseJson.changesetVersion.increment
     });
 
     this.logger.info(`Github mode: ${this.mode}`);

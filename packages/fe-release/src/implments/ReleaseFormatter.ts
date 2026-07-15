@@ -170,11 +170,20 @@ export interface ReleaseFormatterConfig {
       };
 
   /**
-   * Pull request title template
+   * Pull request title template (1–2 packages)
    *
-   * @default {@link DEFAULT_PR_TITLE}
+   * @default {@link releaseJson.github.PRTitle}
    */
   PRTitle?: string;
+
+  /**
+   * Pull request title template when releasing more than 2 packages
+   *
+   * Falls back to {@link PRTitle} when unset.
+   *
+   * @default {@link releaseJson.github.PRTitleMany}
+   */
+  PRTitleMany?: string;
 
   /**
    * Pull request body template
@@ -184,11 +193,20 @@ export interface ReleaseFormatterConfig {
   PRBody?: string;
 
   /**
-   * Template for each workspace section in a multi-workspace PR body
+   * Template for each workspace section in the PR body
+   *
+   * Used for both single- and multi-workspace releases.
+   * Supports `${changeTypeSection}` (Patch/Minor/Major Changes).
    *
    * @default from release.json
    */
   batchPRBody?: string;
+
+  /**
+   * Semver increment used to title changelog sections (patch | minor | major)
+   * @default 'patch'
+   */
+  increment?: string;
 }
 
 /**
@@ -315,30 +333,42 @@ export class ReleaseFormatter {
       return '';
     }
 
-    if (workspaces.length === 1) {
-      return workspaces[0].changelog || '';
-    }
+    const changeTypeSection = this.getChangeTypeSection();
+    const batchTpl = this.config.batchPRBody || releaseJson.github.batchPRBody;
 
     return workspaces
       .map((workspace) =>
-        this.templateEngine.render(
-          this.config.batchPRBody || releaseJson.github.batchPRBody,
-          {
-            ...workspace,
-            // Prefer bumped version in PR changelog section headers
-            version: workspace.newVersion || workspace.version,
-            newVersion: workspace.newVersion || workspace.version
-          }
-        )
+        this.templateEngine.render(batchTpl, {
+          ...workspace,
+          // Prefer bumped version in PR changelog section headers
+          version: workspace.newVersion || workspace.version,
+          newVersion: workspace.newVersion || workspace.version,
+          changeTypeSection
+        })
       )
       .join('\n');
+  }
+
+  /**
+   * Map semver increment to Changesets-style section title.
+   */
+  protected getChangeTypeSection(): string {
+    const increment = (this.config.increment || 'patch').toLowerCase();
+
+    if (increment === 'major') {
+      return 'Major Changes';
+    }
+    if (increment === 'minor') {
+      return 'Minor Changes';
+    }
+    return 'Patch Changes';
   }
 
   protected formatPRTagName(
     workspaces: WorkspaceInterface[],
     releaseBranchResult: ReleaseBranchResult
   ): string {
-    if (workspaces.length <= 1) {
+    if (workspaces.length === 0) {
       return releaseBranchResult.releaseTagName;
     }
 
@@ -355,7 +385,14 @@ export class ReleaseFormatter {
     context: TemplateContext,
     workspaces: WorkspaceInterface[] = []
   ): string {
-    const prTitleTpl = this.config.PRTitle || releaseJson.github.PRTitle;
+    const count = workspaces.length;
+    // More than 2 packages: prefer PRTitleMany (includes ${count})
+    const prTitleTpl =
+      count > 2
+        ? this.config.PRTitleMany ||
+          this.config.PRTitle ||
+          releaseJson.github.PRTitleMany
+        : this.config.PRTitle || releaseJson.github.PRTitle;
 
     return this.templateEngine.render(
       prTitleTpl,

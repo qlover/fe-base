@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # PR merged to master with CI-Release (non-release head) -> version bump + create release PR
+  # PR merged to master with preRelease (non-release head) -> version bump + create release PR
   create-release-pr:
     if: |
       github.event_name == 'workflow_dispatch' ||
@@ -23,7 +23,7 @@ jobs:
         github.event.pull_request.merged == true &&
         github.event.pull_request.base.ref == 'master' &&
         !startsWith(github.event.pull_request.head.ref, 'release/') &&
-        contains(github.event.pull_request.labels.*.name, 'CI-Release')
+        contains(github.event.pull_request.labels.*.name, 'preRelease')
       )
     runs-on: ubuntu-latest
     env:

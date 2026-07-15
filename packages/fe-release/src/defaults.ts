@@ -30,16 +30,24 @@ export const releaseJson = {
     autoMergeReleasePR: false,
     pushChangeLabels: false,
     skipCreateReleasePR: false,
-    PRTitle: 'Release ${env} ${pkgName} ${tagName}',
+    /** Used when releasing 1–2 packages */
+    PRTitle: 'Release ${spaces}',
+    /** Used when releasing more than 2 packages */
+    PRTitleMany: 'Release ${count} packages: ${spaces}',
     PRBody: '## Changelog\n\n${changelog}',
-    batchPRBody: '\n## ${name} ${newVersion}\n${changelog}\n',
+    /**
+     * Per-workspace section in the PR body (single and multi package).
+     * `${changeTypeSection}` is Patch/Minor/Major Changes from increment.
+     */
+    batchPRBody:
+      '\n### ${name}@${newVersion}\n\n#### ${changeTypeSection}\n\n${changelog}\n',
     branchName: 'release/${repoName}-${releaseId}',
     releaseTagName: 'release-tag-${count}-patch-${releaseId}',
     commitMessage: 'chore(release): ${spaces}',
     label: {
       name: 'CI-Release',
       color: '1A7F37',
-      description: 'Release PR'
+      description: 'Automated release PR (merge to publish)'
     }
   },
   changesetVersion: {
