@@ -124,6 +124,12 @@ export class UserController {
     return await this.requestLogsRepository.search(criteria);
   }
 
+  /** Clears all request log rows (see repository note). */
+  public async clearRequestLogs(): Promise<{ deleted: number }> {
+    const deleted = await this.requestLogsRepository.clearAll();
+    return { deleted };
+  }
+
   public signWithOtp(body: unknown): Promise<SignOtpResult> {
     const phoneResult = signWithPhoneOtpSchema.safeParse(body);
     if (phoneResult.success) {

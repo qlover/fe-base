@@ -70,4 +70,13 @@ export class RequestLogsApi implements ResourceSearchInterface<RequestLogRow> {
     }
     return data;
   }
+
+  /** Permanently clear all request logs. */
+  public async clear(): Promise<{ deleted: number }> {
+    const response = await this.appApiRequester.delete(API_USER_REQUEST_LOGS);
+    const envelope = response.data as AppApiSuccessInterface<{
+      deleted: number;
+    }>;
+    return envelope.data ?? { deleted: 0 };
+  }
 }

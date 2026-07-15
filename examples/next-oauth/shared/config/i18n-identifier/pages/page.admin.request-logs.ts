@@ -106,3 +106,34 @@ export const ADMIN_REQUEST_LOGS_COL_ERROR = 'admin_request_logs:col__error';
  * @localEn No events yet
  */
 export const ADMIN_REQUEST_LOGS_EMPTY = 'admin_request_logs:empty';
+
+/**
+ * @description Clear all request logs button
+ * @localZh 清空日志
+ * @localEn Clear logs
+ */
+export const ADMIN_REQUEST_LOGS_CLEAR = 'admin_request_logs:clear';
+
+/**
+ * @description Clear logs confirm dialog title
+ * @localZh 清空全部日志？
+ * @localEn Clear all logs?
+ */
+export const ADMIN_REQUEST_LOGS_CLEAR_CONFIRM_TITLE =
+  'admin_request_logs:clear_confirm_title';
+
+/**
+ * @description Clear logs confirm dialog content
+ * @localZh 将永久删除当前可见的全部请求日志，此操作不可撤销。
+ * @localEn This permanently deletes all request log rows. This cannot be undone.
+ */
+export const ADMIN_REQUEST_LOGS_CLEAR_CONFIRM_CONTENT =
+  'admin_request_logs:clear_confirm_content';
+
+/**
+ * @description Clear logs success toast
+ * @localZh 日志已清空
+ * @localEn Logs cleared
+ */
+export const ADMIN_REQUEST_LOGS_CLEAR_SUCCESS =
+  'admin_request_logs:clear_success';

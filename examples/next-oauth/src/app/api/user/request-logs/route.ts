@@ -64,6 +64,16 @@ import type { NextRequest } from 'next/server';
  *         description: Success envelope; `data` is ResourceSearchResult.
  *       400:
  *         description: Not authenticated or query failed.
+ *   delete:
+ *     tags:
+ *       - User
+ *     summary: Clear all request logs
+ *     description: Permanently deletes all rows in `request_logs` (admin). Requires auth.
+ *     responses:
+ *       200:
+ *         description: Success envelope; `data` is `{ deleted: number }`.
+ *       400:
+ *         description: Not authenticated or delete failed.
  */
 export async function GET(req: NextRequest) {
   return await new NextApiServer(API_USER_REQUEST_LOGS, req)
@@ -72,5 +82,13 @@ export async function GET(req: NextRequest) {
       IOC(UserController).searchRequestLogsForCurrentUser(
         req.nextUrl.searchParams
       )
+    );
+}
+
+export async function DELETE(req: NextRequest) {
+  return await new NextApiServer(API_USER_REQUEST_LOGS, req)
+    .use(new ServerAuthPlugin())
+    .runWithJson(async ({ parameters: { IOC } }) =>
+      IOC(UserController).clearRequestLogs()
     );
 }
