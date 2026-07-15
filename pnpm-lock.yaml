@@ -300,6 +300,9 @@ importers:
       '@brain-toolkit/antd-theme-override':
         specifier: ^0.0.3
         version: 0.0.3
+      '@brain-toolkit/brain-user':
+        specifier: ^0.2.5
+        version: 0.2.5(@types/node@20.11.5)(less@4.6.4)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0)(zustand@5.0.14(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
       '@brain-toolkit/react-kit':
         specifier: ^0.2.2
         version: 0.2.3(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.4)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(reflect-metadata@0.2.2)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0)
@@ -18896,7 +18899,7 @@ snapshots:
 
   '@qlover/tailwind-theme@0.2.0':
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.16
 
   '@rc-component/async-validator@5.1.0':
     dependencies:

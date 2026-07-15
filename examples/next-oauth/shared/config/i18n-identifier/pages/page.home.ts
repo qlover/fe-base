@@ -7,15 +7,15 @@ export const PAGE_HOME_TITLE = 'page_home:title';
 
 /**
  * @description Home page meta description
- * @localZh 集成 GitHub、Google 等第三方账号的统一认证登录平台
- * @localEn Unified authentication platform with GitHub, Google and other third-party sign-in
+ * @localZh OAuth 模板项目：预置 Supabase Auth 与 Brain User 上游代理两种方案
+ * @localEn OAuth template with two predefined upstreams: Supabase Auth and Brain User proxy
  */
 export const PAGE_HOME_DESCRIPTION = 'page_home:description';
 
 /**
  * @description Home page keywords
- * @localZh OAuth 2.0, 第三方登录, GitHub, Google, Supabase, Next OAuth
- * @localEn OAuth 2.0, third-party login, GitHub, Google, Supabase, Next OAuth
+ * @localZh OAuth 2.0, 模板, Supabase, Brain User, 授权码, PKCE, Next OAuth
+ * @localEn OAuth 2.0, template, Supabase, Brain User, authorization code, PKCE, Next OAuth
  */
 export const PAGE_HOME_KEYWORDS = 'page_home:keywords';
 
@@ -126,22 +126,22 @@ export const PAGE_HOME_SECTION_ARCH_TITLE = 'page_home:section__arch__title';
 
 /**
  * @description Architecture section body
- * @localZh @qlover/oauth-wrapper 提供通用 OAuth 2.0 协议能力（授权码、PKCE、换票）；next-oauth 通过 SupabaseOAuthProvider 装配 Supabase Auth，实现 GitHub、Google 等第三方登录及邮箱/手机登录，并暴露标准 OAuth 端点供第三方应用接入。
- * @localEn @qlover/oauth-wrapper provides the reusable OAuth 2.0 protocol core (authorization code, PKCE, token exchange); next-oauth wires Supabase Auth via SupabaseOAuthProvider for GitHub, Google and email/phone sign-in, and exposes standard OAuth endpoints for third-party app integration.
+ * @localZh 这是一个模板项目：@qlover/oauth-wrapper 提供与上游无关的 OAuth 2.0 协议面；示例预置两种上游——默认 SupabaseOAuthProvider（邮箱/手机/GitHub/Google），可选 BrainUserOAuthProvider（把已有登录 API 包装成 OAuth 服务端）。切换 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER / OAUTH_UPSTREAM_PROVIDER 即可。
+ * @localEn This is a template: @qlover/oauth-wrapper supplies the provider-agnostic OAuth 2.0 surface. Two upstreams ship in-box—default SupabaseOAuthProvider (email/phone/GitHub/Google), optional BrainUserOAuthProvider (wrap an existing login API as an OAuth AS). Switch via NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER / OAUTH_UPSTREAM_PROVIDER.
  */
 export const PAGE_HOME_SECTION_ARCH_BODY = 'page_home:section__arch__body';
 
 /**
  * @description Demo deployment section title
- * @localZh 当前部署：Supabase Auth 登录
- * @localEn This deployment: Supabase Auth sign-in
+ * @localZh 预置方案：Supabase（默认）与 Brain User（可选）
+ * @localEn Built-in options: Supabase (default) and Brain User (optional)
  */
 export const PAGE_HOME_SECTION_DEMO_TITLE = 'page_home:section__demo__title';
 
 /**
  * @description Demo deployment section body
- * @localZh 当前实例通过 SupabaseOAuthProvider 接入 Supabase Auth，支持 GitHub、Google 第三方登录以及邮箱密码、手机验证码、邮箱 Magic Link 等多种方式。OAuth 协议面（authorize、token、userinfo）保持不变，第三方应用可无缝对接。
- * @localEn This instance uses SupabaseOAuthProvider with Supabase Auth, supporting GitHub and Google sign-in along with email/password, phone OTP, email Magic Link and more. The OAuth surface (authorize, token, userinfo) remains consistent for seamless third-party app integration.
+ * @localZh 默认绑定 SupabaseOAuthProvider，行为与原先一致。若要将已有登录接口变成 OAuth 授权服务器，改为 brain-user 并配置 Brain User 相关环境变量；协议端点（authorize、token、userinfo）不变。GitHub/Google 等 SSO 仅在 Supabase 方案下可用。
+ * @localEn Default binding is still SupabaseOAuthProvider (same behavior as before). To wrap an existing login API as an OAuth AS, set brain-user and configure Brain User envs; authorize/token/userinfo stay the same. GitHub/Google SSO is available only under the Supabase option.
  */
 export const PAGE_HOME_SECTION_DEMO_BODY = 'page_home:section__demo__body';
 

@@ -1,12 +1,33 @@
-# Next OAuth Wrapper（`examples/next-oauth-wrapper`）
+# Next OAuth（`examples/next-oauth`）
 
 > English: [README.en.md](./README.en.md)
 
-**TL;DR**：`npm install` → 将 `.env.template` 复制为 `.env` 并按注释填写（OAuth 相关变量见下文）→ 在 Supabase 执行 `makes/sql/` 脚本 → `npm run dev`（默认端口 **3102**，`APP_ENV=localhost`）→ 生产：`npm run build` 后 `npm start`（默认端口 **3101**）。
+**模板定位**：基于 Next.js 的 OAuth 2.0 授权服务器示例。协议内核来自 `@qlover/oauth-wrapper`；本仓库负责会话、仓储与上游 Provider 装配。
 
-**文档**：站内 OAuth 集成说明见 [`/[locale]/docs/oauth`](./src/app/[locale]/docs/oauth/page.tsx)（开发环境如 `http://localhost:3102/zh/docs/oauth`）；国际化约定见 [docs/i18n.md](./docs/i18n.md)。
+**预置两种上游（IOC / 环境变量切换，默认不变）**：
 
-基于 **Next.js** 的 OAuth 2.0 授权服务器示例：**`shared/oauth-wrapper`** 提供与上游登录 API 无关的协议内核；本仓库在 `server/`、`src/` 中完成会话、仓储、适配器与路由装配。整体仍保持清晰分层、前后端职责分离与面向接口编程。
+| 方案 | 值 | 说明 |
+| ---- | -- | ---- |
+| **Supabase（默认）** | `supabase` | 现有行为：邮箱密码、OTP、GitHub/Google SSO |
+| **Brain User（可选）** | `brain-user` | 把已有登录 API 包装成 OAuth 凭据源 |
+
+```bash
+# .env — 默认即可保持原逻辑
+OAUTH_UPSTREAM_PROVIDER=supabase
+NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
+
+# 改用 Brain User 时：
+# OAUTH_UPSTREAM_PROVIDER=brain-user
+# NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=brain-user
+```
+
+绑定代码：`server/serverIoc.ts`；Provider：`server/providers/SupabaseOAuthProvider.ts`、`BrainUserOAuthProvider.ts`。
+
+**TL;DR**：`npm install` → 将 `.env.template` 复制为 `.env` 并按注释填写 → 在 Supabase 执行 `makes/sql/` 脚本 → `npm run dev`（默认端口 **3300**）→ 生产：`npm run build` 后 `npm start`。
+
+**文档**：站内 OAuth 集成说明见 [`/[locale]/docs/oauth`](./src/app/[locale]/docs/oauth/page.tsx)；国际化约定见 [docs/i18n.md](./docs/i18n.md)。
+
+基于 **Next.js** 的 OAuth 2.0 授权服务器示例。整体保持清晰分层、前后端职责分离与面向接口编程。
 
 ---
 
@@ -17,9 +38,10 @@
 | **框架**       | Next.js 16、App Router、React 19         |
 | **OAuth**      | `shared/oauth-wrapper`（授权码、PKCE、换票、userinfo） |
 | **校验**       | Zod（Schema 与请求/响应校验）            |
-| **数据与鉴权** | Supabase（OAuth 表、SSR、PostgREST）     |
-| **上游示例**   | `@brain-toolkit/brain-user`（`BrainUserAdapter`，可替换） |
-| **UI**         | Ant Design 5、Tailwind CSS 4             |
+| **数据与鉴权** | Supabase（OAuth 表、SSR、PostgREST；默认 Provider）     |
+| **上游可选**   | `@brain-toolkit/brain-user`（`BrainUserOAuthProvider`） |
+| **UI**         | Tailwind + 自建组件（Heroicons、sonner）；antd 仅 demo |
+
 | **国际化**     | next-intl                                |
 | **主题**       | next-themes                              |
 | **依赖注入**   | Inversify、SimpleIOCContainer（项目内）  |

@@ -28,8 +28,8 @@ export const PAGE_DOCS_OAUTH_KEYWORDS = 'page_docs_oauth:keywords';
 
 /**
  * @description Page intro
- * @localZh 本文说明 Next OAuth 如何集成 GitHub、Google 等第三方登录（基于 Supabase Auth），以及第三方应用如何对接其标准 OAuth 2.0 授权端点。
- * @localEn This document explains how Next OAuth integrates GitHub, Google and other third-party sign-in via Supabase Auth, and how third-party apps connect to its standard OAuth 2.0 authorization endpoints.
+ * @localZh Next OAuth 是模板项目：用 @qlover/oauth-wrapper 把上游登录包装成标准 OAuth 2.0 服务端。预置两种方案——默认 Supabase Auth（含 GitHub/Google），可选 Brain User 代理已有登录 API。下文默认按 Supabase 路径说明；切换上游见环境变量 OAUTH_UPSTREAM_PROVIDER。
+ * @localEn Next OAuth is a template that turns an upstream login into a standard OAuth 2.0 AS via @qlover/oauth-wrapper. Two options ship in-box—default Supabase Auth (incl. GitHub/Google), optional Brain User to proxy an existing login API. Docs below follow the Supabase path; switch with OAUTH_UPSTREAM_PROVIDER.
  */
 export const PAGE_DOCS_OAUTH_INTRO = 'page_docs_oauth:intro';
 

@@ -14,6 +14,7 @@ import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
 import type { LoginProviderType } from '@config/common';
 import { loginProviders } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
+import { isSupabaseOAuthUpstream } from '@config/oauthUpstream';
 import { useIOC } from '../hook/useIOC';
 
 type LoginTab = 'email' | 'phone';
@@ -50,6 +51,8 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
   const [providerLogining, setProviderLogining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
+  const supabaseUpstream = isSupabaseOAuthUpstream();
 
   const tabBaseClass =
     'flex-1 py-2.5 text-sm font-medium text-center transition-colors cursor-pointer border-b-2 outline-none';
@@ -89,68 +92,75 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </div>
       )}
 
-      {providersItems.map(
-        ({ key, disabled, provider, titleI18nMapKey, Icon }) => (
-          <button
-            data-testid={'LoginWith' + key}
-            key={key}
-            disabled={disabled || providerLogining}
-            onClick={() => onLoginWithProvider(provider)}
-            title={tt[titleI18nMapKey]}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 mb-6"
-          >
-            <Icon className="h-5 w-5" />
-            <span>{tt[titleI18nMapKey]}</span>
-          </button>
-        )
+      {supabaseUpstream &&
+        providersItems.map(
+          ({ key, disabled, provider, titleI18nMapKey, Icon }) => (
+            <button
+              data-testid={'LoginWith' + key}
+              key={key}
+              disabled={disabled || providerLogining}
+              onClick={() => onLoginWithProvider(provider)}
+              title={tt[titleI18nMapKey]}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 mb-6"
+            >
+              <Icon className="h-5 w-5" />
+              <span>{tt[titleI18nMapKey]}</span>
+            </button>
+          )
+        )}
+
+      {supabaseUpstream && (
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-primary-border"></div>
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-bg-container px-2 text-tertiary-text">
+              {tt.continueWith}
+            </span>
+          </div>
+        </div>
       )}
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-primary-border"></div>
+      {supabaseUpstream ? (
+        <div className="flex border-b border-primary-border mb-6">
+          <button
+            type="button"
+            className={`${tabBaseClass} ${tab === 'email' ? tabActiveClass : tabInactiveClass}`}
+            onClick={() => setTab('email')}
+            aria-selected={tab === 'email'}
+            role="tab"
+          >
+            {tt.tabEmail}
+          </button>
+          <button
+            type="button"
+            className={`${tabBaseClass} ${tab === 'phone' ? tabActiveClass : tabInactiveClass}`}
+            onClick={() => setTab('phone')}
+            aria-selected={tab === 'phone'}
+            role="tab"
+          >
+            {tt.tabPhone}
+          </button>
         </div>
-        <div className="relative flex justify-center text-xs">
-          <span className="bg-bg-container px-2 text-tertiary-text">
-            {tt.continueWith}
-          </span>
-        </div>
-      </div>
+      ) : null}
 
-      <div className="flex border-b border-primary-border mb-6">
-        <button
-          type="button"
-          className={`${tabBaseClass} ${tab === 'email' ? tabActiveClass : tabInactiveClass}`}
-          onClick={() => setTab('email')}
-          aria-selected={tab === 'email'}
-          role="tab"
-        >
-          {tt.tabEmail}
-        </button>
-        <button
-          type="button"
-          className={`${tabBaseClass} ${tab === 'phone' ? tabActiveClass : tabInactiveClass}`}
-          onClick={() => setTab('phone')}
-          aria-selected={tab === 'phone'}
-          role="tab"
-        >
-          {tt.tabPhone}
-        </button>
-      </div>
-
-      {tab === 'email' && (
+      {(!supabaseUpstream || tab === 'email') && (
         <>
-          {emailMode === 'password' ? (
+          {emailMode === 'password' || !supabaseUpstream ? (
             <>
               <LoginForm tt={tt} />
-              <p className="text-center mt-4">
-                <button
-                  type="button"
-                  onClick={() => setEmailMode('otp')}
-                  className="text-brand text-sm hover:underline"
-                >
-                  {tt.switchToOtp}
-                </button>
-              </p>
+              {supabaseUpstream && (
+                <p className="text-center mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEmailMode('otp')}
+                    className="text-brand text-sm hover:underline"
+                  >
+                    {tt.switchToOtp}
+                  </button>
+                </p>
+              )}
             </>
           ) : (
             <>
@@ -169,7 +179,7 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </>
       )}
 
-      {tab === 'phone' && <PhoneLoginForm tt={tt} />}
+      {supabaseUpstream && tab === 'phone' && <PhoneLoginForm tt={tt} />}
     </div>
   );
 }

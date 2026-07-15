@@ -1,12 +1,26 @@
-# Next OAuth Wrapper (`examples/next-oauth-wrapper`)
+# Next OAuth (`examples/next-oauth`)
 
 > 中文: [README.md](./README.md)
 
-**TL;DR**: `npm install` → copy `.env.template` to `.env` (OAuth variables below) → run `makes/sql/` on Supabase → `npm run dev` (port **3102**, `APP_ENV=localhost`) → production: `npm run build` then `npm start` (port **3101**).
+**Template**: Next.js OAuth 2.0 authorization server example. Protocol core from `@qlover/oauth-wrapper`; this app wires session, storage, and upstream providers.
 
-**Docs**: In-app OAuth guide at `/[locale]/docs/oauth` (e.g. `http://localhost:3102/en/docs/oauth`); i18n conventions in [docs/i18n.en.md](./docs/i18n.en.md).
+**Two predefined upstreams** (env / IOC switch; **default unchanged**):
 
-A Next.js OAuth 2.0 authorization server example. **`shared/oauth-wrapper`** holds provider-agnostic protocol logic; this repo wires sessions, storage, adapters, and routes under `server/` and `src/`.
+| Option | Value | Notes |
+| ------ | ----- | ----- |
+| **Supabase (default)** | `supabase` | Email/password, OTP, GitHub/Google SSO |
+| **Brain User (optional)** | `brain-user` | Wrap an existing login API as OAuth credentials |
+
+```bash
+OAUTH_UPSTREAM_PROVIDER=supabase
+NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
+```
+
+See `server/serverIoc.ts` and `server/providers/*`.
+
+**TL;DR**: `npm install` → copy `.env.template` to `.env` → run `makes/sql/` on Supabase → `npm run dev` (port **3300**) → production: `npm run build` then `npm start`.
+
+**Docs**: In-app OAuth guide at `/[locale]/docs/oauth`; i18n conventions in [docs/i18n.en.md](./docs/i18n.en.md).
 
 ---
 
