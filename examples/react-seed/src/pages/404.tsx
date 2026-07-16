@@ -1,6 +1,6 @@
-import { PAGE_404_TITLE } from '@config/i18n-identifier/common';
-import { useTranslation } from '@/hooks/useTranslation';
 import type { RouterRenderProps } from '@/components/RouterRenderComponent';
+import { useTranslation } from '@/hooks/useTranslation';
+import { PAGE_404_TITLE } from '@config/i18n-identifier/common';
 
 export default function NotFound(_props: RouterRenderProps) {
   const { t } = useTranslation();

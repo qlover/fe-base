@@ -1,6 +1,6 @@
 import { RouteService } from '@/impls/RouteService';
-import { filterRouteByCategorys } from '@/utils/filterAppRoute';
 import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
+import { filterRouteByCategorys } from '@/utils/filterAppRoute';
 
 const { mockBaseRoutes, mockBaseRoutesWithLocale } = vi.hoisted(() => {
   const base: RouteConfigValue[] = [

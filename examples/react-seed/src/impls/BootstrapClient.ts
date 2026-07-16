@@ -1,21 +1,21 @@
-import { browserGlobalsName, omitInjectedGlobals } from '@config/seed.config';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
-import { omit } from 'lodash-es';
 import * as globals from '@/globals';
+import { omit } from '@/utils/omit';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { userRoutePlugin } from '@/utils/userRoutePlugin';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
+import { browserGlobalsName, omitInjectedGlobals } from '@config/seed.config';
 import { appApiRequesterBootstrap } from './AppApiRequester';
 import { I18nService } from './I18nService';
-import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   BootstrapPluginOptions,
   IOCContainerInterface
 } from '@qlover/corekit-bridge';
 import type {
   SeedConfigInterface,
-  BootstrapInterface
+  BootstrapInterface,
+  BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge/bootstrap';
-import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCFunctionInterface,
   IOCRegisterInterface

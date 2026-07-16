@@ -60,7 +60,14 @@ export default defineConfig({
               __dirname,
               './packages/scripts-context/src'
             ),
-            '@qlover/tailwind-theme': resolve(__dirname, './packages/tailwind-theme/src')
+            '@qlover/tailwind-theme': resolve(
+              __dirname,
+              './packages/tailwind-theme/src'
+            ),
+            '@qlover/tailwind-theme/generater': resolve(
+              __dirname,
+              './packages/tailwind-theme/src/generater.ts'
+            )
           }
         }
       },

@@ -1,7 +1,4 @@
-import { baseRoutes, baseRoutesWithLocale } from '@config/router';
-import { usePathLocaleRoute } from '@config/seed.config';
 import { AsyncStore, AsyncStoreState } from '@qlover/corekit-bridge';
-import { filterRouteByCategorys } from '@/utils/filterAppRoute';
 import type {
   RouteCategory,
   RouteConfigValue
@@ -10,6 +7,9 @@ import type {
   RouteServiceInterface,
   RouteServiceState
 } from '@/interfaces/RouteServiceInterface';
+import { filterRouteByCategorys } from '@/utils/filterAppRoute';
+import { baseRoutes, baseRoutesWithLocale } from '@config/router';
+import { usePathLocaleRoute } from '@config/seed.config';
 import type { SliceStoreAdapter } from '@qlover/corekit-bridge';
 
 const mainCategory: RouteCategory[] = ['main', 'general'];

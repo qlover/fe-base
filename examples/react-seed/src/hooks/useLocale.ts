@@ -1,15 +1,15 @@
+import { useCallback, useMemo, useTransition } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { I18nService } from '@/impls/I18nService';
+import type { RouteParams } from '@/interfaces/RouteServiceInterface';
+import { getLocaleRedirectTo } from '@/utils/getLocaleRedirectTo';
 import { i18nConfig } from '@config/i18n';
+import type { LocaleType } from '@config/i18n';
 import {
   routePathLocaleParamKey,
   usePathLocaleRoute
 } from '@config/seed.config';
-import { useCallback, useMemo, useTransition } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { I18nService } from '@/impls/I18nService';
-import { getLocaleRedirectTo } from '@/utils/getLocaleRedirectTo';
 import { useIOC } from './useIOC';
-import type { RouteParams } from '@/interfaces/RouteServiceInterface';
-import type { LocaleType } from '@config/i18n';
 
 export function useLocale() {
   const navigate = useNavigate();

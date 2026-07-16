@@ -49,5 +49,21 @@ export default defineConfig([
     outDir: 'dist',
     external,
     silent: true
+  },
+  {
+    entry: { generater: 'src/generater.ts' },
+    format: ['esm', 'cjs'],
+    dts: {
+      compilerOptions: {
+        composite: false,
+        rootDir: undefined
+      }
+    },
+    outExtension: ({ format }) => ({
+      js: format === 'cjs' ? '.cjs' : '.js'
+    }),
+    outDir: 'dist',
+    external,
+    silent: true
   }
 ]);

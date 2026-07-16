@@ -1,13 +1,13 @@
-import { DetectionOrder, i18nConfig } from '@config/i18n';
-import { pathLocaleQSKeys } from '@config/seed.config';
 import { createInstance } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
-import { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
-import { injectable } from './Container';
 import type { I18nInterface } from '@/interfaces/I18nInterface';
+import { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
+import { DetectionOrder, i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
+import { pathLocaleQSKeys } from '@config/seed.config';
+import { injectable } from './Container';
 import type i18n from 'i18next';
 
 @injectable()

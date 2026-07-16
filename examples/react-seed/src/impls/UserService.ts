@@ -1,24 +1,25 @@
-import { I } from '@config/ioc-identifier';
-import { UserService as BridgeUserService } from '@qlover/corekit-bridge';
-import { CookieStorage } from '@qlover/corekit-bridge';
-import { StorageExecutor } from '@qlover/fe-corekit';
-import { isString } from 'lodash-es';
 import {
-  isWebUserSchema,
+  UserService as BridgeUserService,
+  CookieStorage
+} from '@qlover/corekit-bridge';
+import { StorageExecutor } from '@qlover/fe-corekit/storage';
+import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
+import {
+  isUserCredential,
+  isWebUser,
   UserCredential,
-  userCredentialSchema,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
+import { I } from '@config/ioc-identifier';
 import { inject } from './Container';
 import { RouteService } from './RouteService';
 import { SeedOAuthClient } from './SeedOAuthClient';
 import { UserGateway } from './UserGateway';
 import type { ReactSeedConfig } from './ReactSeedConfig';
 import type { OAuthLoginResult } from './SeedOAuthClient';
-import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { StorageExecutorPlugin } from '@qlover/fe-corekit';
+import type { StorageExecutorPlugin } from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 
 // TODO:
@@ -32,11 +33,11 @@ const userStoragePlugin: StorageExecutorPlugin<
   unknown
 > = {
   get(_, valueFromPrevious) {
-    if (isString(valueFromPrevious)) {
+    if (typeof valueFromPrevious === 'string') {
       try {
         const parsed = JSON.parse(valueFromPrevious) as unknown;
-        if (userCredentialSchema.safeParse(parsed).success) {
-          return parsed as UserCredential;
+        if (isUserCredential(parsed)) {
+          return parsed;
         }
       } catch {
         /* legacy plain token string */
@@ -45,8 +46,8 @@ const userStoragePlugin: StorageExecutorPlugin<
     }
   },
   set(_, value) {
-    if (userCredentialSchema.safeParse(value).success) {
-      const credential = value as UserCredential;
+    if (isUserCredential(value)) {
+      const credential = value;
       return credential.refresh_token
         ? JSON.stringify(credential)
         : credential.token;
@@ -92,7 +93,7 @@ export class UserService extends BridgeUserService<
    * @returns
    */
   public isUser(value: unknown): value is UserSchema {
-    return isWebUserSchema(value).success;
+    return isWebUser(value);
   }
 
   /**
@@ -101,7 +102,7 @@ export class UserService extends BridgeUserService<
    * @returns
    */
   public isCredential(value: unknown): value is UserCredential {
-    return userCredentialSchema.safeParse(value).success;
+    return isUserCredential(value);
   }
 
   public refreshUser(): Promise<boolean> {

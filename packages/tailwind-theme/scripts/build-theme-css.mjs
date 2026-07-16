@@ -1,4 +1,4 @@
-import { generateThemeFiles } from '../dist/index.js';
+import { generateThemeFiles } from '../dist/generater.js';
 
 await generateThemeFiles({
   outputDir: 'dist',

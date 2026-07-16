@@ -1,4 +1,3 @@
-import isString from 'lodash-es/isString';
 import { lazy } from 'react';
 import type {
   RouteLoaderInterface,
@@ -35,8 +34,7 @@ type ComponentMapValue =
 export type ComponentMap = Record<string, ComponentMapValue>;
 
 type RouteComponentType<T = unknown> =
-  | ComponentType<T>
-  | LazyExoticComponent<ComponentType<T>>;
+  ComponentType<T> | LazyExoticComponent<ComponentType<T>>;
 
 export type ParseComponentResult<T> = RouteComponentType<T> | ReactNode;
 
@@ -150,8 +148,7 @@ export class RouterLoader implements RouteLoaderInterface {
   protected isComponent(
     value: ComponentMapValue
   ): value is
-    | ComponentType<unknown>
-    | LazyExoticComponent<ComponentType<unknown>> {
+    ComponentType<unknown> | LazyExoticComponent<ComponentType<unknown>> {
     // If it's already a LazyExoticComponent, return true
     if (this.isLazyExoticComponent(value)) {
       return true;
@@ -184,7 +181,7 @@ export class RouterLoader implements RouteLoaderInterface {
     }
 
     // If element is a ReactNode or ComponentType, return directly
-    if (!isString(element)) {
+    if (typeof element !== 'string') {
       return element as ParseComponentResult<unknown>;
     }
 

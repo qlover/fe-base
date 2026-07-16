@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { browserGlobalsName } from '@config/seed.config';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import * as globals from '@/globals';
 import { AppApiRequester } from '@/impls/AppApiRequester';
@@ -8,8 +7,9 @@ import { I18nService } from '@/impls/I18nService';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import { printBootstrap } from '@/utils/PrintBootstrap';
-import { createMockGlobals } from '../__mocks__/createMockGlobals';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
+import { browserGlobalsName } from '@config/seed.config';
+import { createMockGlobals } from '../__mocks__/createMockGlobals';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCContainerInterface,
@@ -68,7 +68,7 @@ describe('BootstrapClient', () => {
 
   describe('startup', () => {
     it('should create Bootstrap instance with correct parameters', async () => {
-      const { omit } = await import('lodash-es');
+      const { omit } = await import('@/utils/omit');
       const { browserGlobalsName, omitInjectedGlobals } =
         await import('@config/seed.config');
 

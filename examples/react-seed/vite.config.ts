@@ -30,6 +30,7 @@ export default defineConfig({
     tsconfigPaths({
       projects: ['./tsconfig.test.json']
     }),
+    // @ts-expect-error
     process.env.ANALYZE === 'true' &&
       visualizer({
         filename: 'dist/stats.html',

@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 export interface MultiQuerystringOptions {
   /**
    * 用于扩展原来 `lookupQuerystring` 的查询参数

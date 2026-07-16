@@ -1,6 +1,6 @@
-import { browserGlobalsName } from '@config/seed.config';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
+import { browserGlobalsName } from '@config/seed.config';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const printBootstrap: BootstrapExecutorPlugin = {

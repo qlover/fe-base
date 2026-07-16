@@ -1,10 +1,10 @@
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import {
-  LifecycleExecutor,
   RequestAdapterFetch,
   RequestExecutor,
   RequestPlugin,
   ResponsePlugin
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/request';
 import { injectable } from './Container';
 import { UserService } from './UserService';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
