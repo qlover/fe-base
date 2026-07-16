@@ -1,4 +1,4 @@
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import {
   type SupabaseClient,
   type PostgrestFilterBuilder,

@@ -12,7 +12,7 @@ import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { PasswordEncrypt } from '@server/utils/PasswordEncrypt';
 import { TokenEncryption } from '@server/utils/TokenEncryption';
-import type { EncryptorInterface } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 import type {
   OAuthSessionPayload,

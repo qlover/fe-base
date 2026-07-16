@@ -5,7 +5,7 @@ import {
   type BinaryLike,
   type CipherKey
 } from 'crypto';
-import type { EncryptorInterface } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 
 function toUint8Array(data: Buffer): Uint8Array {
   return Uint8Array.from(data);

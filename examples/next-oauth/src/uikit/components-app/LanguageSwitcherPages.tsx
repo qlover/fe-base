@@ -73,8 +73,9 @@ export function LanguageSwitcherPages() {
         variant="header"
         data-testid="LanguageSwitcher"
         disabled={isPending || !router.isReady}
+        aria-label={currentLocaleLabel}
       >
-        <LanguageIcon className="h-4 w-4 shrink-0" />
+        <LanguageIcon className="h-4 w-4 shrink-0" aria-hidden />
         <span className="hidden sm:inline">{currentLocaleLabel}</span>
       </Button>
     </Dropdown>

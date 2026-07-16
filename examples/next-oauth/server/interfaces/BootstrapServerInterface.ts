@@ -11,7 +11,7 @@ import type {
   ExecutorAsyncTask,
   LifecyclePluginInterface,
   ExecutorContextInterface
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/executor';
 import type { LoggerInterface } from '@qlover/logger';
 
 export interface BootstrapServerRoot {

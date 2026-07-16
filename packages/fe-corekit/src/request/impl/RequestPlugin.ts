@@ -11,12 +11,12 @@ import {
   type HeaderInjectorInterface
 } from '../interface/HeaderInjectorInterface';
 import { hasObjectKeyWithValue } from '../utils/isAsString';
+import { shallowClone } from '../utils/mergeConfig';
 import {
   JSON_RESPONSE_TYPE,
   CONTENT_TYPE_HEADER,
   JSON_CONTENT_TYPE
 } from './consts';
-import { clone } from 'lodash-es';
 
 export type RequestAdapterContext = ExecutorContextInterface<
   RequestAdapterConfig,
@@ -228,7 +228,7 @@ export class RequestPlugin implements LifecyclePluginInterface<RequestAdapterCon
   protected createConfig(
     contextConfig: RequestAdapterConfig
   ): RequestAdapterConfig & RequestPluginConfig {
-    const merged = Object.assign(clone(this.config), contextConfig);
+    const merged = Object.assign(shallowClone(this.config), contextConfig);
 
     // Preserve default data if contextConfig.data is undefined
     // Only override if contextConfig explicitly provides data (including null)

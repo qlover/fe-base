@@ -1,4 +1,4 @@
-import { isPlainObject, pick } from 'lodash';
+import { isPlainObject, pick } from 'lodash-es';
 import { NextResponse, type NextRequest } from 'next/server';
 import { I } from '@config/ioc-identifiter';
 import type {
@@ -16,7 +16,7 @@ import type {
 import type { ServerContextInterface } from './interfaces/ServerContextInterface';
 import type { ResultHandlerInterface } from './utils/NextApiHandler';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
+import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 
 export type NextApiServerContext = {
   name?: string;

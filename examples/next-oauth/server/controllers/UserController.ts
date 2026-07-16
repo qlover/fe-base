@@ -1,4 +1,5 @@
-import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { Base64Serializer } from '@qlover/fe-corekit/serializer';
 import {
   SignOtpResult,
   signWithPhoneOtpSchema,

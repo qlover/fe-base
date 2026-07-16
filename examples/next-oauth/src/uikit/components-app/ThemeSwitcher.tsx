@@ -119,6 +119,14 @@ export function ThemeSwitcher() {
   const ThemeIcon =
     mounted && resolvedTheme === 'dark' ? MoonOutlineIcon : SunOutlineIcon;
 
+  const themeAriaLabel = useMemo(() => {
+    const themeKey =
+      mounted && resolvedTheme && colorMap[resolvedTheme]
+        ? resolvedTheme
+        : 'system';
+    return t(colorMap[themeKey].i18nkey);
+  }, [mounted, resolvedTheme, t]);
+
   return (
     <Dropdown
       data-testid="ThemeSwitcherDropdown"
@@ -130,8 +138,13 @@ export function ThemeSwitcher() {
         setTheme(key as DefaultTheme);
       }}
     >
-      <Button variant="header" data-testid="ThemeSwitcher" disabled={!mounted}>
-        <ThemeIcon className="h-4 w-4" />
+      <Button
+        variant="header"
+        data-testid="ThemeSwitcher"
+        disabled={!mounted}
+        aria-label={themeAriaLabel}
+      >
+        <ThemeIcon className="h-4 w-4" aria-hidden />
       </Button>
     </Dropdown>
   );

@@ -1,5 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { generateApiRoutes } from './tools/generateApiRoutes';
+import { generateAppThemeCss } from './tools/generateAppThemeCss';
 import { generateLocales } from './tools/generateLocales';
 import { getLocalIpAddress } from './tools/getLocalIpAddress';
 import type { NextConfig } from 'next';
@@ -18,6 +19,12 @@ generateLocales(__dirname, {
 }).catch((error) => {
   console.error('Failed to generate locales:', error);
 });
+
+try {
+  generateAppThemeCss(__dirname);
+} catch (error) {
+  console.error('Failed to generate app theme CSS:', error);
+}
 
 const localIp = getLocalIpAddress();
 

@@ -195,6 +195,37 @@ describe('RequestPlugin', () => {
 
       expect(merged.data).toBeNull();
     });
+
+    it('should preserve plugin config prototype when merging context config', () => {
+      class CustomPluginConfig {
+        public token = 'default-token';
+        public data = { version: '1.0' };
+
+        public getToken(): string {
+          return this.token;
+        }
+      }
+
+      const defaultConfig = new CustomPluginConfig();
+      // Constructor rest-spread always yields a plain object; set instance
+      // config directly to verify createConfig preserves prototype.
+      const typedPlugin = new RequestPlugin();
+      (typedPlugin as unknown as { config: CustomPluginConfig }).config =
+        defaultConfig;
+
+      const merged = typedPlugin['createConfig']({
+        url: '/api/users',
+        token: 'context-token'
+      });
+
+      expect(merged).toBeInstanceOf(CustomPluginConfig);
+      expect(merged).not.toBe(defaultConfig);
+      expect((merged as CustomPluginConfig).getToken()).toBe('context-token');
+      expect(merged.url).toBe('/api/users');
+      expect(merged.data).toEqual({ version: '1.0' });
+      expect(defaultConfig.token).toBe('default-token');
+      expect(defaultConfig).not.toHaveProperty('url');
+    });
   });
 
   describe('buildUrl', () => {

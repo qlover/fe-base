@@ -1,6 +1,6 @@
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
-import { first, isNumber, isPlainObject, isString } from 'lodash';
+import { first, isNumber, isPlainObject, isString } from 'lodash-es';
 import { ZodError } from 'zod';
 import { API_SERVER_ERROR } from '@config/i18n-identifier/api';
 import { V_ZOD_FAILED } from '@config/i18n-identifier/common/validators';

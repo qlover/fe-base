@@ -4,6 +4,7 @@
   "version": "3.3.0",
   "private": false,
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "package.json",
@@ -17,37 +18,49 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     },
     "./aborter": {
       "types": "./dist/aborter/index.d.ts",
       "import": "./dist/aborter/index.js",
-      "require": "./dist/aborter/index.cjs"
+      "require": "./dist/aborter/index.cjs",
+      "default": "./dist/aborter/index.js"
+    },
+    "./common": {
+      "types": "./dist/common.d.ts",
+      "import": "./dist/common.js",
+      "default": "./dist/common.js"
     },
     "./encrypt": {
       "types": "./dist/encrypt/index.d.ts",
       "import": "./dist/encrypt/index.js",
-      "require": "./dist/encrypt/index.cjs"
+      "require": "./dist/encrypt/index.cjs",
+      "default": "./dist/encrypt/index.js"
     },
     "./executor": {
       "types": "./dist/executor/index.d.ts",
       "import": "./dist/executor/index.js",
-      "require": "./dist/executor/index.cjs"
+      "require": "./dist/executor/index.cjs",
+      "default": "./dist/executor/index.js"
     },
     "./request": {
       "types": "./dist/request/index.d.ts",
       "import": "./dist/request/index.js",
-      "require": "./dist/request/index.cjs"
+      "require": "./dist/request/index.cjs",
+      "default": "./dist/request/index.js"
     },
     "./serializer": {
       "types": "./dist/serializer/index.d.ts",
       "import": "./dist/serializer/index.js",
-      "require": "./dist/serializer/index.cjs"
+      "require": "./dist/serializer/index.cjs",
+      "default": "./dist/serializer/index.js"
     },
     "./storage": {
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.js",
-      "require": "./dist/storage/index.cjs"
+      "require": "./dist/storage/index.cjs",
+      "default": "./dist/storage/index.js"
     }
   },
   "repository": {
@@ -77,10 +90,6 @@
   "dependencies": {
     "any-signal": "^4.2.0",
     "axios": "^1.7.9",
-    "lodash-es": "^4.17.22",
     "p-retry": "^7.1.1"
-  },
-  "devDependencies": {
-    "@types/lodash-es": "^4.17.12"
   }
 }

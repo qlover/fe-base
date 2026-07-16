@@ -1,4 +1,4 @@
-import { LifecycleExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import { v4 as uuidv4 } from 'uuid';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { ServerConfig } from './ServerConfig';
@@ -20,7 +20,10 @@ import type {
   BootstrapInterface
 } from '@qlover/corekit-bridge/bootstrap';
 import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
-import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
+import type {
+  ExecutorAsyncTask,
+  ExecutorError
+} from '@qlover/fe-corekit/executor';
 import type { LoggerInterface } from '@qlover/logger';
 
 type BootstrapServerIOC = IOCFunctionInterface<

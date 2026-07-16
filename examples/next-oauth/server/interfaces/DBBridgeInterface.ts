@@ -2,7 +2,7 @@ import type {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
-import type { ValueOf } from '@qlover/fe-corekit';
+import type { ValueOf } from '@qlover/fe-corekit/common';
 
 export type WhereOperation = '=' | '!=' | '>' | '<' | '>=' | '<=';
 export type Where = [string, WhereOperation, string | number];

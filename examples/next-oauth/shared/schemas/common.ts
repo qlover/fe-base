@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { V_INVALID_ID } from '@config/i18n-identifier/common/validators';
-import type { ValueOf } from '@qlover/fe-corekit';
+import type { ValueOf } from '@qlover/fe-corekit/common';
 
 export const uuidSchema = z.uuid({
   error: V_INVALID_ID

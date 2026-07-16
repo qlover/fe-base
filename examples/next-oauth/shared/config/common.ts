@@ -1,4 +1,4 @@
-import type { ValueOf } from '@qlover/fe-corekit';
+import type { ValueOf } from '@qlover/fe-corekit/common';
 
 export const envPrefix = 'NEXT_PUBLIC_';
 

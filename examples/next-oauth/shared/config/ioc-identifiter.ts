@@ -7,7 +7,11 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
-import type * as FeCorekit from '@qlover/fe-corekit';
+import type { JSONSerializer } from '@qlover/fe-corekit/serializer';
+import type {
+  ObjectStorageOptions,
+  StorageInterface
+} from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**
@@ -49,17 +53,17 @@ export const I = IOCIdentifier;
  * - value: implementation class
  */
 export interface IOCIdentifierMap {
-  [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
+  [IOCIdentifier.JSONSerializer]: JSONSerializer;
   [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.LocalStorage]: FeCorekit.StorageInterface<
+  [IOCIdentifier.LocalStorage]: StorageInterface<
     string,
     unknown,
-    FeCorekit.ObjectStorageOptions
+    ObjectStorageOptions
   >;
-  [IOCIdentifier.LocalStorageEncrypt]: FeCorekit.StorageInterface<
+  [IOCIdentifier.LocalStorageEncrypt]: StorageInterface<
     string,
     unknown,
-    FeCorekit.ObjectStorageOptions
+    ObjectStorageOptions
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.AppConfig]: CorekitBridge.SeedConfigInterface;

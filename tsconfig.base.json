@@ -29,6 +29,7 @@
       "@qlover/env-loader": ["./packages/env-loader/src"],
       "@qlover/eslint-plugin": ["./packages/eslint-plugin/src"],
       "@qlover/fe-corekit": ["./packages/fe-corekit/src"],
+      "@qlover/fe-corekit/*": ["./packages/fe-corekit/src/*"],
       "@qlover/fe-release": ["./packages/fe-release/src"],
       "@qlover/fe-scripts": ["./packages/fe-scripts/src"],
       "@qlover/logger": ["./packages/logger/src"],

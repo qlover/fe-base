@@ -1,4 +1,3 @@
-import { isString } from 'lodash-es';
 import { AbortError } from './AbortError';
 import type {
   AborterInterface,
@@ -490,7 +489,7 @@ export class Aborter<
    * @protected
    */
   protected resolveAbortId(config: T | AborterId): AborterId {
-    return isString(config) ? config : this.generateAbortedId(config);
+    return typeof config === 'string' ? config : this.generateAbortedId(config);
   }
 
   /**
@@ -561,7 +560,7 @@ export class Aborter<
       return false;
     }
 
-    const configToUse = isString(config) ? wrapper.config : config;
+    const configToUse = typeof config === 'string' ? wrapper.config : config;
 
     wrapper.controller.abort(new AbortError('The operation was aborted', key));
     this.cleanup(key);
