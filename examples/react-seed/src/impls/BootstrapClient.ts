@@ -1,7 +1,7 @@
 import { browserGlobalsName, omitInjectedGlobals } from '@config/seed.config';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
-import { omit } from 'lodash-es';
 import * as globals from '@/globals';
+import { omit } from '@/utils/omit';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { userRoutePlugin } from '@/utils/userRoutePlugin';
 import { appApiRequesterBootstrap } from './AppApiRequester';

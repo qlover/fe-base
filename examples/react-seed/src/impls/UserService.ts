@@ -1,8 +1,7 @@
 import { I } from '@config/ioc-identifier';
 import { UserService as BridgeUserService } from '@qlover/corekit-bridge';
 import { CookieStorage } from '@qlover/corekit-bridge';
-import { StorageExecutor } from '@qlover/fe-corekit';
-import { isString } from 'lodash-es';
+import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import {
   isWebUserSchema,
   UserCredential,
@@ -18,7 +17,7 @@ import type { OAuthLoginResult } from './SeedOAuthClient';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { StorageExecutorPlugin } from '@qlover/fe-corekit';
+import type { StorageExecutorPlugin } from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 
 // TODO:
@@ -32,7 +31,7 @@ const userStoragePlugin: StorageExecutorPlugin<
   unknown
 > = {
   get(_, valueFromPrevious) {
-    if (isString(valueFromPrevious)) {
+    if (typeof valueFromPrevious === 'string') {
       try {
         const parsed = JSON.parse(valueFromPrevious) as unknown;
         if (userCredentialSchema.safeParse(parsed).success) {

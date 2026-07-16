@@ -1,4 +1,3 @@
-import isString from 'lodash-es/isString';
 import { lazy } from 'react';
 import type {
   RouteLoaderInterface,
@@ -184,7 +183,7 @@ export class RouterLoader implements RouteLoaderInterface {
     }
 
     // If element is a ReactNode or ComponentType, return directly
-    if (!isString(element)) {
+    if (typeof element !== 'string') {
       return element as ParseComponentResult<unknown>;
     }
 
