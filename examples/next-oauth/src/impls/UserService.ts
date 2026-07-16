@@ -2,11 +2,7 @@ import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge'
 import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
-import {
-  userSchema,
-  type UserCredential,
-  type UserSchema
-} from '@schemas/UserSchema';
+import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserServiceGatewayInterface,
   UserServiceInterface
@@ -17,6 +13,9 @@ import type {
   SliceStoreAdapter,
   UserStateInterface
 } from '@qlover/corekit-bridge';
+
+/** Mirrors {@link UserRole} without importing the Zod-backed schema module. */
+const USER_ROLES = new Set([0, 1]);
 
 @injectable()
 export class UserService
@@ -67,7 +66,20 @@ export class UserService
    * @override
    */
   public isUser(value: unknown): value is UserSchema {
-    return userSchema.safeParse(value).success;
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+
+    const user = value as Record<string, unknown>;
+
+    return (
+      typeof user.id === 'string' &&
+      typeof user.role === 'number' &&
+      USER_ROLES.has(user.role) &&
+      typeof user.email === 'string' &&
+      typeof user.credential_token === 'string' &&
+      typeof user.created_at === 'string'
+    );
   }
 
   /**

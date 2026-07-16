@@ -3,7 +3,7 @@ import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
-import { UserCredential, UserSchema } from '@schemas/UserSchema';
+import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
   UserApiLoginTransaction,
