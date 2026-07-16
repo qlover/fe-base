@@ -7,7 +7,6 @@ import { useLocale } from '@/hooks/useLocale';
 import { useOAuthLogin } from '@/hooks/useOAuthLogin';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
-import { LoginDataSchema } from '@/interfaces/schema/UserGateway';
 import { pageLoginI18n } from '@config/i18n-mapping/page.login';
 import { usePathLocaleRoute } from '@config/seed.config';
 import type { FormEvent } from 'react';
@@ -33,6 +32,8 @@ export default function LoginPage(_props: RouterRenderProps) {
     setSubmitError(null);
     setFieldErrors({});
 
+    const { LoginDataSchema } =
+      await import('@/interfaces/schema/UserGateway.zod');
     const parsed = LoginDataSchema.safeParse({ email, password });
     if (!parsed.success) {
       const issues = parsed.error.flatten().fieldErrors;

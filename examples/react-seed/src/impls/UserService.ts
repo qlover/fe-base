@@ -5,9 +5,9 @@ import {
 import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import {
-  isWebUserSchema,
+  isUserCredential,
+  isWebUser,
   UserCredential,
-  userCredentialSchema,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
 import { I } from '@config/ioc-identifier';
@@ -36,8 +36,8 @@ const userStoragePlugin: StorageExecutorPlugin<
     if (typeof valueFromPrevious === 'string') {
       try {
         const parsed = JSON.parse(valueFromPrevious) as unknown;
-        if (userCredentialSchema.safeParse(parsed).success) {
-          return parsed as UserCredential;
+        if (isUserCredential(parsed)) {
+          return parsed;
         }
       } catch {
         /* legacy plain token string */
@@ -46,8 +46,8 @@ const userStoragePlugin: StorageExecutorPlugin<
     }
   },
   set(_, value) {
-    if (userCredentialSchema.safeParse(value).success) {
-      const credential = value as UserCredential;
+    if (isUserCredential(value)) {
+      const credential = value;
       return credential.refresh_token
         ? JSON.stringify(credential)
         : credential.token;
@@ -93,7 +93,7 @@ export class UserService extends BridgeUserService<
    * @returns
    */
   public isUser(value: unknown): value is UserSchema {
-    return isWebUserSchema(value).success;
+    return isWebUser(value);
   }
 
   /**
@@ -102,7 +102,7 @@ export class UserService extends BridgeUserService<
    * @returns
    */
   public isCredential(value: unknown): value is UserCredential {
-    return userCredentialSchema.safeParse(value).success;
+    return isUserCredential(value);
   }
 
   public refreshUser(): Promise<boolean> {

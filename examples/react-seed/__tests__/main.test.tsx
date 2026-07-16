@@ -61,16 +61,12 @@ describe('main.tsx', () => {
     const { BootstrapClient } = await import('@/impls/BootstrapClient');
     const globals = await import('@/globals');
 
-    // Dynamically import main.tsx to execute it
     await import('@/main');
+    await vi.waitFor(() => expect(BootstrapClientInstances.length).toBe(1));
 
-    // Verify BootstrapClient was instantiated
     expect(BootstrapClient).toHaveBeenCalled();
-
-    // Verify BootstrapClient was instantiated with IOC from globals
     expect(BootstrapClient).toHaveBeenCalledWith(globals.IOC);
 
-    // Verify the IOC passed to BootstrapClient is the same reference as globals.IOC
     const instance = BootstrapClientInstances[0];
     expect(instance.IOC).toBe(globals.IOC);
   });
@@ -79,13 +75,11 @@ describe('main.tsx', () => {
     const { BootstrapClient } = await import('@/impls/BootstrapClient');
     const globals = await import('@/globals');
 
-    // Dynamically import main.tsx to execute it
     await import('@/main');
+    await vi.waitFor(() => expect(BootstrapClientInstances.length).toBe(1));
 
-    // Get the instance created
     const instance = BootstrapClientInstances[0];
 
-    // Verify IOC reference equality - they should be the exact same object
     expect(instance.IOC).toBe(globals.IOC);
     expect(instance.IOC).toStrictEqual(globals.IOC);
     expect(BootstrapClient).toHaveBeenCalledWith(globals.IOC);
@@ -94,14 +88,12 @@ describe('main.tsx', () => {
   it('should verify IOC.implemention equals containerImpl', async () => {
     const globals = await import('@/globals');
 
-    // Dynamically import main.tsx to execute it
     await import('@/main');
+    await vi.waitFor(() => expect(BootstrapClientInstances.length).toBe(1));
 
-    // Verify IOC.implemention is the same as containerImpl
     expect(globals.IOC.implemention).toBe(globals.containerImpl);
     expect(globals.IOC.implemention).toStrictEqual(globals.containerImpl);
 
-    // Verify the IOC passed to BootstrapClient has the same implemention
     const instance = BootstrapClientInstances[0];
     const passedIOC = instance.IOC as typeof globals.IOC;
     expect(passedIOC.implemention).toBe(globals.containerImpl);
@@ -109,13 +101,9 @@ describe('main.tsx', () => {
   });
 
   it('should call startup with window object', async () => {
-    // Dynamically import main.tsx to execute it
     await import('@/main');
+    await vi.waitFor(() => expect(BootstrapClientInstances.length).toBe(1));
 
-    // Wait for startup promise to resolve (mock resolves immediately)
-    await Promise.resolve();
-
-    // Verify startup was called
     const instance = BootstrapClientInstances[0];
     expect(instance.startup).toHaveBeenCalled();
 

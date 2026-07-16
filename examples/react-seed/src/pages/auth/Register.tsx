@@ -5,7 +5,6 @@ import type { RouterRenderProps } from '@/components/RouterRenderComponent';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
 import { UserService } from '@/impls/UserService';
-import { LoginDataSchema } from '@/interfaces/schema/UserGateway';
 import { pageRegisterI18n } from '@config/i18n-mapping/page.register';
 import type { FormEvent } from 'react';
 
@@ -29,6 +28,8 @@ export default function RegisterPage(_props: RouterRenderProps) {
     setSubmitError(null);
     setFieldErrors({});
 
+    const { LoginDataSchema } =
+      await import('@/interfaces/schema/UserGateway.zod');
     const parsed = LoginDataSchema.safeParse({ email, password });
     if (!parsed.success) {
       const issues = parsed.error.flatten().fieldErrors;
