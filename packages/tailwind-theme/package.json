@@ -18,6 +18,11 @@
       "import": "./dist/plugin.js",
       "require": "./dist/plugin.cjs"
     },
+    "./generater": {
+      "types": "./dist/generater.d.ts",
+      "import": "./dist/generater.js",
+      "require": "./dist/generater.cjs"
+    },
     "./theme.css": "./dist/theme.css",
     "./theme-layer-base.css": "./dist/theme-layer-base.css",
     "./theme-block.css": "./dist/theme-block.css"
