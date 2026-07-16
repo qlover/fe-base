@@ -1,7 +1,7 @@
 import { ClientThemeProvider } from '@wrksz/themes/client';
 import dynamic from 'next/dynamic';
 import { NextIntlClientProvider } from 'next-intl';
-import '@/styles/index.css';
+import '@/styles/pages.css';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';

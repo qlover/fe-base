@@ -39,6 +39,11 @@ export interface UiThemeOptions {
   prefix?: string;
   defaultTheme?: string;
   themes?: ThemesMap;
+  /**
+   * When set, only these theme names are emitted (after merging builtins).
+   * Use to keep app CSS small when the package ships extra demo themes.
+   */
+  includeThemes?: string[];
   tokenMapping?: TokenMapping;
   cssSelector?: (themeName: string, root: boolean) => string;
   outputPath?: string;
@@ -220,7 +225,18 @@ export const defaultConfig: UiThemeOptions = {
 };
 
 export function getConfig(options?: UiThemeOptions): Required<UiThemeOptions> {
-  const allThemes = deepMerge(builtinThemes, options?.themes || {});
+  let allThemes = deepMerge(builtinThemes, options?.themes || {});
+  const includeThemes = options?.includeThemes;
+  if (includeThemes?.length) {
+    const filtered: ThemesMap = {};
+    for (const name of includeThemes) {
+      if (allThemes[name]) {
+        filtered[name] = allThemes[name];
+      }
+    }
+    allThemes = filtered;
+  }
+
   const allMappings = deepMerge(
     defaultTokenMapping,
     options?.tokenMapping || {}
@@ -232,11 +248,12 @@ export function getConfig(options?: UiThemeOptions): Required<UiThemeOptions> {
     options,
     {
       themes: allThemes,
-      tokenMapping: allMappings
+      tokenMapping: allMappings,
+      includeThemes: includeThemes ?? []
     }
   );
 
-  if (!config.defaultTheme && config.themes) {
+  if (!config.defaultTheme || !config.themes[config.defaultTheme]) {
     config.defaultTheme = Object.keys(config.themes)[0];
   }
 

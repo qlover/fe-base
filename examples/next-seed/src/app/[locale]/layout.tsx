@@ -55,8 +55,6 @@ export default async function RootLayout({
       data-testid="AppRoute-RootLayout"
       lang={locale}
       className={inter.variable}
-      // 暂时解决主题 hydration 问题
-      suppressHydrationWarning
     >
       <body className="font-sans antialiased">
         <IOCProvider>
