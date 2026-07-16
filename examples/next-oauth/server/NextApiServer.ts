@@ -1,4 +1,4 @@
-import { isPlainObject, pick } from 'lodash';
+import { isPlainObject, pick } from 'lodash-es';
 import { NextResponse, type NextRequest } from 'next/server';
 import { I } from '@config/ioc-identifiter';
 import type {

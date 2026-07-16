@@ -5,7 +5,7 @@ import {
   VerifyOtpParams
 } from '@qlover/oauth-wrapper';
 import { Provider } from '@supabase/supabase-js';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash-es';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
 import { API_CALLBACK_PROVIDER_LOGIN } from '@config/apiRoutes';

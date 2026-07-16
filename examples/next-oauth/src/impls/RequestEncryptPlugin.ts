@@ -1,4 +1,3 @@
-import { clone, isObject } from 'lodash';
 import type {
   ExecutorContextInterface,
   LifecyclePluginInterface,
@@ -34,16 +33,19 @@ export class RequestEncryptPlugin implements LifecyclePluginInterface<
   ): void | Promise<void> {
     const { responseType, encryptProps } = context.parameters;
 
+    const { data } = context.parameters;
     if (
       responseType === 'json' &&
-      isObject(context.parameters.data) &&
+      typeof data === 'object' &&
+      data !== null &&
       encryptProps
     ) {
+      const cloned = { ...data };
       context.setParameters({
         ...context.parameters,
         data: {
-          ...context.parameters.data,
-          ...this.encryptData(clone(context.parameters.data), encryptProps)
+          ...cloned,
+          ...this.encryptData(cloned, encryptProps)
         }
       });
     }

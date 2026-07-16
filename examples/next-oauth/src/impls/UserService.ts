@@ -1,6 +1,5 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
-import { isObject, isString } from 'lodash';
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
 import {
@@ -76,9 +75,10 @@ export class UserService
    */
   public isCredential(value: unknown): value is UserCredential {
     return (
-      isObject(value) &&
+      typeof value === 'object' &&
+      value !== null &&
       'credential_token' in value &&
-      isString(value.credential_token)
+      typeof value.credential_token === 'string'
     );
   }
 

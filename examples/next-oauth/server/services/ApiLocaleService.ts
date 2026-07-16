@@ -3,7 +3,7 @@ import {
   ResourceSearchResult,
   ResourceSortClause
 } from '@qlover/corekit-bridge';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import { revalidateTag } from 'next/cache';
 import { inject, injectable } from '@shared/container';
 import type { LocaleType } from '@config/i18n';
