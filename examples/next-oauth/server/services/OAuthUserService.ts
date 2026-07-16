@@ -1,4 +1,4 @@
-import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import {
   SignOtpResult,
   SignWithOtpSchema,
@@ -31,6 +31,7 @@ import type {
   UserServiceInterface,
   UserServiceRegisterParams
 } from '../interfaces/UserServiceInterface';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()

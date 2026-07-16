@@ -27,6 +27,11 @@
       "require": "./dist/aborter/index.cjs",
       "default": "./dist/aborter/index.js"
     },
+    "./common": {
+      "types": "./dist/common.d.ts",
+      "import": "./dist/common.js",
+      "default": "./dist/common.js"
+    },
     "./encrypt": {
       "types": "./dist/encrypt/index.d.ts",
       "import": "./dist/encrypt/index.js",

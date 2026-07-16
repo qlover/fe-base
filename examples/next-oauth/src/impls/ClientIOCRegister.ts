@@ -1,5 +1,6 @@
 import { CookieStorage } from '@qlover/corekit-bridge';
-import { Base64Serializer, StorageExecutor } from '@qlover/fe-corekit';
+import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import { I18nService } from '@/impls/I18nService';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';

@@ -1,8 +1,8 @@
 import {
-  ExecutorContextInterface,
+  type ExecutorContextInterface,
   ExecutorError,
-  LifecyclePluginInterface
-} from '@qlover/fe-corekit';
+  type LifecyclePluginInterface
+} from '@qlover/fe-corekit/executor';
 import { inject, injectable } from '@shared/container';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';

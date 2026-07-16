@@ -1,4 +1,4 @@
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { first, isNumber, isPlainObject, isString } from 'lodash-es';
 import { ZodError } from 'zod';

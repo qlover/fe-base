@@ -1,7 +1,7 @@
 import {
   RequestAdapterFetch,
   type RequestAdapterFetchConfig
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/request';
 import HttpsProxyAgentImport from 'https-proxy-agent';
 import nodeFetch from 'node-fetch';
 import type { RequestInit as NodeFetchRequestInit } from 'node-fetch';

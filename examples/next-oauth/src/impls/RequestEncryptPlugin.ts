@@ -1,9 +1,9 @@
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type {
   ExecutorContextInterface,
-  LifecyclePluginInterface,
-  RequestAdapterConfig,
-  EncryptorInterface
-} from '@qlover/fe-corekit';
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit/executor';
+import type { RequestAdapterConfig } from '@qlover/fe-corekit/request';
 
 export interface RequestEncryptPluginProps<
   Request = unknown

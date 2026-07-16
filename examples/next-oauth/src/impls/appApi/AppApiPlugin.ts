@@ -1,10 +1,11 @@
-import { ExecutorError, isRequestAdapterResponse } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { isRequestAdapterResponse } from '@qlover/fe-corekit/request';
 import type { AppApiErrorInterface } from '@interfaces/AppApiInterface';
 import type { AppApiConfig } from './AppApiRequester';
 import type {
   ExecutorContextInterface,
   LifecyclePluginInterface
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/executor';
 import type { LoggerInterface } from '@qlover/logger';
 
 export type AppApiPluginOptions = {

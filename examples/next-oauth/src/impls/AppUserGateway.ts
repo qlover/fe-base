@@ -1,4 +1,4 @@
-import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit/request';
 import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';

@@ -1,4 +1,5 @@
-import type { Base64Serializer, EncryptorInterface } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
+import type { Base64Serializer } from '@qlover/fe-corekit/serializer';
 
 export class StringEncryptor implements EncryptorInterface<string, string> {
   constructor(
@@ -13,10 +14,10 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
   protected encryptWithKey(str: string, key: string): string {
     const result = [];
     for (let i = 0; i < str.length; i++) {
-      // 使用字符的 Unicode 值和密钥进行混合运算
+      // 使用字符的 Unicode 值和密钥进行混坈违算
       const charCode = str.charCodeAt(i);
       const keyChar = key.charCodeAt(i % key.length);
-      // 使用多个运算来增加复杂度
+      // 使用多个违算来增加夝杂度
       const encrypted = (charCode + keyChar * 13) ^ (keyChar + i * 7);
       result.push(String.fromCharCode(encrypted % 65536)); // 确保结果在有效的 Unicode 范围内
     }
@@ -28,7 +29,7 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
     for (let i = 0; i < str.length; i++) {
       const charCode = str.charCodeAt(i);
       const keyChar = key.charCodeAt(i % key.length);
-      // 反向运算还原原始字符
+      // 坝坑违算还原原始字符
       const decrypted = (charCode ^ (keyChar + i * 7)) - keyChar * 13;
       result.push(String.fromCharCode(decrypted));
     }
@@ -53,9 +54,9 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
    */
   public decrypt(encryptedValue: string): string {
     try {
-      // 1. 先用 base64 反序列化
+      // 1. 先用 base64 坝庝列化
       const decoded = this.base64Serializer.deserialize(encryptedValue);
-      // 2. 然后用密钥解密
+      // 2. 然坎用密钥解密
       return this.decryptWithKey(decoded, this.key);
     } catch (error) {
       console.error('Decryption failed:', error);

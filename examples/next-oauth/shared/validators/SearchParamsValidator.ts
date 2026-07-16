@@ -1,4 +1,4 @@
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { defaultSearchParams } from '@config/common';
 import {
   V_REQUEST_LOGS_QUERY_INVALID,
