@@ -14,7 +14,6 @@ import { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperPr
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { TokenEncryption } from '@server/utils/TokenEncryption';
-import { SupabaseSession } from './SupabaseOAuthProvider';
 import type { LoggerInterface } from '@qlover/logger';
 import type {
   OAuthSessionPayload,
@@ -40,7 +39,8 @@ export interface BrainUserSession
   extends OAuthSessionPayload, BrainCredentials {}
 
 /**
- * Demo reference provider: Brain User API (`@brain-toolkit/brain-user`).
+ * Optional upstream provider: wraps Brain User login API as an OAuth AS backend.
+ * Not the default — bind via ServerConfig.oauthUpstreamProvider / `serverIoc`.
  */
 @injectable()
 export class BrainUserOAuthProvider
@@ -76,12 +76,6 @@ export class BrainUserOAuthProvider
       password: params.password!
     });
 
-    // TODO:
-    // const result = {
-    //   data: { token: '2c09b2c5ff6371e36d90130b8c4e5635464c6954' },
-    //   error: null
-    // };
-
     if (result.error) {
       throw result.error;
     }
@@ -97,7 +91,7 @@ export class BrainUserOAuthProvider
    * @override
    */
   protected async providerExchangeAccessToken(
-    session: SupabaseSession
+    session: BrainUserSession
   ): Promise<OAuthWrapperAccessToken> {
     const accessResult = await this.gateway.getAccessToken({
       token: session.providerRefreshToken,

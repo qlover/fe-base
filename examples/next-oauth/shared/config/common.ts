@@ -101,3 +101,24 @@ export const loginProviders = {
   Google: 'Google'
 } as const;
 export type LoginProviderType = ValueOf<typeof loginProviders>;
+
+/**
+ * Upstream identity provider for the Next OAuth template.
+ * Read via AppConfig / ServerConfig from `NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER`.
+ *
+ * - `supabase` (default): Supabase Auth password / OTP / SSO
+ * - `brain-user`: wrap Brain User login API as OAuth credentials
+ */
+export const oauthUpstreamProviders = {
+  supabase: 'supabase',
+  brainUser: 'brain-user'
+} as const;
+export type OAuthUpstreamId = ValueOf<typeof oauthUpstreamProviders>;
+
+export function resolveOAuthUpstreamProvider(
+  raw: string | undefined | null
+): OAuthUpstreamId {
+  return raw === oauthUpstreamProviders.brainUser
+    ? oauthUpstreamProviders.brainUser
+    : oauthUpstreamProviders.supabase;
+}
