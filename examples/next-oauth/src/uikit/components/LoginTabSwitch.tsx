@@ -12,9 +12,10 @@ import { GithubIcon, GoogleIcon } from '@/uikit/components/icons';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
 import type { LoginProviderType } from '@config/common';
-import { loginProviders } from '@config/common';
+import { loginProviders, oauthUpstreamProviders } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
-import { isSupabaseOAuthUpstream } from '@config/oauthUpstream';
+import { I } from '@config/ioc-identifiter';
+import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { useIOC } from '../hook/useIOC';
 
 type LoginTab = 'email' | 'phone';
@@ -47,12 +48,14 @@ const providersItems: ProvidersItem[] = Object.values(loginProviders).map(
 
 export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const userGateway = useIOC(AppUserGateway);
+  const appConfig = useIOC(I.AppConfig) as SeedSrcConfigInterface;
   const [tab, setTab] = useState<LoginTab>('email');
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
   const [providerLogining, setProviderLogining] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
-  const supabaseUpstream = isSupabaseOAuthUpstream();
+  const supabaseUpstream =
+    appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
 
   const tabBaseClass =
     'flex-1 py-2.5 text-sm font-medium text-center transition-colors cursor-pointer border-b-2 outline-none';

@@ -1,4 +1,7 @@
-import { logPrefixTemplate } from '@config/common';
+import {
+  logPrefixTemplate,
+  resolveOAuthUpstreamProvider
+} from '@config/common';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { name, version } from '../package.json';
 import type { StringValue } from 'ms';
@@ -64,4 +67,9 @@ export class ServerConfig implements SeedServerConfigInterface {
 
   public readonly oauthSessionKey: string =
     process.env.OAUTH_SESSION_KEY ?? 'next_oauth_session';
+
+  /** Same `NEXT_PUBLIC_` key as AppConfig so client/server stay aligned. */
+  public readonly oauthUpstreamProvider = resolveOAuthUpstreamProvider(
+    process.env.NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER
+  );
 }

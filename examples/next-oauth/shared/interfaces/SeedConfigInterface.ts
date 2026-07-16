@@ -1,8 +1,13 @@
+import type { OAuthUpstreamId } from '@config/common';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StringValue } from 'ms';
 
 export interface SharedConfigInterface extends SeedConfigInterface {
-  // 需要扩展前后端通用配置
+  /**
+   * Upstream identity provider for this template.
+   * From `NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER` (default: supabase).
+   */
+  readonly oauthUpstreamProvider: OAuthUpstreamId;
 }
 
 export interface SeedServerConfigInterface extends SharedConfigInterface {

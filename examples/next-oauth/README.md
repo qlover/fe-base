@@ -13,11 +13,9 @@
 
 ```bash
 # .env — 默认即可保持原逻辑
-OAUTH_UPSTREAM_PROVIDER=supabase
 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
 
 # 改用 Brain User 时：
-# OAUTH_UPSTREAM_PROVIDER=brain-user
 # NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=brain-user
 ```
 

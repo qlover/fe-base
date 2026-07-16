@@ -12,7 +12,6 @@
 | **Brain User (optional)** | `brain-user` | Wrap an existing login API as OAuth credentials |
 
 ```bash
-OAUTH_UPSTREAM_PROVIDER=supabase
 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
 ```
 

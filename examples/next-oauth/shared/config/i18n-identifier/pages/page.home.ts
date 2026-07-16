@@ -126,8 +126,8 @@ export const PAGE_HOME_SECTION_ARCH_TITLE = 'page_home:section__arch__title';
 
 /**
  * @description Architecture section body
- * @localZh 这是一个模板项目：@qlover/oauth-wrapper 提供与上游无关的 OAuth 2.0 协议面；示例预置两种上游——默认 SupabaseOAuthProvider（邮箱/手机/GitHub/Google），可选 BrainUserOAuthProvider（把已有登录 API 包装成 OAuth 服务端）。切换 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER / OAUTH_UPSTREAM_PROVIDER 即可。
- * @localEn This is a template: @qlover/oauth-wrapper supplies the provider-agnostic OAuth 2.0 surface. Two upstreams ship in-box—default SupabaseOAuthProvider (email/phone/GitHub/Google), optional BrainUserOAuthProvider (wrap an existing login API as an OAuth AS). Switch via NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER / OAUTH_UPSTREAM_PROVIDER.
+ * @localZh 这是一个模板项目：@qlover/oauth-wrapper 提供与上游无关的 OAuth 2.0 协议面；示例预置两种上游——默认 SupabaseOAuthProvider（邮箱/手机/GitHub/Google），可选 BrainUserOAuthProvider（把已有登录 API 包装成 OAuth 服务端）。切换 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER 即可。
+ * @localEn This is a template: @qlover/oauth-wrapper supplies the provider-agnostic OAuth 2.0 surface. Two upstreams ship in-box—default SupabaseOAuthProvider (email/phone/GitHub/Google), optional BrainUserOAuthProvider (wrap an existing login API as an OAuth AS). Switch via NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER.
  */
 export const PAGE_HOME_SECTION_ARCH_BODY = 'page_home:section__arch__body';
 

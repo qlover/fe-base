@@ -40,7 +40,7 @@ export interface BrainUserSession
 
 /**
  * Optional upstream provider: wraps Brain User login API as an OAuth AS backend.
- * Not the default — bind via {@link getOAuthUpstreamProvider} / `serverIoc`.
+ * Not the default — bind via ServerConfig.oauthUpstreamProvider / `serverIoc`.
  */
 @injectable()
 export class BrainUserOAuthProvider
