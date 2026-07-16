@@ -21,7 +21,7 @@ import {
 } from '@config/route';
 
 const featureIconWrapClassName =
-  'w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-3 text-brand';
+  'w-12 h-12 rounded-full bg-brand/15 flex items-center justify-center mx-auto mb-3 text-brand-active';
 
 const featureIconClassName = 'h-6 w-6';
 
@@ -33,16 +33,14 @@ export function HomeHero({ tt }: HomeSectionProps) {
   return (
     <section data-testid="HomeHero" className="py-10 sm:py-16 md:py-24">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="inline-flex max-w-full items-center gap-2 bg-brand/10 text-brand px-3 py-1 rounded-full text-xs sm:text-sm mb-4 sm:mb-6">
-          <CheckCircleIcon className="h-4 w-4 shrink-0" />
+        <div className="inline-flex max-w-full items-center gap-2 bg-brand/15 text-brand-active px-3 py-1 rounded-full text-xs sm:text-sm mb-4 sm:mb-6">
+          <CheckCircleIcon className="h-4 w-4 shrink-0" aria-hidden />
           <span className="truncate">{tt.heroBadge}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-primary-text mb-3 sm:mb-4 px-1">
           {tt.heroTitle1}
           <br />
-          <span className="bg-linear-to-r from-brand to-purple-500 bg-clip-text text-transparent">
-            {tt.heroTitle2}
-          </span>
+          <span className="text-brand-active">{tt.heroTitle2}</span>
         </h1>
         <p className="max-w-2xl mx-auto text-base sm:text-lg text-secondary-text mb-6 sm:mb-8 px-1">
           {tt.heroDesc}
@@ -85,8 +83,8 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="rounded-xl border border-primary-border bg-elevated/50 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <span className="text-brand mt-0.5 shrink-0">
-              <CodeBracketIcon className="h-5 w-5" />
+            <span className="text-brand-active mt-0.5 shrink-0">
+              <CodeBracketIcon className="h-5 w-5" aria-hidden />
             </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionArchTitle}
@@ -98,8 +96,8 @@ export function HomeArchitecture({ tt }: HomeSectionProps) {
         </div>
         <div className="rounded-xl border border-brand/30 bg-brand/5 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-3">
-            <span className="text-brand mt-0.5 shrink-0">
-              <CubeTransparentIcon className="h-5 w-5" />
+            <span className="text-brand-active mt-0.5 shrink-0">
+              <CubeTransparentIcon className="h-5 w-5" aria-hidden />
             </span>
             <h2 className="text-lg font-semibold text-primary-text">
               {tt.sectionDemoTitle}
@@ -170,18 +168,20 @@ export function HomeApiSnippet({ tt }: HomeSectionProps) {
           {tt.apiSnippetTitle}
         </h2>
         <div className="rounded-xl bg-primary shadow-sm border border-primary-border p-5 space-y-3">
-          <p className="text-xs text-tertiary-text font-medium uppercase tracking-wide">
+          <p className="text-xs text-secondary-text font-medium uppercase tracking-wide">
             {tt.apiSnippetLogin}
           </p>
           <p className="text-sm font-mono text-secondary-text break-all">
-            <span className="text-brand">POST</span> {API_OAUTH_VERIFY}
+            <span className="text-brand-active font-semibold">POST</span>{' '}
+            {API_OAUTH_VERIFY}
           </p>
           <p className="text-sm font-mono text-secondary-text break-all">
-            <span className="text-brand">GET</span>{' '}
+            <span className="text-brand-active font-semibold">GET</span>{' '}
             /oauth/authorize?client_id=your_app&amp;redirect_uri=...
           </p>
           <p className="text-sm font-mono text-secondary-text break-all">
-            <span className="text-brand">POST</span> /oauth/token -d
+            <span className="text-brand-active font-semibold">POST</span>{' '}
+            /oauth/token -d
             &quot;grant_type=authorization_code&amp;code=...&quot;
           </p>
         </div>
