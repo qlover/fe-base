@@ -2,6 +2,7 @@ import { defineConfig } from 'tsup';
 import pkg from './package.json';
 import { toPureCamelCase } from '../../tools/toPureCamelCase.js';
 import { builtinModules } from 'module';
+import { readdirSync } from 'fs';
 
 const pkgName = toPureCamelCase(pkg.name);
 const external = [
@@ -11,82 +12,79 @@ const external = [
   ...Object.keys(pkg.devDependencies || {})
 ];
 
-// const coreModulesEntry = readdirSync('./src')
-//   .filter((file) => !file.endsWith('.ts'))
-//   .reduce(
-//     (acc, mod) => {
-//       acc[`${mod}/index`] = `src/${mod}/index.ts`;
-//       return acc;
-//     },
-//     {} as Record<string, string>
-//   );
+const dtsOptions = {
+  resolve: true,
+  compilerOptions: {
+    composite: false,
+    rootDir: undefined
+  }
+};
+
+// Submodule entries: dist/<mod>/index.{js,cjs,d.ts}
+const coreModulesEntry = readdirSync('./src')
+  .filter((file) => !file.endsWith('.ts') && !file.startsWith('.'))
+  .reduce(
+    (acc, mod) => {
+      acc[`${mod}/index`] = `src/${mod}/index.ts`;
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
 export default defineConfig([
-  // {
-  //   entry: coreModulesEntry,
-  //   format: ['cjs'],
-  //   dts: false,
-  //   minify: false,
-  //
-  //   clean: true,
-  //   outDir: 'dist',
-  //   external
-  // },
-  // {
-  //   entry: coreModulesEntry,
-  //   format: ['esm'],
-  //   splitting: false,
-  //   dts: {
-  //     compilerOptions: {
-  //       composite: false,
-  //       rootDir: undefined
-  //     }
-  //   },
-  //   minify: false,
-  //   // bundle: true by default - bundle code but keep external dependencies external
-  //   outDir: 'dist',
-  //   external
-  // },
-
+  // Main entry: CJS (full bundle for require consumers)
   {
     entry: ['src/index.ts'],
     format: ['cjs'],
-    clean: true,
     dts: false,
     minify: false,
+    clean: true,
+    bundle: true,
     outExtension: () => ({ js: '.cjs' }),
-    outDir: 'dist'
+    outDir: 'dist',
+    external
   },
+  // Main entry: ESM re-exports only — enables consumer tree-shaking
   {
     entry: ['src/index.ts'],
     format: ['esm'],
-    dts: {
-      resolve: true,
-      compilerOptions: {
-        composite: false,
-        rootDir: undefined
-      }
-    },
-    bundle: true,
+    bundle: false,
     splitting: false,
+    dts: dtsOptions,
     minify: false,
+    outDir: 'dist',
     external
   },
+  // Submodules: CJS
+  {
+    entry: coreModulesEntry,
+    format: ['cjs'],
+    dts: false,
+    minify: false,
+    outDir: 'dist',
+    external
+  },
+  // Submodules: ESM + declarations
+  {
+    entry: coreModulesEntry,
+    format: ['esm'],
+    splitting: false,
+    dts: dtsOptions,
+    minify: false,
+    outDir: 'dist',
+    external
+  },
+  // Shared utility types (re-exported by main ESM entry)
   {
     entry: ['src/common.ts'],
     format: ['esm'],
-    dts: {
-      resolve: true,
-      compilerOptions: {
-        composite: false,
-        rootDir: undefined
-      }
-    },
+    dts: dtsOptions,
     bundle: false,
     splitting: false,
     minify: false,
     external
   },
+  // CDN: IIFE
   {
     entry: ['src/index.ts'],
     format: ['iife'],

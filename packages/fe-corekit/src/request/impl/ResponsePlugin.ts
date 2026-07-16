@@ -8,7 +8,6 @@ import type {
   RequestAdapterResponse
 } from '../interface';
 import { JSON_RESPONSE_TYPE } from './consts';
-import { isFunction } from 'lodash-es';
 import { isRequestAdapterResponse } from '../utils/isRequestAdapterResponse';
 import { RESPONSE_NOT_OK_ID } from './consts';
 
@@ -374,7 +373,7 @@ export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginCo
     responseType?: string
   ): Promise<unknown> {
     // Use custom parser if provided
-    if (isFunction(this.config.responseDataParser)) {
+    if (typeof this.config.responseDataParser === 'function') {
       return await this.config.responseDataParser(response, responseType);
     }
 
@@ -411,7 +410,7 @@ export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginCo
     }
 
     // If custom parser exists, use it
-    if (isFunction(parser)) {
+    if (typeof parser === 'function') {
       return await parser(response);
     }
 
@@ -436,7 +435,7 @@ export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginCo
     // Check for JSON content type
     if (lowerContentType.includes('application/json')) {
       const jsonParser = this.parsers.json;
-      if (isFunction(jsonParser)) {
+      if (typeof jsonParser === 'function') {
         return jsonParser;
       }
     }
@@ -448,7 +447,7 @@ export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginCo
       lowerContentType.includes('application/xhtml')
     ) {
       const textParser = this.parsers.text;
-      if (isFunction(textParser)) {
+      if (typeof textParser === 'function') {
         return textParser;
       }
     }
@@ -469,13 +468,13 @@ export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginCo
 
     // Try JSON parser first as it's most common
     const jsonParser = this.parsers.json;
-    if (isFunction(jsonParser)) {
+    if (typeof jsonParser === 'function') {
       fallbackParsers.push(jsonParser);
     }
 
     // Then try text parser
     const textParser = this.parsers.text;
-    if (isFunction(textParser)) {
+    if (typeof textParser === 'function') {
       fallbackParsers.push(textParser);
     }
 

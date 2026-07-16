@@ -4,9 +4,9 @@ import type {
   RequestAdapterInterface,
   RequestAdapterResponse
 } from '../interface';
-import { merge, pick } from 'lodash-es';
 import { ENV_FETCH_NOT_SUPPORT_ID, FETCHER_NONE_ID } from '../impl/consts';
 import { isAbsoluteUrl } from '../utils/isAbsoluteUrl';
+import { mergeConfig, pickKeys } from '../utils/mergeConfig';
 
 /**
  * Request adapter fetch configuration
@@ -54,7 +54,7 @@ const reqInitAttrs = [
   'referrer',
   'referrerPolicy',
   'signal'
-];
+] as const satisfies readonly (keyof RequestAdapterFetchConfig)[];
 
 /**
  * Fetch-based HTTP request adapter implementing the RequestAdapterInterface
@@ -76,7 +76,7 @@ const reqInitAttrs = [
  *   - Full support for fetch RequestInit options
  *
  * - Configuration merging: Combines default and request-specific settings
- *   - Deep merge of configuration objects
+ *   - Shallow merge with nested merge for headers/params
  *   - Per-request configuration override
  *   - Immutable default configuration
  *
@@ -304,7 +304,7 @@ export class RequestAdapterFetch implements RequestAdapterInterface<RequestAdapt
    * the fetch request, and normalizes the response.
    *
    * Request execution flow:
-   * 1. Merge request config with adapter defaults (deep merge)
+   * 1. Merge request config with adapter defaults
    * 2. Validate fetcher function availability
    * 3. Validate URL presence
    * 4. Convert merged config to fetch Request object
@@ -315,7 +315,7 @@ export class RequestAdapterFetch implements RequestAdapterInterface<RequestAdapt
    * Configuration merging:
    * - Adapter defaults are used as base
    * - Request-specific config overrides defaults
-   * - Headers, params, and other objects are deep merged
+   * - Headers and params are merged one level deep
    *
    * @override
    * @template Request - Request data type
@@ -378,11 +378,7 @@ export class RequestAdapterFetch implements RequestAdapterInterface<RequestAdapt
     config: RequestAdapterFetchConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const thisConfig = this.getConfig();
-    const mergedConfig = merge(
-      {},
-      thisConfig,
-      config
-    ) as RequestAdapterFetchConfig<Request>;
+    const mergedConfig = mergeConfig(thisConfig, config);
     const { fetcher, ...rest } = mergedConfig;
 
     if (typeof fetcher !== 'function') {
@@ -485,15 +481,14 @@ export class RequestAdapterFetch implements RequestAdapterInterface<RequestAdapt
     parameters: RequestAdapterFetchConfig
   ): Request {
     const { url = '/', baseURL, method = 'GET', data } = parameters;
-    const init = pick(parameters, reqInitAttrs);
-    return new Request(
-      this.buildRequestUrl(url, baseURL),
-      Object.assign(init, {
-        // FIXME: data is unknown type
-        body: data as BodyInit,
-        method: method.toUpperCase()
-      })
-    );
+    const init = pickKeys(parameters, reqInitAttrs);
+    return new Request(this.buildRequestUrl(url, baseURL), {
+      ...init,
+      headers: init.headers as HeadersInit | undefined,
+      // FIXME: data is unknown type
+      body: data as BodyInit,
+      method: method.toUpperCase()
+    });
   }
 
   /**

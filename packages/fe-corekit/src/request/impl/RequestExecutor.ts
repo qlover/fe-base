@@ -3,7 +3,6 @@ import type {
   RequestAdapterInterface,
   RequestAdapterResponse
 } from '../interface/RequestAdapterInterface';
-import { clone } from 'lodash-es';
 import { type RequestExecutorInterface } from '../interface/RequestExecutorInterface';
 import {
   type ExecutorContextInterface,
@@ -11,6 +10,7 @@ import {
   type LifecyclePluginInterface
 } from '../../executor';
 import { HttpMethods } from '../utils/httpMethods';
+import { shallowClone } from '../utils/mergeConfig';
 
 type URL = string;
 type ConfigData<C extends RequestAdapterConfig> = C['data'];
@@ -398,8 +398,11 @@ export class RequestExecutor<
   public request<T, D, R = RequestExecutorResponse<Config, T>>(
     config: Config & { data?: D }
   ): Promise<R> {
-    // Merge adapter defaults with request config (clone to prevent mutations)
-    const mergedConfig = Object.assign(clone(this.adapter.getConfig()), config);
+    // Clone defaults (preserve prototype) then overlay request config
+    const mergedConfig = Object.assign(
+      shallowClone(this.adapter.getConfig()),
+      config
+    );
 
     // If no executor, execute request directly through adapter
     if (!this.executor) {

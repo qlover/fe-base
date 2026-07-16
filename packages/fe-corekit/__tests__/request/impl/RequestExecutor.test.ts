@@ -589,6 +589,57 @@ describe('RequestExecutor', () => {
       expect(callArg.headers.get('X-Custom')).toBe('value');
     });
 
+    it('should preserve adapter config prototype when merging request config', async () => {
+      class CustomFetchConfig {
+        public baseURL = 'https://api.example.com';
+        public method = 'GET';
+        public fetcher = fetchMock;
+        public url: any;
+
+        public getAuth(): string {
+          return 'Bearer custom';
+        }
+      }
+
+      const defaultConfig = new CustomFetchConfig();
+      const receivedConfigs: CustomFetchConfig[] = [];
+
+      const adapter = {
+        getConfig: () => defaultConfig,
+        setConfig: vi.fn(),
+        request: vi.fn(async (config: CustomFetchConfig) => {
+          receivedConfigs.push(config);
+          return {
+            data: { ok: true },
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config
+          };
+        })
+      };
+
+      const executor = new RequestExecutor(
+        adapter as unknown as RequestAdapterFetch
+      );
+
+      await executor.request({
+        url: '/users',
+        method: 'POST'
+      });
+
+      expect(receivedConfigs).toHaveLength(1);
+      const merged = receivedConfigs[0];
+      expect(merged).toBeInstanceOf(CustomFetchConfig);
+      expect(merged).not.toBe(defaultConfig);
+      expect(merged.getAuth()).toBe('Bearer custom');
+      expect(merged.method).toBe('POST');
+      expect(merged.url).toBe('/users');
+      // Original adapter defaults must stay untouched
+      expect(defaultConfig.method).toBe('GET');
+      expect(defaultConfig).not.toHaveProperty('url');
+    });
+
     it('should work without lifecycle executor', async () => {
       const adapter = new RequestAdapterFetch({
         baseURL: 'https://api.example.com',
