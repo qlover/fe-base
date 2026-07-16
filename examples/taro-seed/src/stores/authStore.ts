@@ -4,10 +4,7 @@ import type {
   UserStateInterface
 } from '@qlover/corekit-bridge';
 import type { StorageInterface } from '@qlover/fe-corekit';
-import type {
-  UserCredentialSchema,
-  UserSchema
-} from 'types/schemas/UserSchema';
+import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 
 export type UserCredential = string;
 

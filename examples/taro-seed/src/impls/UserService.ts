@@ -1,4 +1,3 @@
-import { fetchLogout, fetchUserInfo, fetchWxLogin } from './AppRequester';
 import type { AuthStore } from '@/stores/authStore';
 import type {
   UserServiceInterface,
@@ -76,6 +75,7 @@ export class UserService implements UserServiceInterface<
     this.authStore.setCode(code);
     this.authStore.start();
 
+    const { fetchWxLogin } = await import('./AppRequester');
     const response = await fetchWxLogin(code);
 
     if (!response.data) {
@@ -95,6 +95,7 @@ export class UserService implements UserServiceInterface<
     _params?: unknown,
     _config?: string
   ): Promise<R> {
+    const { fetchLogout } = await import('./AppRequester');
     await fetchLogout();
 
     this.authStore.reset();
@@ -126,6 +127,7 @@ export class UserService implements UserServiceInterface<
     params: UserCredentialSchema,
     _config?: string
   ): Promise<UserSchema> {
+    const { fetchUserInfo } = await import('./AppRequester');
     const response = await fetchUserInfo(params.access_token);
 
     if (!response.data) {

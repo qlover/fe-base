@@ -21,7 +21,8 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@interfaces/*": ["./types/interfaces/*"]
+      "@interfaces/*": ["./types/interfaces/*"],
+      "@schemas/*": ["./types/schemas/*"]
     }
   },
   "include": ["./src", "./types"],

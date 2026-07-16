@@ -1,6 +1,6 @@
 import { Text, Button } from '@tarojs/components';
+import { lazy, Suspense } from 'react';
 import './index.css';
-import { LoginForm } from '@/components/LoginForm';
 import { Page } from '@/components/Page';
 import {
   PAGE_HOME_GREETING,
@@ -12,6 +12,12 @@ import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
 import { useStore } from '@/hooks/useStore';
 import { useTranslation } from '@/hooks/useTranslation';
+
+const LoginForm = lazy(() =>
+  import('@/components/LoginForm').then((module) => ({
+    default: module.LoginForm
+  }))
+);
 
 export default function Index() {
   const authStore = useIOC(I.AuthStore);
@@ -71,7 +77,11 @@ export default function Index() {
         </>
       )}
 
-      {showLoginForm && <LoginForm />}
+      {showLoginForm && (
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
+      )}
     </Page>
   );
 }

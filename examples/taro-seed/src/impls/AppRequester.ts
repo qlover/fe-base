@@ -1,8 +1,7 @@
-import { LifecycleExecutor, RequestExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
+import { RequestExecutor } from '@qlover/fe-corekit/request';
 import { EP_LOGIN_WX, EP_LOGOUT, EP_USER_INFO } from '@/config/endpotins';
-import { mockData } from '@/config/mockData';
 import { logger, seedConfig } from '@/globals';
-import { MockPlugin } from './MockPlugin';
 import { createTaroRequestAdapter } from '../utils/createTaroRequestAdapter';
 import type { TaroRequestAdapterConfig } from '../utils/createTaroRequestAdapter';
 import type { ApiMockPluginOptions } from '@qlover/corekit-bridge';
@@ -25,13 +24,18 @@ export const appRequester = new RequestExecutor(
   new LifecycleExecutor<AppRequesterContext>()
 );
 
-// TODO: 测试用，后续删除
-appRequester.use(
-  new MockPlugin({
-    mockData: mockData,
-    logger: logger
-  })
-);
+if (!seedConfig.isProduction) {
+  void import('./MockPlugin').then(({ MockPlugin }) =>
+    import('@/config/mockData').then(({ mockData }) => {
+      appRequester.use(
+        new MockPlugin({
+          mockData,
+          logger
+        })
+      );
+    })
+  );
+}
 
 export function fetchIpinfo() {
   return appRequester.get('https://api.ipify.org?format=json', {
