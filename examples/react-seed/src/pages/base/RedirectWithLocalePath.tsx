@@ -1,8 +1,8 @@
-import { usePathLocaleRoute } from '@config/seed.config';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { logger } from '@/globals';
+import { usePathLocaleRoute } from '@config/seed.config';
 
 export default function RedirectWithLocalePath() {
   const navigate = useNavigate();

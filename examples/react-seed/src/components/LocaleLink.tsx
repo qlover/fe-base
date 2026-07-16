@@ -1,5 +1,5 @@
-import { usePathLocaleRoute } from '@config/seed.config';
 import { Link as RouterLink, useParams } from 'react-router-dom';
+import { usePathLocaleRoute } from '@config/seed.config';
 import type { ReactNode } from 'react';
 import type { LinkProps, To } from 'react-router-dom';
 

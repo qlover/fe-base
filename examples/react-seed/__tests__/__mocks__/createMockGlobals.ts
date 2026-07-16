@@ -1,5 +1,7 @@
-import { createIOCFunction } from '@qlover/corekit-bridge/ioc';
-import { ReflectionIOCContainer } from '@qlover/corekit-bridge/ioc';
+import {
+  createIOCFunction,
+  ReflectionIOCContainer
+} from '@qlover/corekit-bridge/ioc';
 import { Logger } from '@qlover/logger';
 import { ReactSeedConfig } from '@/impls/ReactSeedConfig';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';

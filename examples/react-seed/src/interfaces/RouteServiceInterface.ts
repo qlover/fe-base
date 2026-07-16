@@ -1,5 +1,5 @@
-import type { RouteConfigValue } from './RouteLoaderInterface';
 import type { routePathLocaleParamKey } from '@config/seed.config';
+import type { RouteConfigValue } from './RouteLoaderInterface';
 import type {
   AsyncStoreStateInterface,
   AsyncStoreInterface,

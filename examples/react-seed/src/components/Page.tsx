@@ -1,16 +1,16 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useIOC } from '@/hooks/useIOC';
+import { I18nService } from '@/impls/I18nService';
+import type { RouteParams } from '@/interfaces/RouteServiceInterface';
+import { getLocaleRedirectTo } from '@/utils/getLocaleRedirectTo';
 import { pathLocalRoutePrefix } from '@config/router';
 import {
   routePathLocaleParamKey,
   usePathLocaleRoute
 } from '@config/seed.config';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useIOC } from '@/hooks/useIOC';
-import { I18nService } from '@/impls/I18nService';
-import { getLocaleRedirectTo } from '@/utils/getLocaleRedirectTo';
 import { Loading } from './Loading';
 import type { RouterRenderProps } from './RouterRenderComponent';
-import type { RouteParams } from '@/interfaces/RouteServiceInterface';
 import type { PropsWithChildren } from 'react';
 
 export interface PageProps extends RouterRenderProps {

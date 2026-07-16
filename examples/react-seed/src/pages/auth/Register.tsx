@@ -1,12 +1,12 @@
-import { pageRegisterI18n } from '@config/i18n-mapping/page.register';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LocaleLink } from '@/components/LocaleLink';
+import type { RouterRenderProps } from '@/components/RouterRenderComponent';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
 import { UserService } from '@/impls/UserService';
 import { LoginDataSchema } from '@/interfaces/schema/UserGateway';
-import type { RouterRenderProps } from '@/components/RouterRenderComponent';
+import { pageRegisterI18n } from '@config/i18n-mapping/page.register';
 import type { FormEvent } from 'react';
 
 export default function RegisterPage(_props: RouterRenderProps) {
@@ -66,7 +66,6 @@ export default function RegisterPage(_props: RouterRenderProps) {
       data-testid="RegisterPage"
       className="grid min-h-screen w-full lg:grid-cols-2"
     >
-      {/* Left: decorative panel — hidden on small, visible from lg */}
       <div
         className="relative hidden overflow-hidden lg:block"
         style={{
@@ -137,7 +136,6 @@ export default function RegisterPage(_props: RouterRenderProps) {
         </div>
       </div>
 
-      {/* Right: form */}
       <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-14 lg:px-10 xl:px-14">
         <div className="mx-auto w-full max-w-[400px]">
           <div className="mb-8 text-center lg:mb-10 lg:text-left">

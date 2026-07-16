@@ -1,6 +1,6 @@
 import * as globals from '@/globals';
-import { name, version } from '../package.json';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
+import { name, version } from '../package.json';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCContainerInterface,

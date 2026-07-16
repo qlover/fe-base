@@ -1,10 +1,3 @@
-import {
-  AUTH_LOGOUT_DIALOG_CONTENT,
-  AUTH_LOGOUT_DIALOG_TITLE,
-  COMMON_CANCEL
-} from '@config/i18n-identifier/common';
-import { pageHomeI18n } from '@config/i18n-mapping/page.home';
-import { usePathLocaleRoute } from '@config/seed.config';
 import { useCallback, useState } from 'react';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
@@ -13,6 +6,13 @@ import { useLocale } from '@/hooks/useLocale';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
+import {
+  AUTH_LOGOUT_DIALOG_CONTENT,
+  AUTH_LOGOUT_DIALOG_TITLE,
+  COMMON_CANCEL
+} from '@config/i18n-identifier/common';
+import { pageHomeI18n } from '@config/i18n-mapping/page.home';
+import { usePathLocaleRoute } from '@config/seed.config';
 
 export default function HomePage() {
   const { t } = useTranslation();

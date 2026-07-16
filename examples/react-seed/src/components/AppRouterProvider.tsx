@@ -1,12 +1,12 @@
-import { routerPrefix } from '@config/seed.config';
 import { useEffect, useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';
 import { useStore } from '@/hooks/useStore';
 import { RouterLoader } from '@/impls/RouterLoader';
-import { RouteService } from '@/impls/RouteService';
-import { RouterRenderComponent } from './RouterRenderComponent';
 import type { ComponentMap } from '@/impls/RouterLoader';
+import { RouteService } from '@/impls/RouteService';
+import { routerPrefix } from '@config/seed.config';
+import { RouterRenderComponent } from './RouterRenderComponent';
 
 export function AppRouterProvider(props: { pages: ComponentMap }) {
   const { pages } = props;

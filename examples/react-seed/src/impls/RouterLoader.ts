@@ -34,8 +34,7 @@ type ComponentMapValue =
 export type ComponentMap = Record<string, ComponentMapValue>;
 
 type RouteComponentType<T = unknown> =
-  | ComponentType<T>
-  | LazyExoticComponent<ComponentType<T>>;
+  ComponentType<T> | LazyExoticComponent<ComponentType<T>>;
 
 export type ParseComponentResult<T> = RouteComponentType<T> | ReactNode;
 
@@ -149,8 +148,7 @@ export class RouterLoader implements RouteLoaderInterface {
   protected isComponent(
     value: ComponentMapValue
   ): value is
-    | ComponentType<unknown>
-    | LazyExoticComponent<ComponentType<unknown>> {
+    ComponentType<unknown> | LazyExoticComponent<ComponentType<unknown>> {
     // If it's already a LazyExoticComponent, return true
     if (this.isLazyExoticComponent(value)) {
       return true;

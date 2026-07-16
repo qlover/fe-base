@@ -1,5 +1,5 @@
-import { routePathLocaleParamKey } from './seed.config';
 import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
+import { routePathLocaleParamKey } from './seed.config';
 
 const noMatchRoute: RouteConfigValue = {
   path: '*',

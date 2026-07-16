@@ -1,7 +1,6 @@
-import { pageLoginI18n } from '@config/i18n-mapping/page.login';
-import { usePathLocaleRoute } from '@config/seed.config';
 import { useState } from 'react';
 import { LocaleLink } from '@/components/LocaleLink';
+import type { RouterRenderProps } from '@/components/RouterRenderComponent';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
 import { useLocale } from '@/hooks/useLocale';
@@ -9,7 +8,8 @@ import { useOAuthLogin } from '@/hooks/useOAuthLogin';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import { LoginDataSchema } from '@/interfaces/schema/UserGateway';
-import type { RouterRenderProps } from '@/components/RouterRenderComponent';
+import { pageLoginI18n } from '@config/i18n-mapping/page.login';
+import { usePathLocaleRoute } from '@config/seed.config';
 import type { FormEvent } from 'react';
 
 export default function LoginPage(_props: RouterRenderProps) {
@@ -64,7 +64,6 @@ export default function LoginPage(_props: RouterRenderProps) {
       data-testid="LoginPage"
       className="grid min-h-screen w-full lg:grid-cols-2"
     >
-      {/* Left: decorative panel — hidden on small, visible from lg */}
       <div
         className="relative hidden overflow-hidden lg:block"
         style={{
@@ -72,7 +71,6 @@ export default function LoginPage(_props: RouterRenderProps) {
             'linear-gradient(135deg, rgb(var(--color-brand) / 0.14) 0%, rgb(var(--color-brand) / 0.06) 40%, rgb(var(--color-brand) / 0.02) 100%)'
         }}
       >
-        {/* Dot grid */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -80,7 +78,7 @@ export default function LoginPage(_props: RouterRenderProps) {
             backgroundSize: '28px 28px'
           }}
         />
-        {/* Floating shapes */}
+
         <div
           className="absolute -left-20 -top-20 h-64 w-64 rounded-full opacity-20 blur-3xl"
           style={{
@@ -106,7 +104,7 @@ export default function LoginPage(_props: RouterRenderProps) {
             background: 'rgb(var(--color-brand) / 0.25)'
           }}
         />
-        {/* Content */}
+
         <div className="relative flex h-full flex-col justify-between p-10 xl:p-14">
           <div className="text-primary-text/70 text-sm font-medium tracking-wide">
             {text.title}
@@ -151,10 +149,8 @@ export default function LoginPage(_props: RouterRenderProps) {
         </div>
       </div>
 
-      {/* Right: form */}
       <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-14 lg:px-10 xl:px-14">
         <div className="mx-auto w-full max-w-[400px]">
-          {/* Mobile-only title */}
           <div className="mb-8 text-center lg:mb-10 lg:text-left">
             <h1 className="text-primary-text text-2xl font-semibold tracking-tight sm:text-3xl">
               {text.title}
@@ -164,7 +160,6 @@ export default function LoginPage(_props: RouterRenderProps) {
             </p>
           </div>
 
-          {/* OAuth login */}
           <div className="space-y-3">
             <button
               type="button"

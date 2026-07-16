@@ -1,20 +1,22 @@
-import { I } from '@config/ioc-identifier';
-import { UserService as BridgeUserService } from '@qlover/corekit-bridge';
-import { CookieStorage } from '@qlover/corekit-bridge';
+import {
+  UserService as BridgeUserService,
+  CookieStorage
+} from '@qlover/corekit-bridge';
 import { StorageExecutor } from '@qlover/fe-corekit/storage';
+import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import {
   isWebUserSchema,
   UserCredential,
   userCredentialSchema,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
+import { I } from '@config/ioc-identifier';
 import { inject } from './Container';
 import { RouteService } from './RouteService';
 import { SeedOAuthClient } from './SeedOAuthClient';
 import { UserGateway } from './UserGateway';
 import type { ReactSeedConfig } from './ReactSeedConfig';
 import type { OAuthLoginResult } from './SeedOAuthClient';
-import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StorageExecutorPlugin } from '@qlover/fe-corekit/storage';

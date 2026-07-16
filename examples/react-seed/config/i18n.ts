@@ -1,5 +1,5 @@
-import { routerPrefix, usePathLocaleRoute } from './seed.config';
 import type { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
+import { routerPrefix, usePathLocaleRoute } from './seed.config';
 import type { DetectorOptions } from 'i18next-browser-languagedetector';
 
 export const i18nLoadBasePath = '/locales/{{lng}}.json';

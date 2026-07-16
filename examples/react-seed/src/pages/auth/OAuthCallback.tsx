@@ -1,16 +1,16 @@
-import { i18nConfig } from '@config/i18n';
-import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
-import { routerPrefix } from '@config/seed.config';
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { LocaleLink } from '@/components/LocaleLink';
+import type { RouterRenderProps } from '@/components/RouterRenderComponent';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
 import { SeedOAuthClient } from '@/impls/SeedOAuthClient';
-import { UserService } from '@/impls/UserService';
-import type { RouterRenderProps } from '@/components/RouterRenderComponent';
 import type { OAuthLoginResult } from '@/impls/SeedOAuthClient';
+import { UserService } from '@/impls/UserService';
 import type { UserSchema } from '@/interfaces/schema/UserSchema';
+import { i18nConfig } from '@config/i18n';
+import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
+import { routerPrefix } from '@config/seed.config';
 
 /** Survives StrictMode remounts and router rebuilds for the same authorization code. */
 const completedOAuthCallbacks = new Set<string>();

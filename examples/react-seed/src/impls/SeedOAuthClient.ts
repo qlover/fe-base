@@ -1,11 +1,11 @@
-import { I } from '@config/ioc-identifier';
-import { routerPrefix } from '@config/seed.config';
 import { OAuthClient, OAuthUserInfo } from '@qlover/oauth-wrapper/client';
 import {
   UserCredential,
   UserRole,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
+import { I } from '@config/ioc-identifier';
+import { routerPrefix } from '@config/seed.config';
 import { inject, injectable } from './Container';
 import type { ReactSeedConfig } from './ReactSeedConfig';
 import type { LoggerInterface } from '@qlover/logger';

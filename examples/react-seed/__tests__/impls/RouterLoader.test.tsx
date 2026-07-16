@@ -1,8 +1,8 @@
 import { Suspense, lazy } from 'react';
 import { RouterLoader, type ComponentMap } from '@/impls/RouterLoader';
+import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 import NotFound from '@/pages/404';
 import NotFound500 from '@/pages/500';
-import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import type React from 'react';
 
