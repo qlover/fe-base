@@ -1,4 +1,4 @@
-import { LifecycleExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import { v4 as uuidv4 } from 'uuid';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { ServerConfig } from './ServerConfig';
@@ -9,8 +9,8 @@ import type {
   BootstrapServerContextOptions,
   BootstrapServerPlugin,
   BootstrapServerRoot,
-  ServerInterface
-} from './interfaces/ServerInterface';
+  BootstrapServerInterface
+} from './interfaces/BootstrapServerInterface';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
@@ -20,7 +20,10 @@ import type {
   BootstrapInterface
 } from '@qlover/corekit-bridge/bootstrap';
 import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
-import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
+import type {
+  ExecutorAsyncTask,
+  ExecutorError
+} from '@qlover/fe-corekit/executor';
 import type { LoggerInterface } from '@qlover/logger';
 
 type BootstrapServerIOC = IOCFunctionInterface<
@@ -29,7 +32,7 @@ type BootstrapServerIOC = IOCFunctionInterface<
 >;
 
 export class BootstrapServer
-  implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
+  implements BootstrapInterface<BootstrapServerPlugin>, BootstrapServerInterface
 {
   protected readonly executor: LifecycleExecutor<
     BootstrapServerContext,
@@ -40,6 +43,11 @@ export class BootstrapServer
   protected readonly IOC: BootstrapServerIOC;
 
   public readonly logger: LoggerInterface;
+
+  /** Correlation id for this server invocation (also stored in `request_logs.request_id`). */
+  public get requestId(): string {
+    return this.root.uuid;
+  }
 
   constructor(name?: string) {
     const serverConfig = new ServerConfig();

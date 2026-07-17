@@ -1,14 +1,19 @@
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import pluginNext from '@next/eslint-plugin-next';
 import qloverEslint from '@qlover/eslint-plugin';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import-x';
+import prettierPlugin from 'eslint-plugin-prettier';
+import reactHooks from 'eslint-plugin-react-hooks';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({ baseDirectory: __dirname });
 
 // Use a smaller tsconfig for ESLint to avoid parsing .next/types (faster lint)
 const eslintTsconfig = './tsconfig.eslint.json';
@@ -22,30 +27,39 @@ const eslintConfig = defineConfig([
     'vitests.config.ts',
     'vitest.config.*',
     'vite.config.*',
-    'next-env.d.ts'
+    'next-env.d.ts',
+    'eslint.config.mjs'
   ]),
-  ...compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:prettier/recommended'
-  ),
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
+      ecmaVersion: 2020,
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
+      parser: tseslint.parser,
       parserOptions: {
-        tsconfigRootDir: __dirname
+        tsconfigRootDir: __dirname,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true
+        }
       }
-    }
-  },
-  // Only register plugins not already provided by compat.extends (import, prettier come from compat)
-  {
+    },
     plugins: {
+      '@next/next': pluginNext,
+      'react-hooks': reactHooks,
       'unused-imports': unusedImports,
+      // Register as `import` so existing `import/*` rule names stay unchanged
+      import: importPlugin,
+      prettier: prettierPlugin,
       '@qlover-eslint': qloverEslint
     },
     settings: {
-      'import/resolver': {
+      'import-x/resolver': {
         typescript: {
           project: eslintTsconfig,
           alwaysTryTypes: false
@@ -56,6 +70,18 @@ const eslintConfig = defineConfig([
       }
     },
     rules: {
+      ...pluginNext.configs.recommended.rules,
+      ...pluginNext.configs['core-web-vitals'].rules,
+      ...reactHooks.configs.flat.recommended.rules,
+
+      // ESLint 10 / react-hooks 7 recommended additions — defer code cleanup
+      'preserve-caught-error': 'off',
+      'no-useless-assignment': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      // Previously quiet under eslint-config-next FlatCompat
+      'no-empty': 'off',
+      'no-empty-pattern': 'off',
+
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
       '@qlover-eslint/ts-class-override': 'off',
@@ -65,9 +91,7 @@ const eslintConfig = defineConfig([
           exclude: ['/^[A-Z]/']
         }
       ],
-      // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
       '@typescript-eslint/no-unused-vars': 'off',
-      // 强制使用 import type 导入类型
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
@@ -76,9 +100,7 @@ const eslintConfig = defineConfig([
           fixStyle: 'separate-type-imports'
         }
       ],
-      // 检查未使用的导入
       'unused-imports/no-unused-imports': 'error',
-      // 检查未使用的变量，但允许以下划线开头的变量
       'unused-imports/no-unused-vars': [
         'error',
         {
@@ -88,20 +110,18 @@ const eslintConfig = defineConfig([
           argsIgnorePattern: '^_'
         }
       ],
-      // import 语句排序规则
       'import/order': [
         'error',
         {
           groups: [
-            'builtin', // Node.js 内置模块
-            'external', // 第三方模块
-            'internal', // 内部模块（使用 alias 的导入）
-            ['parent', 'sibling'], // 父级和同级模块
-            'index', // 当前目录下的模块
-            'object', // 对象导入
-            'type' // 类型导入
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling'],
+            'index',
+            'object',
+            'type'
           ],
-          // pathGroups aligned with tsconfig.json paths
           pathGroups: [
             { pattern: '@/**', group: 'internal', position: 'after' },
             { pattern: '@shared/**', group: 'internal', position: 'after' },
@@ -110,14 +130,13 @@ const eslintConfig = defineConfig([
             { pattern: '@interfaces/**', group: 'internal', position: 'after' },
             { pattern: '@server/**', group: 'internal', position: 'after' }
           ],
-          // "newlines-between": "always", // 不同组之间空一行
+          pathGroupsExcludedImportTypes: [],
           alphabetize: {
-            order: 'asc', // 按字母顺序排序
-            caseInsensitive: true // 排序时忽略大小写
+            order: 'asc',
+            caseInsensitive: true
           }
         }
       ],
-      // Prettier 配置
       'prettier/prettier': [
         'error',
         {
@@ -126,14 +145,10 @@ const eslintConfig = defineConfig([
           endOfLine: 'lf'
         },
         {
-          // 仅用于单独部署时对 eslint prettier 插件自动查找 prettierrc 时报错
-          // 注意: vscode 等编辑器会失效, 作为单独项目开发时可以去掉
           usePrettierrc: false
         }
       ],
-      // 默认禁用 export default
       'import/no-default-export': 'error',
-      // Keep off to match previous behavior (was in typeCheckedRulesOff)
       '@typescript-eslint/no-empty-object-type': 'off',
       'import/no-unresolved': 'off'
     }
@@ -141,7 +156,6 @@ const eslintConfig = defineConfig([
   {
     files: ['src/**/*.tsx'],
     rules: {
-      // `{/* ... */}` is JSXExpressionContainer + JSXEmptyExpression in AST
       'no-restricted-syntax': [
         'error',
         {
@@ -152,7 +166,6 @@ const eslintConfig = defineConfig([
       ]
     }
   },
-  // Type checking only for ts-class-override (no recommendedTypeChecked for speed)
   {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],
     ignores: [
@@ -168,9 +181,11 @@ const eslintConfig = defineConfig([
       '**/__mocks__/**'
     ],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         project: eslintTsconfig,
-        tsconfigRootDir: __dirname
+        tsconfigRootDir: __dirname,
+        sourceType: 'module'
       }
     },
     plugins: { '@qlover-eslint': qloverEslint },
@@ -179,7 +194,6 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-empty-object-type': 'off'
     }
   },
-  // 为特定文件允许 default export
   {
     files: [
       'src/app/**/page.tsx',
@@ -195,7 +209,8 @@ const eslintConfig = defineConfig([
     rules: {
       'import/no-default-export': 'off'
     }
-  }
+  },
+  eslintConfigPrettier
 ]);
 
 export default eslintConfig;

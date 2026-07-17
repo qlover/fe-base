@@ -1,6 +1,6 @@
 'use client';
 
-import { type SubmitEvent, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useStore } from '@/uikit/hook/useStore';
@@ -36,7 +36,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
     agreeToTerms?: string;
   }>({});
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitError(null);
     setFieldErrors({});

@@ -6,7 +6,9 @@
     "src/**/*.tsx",
     "server/**/*.ts",
     "shared/**/*.ts",
-    "tools/**/*.ts"
+    "tools/**/*.ts",
+    "__tests__/**/*.ts",
+    "__tests__/**/*.tsx"
   ],
   "exclude": ["node_modules", ".next"]
 }

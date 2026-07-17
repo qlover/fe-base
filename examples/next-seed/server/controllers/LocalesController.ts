@@ -1,34 +1,31 @@
+import { ResourceSortClause } from '@qlover/corekit-bridge';
 import { inject, injectable } from '@shared/container';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import { ApiLocaleService } from '../services/ApiLocaleService';
-import type {
-  LocalesControllerInterface,
-  LocalesControllerJsonQuery
-} from '../interfaces/LocalesControllerInterface';
+
+export interface LocalesControllerJsonQuery {
+  locale: string;
+  orderBy?: ResourceSortClause;
+}
 
 @injectable()
-export class LocalesController implements LocalesControllerInterface {
+export class LocalesController {
   constructor(
     @inject(ApiLocaleService)
     protected apiLocaleService: ApiLocaleService
   ) {}
 
-  /**
-   * @override
-   */
-  public async json(
-    query: LocalesControllerJsonQuery
-  ): Promise<Record<string, string>> {
-    const locale = query.locale as LocaleType;
+  public async json(query: unknown): Promise<Record<string, string>> {
+    const locale = (query as LocalesControllerJsonQuery).locale;
 
-    if (!locale || !i18nConfig.supportedLngs.includes(locale)) {
+    if (!locale || !i18nConfig.supportedLngs.includes(locale as LocaleType)) {
       return {};
     }
 
     const result = await this.apiLocaleService.getLocalesJson(
       locale,
-      query.orderBy
+      (query as LocalesControllerJsonQuery).orderBy
     );
 
     return result;

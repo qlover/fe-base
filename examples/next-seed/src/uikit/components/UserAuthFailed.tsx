@@ -49,17 +49,13 @@ export function UserAuthFailed({ error }: UserAuthFailedProps) {
         >
           {title}
         </h2>
-        <p
-          className="text-sm mb-4 opacity-90"
-          style={{ color: 'var(--fe-color-text-secondary,inherit)' }}
-        >
+        <p className="text-sm mb-4 opacity-90  text-secondary-text">
           {description}
         </p>
         {error != null && (
           <p
             data-testid="UserAuthFailedError"
-            className="text-xs mb-4 font-mono truncate max-w-full opacity-75"
-            style={{ color: 'var(--fe-color-text-tertiary,inherit)' }}
+            className="text-md text-red-600 mb-4 font-mono truncate max-w-full"
             title={String(error)}
           >
             {String(error)}

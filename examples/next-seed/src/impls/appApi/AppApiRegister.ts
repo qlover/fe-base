@@ -1,8 +1,5 @@
-import {
-  Base64Serializer,
-  RequestPlugin,
-  ResponsePlugin
-} from '@qlover/fe-corekit';
+import { RequestPlugin, ResponsePlugin } from '@qlover/fe-corekit/request';
+import { Base64Serializer } from '@qlover/fe-corekit/serializer';
 import { DialogErrorPlugin } from '@/impls/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/impls/RequestEncryptPlugin';
 import { StringEncryptor } from '@shared/StringEncryptor';
@@ -15,7 +12,7 @@ import type {
   IOCContainerInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
-import type { SerializerIneterface } from '@qlover/fe-corekit';
+import type { SerializerIneterface } from '@qlover/fe-corekit/serializer';
 
 export class AppApiRegister implements IOCRegisterInterface<IOCContainerInterface> {
   constructor(protected serializer: SerializerIneterface) {}

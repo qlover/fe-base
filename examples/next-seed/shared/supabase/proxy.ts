@@ -1,9 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { ROUTE_LOGIN, isPublicPath } from '@config/route';
+import { isPublicPath, redirectToPath } from '@config/route';
 import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
-export async function updateSession(request: NextRequest) {
+export async function supabaseProxySession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request
   });
@@ -55,10 +55,7 @@ export async function updateSession(request: NextRequest) {
   console.log('Proxy(supabase) logged?', !!user, user?.email);
 
   if (!user && !isPublicPath(pathname)) {
-    // no user on protected route, redirect to login
-    const url = request.nextUrl.clone();
-    url.pathname = ROUTE_LOGIN;
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(redirectToPath(request));
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

@@ -1,4 +1,4 @@
-import type { ExecutorError } from '@qlover/fe-corekit';
+import type { ExecutorError } from '@qlover/fe-corekit/executor';
 
 export type ValidationResult<T> =
   | ValidationResultSuccess<T>

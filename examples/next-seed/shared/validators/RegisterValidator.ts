@@ -1,4 +1,4 @@
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { V_LOGIN_PARAMS_REQUIRED } from '@config/i18n-identifier/common/validators';
 import {
   registerUsernameSchema,

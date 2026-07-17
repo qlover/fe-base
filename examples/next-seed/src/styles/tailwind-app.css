@@ -1,0 +1,14 @@
+@layer theme, base, antd, components, utilities;
+
+/* App Router: skip Pages-only UI to keep /en CSS smaller. */
+@import 'tailwindcss' source(none);
+@import './generated/theme.css';
+
+@source '../../shared/config/button.ts';
+@source '../../shared/config/component.ts';
+@source '../app';
+@source '../uikit/components';
+@source '../uikit/components-app';
+@source '../uikit/context';
+@source '../uikit/hook';
+@source '../uikit/utils';

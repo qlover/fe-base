@@ -55,6 +55,7 @@ export default async function LoginPage(props: PageParamsProps) {
         title: tt.title,
         adminTitle: tt.adminTitle
       }}
+      showHeaderNav={false}
       showAuthButton={false}
       headerHref=""
       mainProps={{

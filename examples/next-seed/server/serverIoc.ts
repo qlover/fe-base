@@ -4,9 +4,11 @@ import {
   type IOCContainerInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
+import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { SupabaseBridge } from './repositorys/SupabaseBridge';
+import { SupabaseAuthProvider } from './providers/SupabaseAuthProvider';
+import { ServerContext } from './utils/ServerContext';
 import type { LoggerInterface } from '@qlover/logger';
 
 type ServerIocOptions = {
@@ -23,7 +25,9 @@ export function createServerIoc(
   logger: LoggerInterface,
   config: SeedServerConfigInterface
 ) {
-  const ioc = createIOCFunction(new ReflectionIOCContainer());
+  const ioc = createIOCFunction<IOCIdentifierMapServer>(
+    new ReflectionIOCContainer()
+  );
 
   ServerIocRegister.register(ioc.implemention!, ioc, {
     logger,
@@ -44,7 +48,7 @@ const ServerIocRegister: IOCRegisterInterface<
 
     ioc.bind(I.Logger, logger);
     ioc.bind(I.AppConfig, serverConfig);
-
-    ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
+    ioc.bind(I.ServerContextInterface, ioc.get(ServerContext));
+    ioc.bind(I.AuthProviderInterface, ioc.get(SupabaseAuthProvider));
   }
 };

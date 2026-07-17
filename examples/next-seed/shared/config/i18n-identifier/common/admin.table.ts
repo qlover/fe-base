@@ -67,3 +67,24 @@ export const COMMON_ADMIN_TABLE_DELETE = 'common:admin_table__delete';
  * @localEn Detail
  */
 export const COMMON_ADMIN_TABLE_DETAIL = 'common:admin_table__detail';
+
+/**
+ * @description Table pagination previous page
+ * @localZh 上一页
+ * @localEn Prev
+ */
+export const COMMON_ADMIN_TABLE_PREV = 'common:admin_table__prev';
+
+/**
+ * @description Table pagination next page
+ * @localZh 下一页
+ * @localEn Next
+ */
+export const COMMON_ADMIN_TABLE_NEXT = 'common:admin_table__next';
+
+/**
+ * @description Table page size selector (accessibility label)
+ * @localZh 每页条数
+ * @localEn Page size
+ */
+export const COMMON_ADMIN_TABLE_PAGE_SIZE = 'common:admin_table__page_size';

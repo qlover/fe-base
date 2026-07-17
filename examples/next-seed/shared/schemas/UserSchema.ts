@@ -11,7 +11,6 @@ export const userSchema = z.object({
   id: z.string(),
   role: z.enum(UserRole),
   email: z.email(),
-  password: z.string(),
   /**
    * 加密的token, 包含token, 过期时间
    */
@@ -26,9 +25,3 @@ export type UserSchema = z.infer<typeof userSchema>;
 export type UserCredential = {
   credential_token: string;
 };
-
-export function isWebUserSchema(
-  value: unknown
-): z.ZodSafeParseResult<Omit<UserSchema, 'password'>> {
-  return userSchema.omit({ password: true }).safeParse(value);
-}

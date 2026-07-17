@@ -15,6 +15,7 @@
     "incremental": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "types": ["vitest/globals", "vite/client"],
     "plugins": [
       {
         "name": "next"
@@ -31,13 +32,16 @@
   },
   "include": [
     "next-env.d.ts",
+    "vitest-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "server/**/*.ts",
     "shared/**/*.ts",
     "tools/**/*.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    "__tests__/**/*.ts",
+    "__tests__/**/*.tsx",
+    ".next/dev/types/**/*.ts",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next/types"]
 }

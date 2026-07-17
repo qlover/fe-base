@@ -2,6 +2,9 @@ import type { ThemeConfig } from 'antd';
 
 /**
  * @type {import('@qlover/corekit-bridge').ThemeConfig}
+ *
+ * App shell uses next-themes fields. `antdTheme` is only consumed by demo-ui
+ * (AntdDemoProvider), not the global ClientRootProvider.
  */
 export const themeConfig = {
   domAttribute: 'data-theme',

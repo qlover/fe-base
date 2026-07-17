@@ -1,19 +1,19 @@
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import {
-  LifecycleExecutor,
   RequestAdapterFetch,
   RequestExecutor
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/request';
 import type { RequestEncryptPluginProps } from '@/impls/RequestEncryptPlugin';
 import { injectable } from '@shared/container';
 import type { AppApiResult } from '@interfaces/AppApiInterface';
 import { AppApiPluginOptions } from './AppApiPlugin';
 import type { DialogErrorConfig } from '../DialogErrorPlugin';
+import type { AborterConfig } from '@qlover/fe-corekit/aborter';
+import type { ExecutorContextInterface } from '@qlover/fe-corekit/executor';
 import type {
-  AborterConfig,
-  ExecutorContextInterface,
   RequestAdapterConfig,
   RequestAdapterResponse
-} from '@qlover/fe-corekit';
+} from '@qlover/fe-corekit/request';
 
 export interface RequestTransactionInterface<Request, Response> {
   request: Request;

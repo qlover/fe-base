@@ -1,4 +1,3 @@
-import { isFunction } from 'lodash';
 import { Loading } from '../components/Loading';
 import { useUserAuth } from '../hook/useUserAuth';
 import type { ReactNode } from 'react';
@@ -19,7 +18,9 @@ export function WithUserAuth({
   }
 
   if (error !== null || !success) {
-    return isFunction(failedElement) ? failedElement({ error }) : failedElement;
+    return typeof failedElement === 'function'
+      ? failedElement({ error })
+      : failedElement;
   }
 
   return children;

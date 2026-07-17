@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { loginProviders } from '@config/common';
 import {
   V_EMAIL_INVALID,
   V_PASSWORD_MIN_LENGTH,
@@ -20,3 +21,19 @@ export const loginSchema = z.object({
 });
 
 export type LoginSchema = z.infer<typeof loginSchema>;
+
+export const loginWithProviderSchema = z.object({
+  provider: z.enum(Object.values(loginProviders))
+});
+
+export const loginWithProviderCallbackSchema = z.object({
+  code: z.string(),
+  next: z.string().optional(),
+  origin: z.string().optional()
+});
+
+export type LoginWithProviderCallbackSchema = z.infer<
+  typeof loginWithProviderCallbackSchema
+>;
+
+export type LoginWithProviderSchema = z.infer<typeof loginWithProviderSchema>;

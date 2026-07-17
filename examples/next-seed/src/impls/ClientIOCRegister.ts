@@ -1,9 +1,9 @@
 import { CookieStorage } from '@qlover/corekit-bridge';
-import { Base64Serializer, StorageExecutor } from '@qlover/fe-corekit';
+import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import { I18nService } from '@/impls/I18nService';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
-import { ZustandCounterService } from '@/impls/ZustandCounterService';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { cookiesConfig } from '@config/cookies';
 import { IOCIdentifier as I } from '@config/ioc-identifiter';
@@ -37,7 +37,6 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.I18nServiceInterface, new I18nService());
     ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
-    ioc.bind(I.ZustandCounterServiceInterface, new ZustandCounterService());
 
     new AppApiRegister(JSON).register(ioc);
   }

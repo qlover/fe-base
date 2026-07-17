@@ -1,78 +1,83 @@
+import { isPlainObject, pick } from 'lodash-es';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { AppApiResult } from '@interfaces/AppApiInterface';
+import { I } from '@config/ioc-identifiter';
+import type {
+  AppApiResult,
+  AppApiSuccessInterface
+} from '@interfaces/AppApiInterface';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { RequestLogsRepository } from '@server/repositorys/RequestLogsRepository';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
-import { ApiResultFactory } from './utils/ApiResultFactory';
+import { NextApiHandler } from './utils/NextApiHandler';
 import type {
   BootstrapServerContextOptions,
   BootstrapServerPlugin
-} from './interfaces/ServerInterface';
-import type { UserLoginContext } from './interfaces/UserServiceInterface';
+} from './interfaces/BootstrapServerInterface';
+import type { ServerContextInterface } from './interfaces/ServerContextInterface';
+import type { ResultHandlerInterface } from './utils/NextApiHandler';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
+import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 
+export type NextApiServerContext = {
+  name?: string;
+  nextRequest?: NextRequest;
+  /**
+   * @default 'http.request'
+   */
+  event_type: string;
+};
+
+type RunWithInit = {
+  successHeaders?: HeadersInit;
+  errorHeaders?: HeadersInit;
+  httpStatus?: number;
+};
+type RunWithTask<Result> = ExecutorAsyncTask<
+  Result | AppApiResult<Result>,
+  BootstrapServerContextOptions
+>;
+
+function isNextApiServerContext(
+  value: unknown
+): value is Partial<NextApiServerContext> {
+  return isPlainObject(value);
+}
 export class NextApiServer extends BootstrapServer {
-  private readonly nextRequest?: NextRequest;
+  protected resultHandler: ResultHandlerInterface;
+  protected serverContext: ServerContextInterface;
+  protected nextRequest?: NextRequest;
 
-  /**
-   * @param name Optional server name (logging / IOC scope).
-   * @param nextRequest When set, {@link run} / {@link runWithJson} record one `request_logs` row per invocation.
-   */
-  constructor(name?: string, nextRequest?: NextRequest) {
-    super(name);
-    this.nextRequest = nextRequest;
-  }
+  constructor(name?: string, nextRequest?: NextRequest);
+  constructor(context?: Partial<NextApiServerContext>);
 
-  protected getLoginContext(req: NextRequest): UserLoginContext {
-    const forwarded = req.headers.get('x-forwarded-for');
-    const ip =
-      forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
-    return {
-      userAgent: req.headers.get('user-agent'),
-      ipAddress: ip
-    };
-  }
+  constructor(
+    nameOrContext?: string | Partial<NextApiServerContext>,
+    nextRequest?: NextRequest
+  ) {
+    let context: NextApiServerContext;
+    if (isNextApiServerContext(nameOrContext)) {
+      const { name } = nameOrContext ?? {};
 
-  /**
-   * Adds `parameters.ctx` from {@link getLoginContext} when constructed with `NextRequest`.
-   */
-  protected override getContext(): BootstrapServerContextOptions {
-    const base = super.getContext();
-    if (this.nextRequest === undefined) {
-      return base;
+      super(name);
+      context = {
+        ...nameOrContext,
+        event_type: 'http.request'
+      };
+    } else {
+      super(nameOrContext);
+      context = {
+        name: nameOrContext,
+        nextRequest,
+        event_type: 'http.request'
+      };
     }
-    return { ...base, ctx: this.getLoginContext(this.nextRequest) };
-  }
+    this.nextRequest = context.nextRequest;
+    this.serverContext = this.IOC(I.ServerContextInterface);
+    this.resultHandler = new NextApiHandler(this.logger, this.serverContext);
 
-  protected tryLogHttpApiRequest(
-    req: NextRequest,
-    result: AppApiResult<unknown>,
-    durationMs: number
-  ): void {
-    const { userAgent, ipAddress } = this.getLoginContext(req);
-    const success = result.success === true;
-    const httpStatus = success ? 200 : 400;
-    const errorCode = success ? null : result.id;
-    const errorMessage = success ? null : (result.message ?? null);
-    const correlationId = result.requestId;
-
-    void this.IOC(RequestLogsRepository).insertEvent({
-      event_category: 'api',
-      event_type: 'http.request',
-      success,
-      request_id: correlationId?.trim() ? correlationId : null,
-      payload: {
-        http_method: req.method,
-        http_path: req.nextUrl.pathname,
-        http_status: httpStatus,
-        duration_ms: durationMs,
-        user_agent: userAgent,
-        ip_address: ipAddress,
-        correlation_id: correlationId,
-        error_code: errorCode,
-        error_message: errorMessage
-      }
+    this.serverContext.reset({
+      name: context.name,
+      uid: this.root.uuid,
+      event_type: context.event_type
     });
   }
 
@@ -82,45 +87,82 @@ export class NextApiServer extends BootstrapServer {
       BootstrapServerContextOptions
     >
   ): Promise<AppApiResult<Result>> {
-    const started = performance.now();
+    if (this.nextRequest) {
+      this.serverContext.changeState({ request: this.nextRequest });
+    }
+
     const result = await this.execNoError(task);
 
-    const options = {
-      logger: this.logger,
-      config: this.IOC('SeedConfigInterface'),
-      requestId: this.root.uuid
-    };
-
-    let envelope: AppApiResult<Result>;
-    if (ApiResultFactory.isAppApiResult(result)) {
-      envelope = result;
-    } else if (result instanceof Error) {
-      envelope = ApiResultFactory.createApiWithError(result, options);
-    } else {
-      envelope = ApiResultFactory.createApiSuccess(result, options);
-    }
-
-    if (this.nextRequest) {
-      const durationMs = Math.round(performance.now() - started);
-      this.tryLogHttpApiRequest(this.nextRequest, envelope, durationMs);
-    }
+    const envelope = this.resultHandler.handler<Result>(
+      result,
+      this.serverContext
+    );
 
     return envelope;
   }
 
+  protected returnJson<Result>(
+    result: AppApiResult<Result>,
+    init?: RunWithInit
+  ): NextResponse {
+    const contextHttpStatus = this.serverContext.getState('httpStatus');
+
+    if (!result.success) {
+      return NextResponse.json(this.getSafeAppApiResult(result), {
+        status: contextHttpStatus ?? 400,
+        headers: init?.errorHeaders
+      });
+    }
+
+    return NextResponse.json(this.getSafeAppApiResult(result), {
+      headers: init?.successHeaders
+    });
+  }
+
   public async runWithJson<Result>(
-    task?: ExecutorAsyncTask<
-      Result | AppApiResult<Result>,
-      BootstrapServerContextOptions
-    >
+    task?: RunWithTask<Result>,
+    init?: RunWithInit
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+    return this.returnJson(result, init);
+  }
+
+  /**
+   * 支持在运行时重定向接口
+   *
+   * 如果没有发生重定向，则会默认返回 json
+   *
+   * @param task
+   * @param init
+   * @returns
+   */
+  public async runWithRedirect<Result>(
+    task?: RunWithTask<Result>,
+    init?: RunWithInit
   ): Promise<NextResponse> {
     const result = await this.run(task);
 
-    if (!result.success) {
-      return NextResponse.json(result, { status: 400 });
+    const contextHttpStatus = this.serverContext.getState('httpStatus');
+
+    const redirectUrl = this.serverContext.getState('redirectUrl');
+    if (redirectUrl) {
+      return NextResponse.redirect(redirectUrl, {
+        status: contextHttpStatus ?? 307,
+        headers: init?.errorHeaders
+      });
     }
 
-    return NextResponse.json(result);
+    return this.returnJson(result, init);
+  }
+
+  protected getSafeAppApiResult<T>(result: AppApiResult<T>): AppApiResult<T> {
+    return pick(result, [
+      'success',
+      'id',
+      'requestId',
+      'message',
+      'data'
+    ]) as AppApiSuccessInterface<T>;
   }
 
   public override getPlugins(
