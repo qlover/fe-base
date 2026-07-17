@@ -60,6 +60,19 @@ export function shouldProcessWorkspace(
   return !(ignoreNonUpdatedPackages && workspace.dependencyRelease);
 }
 
+/**
+ * Whether a workspace is a private package (`package.json#private === true`).
+ *
+ * Private packages are skipped by `changeset publish` (no npm publish / no
+ * automatic git tag). fe-release still versions them and creates/pushes tags
+ * via ChangesetVersion private-tag ensure step.
+ */
+export function isPrivateWorkspace(
+  workspace: Pick<WorkspaceInterface, 'packageJson'>
+): boolean {
+  return workspace.packageJson?.private === true;
+}
+
 export function readJson(path: string): Record<string, unknown> {
   const packageJsonContent = readFileSync(path, 'utf-8');
   return JSON.parse(packageJsonContent);

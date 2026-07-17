@@ -140,8 +140,19 @@ describe('ChangesetVersion Plugin', () => {
 
   describe('pushWorkspaceReleaseTags', () => {
     it('should push tagName from synced workspaces', async () => {
-      const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('');
+      const exec = vi
+        .spyOn(plugin.shell, 'exec')
+        .mockImplementation((command) => {
+          if (
+            typeof command === 'string' &&
+            command.includes('git for-each-ref')
+          ) {
+            return Promise.resolve('pkg-a@1.0.1\npkg-b@2.0.0');
+          }
+          return Promise.resolve('');
+        });
 
+      // @ts-expect-error access protected method for testing
       await plugin.pushWorkspaceReleaseTags([
         {
           ...workspace,
@@ -164,12 +175,172 @@ describe('ChangesetVersion Plugin', () => {
       ]);
     });
 
+    it('should push private workspace tags when they exist locally', async () => {
+      const exec = vi
+        .spyOn(plugin.shell, 'exec')
+        .mockImplementation((command) => {
+          if (
+            typeof command === 'string' &&
+            command.includes('git for-each-ref')
+          ) {
+            return Promise.resolve(
+              'pkg-a@1.0.1\nexamples/browser-plugin-seed@1.2.0'
+            );
+          }
+          return Promise.resolve('');
+        });
+
+      // @ts-expect-error access protected method for testing
+      await plugin.pushWorkspaceReleaseTags([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.1'
+        },
+        {
+          ...workspace,
+          name: 'examples/browser-plugin-seed',
+          path: 'examples/browser-plugin-seed',
+          packageJson: {
+            name: 'examples/browser-plugin-seed',
+            version: '1.2.0',
+            private: true
+          },
+          tagName: 'examples/browser-plugin-seed@1.2.0'
+        }
+      ]);
+
+      expect(exec).toHaveBeenCalledWith([
+        'git',
+        'push',
+        'origin',
+        '"refs/tags/pkg-a@1.0.1"',
+        '"refs/tags/examples/browser-plugin-seed@1.2.0"'
+      ]);
+    });
+
+    it('should skip tags that do not exist locally', async () => {
+      const exec = vi
+        .spyOn(plugin.shell, 'exec')
+        .mockImplementation((command) => {
+          if (
+            typeof command === 'string' &&
+            command.includes('git for-each-ref')
+          ) {
+            return Promise.resolve('pkg-a@1.0.1');
+          }
+          return Promise.resolve('');
+        });
+
+      // @ts-expect-error access protected method for testing
+      await plugin.pushWorkspaceReleaseTags([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.1'
+        },
+        {
+          ...workspace,
+          name: 'pkg-c',
+          path: 'packages/c',
+          packageJson: { name: 'pkg-c', version: '3.0.0' },
+          tagName: 'pkg-c@3.0.0'
+        }
+      ]);
+
+      expect(exec).toHaveBeenCalledWith([
+        'git',
+        'push',
+        'origin',
+        '"refs/tags/pkg-a@1.0.1"'
+      ]);
+      expect(exec).not.toHaveBeenCalledWith(
+        expect.arrayContaining(['"refs/tags/pkg-c@3.0.0"'])
+      );
+    });
+
     it('should skip push when no tagName is present', async () => {
       const exec = vi.spyOn(plugin.shell, 'exec').mockResolvedValue('');
 
+      // @ts-expect-error access protected method for testing
       await plugin.pushWorkspaceReleaseTags([workspace]);
 
       expect(exec).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ensurePrivateReleaseTags', () => {
+    it('should create local tags for private packages when missing', async () => {
+      const exec = vi
+        .spyOn(plugin.shell, 'exec')
+        .mockImplementation((command) => {
+          if (
+            typeof command === 'string' &&
+            command.includes('git for-each-ref')
+          ) {
+            return Promise.resolve('pkg-a@1.0.1');
+          }
+          return Promise.resolve('');
+        });
+
+      // @ts-expect-error access protected method for testing
+      await plugin.ensurePrivateReleaseTags([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.1'
+        },
+        {
+          ...workspace,
+          name: 'examples/browser-plugin-seed',
+          path: 'examples/browser-plugin-seed',
+          packageJson: {
+            name: 'examples/browser-plugin-seed',
+            version: '1.2.0',
+            private: true
+          },
+          tagName: 'examples/browser-plugin-seed@1.2.0'
+        }
+      ]);
+
+      expect(exec).toHaveBeenCalledWith([
+        'git',
+        'tag',
+        'examples/browser-plugin-seed@1.2.0'
+      ]);
+      expect(exec).not.toHaveBeenCalledWith(['git', 'tag', 'pkg-a@1.0.1']);
+    });
+
+    it('should not recreate private tags that already exist', async () => {
+      const exec = vi
+        .spyOn(plugin.shell, 'exec')
+        .mockImplementation((command) => {
+          if (
+            typeof command === 'string' &&
+            command.includes('git for-each-ref')
+          ) {
+            return Promise.resolve('examples/browser-plugin-seed@1.2.0');
+          }
+          return Promise.resolve('');
+        });
+
+      // @ts-expect-error access protected method for testing
+      await plugin.ensurePrivateReleaseTags([
+        {
+          ...workspace,
+          name: 'examples/browser-plugin-seed',
+          path: 'examples/browser-plugin-seed',
+          packageJson: {
+            name: 'examples/browser-plugin-seed',
+            version: '1.2.0',
+            private: true
+          },
+          tagName: 'examples/browser-plugin-seed@1.2.0'
+        }
+      ]);
+
+      expect(exec).not.toHaveBeenCalledWith([
+        'git',
+        'tag',
+        'examples/browser-plugin-seed@1.2.0'
+      ]);
     });
   });
 

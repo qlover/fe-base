@@ -13,9 +13,10 @@
  * - **onSuccess**: run version and/or publish flow based on `mode`
  *
  * Publish flow (`mode: 'publish'` or second half of `'both'`):
- * 1. Run `changeset publish` (npm publish + local `git tag` only)
+ * 1. Run `changeset publish` (npm publish + local `git tag` for public packages)
  * 2. Sync workspaces from disk so `tagName` is set from the release version
- * 3. Push `workspace.tagName` refs to `origin`
+ * 3. Create local tags for `private` packages (changesets skips tagging them)
+ * 4. Push `workspace.tagName` refs that exist locally to `origin`
  *
  * Version flow (`mode: 'version'` or first half of `'both'`):
  * 1. Write `.changeset/*.md` files for directly changed packages only
@@ -57,6 +58,7 @@ import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 import type { WorkspaceInterface } from '../interface/WorkspaceInterface';
 import {
   createWorkspaceValue,
+  isPrivateWorkspace,
   readWorkspacePackageFromDisk,
   shouldProcessWorkspace,
   workspaceVersionSummary,
@@ -359,14 +361,26 @@ export default class ChangesetVersion extends ScriptPlugin<
       // Publish does not bump package.json; tagName comes from the current version.
       const preview = this.mergeWorkspaces(workspaces);
       this.context.setWorkspaces(preview);
-      const previewTags = preview
+      const previewTags = this.collectPushableReleaseTags(preview);
+      const privateTags = preview
         .filter(
           (workspace) =>
             this.shouldProcessWorkspace(workspace) &&
             !workspace.dependencyRelease &&
-            workspace.tagName
+            isPrivateWorkspace(workspace) &&
+            !!workspace.tagName
         )
         .map((workspace) => workspace.tagName as string);
+
+      if (privateTags.length > 0) {
+        this.logDryRun(
+          `Would create local tag(s) for private package(s):\n${[
+            ...new Set(privateTags)
+          ]
+            .map((tag) => `  ${tag}`)
+            .join('\n')}`
+        );
+      }
 
       this.logDryRun(
         previewTags.length === 0
@@ -388,22 +402,29 @@ export default class ChangesetVersion extends ScriptPlugin<
       this.syncWorkspaces(workspaces);
     }
 
+    const syncedWorkspaces = this.context.workspaces ?? workspaces;
+
+    await this.step({
+      label: 'Create Private Package Tags',
+      task: () => this.ensurePrivateReleaseTags(syncedWorkspaces)
+    });
+
     await this.step({
       label: 'Push Release Tags',
-      task: () =>
-        this.pushWorkspaceReleaseTags(this.context.workspaces ?? workspaces)
+      task: () => this.pushWorkspaceReleaseTags(syncedWorkspaces)
     });
   }
 
   /**
-   * Push release tags from synced workspaces' `tagName` fields.
+   * Collect tag names that should be pushed after `changeset publish`.
    *
-   * `changeset publish` only creates tags locally. After {@link syncWorkspaces},
-   * each publishable workspace should already have `tagName` (e.g. `pkg@1.2.3`).
+   * Includes public packages (tagged by changesets) and private packages
+   * (tagged by {@link ensurePrivateReleaseTags}). Skips dependency-release
+   * workspaces.
    */
-  protected async pushWorkspaceReleaseTags(
+  protected collectPushableReleaseTags(
     workspaces: WorkspaceInterface[]
-  ): Promise<void> {
+  ): string[] {
     const tags = workspaces
       .filter(
         (workspace) =>
@@ -413,7 +434,75 @@ export default class ChangesetVersion extends ScriptPlugin<
       )
       .map((workspace) => workspace.tagName as string);
 
-    const uniqueTags = [...new Set(tags)];
+    return [...new Set(tags)];
+  }
+
+  /**
+   * List local git tag names (short refs under `refs/tags/`).
+   */
+  protected async listLocalTags(): Promise<Set<string>> {
+    const output = await this.shell.exec(
+      'git for-each-ref --format=%(refname:short) refs/tags/',
+      { dryRun: false, silent: true }
+    );
+
+    const tags = output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    return new Set(tags);
+  }
+
+  /**
+   * Create local git tags for private packages after `changeset publish`.
+   *
+   * Changesets skips npm publish and tagging for `private: true` packages.
+   * Release still needs those tags as changelog baselines, so create them here.
+   */
+  protected async ensurePrivateReleaseTags(
+    workspaces: WorkspaceInterface[]
+  ): Promise<void> {
+    const privateWorkspaces = workspaces.filter(
+      (workspace) =>
+        this.shouldProcessWorkspace(workspace) &&
+        !workspace.dependencyRelease &&
+        isPrivateWorkspace(workspace) &&
+        !!workspace.tagName
+    );
+
+    if (privateWorkspaces.length === 0) {
+      return;
+    }
+
+    const localTags = await this.listLocalTags();
+
+    for (const workspace of privateWorkspaces) {
+      const tagName = workspace.tagName as string;
+      if (localTags.has(tagName)) {
+        this.logger.debug(`Private package tag already exists: ${tagName}`);
+        continue;
+      }
+
+      this.logger.info(
+        `Create local release tag for private package: ${tagName}`
+      );
+      await this.shell.exec(['git', 'tag', tagName]);
+      localTags.add(tagName);
+    }
+  }
+
+  /**
+   * Push release tags from synced workspaces' `tagName` fields.
+   *
+   * After {@link syncWorkspaces} and {@link ensurePrivateReleaseTags}, push
+   * tags that exist as local refs. Missing public-package tags are skipped
+   * (changeset may have skipped publish); they are not invented here.
+   */
+  protected async pushWorkspaceReleaseTags(
+    workspaces: WorkspaceInterface[]
+  ): Promise<void> {
+    const uniqueTags = this.collectPushableReleaseTags(workspaces);
 
     if (uniqueTags.length === 0) {
       this.logger.warn(
@@ -422,8 +511,27 @@ export default class ChangesetVersion extends ScriptPlugin<
       return;
     }
 
+    const localTags = await this.listLocalTags();
+    const existingTags = uniqueTags.filter((tag) => localTags.has(tag));
+    const missingTags = uniqueTags.filter((tag) => !localTags.has(tag));
+
+    if (missingTags.length > 0) {
+      this.logger.warn(
+        `Skip push for missing local tag(s):\n${missingTags
+          .map((tag) => `  ${tag}`)
+          .join('\n')}`
+      );
+    }
+
+    if (existingTags.length === 0) {
+      this.logger.warn(
+        'No local release tags found to push after publish; skip tag push'
+      );
+      return;
+    }
+
     this.logger.info(
-      `Pushing ${uniqueTags.length} release tag(s) to origin:\n${uniqueTags.map((tag) => `  ${tag}`).join('\n')}`
+      `Pushing ${existingTags.length} release tag(s) to origin:\n${existingTags.map((tag) => `  ${tag}`).join('\n')}`
     );
 
     // Quote refs: Shell.exec runs through /bin/sh after joining argv.
@@ -431,7 +539,7 @@ export default class ChangesetVersion extends ScriptPlugin<
       'git',
       'push',
       'origin',
-      ...uniqueTags.map((tag) => `"refs/tags/${tag}"`)
+      ...existingTags.map((tag) => `"refs/tags/${tag}"`)
     ]);
   }
 
@@ -552,8 +660,7 @@ export default class ChangesetVersion extends ScriptPlugin<
       // Always derive tagName from the on-disk release version.
       // Version mode: disk was bumped (newVersion may differ from version).
       // Publish mode: disk is already the release version (newVersion === version).
-      const releaseVersion =
-        newWorkspace.newVersion || newWorkspace.version;
+      const releaseVersion = newWorkspace.newVersion || newWorkspace.version;
       if (releaseVersion) {
         newWorkspace.tagName = this.generateTagName({
           ...newWorkspace,

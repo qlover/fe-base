@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { readFileSync } from 'fs';
 import {
   createWorkspaceValue,
+  isPrivateWorkspace,
   readJson,
   resolveWorkspacePackagePath,
   shouldProcessWorkspace,
@@ -71,6 +72,16 @@ describe('createWorkspace', () => {
 
     it('should skip dependency-release when ignoring non-updated packages', () => {
       expect(shouldProcessWorkspace(workspace, true)).toBe(false);
+    });
+  });
+
+  describe('isPrivateWorkspace', () => {
+    it('should detect private packages', () => {
+      expect(isPrivateWorkspace({ packageJson: { private: true } })).toBe(true);
+      expect(isPrivateWorkspace({ packageJson: { private: false } })).toBe(
+        false
+      );
+      expect(isPrivateWorkspace({ packageJson: {} })).toBe(false);
     });
   });
 
