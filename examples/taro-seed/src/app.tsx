@@ -7,7 +7,6 @@ import { useState, type PropsWithChildren } from 'react';
 import { I18nProvider } from './contexts/I18nProvider';
 import { IOCContext } from './contexts/IOCContext';
 import { logger } from './globals';
-import { BootstrapClient } from './impls/BootstrapClient';
 import { IOCIdentifierRegister } from './impls/IOCIdentifierRegister';
 import type { IOCIdentifierMap } from './config/ioc-identifier';
 import './styles/index.css';
@@ -22,7 +21,9 @@ function App({ children }: PropsWithChildren<unknown>) {
   });
 
   useLaunch(() => {
-    new BootstrapClient(IOC).startup(globalThis);
+    void import('./bootstrapApp').then(({ bootstrapApp }) =>
+      bootstrapApp(IOC, globalThis)
+    );
   });
 
   return (
