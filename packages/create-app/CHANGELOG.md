@@ -1,5 +1,17 @@
 # @qlover/create-app
 
+## 3.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **create-app:** Update package.json files across examples to enhance descriptions and improve clarity ([7cadb9b](https://github.com/qlover/fe-base/commit/7cadb9b48b54658184a93a9a68e96aa725cd31dd)) ([#661](https://github.com/qlover/fe-base/pull/661))
+
+### Patch Changes
+
+- Update dependency **@qlover/scripts-context** from `2.3.3` to `2.3.3`
+
 ## 3.2.3
 
 ### Patch Changes

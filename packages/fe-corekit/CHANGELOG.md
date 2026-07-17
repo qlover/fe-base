@@ -1,5 +1,15 @@
 # @qlover/fe-corekit
 
+## 3.4.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **fe-corekit:** enhance request handling and configuration management ([ad017e9](https://github.com/qlover/fe-base/commit/ad017e93c6f4b17ecf6f739a9fc7f851968248c7)) ([#657](https://github.com/qlover/fe-base/pull/657))
+
+- **next-oauth:** update imports from fe-corekit for improved module structure ([e6ef3c6](https://github.com/qlover/fe-base/commit/e6ef3c6117849afdfa477c6c8ae441f87fde8932)) ([#657](https://github.com/qlover/fe-base/pull/657))
+
 ## 3.3.0
 
 ### Minor Changes
