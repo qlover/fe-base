@@ -66,6 +66,9 @@ describe('Github Plugin', () => {
     vi.spyOn(GithubManager.prototype, 'createReleasePR').mockResolvedValue('42');
     vi.spyOn(GithubManager.prototype, 'mergePR').mockResolvedValue(undefined);
     vi.spyOn(GithubManager.prototype, 'checkedPR').mockResolvedValue(undefined);
+    vi.spyOn(GithubManager.prototype, 'createRelease').mockResolvedValue(
+      undefined
+    );
 
     context = createContext();
     plugin = new Github(context);
@@ -106,6 +109,25 @@ describe('Github Plugin', () => {
 
       expect(enrichSpy).not.toHaveBeenCalled();
       expect(context.workspaces![0].changelog).toBe('dependency template');
+    });
+
+    it('should skip ignored release paths in createRelease mode', async () => {
+      plugin.setConfig({
+        mode: 'createRelease',
+        ignoreReleasePaths: ['examples']
+      });
+      context.setWorkspaces([
+        {
+          ...workspace,
+          name: 'example-app',
+          path: 'examples/react-seed',
+          root: '/repo/examples/react-seed'
+        }
+      ]);
+
+      await plugin.onExec();
+
+      expect(enrichSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -166,6 +188,95 @@ describe('Github Plugin', () => {
             'change:packages/a'
           ])
         })
+      );
+    });
+
+    it('should create GitHub releases in createRelease mode', async () => {
+      const createReleaseSpy = vi.spyOn(
+        GithubManager.prototype,
+        'createRelease'
+      );
+      const createPRSpy = vi.spyOn(GithubManager.prototype, 'createReleasePR');
+
+      context.setWorkspaces([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.0',
+          changelog: '- feat: ship it'
+        },
+        {
+          ...workspace,
+          name: 'pkg-private',
+          path: 'packages/private',
+          root: '/repo/packages/private',
+          tagName: 'pkg-private@2.0.0',
+          packageJson: {
+            name: 'pkg-private',
+            version: '2.0.0',
+            private: true
+          },
+          changelog: '- chore: private bump'
+        }
+      ]);
+      plugin.setConfig({ mode: 'createRelease' });
+
+      await plugin.onSuccess();
+
+      expect(createPRSpy).not.toHaveBeenCalled();
+      expect(createReleaseSpy).toHaveBeenCalledTimes(2);
+      expect(createReleaseSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ tagName: 'pkg-a@1.0.0' })
+      );
+      expect(createReleaseSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ tagName: 'pkg-private@2.0.0' })
+      );
+    });
+
+    it('should skip ignored paths and dependency releases in createRelease mode', async () => {
+      const createReleaseSpy = vi.spyOn(
+        GithubManager.prototype,
+        'createRelease'
+      );
+
+      context.setWorkspaces([
+        {
+          ...workspace,
+          tagName: 'pkg-a@1.0.0',
+          changelog: '- feat: keep'
+        },
+        {
+          ...workspace,
+          name: 'example-app',
+          path: 'examples/react-seed',
+          root: '/repo/examples/react-seed',
+          tagName: 'example-app@1.0.0',
+          changelog: '- feat: skip'
+        },
+        {
+          ...workspace,
+          name: 'pkg-dep',
+          path: 'packages/dep',
+          tagName: 'pkg-dep@1.0.0',
+          dependencyRelease: true,
+          changelog: '- dep'
+        },
+        {
+          ...workspace,
+          name: 'pkg-no-tag',
+          path: 'packages/no-tag',
+          changelog: '- no tag'
+        }
+      ]);
+      plugin.setConfig({
+        mode: 'createRelease',
+        ignoreReleasePaths: ['examples']
+      });
+
+      await plugin.onSuccess();
+
+      expect(createReleaseSpy).toHaveBeenCalledTimes(1);
+      expect(createReleaseSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ tagName: 'pkg-a@1.0.0' })
       );
     });
   });

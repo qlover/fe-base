@@ -830,7 +830,7 @@ export class GithubManager {
     options: Partial<CreateReleaseOptions>
   ): CreateReleaseOptions {
     const {
-      releaseName,
+      releaseName = releaseJson.github.releaseName,
       draft = false,
       preRelease = false,
       autoGenerate = false,
@@ -840,7 +840,9 @@ export class GithubManager {
     } = this.context.getParameters<GithubProps>('github');
 
     const name = releaseName;
-    const body = autoGenerate ? '' : this.truncateBody(String(releaseNotes));
+    const body = autoGenerate
+      ? ''
+      : this.truncateBody(String(releaseNotes ?? ''));
 
     return {
       name,

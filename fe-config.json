@@ -5,6 +5,9 @@
       "changesetRoot": ".changeset",
       "ignoreNonUpdatedPackages": false,
       "dependencyReleaseTemplate": "- Update dependency **${name}** from `${oldVersion}` to `${newVersion}`"
+    },
+    "github": {
+      "ignoreReleasePaths": ["examples"]
     }
   }
 }

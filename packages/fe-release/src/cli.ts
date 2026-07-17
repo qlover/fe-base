@@ -55,6 +55,8 @@
  *
  * Github:
  *   -b, --github.branch-name <template>                      Release branch name template
+ *   --github.mode <mode>                                     createPR (default) | createRelease
+ *   --github.ignore-release-paths <paths>                    Skip GitHub Releases under these paths
  *   --github.skip [lifecycle]                                Skip plugin or a lifecycle (e.g. onSuccess)
  *   --github.skip-create-release-pr                          Skip GitHub PR creation (branch still pushed)
  *   --github.push-change-labels                              Attach change labels to the release PR
@@ -78,6 +80,13 @@
  * ```bash
  * fe-release --changesetVersion.mode publish
  * fe-release --changesetVersion.mode both -i minor
+ * ```
+ *
+ * @example Publish + GitHub Releases
+ * ```bash
+ * fe-release --changesetVersion.mode publish \
+ *   --github.mode createRelease \
+ *   --github.ignore-release-paths examples
  * ```
  *
  * @example Changelog only — skip GitHub PR creation
@@ -241,6 +250,24 @@ function programArgs() {
     .option(
       '--workspaces.skip',
       'Skip the Workspaces plugin'
+    )
+    .option(
+      '--github.mode <mode>',
+      'Github mode: createPR (default) or createRelease (fe-config: release.github.mode)',
+      (value) => {
+        if (value !== 'createPR' && value !== 'createRelease') {
+          throw new Error(
+            'Invalid github.mode. Must be "createPR" or "createRelease"'
+          );
+        }
+        return value;
+      },
+      'createPR'
+    )
+    .option(
+      '--github.ignore-release-paths <paths>',
+      'Path prefixes to skip when creating GitHub Releases, comma-separated (fe-config: release.github.ignoreReleasePaths)',
+      splitWithComma
     )
     .option(
       '--github.skip [lifecycle]',

@@ -1,6 +1,6 @@
 /**
  * @module Github
- * @description GitHub changelog enrichment and release PR plugin
+ * @description GitHub changelog enrichment, release PR, and GitHub Release plugin
  *
  * Third plugin in the default release pipeline (after {@link Workspaces} and
  * {@link ChangesetVersion}). Extends {@link GitBase} for git operations and
@@ -9,17 +9,31 @@
  * Pipeline phases:
  * - **onBefore**: validate GitHub token; seed {@link ReleaseFormatter} context
  * - **onExec**: enrich workspace changelogs with PR/commit links via {@link GithubChangelog}
- * - **onSuccess**: create release branch, commit, push, and open PR (unless skipped)
+ * - **onSuccess**:
+ *   - `createPR` — create release branch, commit, push, and open PR (unless skipped)
+ *   - `createRelease` — create a GitHub Release per workspace (tag + changelog body)
  *
- * Release branch flow:
+ * Release branch flow (`createPR`):
  * 1. `ReleaseFormatter.getReleaseBranch()` — derive branch and tag names from templates
  * 2. Create branch from `sourceBranch`, commit version/changelog changes, push
  * 3. Open PR with formatted title/body and optional labels
  * 4. Auto-merge when `autoMergeReleasePr` is enabled
  *
+ * GitHub Release flow (`createRelease`):
+ * 1. Filter workspaces with `tagName`, skipping `dependencyRelease` and
+ *    paths matched by {@link GithubProps.ignoreReleasePaths}
+ * 2. Call {@link GithubManager.createRelease} with workspace changelog as notes
+ *
  * @example Skip PR creation (local dry-run)
  * ```bash
  * fe-release --github.skip-create-release-pr --dry-run
+ * ```
+ *
+ * @example Publish + GitHub Releases (ignore examples)
+ * ```bash
+ * fe-release --changesetVersion.mode publish \
+ *   --github.mode createRelease \
+ *   --github.ignore-release-paths examples
  * ```
  *
  * @example fe-config label and merge settings
@@ -28,7 +42,8 @@
  *   "release": {
  *     "github": {
  *       "autoMergeReleasePr": false,
- *       "label": { "name": "CI-Release" }
+ *       "label": { "name": "CI-Release" },
+ *       "ignoreReleasePaths": ["examples"]
  *     }
  *   }
  * }
@@ -46,8 +61,9 @@ import type {
 } from '../implments/ReleaseFormatter';
 import { ReleaseFormatter } from '../implments/ReleaseFormatter';
 import { releaseJson } from '../defaults';
+import { Pather } from '../utils/pather';
 
-export type GithubMode = 'createPR';
+export type GithubMode = 'createPR' | 'createRelease';
 
 export type GithubLabel = {
   /**
@@ -107,8 +123,8 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
   /**
    * Plugin work mode
    *
-   * Currently only `createPR` is supported: enrich changelogs in `onExec`,
-   * then create release branch and PR in `onSuccess`.
+   * - `createPR`: enrich changelogs in `onExec`, then create release branch and PR in `onSuccess`
+   * - `createRelease`: enrich changelogs in `onExec`, then create GitHub Releases in `onSuccess`
    *
    * @default `'createPR'`
    */
@@ -195,6 +211,23 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
   skipCreateReleasePr?: boolean;
 
   /**
+   * Workspace path prefixes to skip when creating GitHub Releases.
+   *
+   * Matched with segment-aware path containment (e.g. `examples` skips
+   * `examples/react-seed`). Applies only in `createRelease` mode.
+   *
+   * CLI: `--github.ignore-release-paths`
+   * fe-config: `release.github.ignoreReleasePaths`
+   *
+   * @default `[]`
+   * @example
+   * ```json
+   * { "ignoreReleasePaths": ["examples", "apps/docs"] }
+   * ```
+   */
+  ignoreReleasePaths?: string[];
+
+  /**
    * Configuration for release pull request labels
    *
    * Core concept:
@@ -241,7 +274,7 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
 }
 
 /**
- * GitHub integration plugin for changelog enrichment and release PR creation.
+ * GitHub integration plugin for changelog enrichment, release PR, and GitHub Releases.
  *
  * Skips `dependencyRelease` workspaces during changelog enrichment because
  * their changelogs are pre-filled by {@link Workspaces} or intentionally
@@ -250,6 +283,7 @@ export interface GithubProps extends ReleaseFormatterConfig, GitBaseProps {
 export default class Github extends GitBase<GithubProps> {
   protected releaseFormatter: ReleaseFormatter;
   protected githubManager: GithubManager;
+  protected pather = new Pather();
 
   constructor(context: ReleaseContext, props: GithubProps = {}) {
     super(context, 'github', props);
@@ -263,6 +297,13 @@ export default class Github extends GitBase<GithubProps> {
 
   protected get mode(): GithubMode {
     return this.config.mode || (releaseJson.github.mode as GithubMode);
+  }
+
+  protected get ignoreReleasePaths(): string[] {
+    return (
+      this.config.ignoreReleasePaths ??
+      [...releaseJson.github.ignoreReleasePaths]
+    );
   }
 
   public override async onBefore(): Promise<void> {
@@ -299,6 +340,13 @@ export default class Github extends GitBase<GithubProps> {
             if (workspace.dependencyRelease) {
               return workspace;
             }
+            // createRelease mode: skip ignored paths (no release notes needed)
+            if (
+              this.mode === 'createRelease' &&
+              this.isIgnoredReleasePath(workspace)
+            ) {
+              return workspace;
+            }
             return githubChangelog.enrichWorkspaceChangelog(workspace);
           })
         )
@@ -309,6 +357,14 @@ export default class Github extends GitBase<GithubProps> {
 
   public async onSuccess(): Promise<void> {
     const workspaces = this.context.requireWorkspaces();
+
+    if (this.mode === 'createRelease') {
+      await this.step({
+        label: 'Create GitHub Releases',
+        task: () => this.createGithubReleases(workspaces)
+      });
+      return;
+    }
 
     const releaseBranchResult = await this.step({
       label: 'Create Release Branch',
@@ -327,6 +383,75 @@ export default class Github extends GitBase<GithubProps> {
     }
 
     await this.handleReleasePullRequest(workspaces, releaseBranchResult);
+  }
+
+  /**
+   * Whether this workspace path is under an ignoreReleasePaths entry.
+   */
+  protected isIgnoredReleasePath(workspace: WorkspaceInterface): boolean {
+    const ignorePaths = this.ignoreReleasePaths;
+    if (ignorePaths.length === 0) {
+      return false;
+    }
+
+    return ignorePaths.some((ignorePath) =>
+      this.pather.isSubPath(workspace.path, ignorePath)
+    );
+  }
+
+  /**
+   * Workspaces that should receive a GitHub Release in createRelease mode.
+   *
+   * Requires `tagName`. Skips dependency-release packages and paths matched
+   * by {@link GithubProps.ignoreReleasePaths}. Private packages are included
+   * when they have a tag.
+   */
+  protected getReleaseWorkspaces(
+    workspaces: WorkspaceInterface[]
+  ): WorkspaceInterface[] {
+    return workspaces.filter((workspace) => {
+      if (!workspace.tagName) {
+        return false;
+      }
+      if (workspace.dependencyRelease) {
+        return false;
+      }
+      if (this.isIgnoredReleasePath(workspace)) {
+        this.logger.info(
+          `Skip GitHub Release for ignored path: ${workspace.path} (${workspace.tagName})`
+        );
+        return false;
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Create a GitHub Release for each eligible workspace.
+   *
+   * Release notes use the enriched workspace changelog from `onExec`.
+   */
+  protected async createGithubReleases(
+    workspaces: WorkspaceInterface[]
+  ): Promise<void> {
+    const releaseWorkspaces = this.getReleaseWorkspaces(workspaces);
+
+    if (releaseWorkspaces.length === 0) {
+      this.logger.warn('No workspaces eligible for GitHub Release creation');
+      return;
+    }
+
+    this.logger.info(
+      `Creating GitHub Releases (${releaseWorkspaces.length}):\n${releaseWorkspaces
+        .map((w) => `  ${w.tagName}`)
+        .join('\n')}`
+    );
+
+    await Promise.all(
+      releaseWorkspaces.map((workspace) =>
+        this.githubManager.createRelease(workspace)
+      )
+    );
   }
 
   /**
