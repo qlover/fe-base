@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { existsSync } from 'fs';
-import { type GeneratorPrompt } from './type';
+import { type GeneratorPrompt, type TemplateInfo } from './type';
 
 export const validRequiredString = (
   value: string,
@@ -12,7 +12,9 @@ export const validRequiredString = (
   return true;
 };
 
-export function createDefaultPrompts(templates: string[]): GeneratorPrompt[] {
+export function createDefaultPrompts(
+  templates: TemplateInfo[]
+): GeneratorPrompt[] {
   return [
     {
       type: 'input',
@@ -32,7 +34,10 @@ export function createDefaultPrompts(templates: string[]): GeneratorPrompt[] {
       type: 'list',
       name: 'template',
       message: 'Template name',
-      choices: templates
+      choices: templates.map(({ name, description }) => ({
+        name: description ? `${name} - ${description}` : name,
+        value: name
+      }))
     }
   ];
 }

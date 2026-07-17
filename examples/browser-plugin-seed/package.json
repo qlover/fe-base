@@ -3,7 +3,7 @@
   "private": true,
   "displayName": "Browser Plugin Seed",
   "version": "1.1.1",
-  "description": "A basic Plasmo extension.",
+  "description": "Plasmo + React browser extension seed with corekit",
   "author": "qlover",
   "scripts": {
     "dev": "cross-env NODE_ENV=development npm run startup && plasmo dev",

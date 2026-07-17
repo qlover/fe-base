@@ -2,7 +2,7 @@
   "name": "examples/taro-seed",
   "version": "2.1.1",
   "private": true,
-  "description": "taro react vite",
+  "description": "Taro + React + Vite multi-end mini program / H5 seed",
   "templateInfo": {
     "name": "default",
     "typescript": true,

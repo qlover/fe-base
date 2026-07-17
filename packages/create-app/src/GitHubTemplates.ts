@@ -12,6 +12,7 @@ import { join } from 'path';
 import { mkdtemp, writeFile, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { extract } from 'tar';
+import type { TemplateInfo } from './type';
 
 const GITHUB_API = 'https://api.github.com';
 const GITHUB_ARCHIVE =
@@ -94,12 +95,34 @@ async function fetchWithRetry(url: string, init: FetchInit): Promise<Response> {
   throw lastError;
 }
 
+async function fetchTemplateDescription(
+  name: string,
+  opts: GitHubTemplateOptions
+): Promise<string | undefined> {
+  const url = `https://raw.githubusercontent.com/${opts.owner}/${opts.repo}/${opts.branch}/${opts.examplesPath}/${name}/package.json`;
+  try {
+    const res = await fetchWithRetry(url, {
+      timeoutMs: FETCH_LIST_TIMEOUT_MS,
+      dispatcher: agentList
+    });
+    if (!res.ok) {
+      return undefined;
+    }
+    const pkg = (await res.json()) as { description?: string };
+    const description = pkg.description?.trim();
+    return description || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
- * Fetch directory names under repo path (e.g. examples/) as template list.
+ * Fetch directory names under repo path (e.g. examples/) as template list,
+ * and load each example's package.json description in parallel.
  */
 export async function fetchTemplateList(
   options: Partial<GitHubTemplateOptions> = {}
-): Promise<string[]> {
+): Promise<TemplateInfo[]> {
   const opts = { ...defaultOptions, ...options };
   const url = `${GITHUB_API}/repos/${opts.owner}/${opts.repo}/contents/${opts.examplesPath}`;
   const res = await fetchWithRetry(url, {
@@ -113,7 +136,14 @@ export async function fetchTemplateList(
     );
   }
   const data = (await res.json()) as Array<{ name: string; type: string }>;
-  return data.filter((e) => e.type === 'dir').map((e) => e.name);
+  const names = data.filter((e) => e.type === 'dir').map((e) => e.name);
+
+  return Promise.all(
+    names.map(async (name) => {
+      const description = await fetchTemplateDescription(name, opts);
+      return description ? { name, description } : { name };
+    })
+  );
 }
 
 export interface DownloadTemplateOptions extends Partial<GitHubTemplateOptions> {

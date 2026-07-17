@@ -594,7 +594,6 @@ describe('RequestExecutor', () => {
         public baseURL = 'https://api.example.com';
         public method = 'GET';
         public fetcher = fetchMock;
-        public url: any;
 
         public getAuth(): string {
           return 'Bearer custom';
