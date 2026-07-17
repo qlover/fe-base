@@ -8,7 +8,8 @@ import { Copyer } from './Copyer';
 import {
   type GeneratorOptions,
   type GeneratorPrompt,
-  type GeneratorContext
+  type GeneratorContext,
+  type TemplateInfo
 } from './type';
 import { downloadTemplate } from './GitHubTemplates';
 import { existsSync } from 'fs';
@@ -17,7 +18,7 @@ import { resolveWorkspaceDepsInDir } from './resolveWorkspaceDeps';
 export class Generator {
   private ora: typeof oraPromise;
   protected context: ScriptContext<GeneratorOptions>;
-  private templateList: string[];
+  private templateList: TemplateInfo[];
   private copyer: Copyer;
 
   constructor(context: Partial<ScriptContext<GeneratorOptions>>) {

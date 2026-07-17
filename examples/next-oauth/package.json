@@ -2,6 +2,7 @@
   "name": "examples/next-oauth",
   "version": "0.1.3",
   "private": true,
+  "description": "Next.js OAuth 2.0 authorization server example",
   "scripts": {
     "dev": "cross-env APP_ENV=localhost next dev --port 3300",
     "dev:staging": "cross-env APP_ENV=staging next dev --port 3300",

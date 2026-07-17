@@ -3,10 +3,16 @@ import { type DistinctQuestion } from 'inquirer';
 
 export type GeneratorPrompt = DistinctQuestion;
 
+/** Template entry from GitHub examples (name + optional package.json description). */
+export interface TemplateInfo {
+  name: string;
+  description?: string;
+}
+
 export interface GeneratorOptions extends ScriptSharedInterface {
   prompts?: GeneratorPrompt[];
-  /** Template names from GitHub examples (fetched from API). */
-  templateList: string[];
+  /** Template entries from GitHub examples (fetched from API). */
+  templateList: TemplateInfo[];
 }
 
 export interface GeneratorContext extends GeneratorOptions {
