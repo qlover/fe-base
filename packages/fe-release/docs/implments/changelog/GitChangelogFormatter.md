@@ -95,7 +95,7 @@ const formatter = new GitChangelogFormatter({
 
 ---
 
-#### `new GitChangelogFormatter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: Options & Object) => GitChangelogFormatter`
 

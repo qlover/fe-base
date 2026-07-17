@@ -2,13 +2,13 @@
 
 **Type:** `module WorkspaceValue`
 
-Concrete <a href="../interface/WorkspaceInterface.md#workspaceinterface-module" class="tsd-kind-module">WorkspaceInterface</a> implementation for release plugins
+Concrete [WorkspaceInterface](../interface/WorkspaceInterface.md#workspaceinterface-interface) implementation for release plugins
 
 Holds resolved disk paths (`packagePath`, `manifestPath`) in addition to the
 standard workspace fields used across the release pipeline.
 
 Use createWorkspaceValue for construction from monorepo paths, or
-<a href="#toworkspace-method" class="tsd-kind-method">WorkspaceValue.toWorkspace</a> when all fields are already known.
+[WorkspaceValue.toWorkspace](#toworkspace-method) when all fields are already known.
 
 ---
 
@@ -18,12 +18,12 @@ Use createWorkspaceValue for construction from monorepo paths, or
 
 Mutable workspace record used throughout the release pipeline.
 
-<a href="#tostring-method" class="tsd-kind-method">toString</a> produces a debug-friendly summary including `(DEP)` for
+[toString](#tostring-method) produces a debug-friendly summary including `(DEP)` for
 dependency-release entries and optional tag/version fields.
 
 ---
 
-#### `new WorkspaceValue` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: WorkspaceValueOptions) => WorkspaceValue`
 
@@ -59,6 +59,18 @@ Processing rules depend on `changesetVersion.ignoreNonUpdatedPackages`:
 
 - `false`: included in changelog template flow and version bump logs
 - `true`: tracked for restore only; skipped in changelog generation
+
+---
+
+#### `dependencyReleaseOf` (Property)
+
+**Type:** `string`
+
+Package name of the direct dependency that caused this `dependencyRelease`.
+
+Set by Workspaces when appending dependents. ChangesetVersion uses it after
+`changeset version` to fill `dependencyReleaseTemplate` with the source's
+real `newVersion`.
 
 ---
 

@@ -4,8 +4,8 @@
 
 Core data model for a monorepo package in a release run
 
-Represents one publishable workspace discovered by the <a href="../plugins/Workspaces.md#workspaces-module" class="tsd-kind-module">Workspaces</a>
-plugin and passed through <a href="../plugins/ChangesetVersion.md#changesetversion-module" class="tsd-kind-module">ChangesetVersion</a> and <a href="../plugins/Github.md#github-module" class="tsd-kind-module">Github</a>.
+Represents one publishable workspace discovered by the [Workspaces](../plugins/Workspaces.md#workspaces-module)
+plugin and passed through [ChangesetVersion](../plugins/ChangesetVersion.md#changesetversion-module) and [Github](../plugins/Github.md#github-module).
 
 Typical lifecycle fields:
 
@@ -45,6 +45,18 @@ Processing rules depend on `changesetVersion.ignoreNonUpdatedPackages`:
 
 - `false`: included in changelog template flow and version bump logs
 - `true`: tracked for restore only; skipped in changelog generation
+
+---
+
+#### `dependencyReleaseOf` (Property)
+
+**Type:** `string`
+
+Package name of the direct dependency that caused this `dependencyRelease`.
+
+Set by Workspaces when appending dependents. ChangesetVersion uses it after
+`changeset version` to fill `dependencyReleaseTemplate` with the source's
+real `newVersion`.
 
 ---
 

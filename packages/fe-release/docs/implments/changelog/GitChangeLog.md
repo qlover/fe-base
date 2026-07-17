@@ -106,7 +106,7 @@ const commit = changelog.toCommitValue(
 
 ---
 
-#### `new GitChangelog` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: GitChangelogProps) => GitChangelog`
 
@@ -672,7 +672,7 @@ from: 'abc123'; // Start from specific commit
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface<unknown>`
+**Type:** `LoggerInterface`
 
 ---
 

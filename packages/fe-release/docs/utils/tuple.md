@@ -117,7 +117,7 @@ type StringTuple = PluginTuple<'MyPlugin'>;
 
 ### `tuple` (Function)
 
-**Type:** `(plugin: string \| T, args: PluginConstructorParams<T>) => PluginTuple<T>`
+**Type:** `(plugin: string \| T, args: PluginConstructorParams<T>) => callsignature tuple<T>`
 
 #### Parameters
 
@@ -130,7 +130,7 @@ type StringTuple = PluginTuple<'MyPlugin'>;
 
 #### `tuple` (CallSignature)
 
-**Type:** `PluginTuple<T>`
+**Type:** `callsignature tuple<T>`
 
 Creates a type-safe plugin configuration tuple
 

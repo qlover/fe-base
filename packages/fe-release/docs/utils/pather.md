@@ -26,7 +26,7 @@ pather.isSubPath('src\\utils', 'src'); // true on every platform
 
 ---
 
-#### `new Pather` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `() => Pather`
 

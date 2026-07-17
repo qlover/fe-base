@@ -107,15 +107,15 @@ try {
 
 ### `loaderPluginsFromPluginTuples` (Function)
 
-**Type:** `(context: default, pluginsTuples: unknown[], maxLimit: number) => Promise<T[]>`
+**Type:** `(context: ReleaseContext, pluginsTuples: unknown[], maxLimit: number) => Promise<T[]>`
 
 #### Parameters
 
-| Name            | Type        | Optional | Default | Since | Deprecated | Description                                  |
-| --------------- | ----------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `context`       | `default`   | ❌       | -       | -     | -          | Release context for plugin initialization    |
-| `pluginsTuples` | `unknown[]` | ❌       | -       | -     | -          | Array of plugin configuration tuples         |
-| `maxLimit`      | `number`    | ✅       | `5`     | -     | -          | Maximum concurrent plugin loads (default: 5) |
+| Name            | Type             | Optional | Default | Since | Deprecated | Description                                  |
+| --------------- | ---------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `context`       | `ReleaseContext` | ❌       | -       | -     | -          | Release context for plugin initialization    |
+| `pluginsTuples` | `unknown[]`      | ❌       | -       | -     | -          | Array of plugin configuration tuples         |
+| `maxLimit`      | `number`         | ✅       | `5`     | -     | -          | Maximum concurrent plugin loads (default: 5) |
 
 ---
 
@@ -176,10 +176,10 @@ plugins.forEach((plugin) => plugin.customMethod());
 
 #### Parameters
 
-| Name            | Type        | Optional | Default | Since | Deprecated | Description                                  |
-| --------------- | ----------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `context`       | `default`   | ❌       | -       | -     | -          | Release context for plugin initialization    |
-| `pluginsTuples` | `unknown[]` | ❌       | -       | -     | -          | Array of plugin configuration tuples         |
-| `maxLimit`      | `number`    | ✅       | `5`     | -     | -          | Maximum concurrent plugin loads (default: 5) |
+| Name            | Type             | Optional | Default | Since | Deprecated | Description                                  |
+| --------------- | ---------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `context`       | `ReleaseContext` | ❌       | -       | -     | -          | Release context for plugin initialization    |
+| `pluginsTuples` | `unknown[]`      | ❌       | -       | -     | -          | Array of plugin configuration tuples         |
+| `maxLimit`      | `number`         | ✅       | `5`     | -     | -          | Maximum concurrent plugin loads (default: 5) |
 
 ---

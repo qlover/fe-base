@@ -5,7 +5,7 @@
 Command-line interface for the fe-release tool
 
 Entry point for `@qlover/fe-release`. Parses CLI flags with Commander.js,
-maps them to plugin configuration via dot notation, and runs <a href="./implments/ReleaseTask.md#releasetask-module" class="tsd-kind-module">ReleaseTask</a>.
+maps them to plugin configuration via dot notation, and runs [ReleaseTask](./implments/ReleaseTask.md#default-class).
 
 ## Release pipeline
 
@@ -26,7 +26,7 @@ Flags use dot notation to target plugin config under `fe-config.json` → `relea
 | `workspaces.*`       | `release.workspaces.*`       | Workspaces       |
 | `github.*`           | `release.github.*`           | Github           |
 
-Global flags (`--dry-run`, `--verbose`) are passed to <a href="./implments/ReleaseContext.md#releasecontext-module" class="tsd-kind-module">ReleaseContext</a> directly.
+Global flags (`--dry-run`, `--verbose`) are passed to [ReleaseContext](./implments/ReleaseContext.md#releasecontext-module) directly.
 Shared release options (e.g. `--source-branch`) are merged into `options`.
 
 ## Command reference
@@ -56,6 +56,8 @@ Workspaces:
 
 Github:
   -b, --github.branch-name <template>                      Release branch name template
+  --github.mode <mode>                                     createPR (default) | createRelease
+  --github.ignore-release-paths <paths>                    Skip GitHub Releases under these paths
   --github.skip [lifecycle]                                Skip plugin or a lifecycle (e.g. onSuccess)
   --github.skip-create-release-pr                          Skip GitHub PR creation (branch still pushed)
   --github.push-change-labels                              Attach change labels to the release PR
@@ -82,6 +84,14 @@ fe-release -l "changes:fe-release" -i patch
 ```bash
 fe-release --changesetVersion.mode publish
 fe-release --changesetVersion.mode both -i minor
+```
+
+**Example:** Publish + GitHub Releases
+
+```bash
+fe-release --changesetVersion.mode publish \
+  --github.mode createRelease \
+  --github.ignore-release-paths examples
 ```
 
 **Example:** Changelog only — skip GitHub PR creation

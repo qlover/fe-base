@@ -93,7 +93,7 @@ const changed = label.pick(['src/packages/a/index.ts']);
 
 ---
 
-#### `new ReleaseLabel` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: ReleaseLabelOptions) => ReleaseLabel`
 
@@ -340,9 +340,5 @@ Function type for custom file path comparison
 Used to determine if a changed file belongs to a package.
 Default implementation checks if the file path starts with
 the package path.
-
-**Returns:**
-
-True if the file belongs to the package
 
 ---
