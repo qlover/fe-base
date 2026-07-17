@@ -1,26 +1,13 @@
 # examples/browser-plugin-seed
 
-## 1.2.2
+## 1.2.4
 
 ### Patch Changes
 
 #### ✨ Features
 
 - **create-app:** Update package.json files across examples to enhance descriptions and improve clarity ([7cadb9b](https://github.com/qlover/fe-base/commit/7cadb9b48b54658184a93a9a68e96aa725cd31dd)) ([#661](https://github.com/qlover/fe-base/pull/661))
-- Update dependency **@qlover/fe-corekit** from `3.4.1` to `3.4.2`
-- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
-
-## 1.2.0
-
-### Minor Changes
-
-#### ✨ Features
-
-- **create-app:** Update package.json files across examples to enhance descriptions and improve clarity ([7cadb9b](https://github.com/qlover/fe-base/commit/7cadb9b48b54658184a93a9a68e96aa725cd31dd)) ([#661](https://github.com/qlover/fe-base/pull/661))
-
-### Patch Changes
-
-- Update dependency **@qlover/fe-corekit** from `3.3.0` to `3.4.0`
+- Update dependency **@qlover/fe-corekit** from `3.4.3` to `3.4.4`
 - Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
 
 ## 1.1.1

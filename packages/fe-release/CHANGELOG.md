@@ -1,5 +1,19 @@
 # @qlover/fe-release
 
+## 5.0.6
+
+### Patch Changes
+
+#### ✨ Features
+
+- **ChangesetVersion:** Enhance handling of private packages by creating and pushing local tags ([d49c087](https://github.com/qlover/fe-base/commit/d49c0872a228d1b6f56fb8c32a41a0310b2940e8)) ([#663](https://github.com/qlover/fe-base/pull/663))
+
+#### 🐞 Bug Fixes
+
+- **ChangesetVersion:** Correct shell command formatting for listing local git tags ([0f43e1e](https://github.com/qlover/fe-base/commit/0f43e1e0ad264572309b6ad935e62fe42cf10785))
+- Update dependency **@qlover/fe-corekit** from `3.4.3` to `3.4.4`
+- Update dependency **@qlover/scripts-context** from `2.3.3` to `2.3.3`
+
 ## 5.0.5
 
 ### Patch Changes
