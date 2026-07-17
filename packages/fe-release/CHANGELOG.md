@@ -1,5 +1,17 @@
 # @qlover/fe-release
 
+## 5.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **Github:** Add support for createRelease mode and ignoreReleasePaths ([eca91f8](https://github.com/qlover/fe-base/commit/eca91f87dd46f8159c22a3a6c40b90ffad762abf)) ([#667](https://github.com/qlover/fe-base/pull/667))
+
+#### 📝 Documentation
+
+- **fe-release:** Update CLI and defaults documentation for improved clarity and new features ([69f91e3](https://github.com/qlover/fe-base/commit/69f91e31df7976d7d3e5dad805ad558d3ae5ad44)) ([#667](https://github.com/qlover/fe-base/pull/667))
+
 ## 5.0.6
 
 ### Patch Changes
