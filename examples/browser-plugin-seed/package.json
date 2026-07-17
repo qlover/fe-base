@@ -2,7 +2,7 @@
   "name": "examples/browser-plugin-seed",
   "private": true,
   "displayName": "Browser Plugin Seed",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Plasmo + React browser extension seed with corekit",
   "author": "qlover",
   "scripts": {
