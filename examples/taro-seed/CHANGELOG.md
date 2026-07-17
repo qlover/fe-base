@@ -1,5 +1,23 @@
 # examples/taro-seed
 
+## 2.2.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** Update package.json files across examples to enhance descriptions and improve clarity ([7cadb9b](https://github.com/qlover/fe-base/commit/7cadb9b48b54658184a93a9a68e96aa725cd31dd)) ([#661](https://github.com/qlover/fe-base/pull/661))
+
+- **tailwind-theme:** Introduce 'generater' module for theme generation ([24e2345](https://github.com/qlover/fe-base/commit/24e2345d7cc1162702362ea3c29b61b6788d7861)) ([#658](https://github.com/qlover/fe-base/pull/658))
+
+#### ♻️ Refactors
+
+- **taro-seed:** Modularize bootstrapping and enhance request handling ([72b626e](https://github.com/qlover/fe-base/commit/72b626ec25ff0e2501420f54db5758abfe453c49)) ([#659](https://github.com/qlover/fe-base/pull/659))
+
+- **taro-seed:** Update ESLint configuration and dependencies ([3403d7f](https://github.com/qlover/fe-base/commit/3403d7f16fe238eb362fef15d9a7d3fcaadce74c)) ([#659](https://github.com/qlover/fe-base/pull/659))
+- Update dependency **@qlover/fe-corekit** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
+
 ## 2.2.0
 
 ### Minor Changes
