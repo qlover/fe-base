@@ -1,3 +1,5 @@
+import type { ValueOf } from '@qlover/fe-corekit/common';
+
 export const envPrefix = 'NEXT_PUBLIC_';
 
 export const browserGlobalsName = 'feGlobals';
@@ -73,3 +75,50 @@ export const defaultSearchParams = {
   pageSize: 20,
   sort: [{ orderBy: 'created_at', order: 'desc' }]
 } as const;
+
+/**
+ * 地址栏参数key
+ */
+export const URLParamsKeys = {
+  /**
+   * 需要返回到指定 url 的参数 key
+   */
+  returnTo: ['return_to', 'redirect', 'returnUrl'],
+
+  /**
+   * supabase 回调授权 id 的参数 key
+   */
+  oAuthQueryAuthId: 'authorization_id'
+} as const;
+
+/**
+ * 查询参数中的语言参数 key
+ */
+export const localeQueryParam = 'locale' as const;
+
+export const loginProviders = {
+  GitHub: 'GitHub',
+  Google: 'Google'
+} as const;
+export type LoginProviderType = ValueOf<typeof loginProviders>;
+
+/**
+ * Upstream identity provider for the Next OAuth template.
+ * Read via AppConfig / ServerConfig from `NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER`.
+ *
+ * - `supabase` (default): Supabase Auth password / OTP / SSO
+ * - `brain-user`: wrap Brain User login API as OAuth credentials
+ */
+export const oauthUpstreamProviders = {
+  supabase: 'supabase',
+  brainUser: 'brain-user'
+} as const;
+export type OAuthUpstreamId = ValueOf<typeof oauthUpstreamProviders>;
+
+export function resolveOAuthUpstreamProvider(
+  raw: string | undefined | null
+): OAuthUpstreamId {
+  return raw === oauthUpstreamProviders.brainUser
+    ? oauthUpstreamProviders.brainUser
+    : oauthUpstreamProviders.supabase;
+}

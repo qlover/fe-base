@@ -1,3 +1,4 @@
+import { resolveOAuthUpstreamProvider } from '@config/common';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { name, version } from '../../package.json';
 
@@ -16,4 +17,8 @@ export class AppConfig implements SeedSrcConfigInterface {
 
   public readonly stringEncryptorKey: string =
     process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY ?? 'demo_string_encryptor_key';
+
+  public readonly oauthUpstreamProvider = resolveOAuthUpstreamProvider(
+    process.env.NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER
+  );
 }

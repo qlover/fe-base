@@ -24,7 +24,7 @@ export function omit<T extends object>(
   }
 
   // 收集所有要排除的键
-  let keysToExclude: string[] = [];
+  let keysToExclude: string[];
   if (Array.isArray(pathsOrFirst)) {
     keysToExclude = pathsOrFirst;
   } else if (typeof pathsOrFirst === 'string') {

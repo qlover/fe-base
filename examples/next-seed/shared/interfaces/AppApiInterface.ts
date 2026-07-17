@@ -41,3 +41,7 @@ export function isAppApiErrorInterface(
     typeof result.requestId === 'string'
   );
 }
+
+export function isAppApiResult<T>(value: unknown): value is AppApiResult<T> {
+  return isAppApiSuccessInterface(value) || isAppApiErrorInterface(value);
+}

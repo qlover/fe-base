@@ -1,7 +1,8 @@
-import { Button } from 'antd';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
-import { HomeAuthUserEmail } from '@/uikit/components-app/HomeAuthUserEmail';
-import { ZustandCounterCard } from '@/uikit/components-app/ZustandCounterCard';
+import {
+  HomeFeatures,
+  HomeHero
+} from '@/uikit/components-app/home/HomeSections';
 import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import { homeI18n, homeI18nNamespace } from '@config/i18n-mapping/HomeI18n';
@@ -13,19 +14,10 @@ import {
 } from '@server/render/pageRouteParams';
 import type { Metadata } from 'next';
 
-// Generate static params for all supported locales (used for SSG)
 export async function generateStaticParams() {
-  // Return one entry for each supported locale
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));
 }
 
-// Allow Next.js to statically generate this page if possible (default behavior)
-// Note: 'auto' is not a valid value in Next.js 15, removed to use default behavior
-
-// Optional: Use revalidate if you want ISR (Incremental Static Regeneration)
-// export const revalidate = 3600; // Rebuild every hour (optional)
-
-// Generate localized SEO metadata per locale (Next.js 15+ best practice)
 export async function generateMetadata({
   params
 }: {
@@ -43,32 +35,14 @@ export default async function Home({ params }: PageParamsProps) {
 
   return (
     <PageI18nProvider value={tt}>
-      <AppRoutePage tt={tt} showAdminButton showAuthButton>
-        <section className="py-16 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
-              {tt.welcome}
-            </h1>
-            <HomeAuthUserEmail />
-            <p className="text-xl text-secondary-text mb-8">{tt.description}</p>
-          </div>
-        </section>
-
-        <section className="py-16 px-4 bg-elevated">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 text-primary-text">
-              {tt.getStartedTitle}
-            </h2>
-            <p className="text-lg text-secondary-text mb-8">
-              {tt.getStartedDescription}
-            </p>
-            <Button type="primary" size="large" className="px-8">
-              {tt.getStartedButton}
-            </Button>
-          </div>
-        </section>
-
-        <ZustandCounterCard />
+      <AppRoutePage
+        tt={tt}
+        showAuthButton
+        authButtonLoginOnly
+        authButtonShowLogoutLabel
+      >
+        <HomeHero tt={tt} />
+        <HomeFeatures tt={tt} />
       </AppRoutePage>
     </PageI18nProvider>
   );

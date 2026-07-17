@@ -1,9 +1,11 @@
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import qloverEslint from '@qlover/eslint-plugin';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import-x';
+import prettierPlugin from 'eslint-plugin-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import unusedImports from 'eslint-plugin-unused-imports';
@@ -11,8 +13,6 @@ import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const eslintTsconfig = './tsconfig.eslint.json';
 
@@ -28,11 +28,6 @@ const eslintConfig = defineConfig([
   ]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...compat.extends(
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:prettier/recommended'
-  ),
   {
     files: ['**/*.{ts,tsx}'],
     ...reactHooks.configs.flat.recommended,
@@ -40,18 +35,22 @@ const eslintConfig = defineConfig([
   },
   {
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
-        tsconfigRootDir: __dirname
+        tsconfigRootDir: __dirname,
+        sourceType: 'module'
       }
-    }
-  },
-  {
+    },
     plugins: {
       'unused-imports': unusedImports,
+      // Register as `import` so existing `import/*` rule names stay unchanged
+      import: importPlugin,
+      prettier: prettierPlugin,
       '@qlover-eslint': qloverEslint
     },
     settings: {
-      'import/resolver': {
+      // import-x reads `import-x/*` settings even when registered as `import`
+      'import-x/resolver': {
         typescript: {
           project: eslintTsconfig,
           alwaysTryTypes: false
@@ -110,6 +109,8 @@ const eslintConfig = defineConfig([
             { pattern: '@interfaces/**', group: 'internal', position: 'after' },
             { pattern: '@server/**', group: 'internal', position: 'after' }
           ],
+          // Allow pathGroups to remapped unresolved aliases (e.g. @config/*)
+          pathGroupsExcludedImportTypes: [],
           alphabetize: {
             order: 'asc',
             caseInsensitive: true
@@ -159,9 +160,11 @@ const eslintConfig = defineConfig([
       '**/__mocks__/**'
     ],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         project: eslintTsconfig,
-        tsconfigRootDir: __dirname
+        tsconfigRootDir: __dirname,
+        sourceType: 'module'
       }
     },
     plugins: { '@qlover-eslint': qloverEslint },
@@ -180,7 +183,8 @@ const eslintConfig = defineConfig([
     rules: {
       'import/no-default-export': 'off'
     }
-  }
+  },
+  eslintConfigPrettier
 ]);
 
 export default eslintConfig;

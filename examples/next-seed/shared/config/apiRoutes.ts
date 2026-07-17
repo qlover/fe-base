@@ -6,22 +6,23 @@
  */
 
 /**
- * API path: `/api/ai/completions`
+ * API path: `/api/callback/email-login`
  *
- * @see [src/app/api/ai/completions/route.ts](../../src/app/api/ai/completions/route.ts)
+ * @see [src/app/api/callback/email-login/route.ts](../../src/app/api/callback/email-login/route.ts)
  *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/ai/completions/route.ts`
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/email-login/route.ts`
  */
-export const API_AI_COMPLETIONS = '/api/ai/completions' as const;
+export const API_CALLBACK_EMAIL_LOGIN = '/api/callback/email-login' as const;
 
 /**
- * API path: `/api/callback`
+ * API path: `/api/callback/provider-login`
  *
- * @see [src/app/api/callback/route.ts](../../src/app/api/callback/route.ts)
+ * @see [src/app/api/callback/provider-login/route.ts](../../src/app/api/callback/provider-login/route.ts)
  *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/route.ts`
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/provider-login/route.ts`
  */
-export const API_CALLBACK = '/api/callback' as const;
+export const API_CALLBACK_PROVIDER_LOGIN =
+  '/api/callback/provider-login' as const;
 
 /**
  * API path: `/api/locales/json`
@@ -33,24 +34,6 @@ export const API_CALLBACK = '/api/callback' as const;
 export const API_LOCALES_JSON = '/api/locales/json' as const;
 
 /**
- * API path: `/api/openapi`
- *
- * @see [src/app/api/openapi/route.ts](../../src/app/api/openapi/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/openapi/route.ts`
- */
-export const API_OPENAPI = '/api/openapi' as const;
-
-/**
- * API path: `/api/reference`
- *
- * @see [src/app/api/reference/route.ts](../../src/app/api/reference/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/reference/route.ts`
- */
-export const API_REFERENCE = '/api/reference' as const;
-
-/**
  * API path: `/api/user/login`
  *
  * @see [src/app/api/user/login/route.ts](../../src/app/api/user/login/route.ts)
@@ -58,6 +41,15 @@ export const API_REFERENCE = '/api/reference' as const;
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/route.ts`
  */
 export const API_USER_LOGIN = '/api/user/login' as const;
+
+/**
+ * API path: `/api/user/login/provider`
+ *
+ * @see [src/app/api/user/login/provider/route.ts](../../src/app/api/user/login/provider/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/provider/route.ts`
+ */
+export const API_USER_LOGIN_PROVIDER = '/api/user/login/provider' as const;
 
 /**
  * API path: `/api/user/logout`
@@ -69,6 +61,24 @@ export const API_USER_LOGIN = '/api/user/login' as const;
 export const API_USER_LOGOUT = '/api/user/logout' as const;
 
 /**
+ * API path: `/api/user/otp/login`
+ *
+ * @see [src/app/api/user/otp/login/route.ts](../../src/app/api/user/otp/login/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/otp/login/route.ts`
+ */
+export const API_USER_OTP_LOGIN = '/api/user/otp/login' as const;
+
+/**
+ * API path: `/api/user/otp/verify`
+ *
+ * @see [src/app/api/user/otp/verify/route.ts](../../src/app/api/user/otp/verify/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/otp/verify/route.ts`
+ */
+export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
+
+/**
  * API path: `/api/user/register`
  *
  * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
@@ -76,15 +86,6 @@ export const API_USER_LOGOUT = '/api/user/logout' as const;
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/register/route.ts`
  */
 export const API_USER_REGISTER = '/api/user/register' as const;
-
-/**
- * API path: `/api/user/request-logs`
- *
- * @see [src/app/api/user/request-logs/route.ts](../../src/app/api/user/request-logs/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/request-logs/route.ts`
- */
-export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 
 /**
  * API path: `/api/user/session`
@@ -96,13 +97,13 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
-  | typeof API_AI_COMPLETIONS
-  | typeof API_CALLBACK
+  | typeof API_CALLBACK_EMAIL_LOGIN
+  | typeof API_CALLBACK_PROVIDER_LOGIN
   | typeof API_LOCALES_JSON
-  | typeof API_OPENAPI
-  | typeof API_REFERENCE
   | typeof API_USER_LOGIN
+  | typeof API_USER_LOGIN_PROVIDER
   | typeof API_USER_LOGOUT
+  | typeof API_USER_OTP_LOGIN
+  | typeof API_USER_OTP_VERIFY
   | typeof API_USER_REGISTER
-  | typeof API_USER_REQUEST_LOGS
   | typeof API_USER_SESSION;

@@ -1,20 +1,23 @@
 'use client';
 
-import {
-  HeartFilled,
-  SettingOutlined,
-  SunOutlined,
-  MoonOutlined,
-  SettingFilled,
-  SunFilled,
-  MoonFilled,
-  HeartOutlined
-} from '@ant-design/icons';
 import { useMountedClient } from '@brain-toolkit/react-kit';
-import { Dropdown } from 'antd';
+import {
+  Cog6ToothIcon as Cog6ToothOutlineIcon,
+  HeartIcon as HeartOutlineIcon,
+  MoonIcon as MoonOutlineIcon,
+  SunIcon as SunOutlineIcon
+} from '@heroicons/react/24/outline';
+import {
+  Cog6ToothIcon as Cog6ToothSolidIcon,
+  HeartIcon as HeartSolidIcon,
+  MoonIcon as MoonSolidIcon,
+  SunIcon as SunSolidIcon
+} from '@heroicons/react/24/solid';
+import { useTheme } from '@wrksz/themes/client';
 import { clsx } from 'clsx';
-import { useTheme } from 'next-themes';
 import { useEffect, useMemo } from 'react';
+import { Button } from '@/uikit/components/Button';
+import { Dropdown } from '@/uikit/components/Dropdown';
 import {
   COMMON_THEME_DARK,
   COMMON_THEME_DEFAULT,
@@ -22,15 +25,14 @@ import {
   COMMON_THEME_PINK
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { type SupportedTheme, themeConfig } from '@config/theme';
+import { themeConfig } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
-import type { ItemType } from 'antd/es/menu/interface';
+import type { DefaultTheme } from '@wrksz/themes/client';
 
 const { supportedThemes, storageKey } = themeConfig;
-
-const defaultTheme = supportedThemes[0] || 'system';
 const themesList = ['system', ...supportedThemes];
+const iconClassName = 'h-4 w-4';
 
 const colorMap: Record<
   string,
@@ -46,29 +48,29 @@ const colorMap: Record<
     i18nkey: COMMON_THEME_DEFAULT,
     selectedColor: 'text-primary-text',
     normalColor: 'text-secondary-text',
-    Icon: SettingOutlined,
-    SelectedIcon: SettingFilled
+    Icon: Cog6ToothOutlineIcon,
+    SelectedIcon: Cog6ToothSolidIcon
   },
   light: {
     i18nkey: COMMON_THEME_LIGHT,
     selectedColor: 'text-primary-text',
     normalColor: 'text-secondary-text',
-    Icon: SunOutlined,
-    SelectedIcon: SunFilled
+    Icon: SunOutlineIcon,
+    SelectedIcon: SunSolidIcon
   },
   dark: {
     i18nkey: COMMON_THEME_DARK,
     selectedColor: 'text-[#9333ea]',
     normalColor: 'text-[#a855f7]',
-    Icon: MoonOutlined,
-    SelectedIcon: MoonFilled
+    Icon: MoonOutlineIcon,
+    SelectedIcon: MoonSolidIcon
   },
   pink: {
     i18nkey: COMMON_THEME_PINK,
     selectedColor: 'text-[#f472b6]',
     normalColor: 'text-[#ec4899]',
-    Icon: HeartOutlined,
-    SelectedIcon: HeartFilled
+    Icon: HeartOutlineIcon,
+    SelectedIcon: HeartSolidIcon
   }
 };
 
@@ -84,7 +86,7 @@ export function ThemeSwitcher() {
     }
   }, [resolvedTheme, cookieStorage]);
 
-  const themeOptions = useMemo(() => {
+  const items = useMemo(() => {
     return themesList.map((themeName) => {
       const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =
         colorMap[themeName] || colorMap.light;
@@ -95,50 +97,55 @@ export function ThemeSwitcher() {
 
       return {
         key: themeName,
-        value: themeName,
         label: (
-          <div
+          <span
             className={clsx(
               'flex items-center gap-2',
               isCurrentTheme ? selectedColor : normalColor
             )}
           >
-            {isCurrentTheme ? <SelectedIcon /> : <Icon />}
+            {isCurrentTheme ? (
+              <SelectedIcon className={iconClassName} />
+            ) : (
+              <Icon className={iconClassName} />
+            )}
             <span>{t(i18nkey)}</span>
-          </div>
+          </span>
         )
-      } as ItemType;
+      };
     });
   }, [currentTheme, resolvedTheme, t]);
 
-  const nextTheme = useMemo(() => {
-    if (!currentTheme) {
-      return defaultTheme;
-    }
-    const targetIndex =
-      supportedThemes.indexOf(currentTheme as SupportedTheme) + 1;
-    return supportedThemes[targetIndex % supportedThemes.length];
-  }, [currentTheme]);
+  const ThemeIcon =
+    mounted && resolvedTheme === 'dark' ? MoonOutlineIcon : SunOutlineIcon;
+
+  const themeAriaLabel = useMemo(() => {
+    const themeKey =
+      mounted && resolvedTheme && colorMap[resolvedTheme]
+        ? resolvedTheme
+        : 'system';
+    return t(colorMap[themeKey].i18nkey);
+  }, [mounted, resolvedTheme, t]);
 
   return (
     <Dropdown
       data-testid="ThemeSwitcherDropdown"
-      trigger={['hover']}
-      menu={{
-        items: themeOptions,
-        selectedKeys: mounted ? [resolvedTheme!] : undefined,
-        onClick: ({ key }) => {
-          setTheme(key);
-        }
+      items={items}
+      selectedKeys={mounted && resolvedTheme ? [resolvedTheme] : []}
+      placement="bottom-end"
+      onSelect={(key) => {
+        if (!mounted) return;
+        setTheme(key as DefaultTheme);
       }}
     >
-      <span
+      <Button
+        variant="header"
         data-testid="ThemeSwitcher"
-        className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
-        onClick={() => setTheme(nextTheme)}
+        disabled={!mounted}
+        aria-label={themeAriaLabel}
       >
-        <SunOutlined />
-      </span>
+        <ThemeIcon className="h-4 w-4" aria-hidden />
+      </Button>
     </Dropdown>
   );
 }

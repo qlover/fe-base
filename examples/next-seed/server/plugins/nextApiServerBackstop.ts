@@ -1,4 +1,4 @@
-import type { BootstrapServerPlugin } from '@server/interfaces/ServerInterface';
+import type { BootstrapServerPlugin } from '@server/interfaces/BootstrapServerInterface';
 
 export const nextApiServerBackstop: BootstrapServerPlugin = {
   pluginName: 'NextApiServerBackstop',
@@ -7,7 +7,9 @@ export const nextApiServerBackstop: BootstrapServerPlugin = {
 
     const appConfig = IOC('SeedConfigInterface');
 
-    logger.log(`appConfig: ${JSON.stringify(appConfig)}`);
+    logger.log(
+      `Running in ${appConfig.env} mode, logging level: ${appConfig.logLevel}`
+    );
   },
 
   onError(ctx) {
@@ -16,18 +18,7 @@ export const nextApiServerBackstop: BootstrapServerPlugin = {
       error
     } = ctx;
 
-    // Single log line: avoid duplicate dumps (previously: generic line + second logger.error).
-    const detail =
-      error instanceof Error && error.cause !== undefined ? error.cause : error;
-    logger.error(`Request id: ${root.uuid} Unexpected Error`, detail);
-
-    // FIXME: 是否catch 所有错误
-    // return new ExecutorError('Unexpected Error', {
-    //   success: false,
-    //   id: 'Unexpected Error',
-    //   requestId: root.uuid,
-    //   message: 'Unexpected Error'
-    // });
+    logger.error(`Request id: ${root.uuid}`, error);
   },
 
   onSuccess({ parameters: { logger, root } }) {

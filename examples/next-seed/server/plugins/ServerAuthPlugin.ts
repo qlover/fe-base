@@ -1,8 +1,8 @@
 import type {
   BootstrapServerContext,
   BootstrapServerPlugin
-} from '@server/interfaces/ServerInterface';
-import { ServerAuth } from '@server/services/ServerAuth';
+} from '@server/interfaces/BootstrapServerInterface';
+import { AuthUserService } from '@server/services/AuthUserService';
 
 export class ServerAuthPlugin implements BootstrapServerPlugin {
   public readonly pluginName = 'ServerAuthPlugin';
@@ -13,6 +13,6 @@ export class ServerAuthPlugin implements BootstrapServerPlugin {
   public async onBefore({
     parameters: { IOC }
   }: BootstrapServerContext): Promise<void> {
-    await IOC(ServerAuth).throwIfNotAuth();
+    await IOC(AuthUserService).throwIfNotAuth();
   }
 }

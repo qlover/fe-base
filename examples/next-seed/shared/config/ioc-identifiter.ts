@@ -2,11 +2,15 @@ import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
-import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
+import type { AuthProviderInterface } from '@server/interfaces/AuthProviderInterface';
+import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
-import type * as FeCorekit from '@qlover/fe-corekit';
+import type { JSONSerializer } from '@qlover/fe-corekit/serializer';
+import type {
+  ObjectStorageOptions,
+  StorageInterface
+} from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**
@@ -23,21 +27,17 @@ export const IOCIdentifier = Object.freeze({
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
-  ZustandCounterServiceInterface: 'ZustandCounterServiceInterface',
   /**
-   * 数据库桥接接口
-   *
-   * 你可以实现不同的例如：
-   *
-   * - Vercel Postgres
-   * - supabase
-   * - mysql
-   * - postgresql
-   * - mongodb
-   * - redis
-   * - sqllite
+   * Auth 提供者接口（server-only）
    */
-  DBBridgeInterface: 'DBBridgeInterface'
+  AuthProviderInterface: 'AuthProviderInterface',
+
+  /**
+   * 服务器状态接口, 其实和 config 类型，不过仅仅用于保存当次会话的配置状态
+   *
+   * 比如当次请求的 locale 等
+   */
+  ServerContextInterface: 'ServerContextInterface'
 });
 
 export const I = IOCIdentifier;
@@ -51,29 +51,29 @@ export const I = IOCIdentifier;
  * - value: implementation class
  */
 export interface IOCIdentifierMap {
-  [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
+  [IOCIdentifier.JSONSerializer]: JSONSerializer;
   [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.LocalStorage]: FeCorekit.StorageInterface<
+  [IOCIdentifier.LocalStorage]: StorageInterface<
     string,
     unknown,
-    FeCorekit.ObjectStorageOptions
+    ObjectStorageOptions
   >;
-  [IOCIdentifier.LocalStorageEncrypt]: FeCorekit.StorageInterface<
+  [IOCIdentifier.LocalStorageEncrypt]: StorageInterface<
     string,
     unknown,
-    FeCorekit.ObjectStorageOptions
+    ObjectStorageOptions
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.AppConfig]: CorekitBridge.SeedConfigInterface;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
-  [IOCIdentifier.ZustandCounterServiceInterface]: ZustandCounterService;
   [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
-  [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
+  [IOCIdentifier.AuthProviderInterface]: AuthProviderInterface;
+  [IOCIdentifier.ServerContextInterface]: ServerContextInterface;
 }

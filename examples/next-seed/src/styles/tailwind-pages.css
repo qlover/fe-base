@@ -1,0 +1,10 @@
+@layer theme, base, antd, components, utilities;
+
+/* Pages Router: include pages + shared / app shell UI. */
+@import 'tailwindcss' source(none);
+@import './generated/theme.css';
+
+@source '../../shared/config/button.ts';
+@source '../../shared/config/component.ts';
+@source '../pages';
+@source '../uikit';

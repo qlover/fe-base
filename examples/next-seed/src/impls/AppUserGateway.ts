@@ -1,24 +1,26 @@
-import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit/request';
 import { inject, injectable } from '@shared/container';
-import {
-  API_USER_LOGIN,
-  API_USER_LOGOUT,
-  API_USER_REGISTER,
-  API_USER_SESSION
-} from '@config/apiRoutes';
-import { UserCredential, UserSchema } from '@schemas/UserSchema';
+import { LoginProviderType } from '@config/common';
+import * as apiRoutes from '@config/route';
+import type { UserCredential, UserSchema } from '@schemas/UserSchema';
+import { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
   UserApiRegisterTransaction
 } from '@interfaces/AppUserApiInterface';
-import { UserServiceGatewayInterface } from '@interfaces/UserServiceInterface';
+import {
+  LoginProviderResult,
+  SignOtpResult,
+  SignWithOtpParams,
+  UserServiceGatewayInterface
+} from '@interfaces/UserServiceInterface';
 import {
   AppApiConfig,
   AppApiRequester,
   AppApiRequesterContext
 } from './appApi/AppApiRequester';
-import type { LoginParams } from '@qlover/corekit-bridge';
+import type { GatewayResult, LoginParams } from '@qlover/corekit-bridge';
 
 /**
  * UserApi
@@ -40,7 +42,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   public getUserInfo(
     _params?: unknown,
     _config?: unknown
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
     throw new Error('Method not implemented.');
   }
   /**
@@ -49,13 +51,13 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   public async refreshUserInfo(
     _params?: unknown,
     _config?: {} | undefined
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
     const response = await this.client.request<
       UserApiLoginTransaction['response'],
       UserApiLoginTransaction['request']
     >({
       ..._config,
-      url: API_USER_SESSION,
+      url: apiRoutes.API_USER_SESSION,
       method: HttpMethods.GET
     });
 
@@ -63,20 +65,24 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       throw new Error(response.data.message);
     }
 
-    return response.data.data as UserSchema;
+    return {
+      data: response.data.data as UserSchema,
+      error: null
+    };
   }
 
   /**
    * @override
    */
   public async login(
-    params: UserApiLoginTransaction['data'] & LoginParams
-  ): Promise<UserCredential> {
+    params: UserApiLoginTransaction['data'] & LoginParams,
+    url?: string
+  ): Promise<GatewayResult<UserCredential>> {
     const response = await this.client.request<
       UserApiLoginTransaction['response'],
       UserApiLoginTransaction['request']
     >({
-      url: API_USER_LOGIN,
+      url: url ?? apiRoutes.API_USER_LOGIN,
       method: HttpMethods.POST,
       data: params,
       encryptProps: 'password'
@@ -86,7 +92,10 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       throw new Error(response.data.message);
     }
 
-    return response.data.data as UserCredential;
+    return {
+      data: response.data.data as UserSchema,
+      error: null
+    };
   }
 
   /**
@@ -94,12 +103,12 @@ export class AppUserGateway implements UserServiceGatewayInterface {
    */
   public async register(
     params: UserApiRegisterTransaction['data']
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
     const response = await this.client.request<
       UserApiRegisterTransaction['response'],
       UserApiRegisterTransaction['request']
     >({
-      url: API_USER_REGISTER,
+      url: apiRoutes.API_USER_REGISTER,
       method: HttpMethods.POST,
       data: params,
       encryptProps: 'password'
@@ -109,7 +118,10 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       throw new Error(response.data.message);
     }
 
-    return response.data.data as UserSchema;
+    return {
+      data: response.data.data as UserSchema,
+      error: null
+    };
   }
 
   /**
@@ -120,10 +132,78 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiLogoutTransaction['response'],
       UserApiLogoutTransaction['request']
     >({
-      url: API_USER_LOGOUT,
+      url: apiRoutes.API_USER_LOGOUT,
       method: HttpMethods.POST
     });
 
     return undefined as R;
+  }
+
+  /**
+   * Send OTP (step 1) — supports both phone and email
+   * @override
+   */
+  public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      AppApiResult<SignOtpResult>,
+      SignWithOtpParams
+    >({
+      url: apiRoutes.API_USER_OTP_LOGIN,
+      method: HttpMethods.POST,
+      data: params
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (response.data.data as { message?: string }).message ??
+          'Send OTP failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Verify OTP code (step 2) — supports both phone and email
+   * @override
+   */
+  public async verifyOtp(
+    params: { phone: string; token: string } | { email: string; token: string }
+  ): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      AppApiResult<SignOtpResult>,
+      typeof params
+    >({
+      url: apiRoutes.API_USER_OTP_VERIFY,
+      method: HttpMethods.POST,
+      data: params
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (response.data.data as { message?: string }).message ??
+          'OTP verification failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * @override
+   */
+  public async loginWithProvider(params: {
+    provider: LoginProviderType;
+  }): Promise<LoginProviderResult> {
+    const response = await this.client.request<
+      AppApiResult<LoginProviderResult>,
+      { provider: LoginProviderType }
+    >({
+      url: apiRoutes.API_USER_LOGIN_PROVIDER,
+      method: HttpMethods.GET,
+      params: params
+    });
+
+    return response.data.data! as LoginProviderResult;
   }
 }

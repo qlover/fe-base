@@ -1,0 +1,7 @@
+/* Pages Router entry */
+@import './utils/zIndex.css';
+@import './utils/scrollbar.css';
+
+button {
+  cursor: pointer;
+}

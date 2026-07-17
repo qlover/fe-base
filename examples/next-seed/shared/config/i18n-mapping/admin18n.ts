@@ -1,8 +1,5 @@
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
-import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
-import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
-import * as userKeys from '../i18n-identifier/pages/page.admin.user';
 
 export const adminTableHeaderI18n = {
   create: commonTablesKeys.COMMON_ADMIN_TABLE_CREATE,
@@ -18,7 +15,10 @@ export const adminTableI18n = {
   action: commonTablesKeys.COMMON_ADMIN_TABLE_ACTION,
   editText: commonTablesKeys.COMMON_ADMIN_TABLE_EDIT,
   deleteText: commonTablesKeys.COMMON_ADMIN_TABLE_DELETE,
-  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL
+  detailText: commonTablesKeys.COMMON_ADMIN_TABLE_DETAIL,
+  prev: commonTablesKeys.COMMON_ADMIN_TABLE_PREV,
+  next: commonTablesKeys.COMMON_ADMIN_TABLE_NEXT,
+  pageSize: commonTablesKeys.COMMON_ADMIN_TABLE_PAGE_SIZE
 } as const;
 
 export const admin18n = Object.freeze({
@@ -30,45 +30,4 @@ export const admin18n = Object.freeze({
 
   // admin page
   welcome: homeKeys.ADMIN_HOME_WELCOME
-});
-
-export type AdminUsersI18nInterface = typeof adminUsers18n;
-
-export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
-
-export const adminRequestLogs18n = Object.freeze({
-  title: requestLogsKeys.ADMIN_REQUEST_LOGS_TITLE,
-  description: requestLogsKeys.ADMIN_REQUEST_LOGS_DESCRIPTION,
-  content: requestLogsKeys.ADMIN_REQUEST_LOGS_DESCRIPTION,
-  keywords: requestLogsKeys.ADMIN_REQUEST_LOGS_KEYWORDS,
-  colTime: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TIME,
-  colRequestId: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_REQUEST_ID,
-  colCategory: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_CATEGORY,
-  colType: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TYPE,
-  colSuccess: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_SUCCESS,
-  colHttp: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_HTTP,
-  colStatus: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_STATUS,
-  colDuration: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_DURATION,
-  colIp: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_IP,
-  colLoginMethod: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_LOGIN_METHOD,
-  colError: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_ERROR,
-  empty: requestLogsKeys.ADMIN_REQUEST_LOGS_EMPTY
-});
-
-export const adminUsers18n = Object.freeze({
-  // basic meta properties
-  title: userKeys.ADMIN_USERS_TITLE,
-  description: userKeys.ADMIN_USERS_DESCRIPTION,
-  content: userKeys.ADMIN_USERS_DESCRIPTION,
-  keywords: userKeys.ADMIN_USERS_KEYWORDS,
-
-  createTitle: userKeys.ADMIN_USERS_CREATE_TITLE,
-  editTitle: userKeys.ADMIN_USERS_EDIT_TITLE,
-  detailTitle: userKeys.ADMIN_USERS_DETAIL_TITLE,
-  deleteTitle: userKeys.ADMIN_USERS_DELETE_TITLE,
-  deleteContent: userKeys.ADMIN_USERS_DELETE_CONTENT,
-  saveButton: commonKeys.COMMON_SAVE,
-  detailButton: commonKeys.COMMON_DETAIL,
-  cancelButton: commonKeys.COMMON_CANCEL,
-  createButton: commonKeys.COMMON_CREATE
 });

@@ -1,4 +1,4 @@
-import { API_USER_SESSION } from '@config/apiRoutes';
+import { API_USER_SESSION } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 import type { NextRequest } from 'next/server';
@@ -68,6 +68,6 @@ import type { NextRequest } from 'next/server';
  */
 export async function GET(req: NextRequest) {
   return await new NextApiServer(API_USER_SESSION, req).runWithJson(
-    async ({ parameters: { IOC } }) => IOC(UserController).getUser()
+    async ({ parameters: { IOC } }) => IOC(UserController).refresh()
   );
 }

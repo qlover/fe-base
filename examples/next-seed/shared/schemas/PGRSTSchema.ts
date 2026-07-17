@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const pgrstSchema = z.object({
   code: z.string(),
-  details: z.string(),
+  details: z.union([z.string(), z.null()]),
   hint: z.string().nullable(),
   message: z.string()
 });

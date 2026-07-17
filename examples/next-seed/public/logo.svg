@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Next OAuth">
+  <rect width="32" height="32" rx="8" fill="#7C3AED"/>
+  <path
+    fill="#FFFFFF"
+    d="M9 7h3.4l5.7 9.2V7H22v18h-3.4l-5.7-9.2V25H9V7Z"
+  />
+</svg>

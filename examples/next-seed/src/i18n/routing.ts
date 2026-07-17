@@ -2,7 +2,12 @@ import { createNavigation } from 'next-intl/navigation';
 import { defineRouting } from 'next-intl/routing';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
-import { ROUTE_LOGIN, ROUTE_REGISTER, ROUTE_REQUEST_LOGS } from '@config/route';
+import {
+  ROUTE_ADMIN,
+  ROUTE_CALLBACK_EMAIL_LOGIN,
+  ROUTE_LOGIN,
+  ROUTE_REGISTER
+} from '@config/route';
 
 const locales = i18nConfig.supportedLngs;
 
@@ -13,7 +18,7 @@ export const routing = defineRouting({
 
   defaultLocale: i18nConfig.fallbackLng,
 
-  localePrefix: useLocaleRoutes ? undefined : 'as-needed',
+  localePrefix: useLocaleRoutes ? 'always' : 'as-needed',
 
   pathnames: {
     '/': {
@@ -28,9 +33,13 @@ export const routing = defineRouting({
       en: '/auth/register',
       zh: '/auth/register'
     },
-    [ROUTE_REQUEST_LOGS]: {
-      en: '/admin/request-logs',
-      zh: '/admin/request-logs'
+    [ROUTE_CALLBACK_EMAIL_LOGIN]: {
+      en: '/callback/email-login',
+      zh: '/callback/email-login'
+    },
+    [ROUTE_ADMIN]: {
+      en: '/admin',
+      zh: '/admin'
     }
   }
 });
