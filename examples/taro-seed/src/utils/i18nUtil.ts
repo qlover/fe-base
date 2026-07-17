@@ -1,5 +1,5 @@
-import { logger } from '@/globals';
 import type { TFunction } from '@/contexts/i18nContext';
+import { logger } from '@/globals';
 import type { I18nMappingInterface } from '@interfaces/I18nMappingInterface';
 
 export function translateWithMapping<T extends I18nMappingInterface>(

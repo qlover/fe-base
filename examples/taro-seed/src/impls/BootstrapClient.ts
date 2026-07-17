@@ -1,8 +1,7 @@
-import { LifecycleExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import { I, type IOCIdentifierMap } from '@/config/ioc-identifier';
 import * as globals from '@/globals';
 import { restoreUserService } from '@/utils/restoreUserService';
-import { testAppRequester } from '@/utils/testAppRequester';
 import type { I18nService } from './I18nService';
 import type { ThemeService } from './ThemeService';
 import type {
@@ -11,9 +10,7 @@ import type {
 } from '@qlover/corekit-bridge';
 import type {
   SeedConfigInterface,
-  BootstrapInterface
-} from '@qlover/corekit-bridge/bootstrap';
-import type {
+  BootstrapInterface,
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge/bootstrap';
@@ -74,9 +71,9 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
    * @override
    */
   public getPlugins(
-    _seedConfig: SeedConfigInterface
+    seedConfig: SeedConfigInterface
   ): BootstrapExecutorPlugin[] {
-    return [
+    const plugins: BootstrapExecutorPlugin[] = [
       {
         pluginName: 'app-init',
         onBefore({ parameters: { ioc } }) {
@@ -84,8 +81,22 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
           ioc.get<ThemeService>(I.ThemeService).init();
         }
       },
-      testAppRequester,
       restoreUserService
     ];
+
+    if (!seedConfig.isProduction) {
+      plugins.push({
+        pluginName: 'testAppRequester',
+        onBefore(ctx) {
+          void import('@/utils/testAppRequester').then(
+            ({ testAppRequester }) => {
+              void testAppRequester.onBefore?.(ctx);
+            }
+          );
+        }
+      });
+    }
+
+    return plugins;
   }
 }
