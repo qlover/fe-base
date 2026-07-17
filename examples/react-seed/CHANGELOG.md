@@ -1,5 +1,27 @@
 # examples/react-seed
 
+## 1.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **create-app:** Update package.json files across examples to enhance descriptions and improve clarity ([7cadb9b](https://github.com/qlover/fe-base/commit/7cadb9b48b54658184a93a9a68e96aa725cd31dd)) ([#661](https://github.com/qlover/fe-base/pull/661))
+
+- **react-seed:** Refactor bootstrapping and schema validation ([f7ef618](https://github.com/qlover/fe-base/commit/f7ef61887d73902f5ee66650e9127d5b1871c726)) ([#658](https://github.com/qlover/fe-base/pull/658))
+
+#### ♻️ Refactors
+
+- **react-seed:** Remove lodash-es and replace with custom omit utility ([3cc4d28](https://github.com/qlover/fe-base/commit/3cc4d28f66712d7fe79eddc7c24b35138a9bfc02)) ([#658](https://github.com/qlover/fe-base/pull/658))
+
+- **react-seed:** Revamp ESLint configuration and dependencies ([d854bd4](https://github.com/qlover/fe-base/commit/d854bd40fd04830d1888b5a7a27a60f88acb11cf)) ([#658](https://github.com/qlover/fe-base/pull/658))
+
+### Patch Changes
+
+- Update dependency **@qlover/fe-corekit** from `3.3.0` to `3.4.0`
+- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.3.1`
+- Update dependency **@qlover/oauth-wrapper** from `0.6.3` to `0.6.4`
+
 ## 1.3.1
 
 ### Patch Changes
