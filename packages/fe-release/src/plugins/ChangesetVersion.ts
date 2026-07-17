@@ -441,8 +441,9 @@ export default class ChangesetVersion extends ScriptPlugin<
    * List local git tag names (short refs under `refs/tags/`).
    */
   protected async listLocalTags(): Promise<Set<string>> {
+    // Quote --format: Shell.exec runs through /bin/sh, so unquoted %(…) breaks.
     const output = await this.shell.exec(
-      'git for-each-ref --format=%(refname:short) refs/tags/',
+      'git for-each-ref --format="%(refname:short)" refs/tags/',
       { dryRun: false, silent: true }
     );
 

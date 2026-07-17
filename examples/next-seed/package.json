@@ -1,6 +1,6 @@
 {
   "name": "examples/next-seed",
-  "version": "1.3.2",
+  "version": "1.3.4",
   "private": true,
   "description": "Next.js app shell with theme, i18n, and auth",
   "scripts": {
