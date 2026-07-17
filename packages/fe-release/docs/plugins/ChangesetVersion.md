@@ -4,8 +4,8 @@
 
 Changelog generation and changeset version/publish plugin
 
-Second plugin in the default release pipeline (after <a href="./Workspaces.md#workspaces-module" class="tsd-kind-module">Workspaces</a>,
-before <a href="./Github.md#github-module" class="tsd-kind-module">Github</a>). Bridges git-based changelog formatting with the
+Second plugin in the default release pipeline (after [Workspaces](./Workspaces.md#workspaces-module),
+before [Github](./Github.md#github-module)). Bridges git-based changelog formatting with the
 Changesets CLI for monorepo version bumps.
 
 Pipeline phases:
@@ -14,6 +14,13 @@ Pipeline phases:
 - **onExec**: generate per-workspace git changelogs (skips `dependencyRelease`
   when `ignoreNonUpdatedPackages` is enabled)
 - **onSuccess**: run version and/or publish flow based on `mode`
+
+Publish flow (`mode: 'publish'` or second half of `'both'`):
+
+1. Run `changeset publish` (npm publish + local `git tag` for public packages)
+2. Sync workspaces from disk so `tagName` is set from the release version
+3. Create local tags for `private` packages (changesets skips tagging them)
+4. Push `workspace.tagName` refs that exist locally to `origin`
 
 Version flow (`mode: 'version'` or first half of `'both'`):
 
@@ -44,7 +51,7 @@ fe-release --changesetVersion.ignore-non-updated-packages
 
 **See:**
 
-<a href="#ignorenonupdatedpackages-property" class="tsd-kind-property">ChangesetVersionProps.ignoreNonUpdatedPackages</a> for dependency-release behavior
+[ChangesetVersionProps.ignoreNonUpdatedPackages](#ignorenonupdatedpackages-property) for dependency-release behavior
 
 ---
 
@@ -54,50 +61,22 @@ fe-release --changesetVersion.ignore-non-updated-packages
 
 Manages changelog generation, changeset file creation, and Changesets CLI execution.
 
-Coordinates with <a href="./Workspaces.md#workspaces-module" class="tsd-kind-module">Workspaces</a> for workspace discovery and
-`dependencyRelease` tagging. Downstream <a href="./Github.md#github-module" class="tsd-kind-module">Github</a> consumes enriched
+Coordinates with [Workspaces](./Workspaces.md#workspaces-module) for workspace discovery and
+`dependencyRelease` tagging. Downstream [Github](./Github.md#github-module) consumes enriched
 changelogs and bumped versions produced here.
 
 ---
 
-#### `new default` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(context: default, props: ChangesetVersionProps) => default`
+**Type:** `(context: ReleaseContext, props: ChangesetVersionProps) => ChangesetVersion`
 
 #### Parameters
 
 | Name      | Type                    | Optional | Default | Since | Deprecated | Description |
 | --------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `default`               | ❌       | -       | -     | -          |             |
+| `context` | `ReleaseContext`        | ❌       | -       | -     | -          |             |
 | `props`   | `ChangesetVersionProps` | ✅       | `{}`    | -     | -          |             |
-
----
-
-#### `context` (Property)
-
-**Type:** `default`
-
----
-
-#### `onlyOne` (Property)
-
-**Type:** `true`
-
-**Default:** `true`
-
-Ensures only one instance of this plugin can be registered
-
----
-
-#### `pluginName` (Property)
-
-**Type:** `string`
-
----
-
-#### `props` (Property)
-
-**Type:** `ChangesetVersionProps`
 
 ---
 
@@ -119,78 +98,68 @@ Ensures only one instance of this plugin can be registered
 
 ---
 
-#### `logger` (Accessor)
-
-**Type:** `accessor logger`
-
----
-
 #### `mode` (Accessor)
 
 **Type:** `accessor mode`
 
 ---
 
-#### `options` (Accessor)
+#### `collectPushableReleaseTags` (Method)
 
-**Type:** `accessor options`
-
----
-
-#### `shell` (Accessor)
-
-**Type:** `accessor shell`
-
----
-
-#### `enabled` (Method)
-
-**Type:** `(_name: string, _context: default) => boolean`
+**Type:** `(workspaces: WorkspaceInterface[]) => string[]`
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `enabled` (CallSignature)
+##### `collectPushableReleaseTags` (CallSignature)
 
-**Type:** `boolean`
+**Type:** `string[]`
 
-Determines whether a lifecycle method should be executed
+Collect tag names that should be pushed after `changeset publish`.
 
-Skip Logic:
-
-- Returns `false` if skip is `true` (skip all)
-- Returns `false` if skip matches the lifecycle name (skip specific)
-- Returns `true` otherwise (execute normally)
-
-**Returns:**
-
-Whether the lifecycle method should be executed
-
-**Example:**
-
-```typescript
-// Skip all lifecycle methods
-const plugin = new MyPlugin(context, 'my-plugin', { skip: true });
-plugin.enabled('onBefore', context); // Returns false
-
-// Skip specific lifecycle method
-const plugin = new MyPlugin(context, 'my-plugin', { skip: 'onBefore' });
-plugin.enabled('onBefore', context); // Returns false
-plugin.enabled('onExec', context); // Returns true
-```
+Includes public packages (tagged by changesets) and private packages
+(tagged by [ensurePrivateReleaseTags](#ensureprivatereleasetags-method)). Skips dependency-release
+workspaces.
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `ensurePrivateReleaseTags` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[]) => Promise<void>`
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `ensurePrivateReleaseTags` (CallSignature)
+
+**Type:** `Promise<void>`
+
+Create local git tags for private packages after `changeset publish`.
+
+Changesets skips npm publish and tagging for `private: true` packages.
+Release still needs those tags as changelog baselines, so create them here.
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -292,64 +261,6 @@ plugin.enabled('onExec', context); // Returns true
 
 ---
 
-#### `getConfig` (Method)
-
-**Type:** `(keys: string \| string[], defaultValue: T) => T`
-
-#### Parameters
-
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                               |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `keys`         | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if configuration not found                  |
-
----
-
-##### `getConfig` (CallSignature)
-
-**Type:** `T`
-
-Retrieves configuration values with nested path support
-
-Features:
-
-- Safe nested object access using lodash get
-- Automatic plugin namespace prefixing
-- Default value support for missing keys
-- Type-safe return values
-
-**Returns:**
-
-Configuration value or default, full config if no keys provided
-
-**Example:**
-
-```typescript
-// Get full plugin configuration
-const config = this.getConfig();
-
-// Get specific configuration value
-const outputDir = this.getConfig('outputDir', './dist');
-
-// Get nested configuration
-const buildMode = this.getConfig(['build', 'mode'], 'development');
-
-// Get with type safety
-const port = this.getConfig<number>('port', 3000);
-
-// Get array configuration
-const plugins = this.getConfig<string[]>('plugins', []);
-```
-
-#### Parameters
-
-| Name           | Type                 | Optional | Default | Since | Deprecated | Description                                               |
-| -------------- | -------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `keys`         | `string \| string[]` | ✅       | -       | -     | -          | Optional path to specific configuration (string or array) |
-| `defaultValue` | `T`                  | ✅       | -       | -     | -          | Default value if configuration not found                  |
-
----
-
 #### `getIncrement` (Method)
 
 **Type:** `() => string`
@@ -362,49 +273,20 @@ const plugins = this.getConfig<string[]>('plugins', []);
 
 ---
 
-#### `getInitialProps` (Method)
+#### `getIncrementLabels` (Method)
 
-**Type:** `(props: ChangesetVersionProps) => ChangesetVersionProps`
-
-#### Parameters
-
-| Name    | Type                    | Optional | Default | Since | Deprecated | Description                     |
-| ------- | ----------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `props` | `ChangesetVersionProps` | ✅       | -       | -     | -          | Runtime configuration overrides |
+**Type:** `() => string[]`
 
 ---
 
-##### `getInitialProps` (CallSignature)
+##### `getIncrementLabels` (CallSignature)
 
-**Type:** `ChangesetVersionProps`
+**Type:** `string[]`
 
-Merges configuration from multiple sources with proper priority
+Labels that can override semver increment.
 
-Configuration Sources (priority order):
-
-1. Constructor props (highest priority)
-2. Command line config (context.options[pluginName])
-3. File config (context.getOptions(pluginName))
-4. Empty object (fallback)
-
-**Returns:**
-
-Merged configuration object
-
-**Example:**
-
-```typescript
-// Get merged config from all sources
-const config = this.getInitialProps({
-  outputDir: './runtime-dist' // This will override file config
-});
-```
-
-#### Parameters
-
-| Name    | Type                    | Optional | Default | Since | Deprecated | Description                     |
-| ------- | ----------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `props` | `ChangesetVersionProps` | ✅       | -       | -     | -          | Runtime configuration overrides |
+Prefer explicit `workspaces.changeLabels`, then fall back to the PR labels
+from `GITHUB_EVENT_PATH` when running in GitHub Actions after a PR merge.
 
 ---
 
@@ -429,6 +311,20 @@ const config = this.getInitialProps({
 | Name         | Type                   | Optional | Default | Since | Deprecated | Description |
 | ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `listLocalTags` (Method)
+
+**Type:** `() => Promise<Set<string>>`
+
+---
+
+##### `listLocalTags` (CallSignature)
+
+**Type:** `Promise<Set<string>>`
+
+List local git tag names (short refs under `refs/tags/`).
 
 ---
 
@@ -490,98 +386,17 @@ const config = this.getInitialProps({
 
 **Type:** `Promise<void>`
 
-Lifecycle method called before script execution
-
-Override this method to perform setup tasks such as:
-
-- Environment validation
-- Configuration verification
-- Resource preparation
-- Pre-execution checks
-
-**Example:**
-
-```typescript
-async onBefore(context: ExecutorContext<MyContext>): Promise<void> {
-  // Validate required environment variables
-  const apiKey = this.context.getEnv('API_KEY');
-  if (!apiKey) {
-    throw new Error('API_KEY environment variable is required');
-  }
-
-  // Check if output directory exists
-  const outputDir = this.getConfig('outputDir', './dist');
-  if (!(await this.shell.exists(outputDir))) {
-    await this.shell.mkdir(outputDir);
-  }
-}
-```
-
----
-
-#### `onError` (Method)
-
-**Type:** `(_context: default) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
-
----
-
-##### `onError` (CallSignature)
-
-**Type:** `void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
-
-Lifecycle method called when script execution fails
-
-Override this method to handle errors such as:
-
-- Error logging and reporting
-- Resource cleanup on failure
-- Error notifications
-- Failure recovery attempts
-
-**Example:**
-
-```typescript
-async onError(context: Context): Promise<void> {
-  // Log detailed error information
-  this.logger.error('Script execution failed', {
-    error: context.error,
-    duration: context.duration,
-    config: this.options
-  });
-
-  // Send error notification
-  await this.sendNotification('Build failed', {
-    error: context.error.message
-  });
-
-  // Clean up partial results
-  await this.shell.rmdir('./partial-build');
-}
-```
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
-
 ---
 
 #### `onExec` (Method)
 
-**Type:** `(_context: default) => Promise<void>`
+**Type:** `(_context: ReleaseContext) => Promise<void>`
 
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type             | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_context` | `ReleaseContext` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -589,84 +404,11 @@ async onError(context: Context): Promise<void> {
 
 **Type:** `Promise<void>`
 
-Lifecycle method called during script execution
-
-Override this method to implement the main plugin logic:
-
-- Core functionality execution
-- Business logic implementation
-- Task orchestration
-- Process management
-
-**Example:**
-
-```typescript
-async onExec(context: Context): Promise<void> {
-  await this.step({
-    label: 'Building project',
-    task: async () => {
-      await this.shell.exec('npm run build');
-      return 'build completed';
-    }
-  });
-
-  await this.step({
-    label: 'Running tests',
-    task: async () => {
-      await this.shell.exec('npm test');
-      return 'tests passed';
-    }
-  });
-}
-```
-
 #### Parameters
 
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
-
----
-
-#### `onFinally` (Method)
-
-**Type:** `(_context: default) => void \| Promise<void>`
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
-
----
-
-##### `onFinally` (CallSignature)
-
-**Type:** `void \| Promise<void>`
-
-Lifecycle method called after script execution
-
-Override this method to perform cleanup tasks such as:
-
-- Resource cleanup
-- Success notifications
-- Result processing
-- Post-execution reporting
-
-**Example:**
-
-```typescript
-async onFinally(context: Context): Promise<void> {
-  // Clean up temporary files
-  await this.shell.rmdir('./temp');
-}
-```
-
-#### Parameters
-
-| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `default` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type             | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_context` | `ReleaseContext` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -680,33 +422,89 @@ async onFinally(context: Context): Promise<void> {
 
 **Type:** `Promise<void>`
 
-Lifecycle method called after successful script execution
+---
 
-Override this method to perform cleanup tasks such as:
+#### `printWorksapces` (Method)
 
-- Resource cleanup
-- Success notifications
-- Result processing
-- Post-execution reporting
+**Type:** `() => void`
 
-**Example:**
+---
 
-```typescript
-async onSuccess(context: Context): Promise<void> {
-  // Send success notification
-  await this.sendNotification('Build completed successfully');
+##### `printWorksapces` (CallSignature)
 
-  // Generate success report
-  await this.generateReport({
-    status: 'success',
-    timestamp: new Date(),
-    duration: context.duration
-  });
+**Type:** `void`
 
-  // Clean up temporary files
-  await this.shell.rmdir('./temp');
-}
-```
+---
+
+#### `pushWorkspaceReleaseTags` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[]) => Promise<void>`
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `pushWorkspaceReleaseTags` (CallSignature)
+
+**Type:** `Promise<void>`
+
+Push release tags from synced workspaces' `tagName` fields.
+
+After [syncWorkspaces](#syncworkspaces-method) and [ensurePrivateReleaseTags](#ensureprivatereleasetags-method), push
+tags that exist as local refs. Missing public-package tags are skipped
+(changeset may have skipped publish); they are not invented here.
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `readGithubEventLabelNames` (Method)
+
+**Type:** `() => string[]`
+
+---
+
+##### `readGithubEventLabelNames` (CallSignature)
+
+**Type:** `string[]`
+
+---
+
+#### `refreshDependencyReleaseChangelogs` (Method)
+
+**Type:** `(workspaces: WorkspaceInterface[]) => WorkspaceInterface[]`
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `refreshDependencyReleaseChangelogs` (CallSignature)
+
+**Type:** `WorkspaceInterface[]`
+
+Rebuild `dependencyRelease` changelogs after source packages have `newVersion`.
+
+Workspaces appends dependents before `changeset version`, so the template can
+only use a provisional version. Once mergeWorkspaces reads bumped versions
+from disk, rewrite each dependent changelog with the real source bump.
+
+#### Parameters
+
+| Name         | Type                   | Optional | Default | Since | Deprecated | Description |
+| ------------ | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspaces` | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -770,60 +568,6 @@ async onSuccess(context: Context): Promise<void> {
 
 ---
 
-#### `setConfig` (Method)
-
-**Type:** `(config: Partial<ChangesetVersionProps>) => void`
-
-#### Parameters
-
-| Name     | Type                             | Optional | Default | Since | Deprecated | Description                                          |
-| -------- | -------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `config` | `Partial<ChangesetVersionProps>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
-
----
-
-##### `setConfig` (CallSignature)
-
-**Type:** `void`
-
-Updates plugin configuration with deep merging
-
-Merging Strategy:
-
-- Uses lodash merge for deep object merging
-- Preserves existing configuration not specified in update
-- Updates configuration in the plugin's namespace
-- Maintains type safety through generic constraints
-
-**Example:**
-
-```typescript
-// Update single configuration
-this.setConfig({ outputDir: '/new/path' });
-
-// Update multiple configurations
-this.setConfig({
-  verbose: true,
-  buildMode: 'production'
-});
-
-// Update nested configuration
-this.setConfig({
-  build: {
-    minify: true,
-    sourcemap: false
-  }
-});
-```
-
-#### Parameters
-
-| Name     | Type                             | Optional | Default | Since | Deprecated | Description                                          |
-| -------- | -------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `config` | `Partial<ChangesetVersionProps>` | ❌       | -       | -     | -          | Partial configuration to merge with current settings |
-
----
-
 #### `shouldProcessWorkspace` (Method)
 
 **Type:** `(workspace: WorkspaceInterface) => boolean`
@@ -845,91 +589,6 @@ this.setConfig({
 | Name        | Type                 | Optional | Default | Since | Deprecated | Description |
 | ----------- | -------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `workspace` | `WorkspaceInterface` | ❌       | -       | -     | -          |             |
-
----
-
-#### `step` (Method)
-
-**Type:** `(options: StepOption<T>) => Promise<T>`
-
-#### Parameters
-
-| Name      | Type            | Optional | Default | Since | Deprecated | Description               |
-| --------- | --------------- | -------- | ------- | ----- | ---------- | ------------------------- |
-| `options` | `StepOption<T>` | ❌       | -       | -     | -          | Step configuration object |
-
----
-
-##### `step` (CallSignature)
-
-**Type:** `Promise<T>`
-
-Executes a step with structured logging and error handling
-
-Features:
-
-- Automatic step labeling in logs
-- Structured success/failure logging
-- Error propagation with context
-- Visual separation in log output
-
-Step Execution Flow:
-
-1. Log step start with label
-2. Execute task function
-3. Log success or error
-4. Return task result or throw error
-
-**Returns:**
-
-The result of the task execution
-
-**Throws:**
-
-When the task function throws an error
-
-**Example:**
-
-```typescript
-// Basic step execution
-const result = await this.step({
-  label: 'Installing dependencies',
-  task: async () => {
-    await this.shell.exec('npm install');
-    return 'dependencies installed';
-  }
-});
-
-// Step with conditional logic
-await this.step({
-  label: 'Running tests',
-  enabled: this.getConfig('runTests', true),
-  task: async () => {
-    await this.shell.exec('npm test');
-    return 'tests passed';
-  }
-});
-
-// Step with complex logic
-await this.step({
-  label: 'Building project',
-  task: async () => {
-    const buildMode = this.getConfig('buildMode', 'development');
-    const command = `npm run build:${buildMode}`;
-    await this.shell.exec(command);
-    return {
-      mode: buildMode,
-      outputDir: this.getConfig('outputDir', './dist')
-    };
-  }
-});
-```
-
-#### Parameters
-
-| Name      | Type            | Optional | Default | Since | Deprecated | Description               |
-| --------- | --------------- | -------- | ------- | ----- | ---------- | ------------------------- |
-| `options` | `StepOption<T>` | ❌       | -       | -     | -          | Step configuration object |
 
 ---
 
@@ -1182,12 +841,12 @@ Dependents are tracked as `dependencyRelease` workspaces
 2. **Changelog / changeset**: skip processing for `dependencyRelease` workspaces
 3. **`changeset version`**: runs as usual (changesets may still touch dependents)
 4. **Restore**: `git restore` all `dependencyRelease` workspace paths
-5. **Result**: only directly changed packages remain bumped; logs show their
-   version changes only
+5. **Result**: only directly changed packages remain bumped; they are the only
+   workspaces left for GitHub PR title/body/`release-tag-${count}-*` naming
 
 **See:**
 
-<a href="../utils/createWorkspace.md#shouldprocessworkspace-function" class="tsd-kind-function">shouldProcessWorkspace</a> for the per-workspace processing gate
+[shouldProcessWorkspace](../utils/createWorkspace.md#shouldprocessworkspace-function) for the per-workspace processing gate
 
 CLI: `--changesetVersion.ignore-non-updated-packages`
 Alias: `--changelog.ignore-non-updated-packages`

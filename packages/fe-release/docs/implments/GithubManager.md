@@ -95,15 +95,15 @@ await manager.createRelease({
 
 ---
 
-#### `new GithubManager` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(context: default) => GithubManager`
+**Type:** `(context: ReleaseContext) => GithubManager`
 
 #### Parameters
 
-| Name      | Type      | Optional | Default | Since | Deprecated | Description                              |
-| --------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `context` | `default` | ❌       | -       | -     | -          | Release context containing configuration |
+| Name      | Type             | Optional | Default | Since | Deprecated | Description                              |
+| --------- | ---------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
+| `context` | `ReleaseContext` | ❌       | -       | -     | -          | Release context containing configuration |
 
 ---
 
@@ -285,13 +285,13 @@ If the creation fails or if the pull request already exists.
 
 #### `createReleasePRLabel` (Method)
 
-**Type:** `() => Promise<undefined \| GithubLabel>`
+**Type:** `() => Promise<GithubLabel \| undefined>`
 
 ---
 
 ##### `createReleasePRLabel` (CallSignature)
 
-**Type:** `Promise<undefined \| GithubLabel>`
+**Type:** `Promise<GithubLabel \| undefined>`
 
 Creates a release pull request label.
 
@@ -307,7 +307,7 @@ If the label is not valid or if the creation fails.
 
 #### `getCommitInfo` (Method)
 
-**Type:** `(commitSha: string) => Promise<null \| Object>`
+**Type:** `(commitSha: string) => Promise<Object \| null>`
 
 #### Parameters
 
@@ -319,7 +319,7 @@ If the label is not valid or if the creation fails.
 
 ##### `getCommitInfo` (CallSignature)
 
-**Type:** `Promise<null \| Object>`
+**Type:** `Promise<Object \| null>`
 
 Gets detailed information about a commit
 

@@ -33,6 +33,61 @@ class MyFormatter implements ChangelogFormatter {
 
 ---
 
+### `ChangelogFormatter` (Interface)
+
+**Type:** `interface ChangelogFormatter`
+
+Interface for changelog formatting
+
+Defines the contract for classes that format commit data
+into changelog entries.
+
+**Example:**
+
+```typescript
+class MarkdownFormatter implements ChangelogFormatter {
+  format(commits: CommitValue[]): string[] {
+    return commits.map(
+      (commit) => `- ${commit.commitlint.message} (#${commit.prNumber})`
+    );
+  }
+}
+```
+
+---
+
+#### `format` (Method)
+
+**Type:** `(commits: unknown[], options: Opt) => string[]`
+
+#### Parameters
+
+| Name      | Type        | Optional | Default | Since | Deprecated | Description                 |
+| --------- | ----------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `commits` | `unknown[]` | ❌       | -       | -     | -          | Array of commits to format  |
+| `options` | `Opt`       | ✅       | -       | -     | -          | Optional formatting options |
+
+---
+
+##### `format` (CallSignature)
+
+**Type:** `string[]`
+
+Formats commits into changelog entries
+
+**Returns:**
+
+Array of formatted changelog lines
+
+#### Parameters
+
+| Name      | Type        | Optional | Default | Since | Deprecated | Description                 |
+| --------- | ----------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `commits` | `unknown[]` | ❌       | -       | -     | -          | Array of commits to format  |
+| `options` | `Opt`       | ✅       | -       | -     | -          | Optional formatting options |
+
+---
+
 ### `ChangeLogInterface` (Interface)
 
 **Type:** `interface ChangeLogInterface`
@@ -90,58 +145,61 @@ Promise resolving to array of parsed commits
 
 ---
 
-### `ChangelogFormatter` (Interface)
+### `Commitlint` (Interface)
 
-**Type:** `interface ChangelogFormatter`
+**Type:** `interface Commitlint`
 
-Interface for changelog formatting
+Parsed conventional commit data
 
-Defines the contract for classes that format commit data
-into changelog entries.
+Represents a commit message parsed according to the
+conventional commit specification.
+
+Format: type(scope): message
 
 **Example:**
 
 ```typescript
-class MarkdownFormatter implements ChangelogFormatter {
-  format(commits: CommitValue[]): string[] {
-    return commits.map(
-      (commit) => `- ${commit.commitlint.message} (#${commit.prNumber})`
-    );
-  }
-}
+const commit: Commitlint = {
+  type: 'feat',
+  scope: 'api',
+  message: 'add new endpoint',
+  body: 'Adds support for new API endpoint\n\nBREAKING CHANGE: API format changed'
+};
 ```
 
 ---
 
-#### `format` (Method)
+#### `body` (Property)
 
-**Type:** `(commits: unknown[], options: Opt) => string[]`
+**Type:** `string`
 
-#### Parameters
+**Since:** `2.3.0`
 
-| Name      | Type        | Optional | Default | Since | Deprecated | Description                 |
-| --------- | ----------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `commits` | `unknown[]` | ❌       | -       | -     | -          | Array of commits to format  |
-| `options` | `Opt`       | ✅       | -       | -     | -          | Optional formatting options |
+Commit message body with title removed
 
 ---
 
-##### `format` (CallSignature)
+#### `message` (Property)
 
-**Type:** `string[]`
+**Type:** `string`
 
-Formats commits into changelog entries
+Main commit message
 
-**Returns:**
+---
 
-Array of formatted changelog lines
+#### `scope` (Property)
 
-#### Parameters
+**Type:** `string`
 
-| Name      | Type        | Optional | Default | Since | Deprecated | Description                 |
-| --------- | ----------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `commits` | `unknown[]` | ❌       | -       | -     | -          | Array of commits to format  |
-| `options` | `Opt`       | ✅       | -       | -     | -          | Optional formatting options |
+Commit scope (e.g., 'api', 'core')
+
+---
+
+#### `type` (Property)
+
+**Type:** `string`
+
+Commit type (e.g., 'feat', 'fix')
 
 ---
 
@@ -266,64 +324,6 @@ Sub-commits (for merge commits)
 **Type:** `string`
 
 Associated pull request number
-
----
-
-### `Commitlint` (Interface)
-
-**Type:** `interface Commitlint`
-
-Parsed conventional commit data
-
-Represents a commit message parsed according to the
-conventional commit specification.
-
-Format: type(scope): message
-
-**Example:**
-
-```typescript
-const commit: Commitlint = {
-  type: 'feat',
-  scope: 'api',
-  message: 'add new endpoint',
-  body: 'Adds support for new API endpoint\n\nBREAKING CHANGE: API format changed'
-};
-```
-
----
-
-#### `body` (Property)
-
-**Type:** `string`
-
-**Since:** `2.3.0`
-
-Commit message body with title removed
-
----
-
-#### `message` (Property)
-
-**Type:** `string`
-
-Main commit message
-
----
-
-#### `scope` (Property)
-
-**Type:** `string`
-
-Commit scope (e.g., 'api', 'core')
-
----
-
-#### `type` (Property)
-
-**Type:** `string`
-
-Commit type (e.g., 'feat', 'fix')
 
 ---
 

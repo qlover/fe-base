@@ -6,7 +6,7 @@ Template-based formatting for release branches, commits, and PRs
 
 Centralizes string formatting for the GitHub release flow. Uses
 TemplateEngine from `@qlover/scripts-context` with ES6-style
-`${ path }` placeholders and variables from <a href="#branchnametplvars-typealias" class="tsd-kind-type-alias">BranchNameTplVars</a>.
+`${ path }` placeholders and variables from [BranchNameTplVars](#branchnametplvars-typealias).
 
 Responsibilities:
 
@@ -17,7 +17,7 @@ Responsibilities:
   formatting via `batchPRBody`
 
 Defaults are sourced from `releaseJson.github` in defaults.
-<a href="../plugins/Github.md#github-module" class="tsd-kind-module">Github</a> constructs an instance and calls `setConfig()` in `onBefore`
+[Github](../plugins/Github.md#github-module) constructs an instance and calls `setConfig()` in `onBefore`
 with runtime context (`repoName`, `releaseId`, `env`, etc.).
 
 **Example:** Branch name template variables
@@ -48,7 +48,7 @@ across plugins.
 
 ---
 
-#### `new ReleaseFormatter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(templateEngine: TemplateEngine, config: ReleaseFormatterConfig) => ReleaseFormatter`
 
@@ -184,6 +184,20 @@ across plugins.
 | --------------------- | ---------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `workspaces`          | `WorkspaceInterface[]` | ❌       | -       | -     | -          |             |
 | `releaseBranchResult` | `ReleaseBranchResult`  | ❌       | -       | -     | -          |             |
+
+---
+
+#### `getChangeTypeSection` (Method)
+
+**Type:** `() => string`
+
+---
+
+##### `getChangeTypeSection` (CallSignature)
+
+**Type:** `string`
+
+Map semver increment to Changesets-style section title.
 
 ---
 
@@ -345,30 +359,6 @@ across plugins.
 
 ---
 
-#### `PRBody` (Property)
-
-**Type:** `string`
-
-**Default:** `ts
-from release.json
-`
-
-Pull request body template
-
----
-
-#### `PRTitle` (Property)
-
-**Type:** `string`
-
-**Default:** `ts
-{@link DEFAULT_PR_TITLE}
-`
-
-Pull request title template
-
----
-
 #### `authorName` (Property)
 
 **Type:** `string`
@@ -385,7 +375,10 @@ Author name
 from release.json
 `
 
-Template for each workspace section in a multi-workspace PR body
+Template for each workspace section in the PR body
+
+Used for both single- and multi-workspace releases.
+Supports `${changeTypeSection}` (Patch/Minor/Major Changes).
 
 ---
 
@@ -397,7 +390,7 @@ Template for each workspace section in a multi-workspace PR body
 
 The branch name for batch release
 
-Template variables: see <a href="#branchnametplvars-typealias" class="tsd-kind-type-alias">BranchNameTplVars</a>
+Template variables: see [BranchNameTplVars](#branchnametplvars-typealias)
 
 ---
 
@@ -449,6 +442,52 @@ Release environment
 
 ---
 
+#### `increment` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+'patch'
+`
+
+Semver increment used to title changelog sections (patch | minor | major)
+
+---
+
+#### `PRBody` (Property)
+
+**Type:** `string`
+
+**Default:** `ts
+from release.json
+`
+
+Pull request body template
+
+---
+
+#### `PRTitle` (Property)
+
+**Type:** `string`
+
+**Default:** `releaseJson.github.PRTitle`
+
+Pull request title template (1–2 packages)
+
+---
+
+#### `PRTitleMany` (Property)
+
+**Type:** `string`
+
+**Default:** `releaseJson.github.PRTitleMany`
+
+Pull request title template when releasing more than 2 packages
+
+Falls back to [PRTitle](#prtitle-property) when unset.
+
+---
+
 #### `releaseId` (Property)
 
 **Type:** `string`
@@ -475,7 +514,7 @@ Unique ID for the current release run
 
 The tag name for batch release
 
-Template variables: see <a href="#branchnametplvars-typealias" class="tsd-kind-type-alias">BranchNameTplVars</a>
+Template variables: see [BranchNameTplVars](#branchnametplvars-typealias)
 
 ---
 
@@ -489,7 +528,7 @@ Repository name
 
 ### `BranchNameTplVars` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type BranchNameTplVars`
 
 ---
 
@@ -554,7 +593,7 @@ Timestamp string used in templates
 
 ### `ReleaseBranchResult` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ReleaseBranchResult`
 
 ---
 

@@ -44,6 +44,10 @@ export const releaseJson = {
     branchName: 'release/${repoName}-${releaseId}',
     releaseTagName: 'release-tag-${count}-patch-${releaseId}',
     commitMessage: 'chore(release): ${spaces}',
+    /** GitHub release title template (createRelease mode) */
+    releaseName: '${name}@${version}',
+    /** Path prefixes skipped when creating GitHub releases */
+    ignoreReleasePaths: [] as readonly string[],
     label: {
       name: 'CI-Release',
       color: '1A7F37',

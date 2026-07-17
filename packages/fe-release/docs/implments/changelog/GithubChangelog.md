@@ -72,7 +72,7 @@ const commits = await changelog.getFullCommit({
 
 ---
 
-#### `new GithubChangelog` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: GithubChangelogProps, githubManager: GithubManager) => GithubChangelog`
 
@@ -589,14 +589,14 @@ const commit = changelog.toCommitValue(
 
 #### `fromContext` (Method)
 
-**Type:** `(context: default, githubManager: GithubManager) => GithubChangelog`
+**Type:** `(context: ReleaseContext, githubManager: GithubManager) => GithubChangelog`
 
 #### Parameters
 
-| Name            | Type            | Optional | Default | Since | Deprecated | Description |
-| --------------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context`       | `default`       | ❌       | -       | -     | -          |             |
-| `githubManager` | `GithubManager` | ❌       | -       | -     | -          |             |
+| Name            | Type             | Optional | Default | Since | Deprecated | Description |
+| --------------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context`       | `ReleaseContext` | ❌       | -       | -     | -          |             |
+| `githubManager` | `GithubManager`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -608,10 +608,10 @@ Creates a GitHub changelog generator from release context
 
 #### Parameters
 
-| Name            | Type            | Optional | Default | Since | Deprecated | Description |
-| --------------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context`       | `default`       | ❌       | -       | -     | -          |             |
-| `githubManager` | `GithubManager` | ❌       | -       | -     | -          |             |
+| Name            | Type             | Optional | Default | Since | Deprecated | Description |
+| --------------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context`       | `ReleaseContext` | ❌       | -       | -     | -          |             |
+| `githubManager` | `GithubManager`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -780,7 +780,7 @@ from: 'abc123'; // Start from specific commit
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface<unknown>`
+**Type:** `LoggerInterface`
 
 ---
 
@@ -858,13 +858,13 @@ types: [
 
 ### `buildGithubChangelogProps` (Function)
 
-**Type:** `(context: default) => GithubChangelogProps`
+**Type:** `(context: ReleaseContext) => GithubChangelogProps`
 
 #### Parameters
 
-| Name      | Type      | Optional | Default | Since | Deprecated | Description |
-| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `default` | ❌       | -       | -     | -          |             |
+| Name      | Type             | Optional | Default | Since | Deprecated | Description |
+| --------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ReleaseContext` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -876,8 +876,8 @@ Builds GitHub changelog options from release context
 
 #### Parameters
 
-| Name      | Type      | Optional | Default | Since | Deprecated | Description |
-| --------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `default` | ❌       | -       | -     | -          |             |
+| Name      | Type             | Optional | Default | Since | Deprecated | Description |
+| --------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ReleaseContext` | ❌       | -       | -     | -          |             |
 
 ---

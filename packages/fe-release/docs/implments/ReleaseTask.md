@@ -117,23 +117,23 @@ const task = new ReleaseTask(
 
 ---
 
-#### `new default` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(options: Partial<ReleaseContextOptions>, executor: LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, ReleaseContextConfig>>, defaultTuples: unknown[]) => default`
+**Type:** `(options: Partial<ReleaseContextOptions>, executor: LifecycleExecutor<ReleaseContext>, defaultTuples: unknown[]) => ReleaseTask`
 
 #### Parameters
 
-| Name            | Type                                                                                           | Optional | Default       | Since | Deprecated | Description                            |
-| --------------- | ---------------------------------------------------------------------------------------------- | -------- | ------------- | ----- | ---------- | -------------------------------------- |
-| `options`       | `Partial<ReleaseContextOptions>`                                                               | ✅       | `{}`          | -     | -          | Release context configuration          |
-| `executor`      | `LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, ReleaseContextConfig>>` | ✅       | `{}`          | -     | -          | Custom async executor (optional)       |
-| `defaultTuples` | `unknown[]`                                                                                    | ✅       | `innerTuples` | -     | -          | Plugin configuration tuples (optional) |
+| Name            | Type                                | Optional | Default       | Since | Deprecated | Description                            |
+| --------------- | ----------------------------------- | -------- | ------------- | ----- | ---------- | -------------------------------------- |
+| `options`       | `Partial<ReleaseContextOptions>`    | ✅       | `{}`          | -     | -          | Release context configuration          |
+| `executor`      | `LifecycleExecutor<ReleaseContext>` | ✅       | `{}`          | -     | -          | Custom async executor (optional)       |
+| `defaultTuples` | `unknown[]`                         | ✅       | `innerTuples` | -     | -          | Plugin configuration tuples (optional) |
 
 ---
 
 #### `context` (Property)
 
-**Type:** `default`
+**Type:** `ReleaseContext`
 
 Release context instance
 
@@ -151,7 +151,7 @@ Plugin configuration tuples (optional)
 
 #### `executor` (Property)
 
-**Type:** `LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, ReleaseContextConfig>>`
+**Type:** `LifecycleExecutor<ReleaseContext>`
 
 **Default:** `{}`
 
@@ -234,13 +234,13 @@ try {
 
 #### `getContext` (Method)
 
-**Type:** `() => default`
+**Type:** `() => ReleaseContext`
 
 ---
 
 ##### `getContext` (CallSignature)
 
-**Type:** `default`
+**Type:** `ReleaseContext`
 
 Gets the current release context
 

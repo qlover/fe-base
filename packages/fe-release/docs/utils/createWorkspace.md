@@ -8,7 +8,7 @@ Replaces the legacy `WorkspaceCreator` module. Provides utilities to:
 
 - Resolve `package.json` paths inside a monorepo root
 - Read workspace manifests from disk
-- Build <a href="../implments/WorkspaceValue.md#workspacevalue-module" class="tsd-kind-module">WorkspaceValue</a> instances for plugins
+- Build [WorkspaceValue](../implments/WorkspaceValue.md#workspacevalue-class) instances for plugins
 - Format workspace names and version summaries for logging
 
 **Example:** Create a workspace from a relative path
@@ -24,7 +24,7 @@ const workspace = createWorkspaceValue({
 
 ### `WorkspaceManifestSource` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type WorkspaceManifestSource`
 
 ---
 
@@ -62,7 +62,7 @@ Monorepo root used to resolve relative `path` values
 
 ### `WorkspacePackageOnDisk` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type WorkspacePackageOnDisk`
 
 ---
 
@@ -112,7 +112,7 @@ Monorepo root used to resolve relative `path` values
 
 **Type:** `WorkspaceValue`
 
-Build a <a href="../implments/WorkspaceValue.md#workspacevalue-class" class="tsd-kind-class">WorkspaceValue</a> from partial workspace data and disk manifest.
+Build a [WorkspaceValue](../implments/WorkspaceValue.md#workspacevalue-class) from partial workspace data and disk manifest.
 
 Reads `package.json` from disk when `packageJson` is not provided.
 
@@ -125,6 +125,36 @@ Error when `path` is missing
 | Name        | Type                                                | Optional | Default | Since | Deprecated | Description |
 | ----------- | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `workspace` | `Partial<WorkspaceValue> & WorkspaceManifestSource` | ❌       | -       | -     | -          |             |
+
+---
+
+### `isPrivateWorkspace` (Function)
+
+**Type:** `(workspace: Pick<WorkspaceInterface, "packageJson">) => boolean`
+
+#### Parameters
+
+| Name        | Type                                      | Optional | Default | Since | Deprecated | Description |
+| ----------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspace` | `Pick<WorkspaceInterface, "packageJson">` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `isPrivateWorkspace` (CallSignature)
+
+**Type:** `boolean`
+
+Whether a workspace is a private package (`package.json#private === true`).
+
+Private packages are skipped by `changeset publish` (no npm publish / no
+automatic git tag). fe-release still versions them and creates/pushes tags
+via ChangesetVersion private-tag ensure step.
+
+#### Parameters
+
+| Name        | Type                                      | Optional | Default | Since | Deprecated | Description |
+| ----------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `workspace` | `Pick<WorkspaceInterface, "packageJson">` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -241,13 +271,13 @@ is a `dependencyRelease` entry (restore-only tracking).
 
 ### `worksapce2name` (Function)
 
-**Type:** `(worksapce: Pick<WorkspaceInterface, "version" \| "name">) => string`
+**Type:** `(worksapce: Pick<WorkspaceInterface, "name" \| "version">) => string`
 
 #### Parameters
 
 | Name        | Type                                            | Optional | Default | Since | Deprecated | Description |
 | ----------- | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `worksapce` | `Pick<WorkspaceInterface, "version" \| "name">` | ❌       | -       | -     | -          |             |
+| `worksapce` | `Pick<WorkspaceInterface, "name" \| "version">` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -267,7 +297,7 @@ pkgname@1.1.0
 
 | Name        | Type                                            | Optional | Default | Since | Deprecated | Description |
 | ----------- | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `worksapce` | `Pick<WorkspaceInterface, "version" \| "name">` | ❌       | -       | -     | -          |             |
+| `worksapce` | `Pick<WorkspaceInterface, "name" \| "version">` | ❌       | -       | -     | -          |             |
 
 ---
 

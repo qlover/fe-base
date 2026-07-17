@@ -150,7 +150,8 @@ jobs:
             --workspaces.compare-ref "${{ github.event.pull_request.base.sha }}" \
             --changesetVersion.skip-changeset \
             --changesetVersion.mode publish \
-            --github.skip
+            --github.mode createRelease \
+            --github.ignore-release-paths examples
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

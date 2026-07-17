@@ -5,27 +5,7 @@
 Internal constants for fe-release
 
 User-facing default configuration lives in `release.json` and is
-injected into <a href="./implments/ReleaseContext.md#releasecontext-module" class="tsd-kind-module">ReleaseContext</a> at construction time.
-
----
-
-### `MANIFEST_PATH` (Variable)
-
-**Type:** `"package.json"`
-
-**Default:** `'package.json'`
-
-Path to package manifest file
-
----
-
-### `TEMPLATE_OPEN` (Variable)
-
-**Type:** `"{{"`
-
-**Default:** `'{{'`
-
-Template opening delimiter
+injected into [ReleaseContext](./implments/ReleaseContext.md#releasecontext-module) at construction time.
 
 ---
 
@@ -36,6 +16,16 @@ Template opening delimiter
 **Default:** `'release'`
 
 Default name for the release task context (fe-config.json key)
+
+---
+
+### `MANIFEST_PATH` (Variable)
+
+**Type:** `"package.json"`
+
+**Default:** `'package.json'`
+
+Path to package manifest file
 
 ---
 
@@ -119,24 +109,6 @@ Default name for the release task context (fe-config.json key)
 
 ---
 
-##### `PRBody` (Property)
-
-**Type:** `"## Changelog
-
-${changelog}"`
-
-**Default:** `'## Changelog\n\n${changelog}'`
-
----
-
-##### `PRTitle` (Property)
-
-**Type:** `"Release ${env} ${pkgName} ${tagName}"`
-
-**Default:** `'Release ${env} ${pkgName} ${tagName}'`
-
----
-
 ##### `autoMergeReleasePR` (Property)
 
 **Type:** `false`
@@ -149,12 +121,17 @@ ${changelog}"`
 
 **Type:** `"
 
-## ${name} ${version}
+### ${name}@${newVersion}
+
+#### ${changeTypeSection}
 
 ${changelog}
 "`
 
-**Default:** `'\n## ${name} ${version}\n${changelog}\n'`
+**Default:** `'\n### ${name}@${newVersion}\n\n#### ${changeTypeSection}\n\n${changelog}\n'`
+
+Per-workspace section in the PR body (single and multi package).
+`${changeTypeSection}` is Patch/Minor/Major Changes from increment.
 
 ---
 
@@ -171,6 +148,14 @@ ${changelog}
 **Type:** `"chore(release): ${spaces}"`
 
 **Default:** `'chore(release): ${spaces}'`
+
+---
+
+##### `ignoreReleasePaths` (Property)
+
+**Type:** `property ignoreReleasePaths`
+
+Path prefixes skipped when creating GitHub releases
 
 ---
 
@@ -192,9 +177,9 @@ ${changelog}
 
 ###### `description` (Property)
 
-**Type:** `"Release PR"`
+**Type:** `"Automated release PR (merge to publish)"`
 
-**Default:** `'Release PR'`
+**Default:** `'Automated release PR (merge to publish)'`
 
 ---
 
@@ -222,11 +207,51 @@ ${changelog}
 
 ---
 
+##### `PRBody` (Property)
+
+**Type:** `"## Changelog
+
+${changelog}"`
+
+**Default:** `'## Changelog\n\n${changelog}'`
+
+---
+
+##### `PRTitle` (Property)
+
+**Type:** `"Release ${spaces}"`
+
+**Default:** `'Release ${spaces}'`
+
+Used when releasing 1–2 packages
+
+---
+
+##### `PRTitleMany` (Property)
+
+**Type:** `"Release ${count} packages: ${spaces}"`
+
+**Default:** `'Release ${count} packages: ${spaces}'`
+
+Used when releasing more than 2 packages
+
+---
+
 ##### `pushChangeLabels` (Property)
 
 **Type:** `false`
 
 **Default:** `false`
+
+---
+
+##### `releaseName` (Property)
+
+**Type:** `"${name}@${version}"`
+
+**Default:** `'${name}@${version}'`
+
+GitHub release title template (createRelease mode)
 
 ---
 
@@ -291,5 +316,15 @@ ${changelog}
 **Type:** `"${name}@${version}"`
 
 **Default:** `'${name}@${version}'`
+
+---
+
+### `TEMPLATE_OPEN` (Variable)
+
+**Type:** `"{{"`
+
+**Default:** `'{{'`
+
+Template opening delimiter
 
 ---
