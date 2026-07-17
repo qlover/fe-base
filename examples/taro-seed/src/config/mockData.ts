@@ -1,8 +1,5 @@
+import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 import { EP_LOGIN_WX, EP_USER_INFO } from './endpotins';
-import type {
-  UserCredentialSchema,
-  UserSchema
-} from 'types/schemas/UserSchema';
 
 export const mockData = {
   _default: {

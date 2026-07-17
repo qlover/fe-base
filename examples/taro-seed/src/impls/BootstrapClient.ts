@@ -10,9 +10,7 @@ import type {
 } from '@qlover/corekit-bridge';
 import type {
   SeedConfigInterface,
-  BootstrapInterface
-} from '@qlover/corekit-bridge/bootstrap';
-import type {
+  BootstrapInterface,
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge/bootstrap';

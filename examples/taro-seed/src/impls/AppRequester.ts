@@ -2,15 +2,15 @@ import { LifecycleExecutor } from '@qlover/fe-corekit/executor';
 import { RequestExecutor } from '@qlover/fe-corekit/request';
 import { EP_LOGIN_WX, EP_LOGOUT, EP_USER_INFO } from '@/config/endpotins';
 import { logger, seedConfig } from '@/globals';
-import { createTaroRequestAdapter } from '../utils/createTaroRequestAdapter';
-import type { TaroRequestAdapterConfig } from '../utils/createTaroRequestAdapter';
-import type { ApiMockPluginOptions } from '@qlover/corekit-bridge';
-import type { ExecutorContextInterface } from '@qlover/fe-corekit';
 import type {
   LoginRequestSchema,
   UserCredentialSchema,
   UserSchema
-} from 'types/schemas/UserSchema';
+} from '@schemas/UserSchema';
+import { createTaroRequestAdapter } from '../utils/createTaroRequestAdapter';
+import type { TaroRequestAdapterConfig } from '../utils/createTaroRequestAdapter';
+import type { ApiMockPluginOptions } from '@qlover/corekit-bridge';
+import type { ExecutorContextInterface } from '@qlover/fe-corekit';
 
 export type AppRequesterConfig = TaroRequestAdapterConfig &
   ApiMockPluginOptions;
@@ -27,11 +27,12 @@ export const appRequester = new RequestExecutor(
 if (!seedConfig.isProduction) {
   void import('./MockPlugin').then(({ MockPlugin }) =>
     import('@/config/mockData').then(({ mockData }) => {
+      // ApiMockPlugin context is wider than AppRequesterContext; cast for use().
       appRequester.use(
         new MockPlugin({
           mockData,
           logger
-        })
+        }) as never
       );
     })
   );

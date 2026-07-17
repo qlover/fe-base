@@ -37,5 +37,7 @@ declare namespace NodeJS {
      */
     TARO_APP_ID: string;
     TARO_APP_AUTH_TYPE?: string;
+    /** Optional API base URL (Vite / Taro env) */
+    VITE_API_BASE?: string;
   }
 }

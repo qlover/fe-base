@@ -1,12 +1,13 @@
-import type { AuthStore } from '@/stores/authStore';
-import type {
+import {
+  createGatewayResultFailed,
+  createGatewayResultSuccess,
+  type GatewayResult,
   UserServiceInterface,
   UserStoreInterface
 } from '@qlover/corekit-bridge';
-import type {
-  UserCredentialSchema,
-  UserSchema
-} from 'types/schemas/UserSchema';
+import { ExecutorError } from '@qlover/fe-corekit';
+import type { AuthStore } from '@/stores/authStore';
+import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 
 export class UserService implements UserServiceInterface<
   UserSchema,
@@ -61,16 +62,21 @@ export class UserService implements UserServiceInterface<
     );
   }
 
-  /*
-* @override
- 微信登录：先取 wx code，再调后端，成功后写入 authStore * 微信登录：先取 wx code，再调后端，成功后写入 authStore */
+  /**
+   * @override
+   */
   public async login(
     _params: unknown,
     _config?: unknown
-  ): Promise<UserCredentialSchema> {
-    throw new Error('Method not implemented.');
+  ): Promise<GatewayResult<UserCredentialSchema>> {
+    return createGatewayResultFailed(
+      new ExecutorError('NOT_IMPLEMENTED', 'Method not implemented.')
+    );
   }
 
+  /**
+   * WeChat login: exchange wx code via backend, then persist to authStore.
+   */
   public async loginWithCode(code: string): Promise<string> {
     this.authStore.setCode(code);
     this.authStore.start();
@@ -106,8 +112,13 @@ export class UserService implements UserServiceInterface<
   /**
    * @override
    */
-  public register(_params: unknown, _config?: unknown): Promise<UserSchema> {
-    throw new Error('Method not implemented.');
+  public async register(
+    _params: unknown,
+    _config?: unknown
+  ): Promise<GatewayResult<UserSchema>> {
+    return createGatewayResultFailed(
+      new ExecutorError('NOT_IMPLEMENTED', 'Method not implemented.')
+    );
   }
 
   /**
@@ -116,30 +127,44 @@ export class UserService implements UserServiceInterface<
   public async getUserInfo(
     _params?: unknown,
     _config?: unknown
-  ): Promise<UserSchema> {
-    throw new Error('Method not implemented.');
+  ): Promise<GatewayResult<UserSchema>> {
+    return createGatewayResultFailed(
+      new ExecutorError('NOT_IMPLEMENTED', 'Method not implemented.')
+    );
   }
 
   /**
    * @override
    */
   public async refreshUserInfo(
-    params: UserCredentialSchema,
+    params?: unknown,
     _config?: string
-  ): Promise<UserSchema> {
+  ): Promise<GatewayResult<UserSchema>> {
+    if (!this.isCredential(params)) {
+      return createGatewayResultFailed(
+        new ExecutorError(
+          'INVALID_CREDENTIAL',
+          'refreshUserInfo requires a valid credential'
+        )
+      );
+    }
+
     const { fetchUserInfo } = await import('./AppRequester');
     const response = await fetchUserInfo(params.access_token);
 
     if (!response.data) {
-      throw new Error('Refresh user info failed');
+      return createGatewayResultFailed(
+        new ExecutorError('REFRESH_FAILED', 'Refresh user info failed')
+      );
     }
 
     if (this.isCredential(response.data)) {
-      this.authStore.success(response.data, response.data);
+      const credential = response.data;
+      this.authStore.success(credential, credential);
     } else {
       this.authStore.success(response.data, params);
     }
 
-    return response.data;
+    return createGatewayResultSuccess(response.data);
   }
 }

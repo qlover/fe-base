@@ -1,10 +1,10 @@
 import { AsyncStoreStatus, UserStore } from '@qlover/corekit-bridge';
+import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 import type {
   StoreInterface,
   UserStateInterface
 } from '@qlover/corekit-bridge';
 import type { StorageInterface } from '@qlover/fe-corekit';
-import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 
 export type UserCredential = string;
 
