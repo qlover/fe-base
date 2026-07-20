@@ -2,7 +2,6 @@ export * from './interface/StoreInterface';
 export * from './interface/PersistentInterface';
 export * from './impl/SliceStoreAdapter';
 export * from './impl/ZustandStoreAdapter';
-export * from './impl/PersistentStore';
 export * from './interface/AsyncStoreInterface';
 export * from './impl/AsyncStore';
 export * from './impl/AsyncStoreState';

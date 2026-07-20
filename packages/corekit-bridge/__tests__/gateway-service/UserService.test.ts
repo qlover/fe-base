@@ -27,7 +27,7 @@ import { type LoginParams } from '../../src/core/gateway-service/interface/UserS
 import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
-import type { StorageInterface } from '@qlover/fe-corekit';
+import { KeyStorage, type StorageInterface } from '@qlover/fe-corekit';
 import type { UserStoreInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
 import { UserStore } from '@qlover/corekit-bridge/core';
 import type { GatewayResult } from '../../src/core/gateway-service/interface/GatewayServiceInterface';
@@ -232,29 +232,20 @@ describe('UserService', () => {
       it('should create UserService with store configuration (default: persist credential only)', () => {
         const mockStorage = new MockStorage<string>();
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token'
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage) }
         });
 
         expect(service.getStore()).toBeDefined();
         const store = service.getStore();
         expect(store).toBeInstanceOf(UserStore);
         expect(
-          (store as UserStore<TestUser, TestCredential, string>).getStorage()
-        ).toBe(mockStorage);
+          (store as UserStore<TestUser, TestCredential, string>).getPersist()?.key).toBe('auth-session');
       });
 
       it('should create UserService with dual persistence configuration', () => {
         const mockStorage = new MockStorage<string>();
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'user-info',
-            credentialStorageKey: 'auth-token',
-            persistUserInfo: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), persistKeys: ['result', 'credential'] }
         });
 
         expect(service.getStore()).toBeDefined();
@@ -263,16 +254,13 @@ describe('UserService', () => {
           TestCredential,
           string
         >;
-        expect(store.getStorage()).toBe(mockStorage);
+        expect(store.getPersist()?.key).toBe('auth-session');
       });
 
       it('should persist credential only by default after login', async () => {
         const mockStorage = new MockStorage<string>();
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token'
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage) }
         });
 
         mockGateway.login.mockResolvedValue({
@@ -284,20 +272,15 @@ describe('UserService', () => {
         const result = await service.login(loginParams);
         expect(result.error).toBeNull();
         // Credential should be persisted
-        expect(mockStorage.data.get('auth-token')).toEqual(testCredential);
+        expect((mockStorage.data.get('auth-session') as any)?.credential).toEqual(testCredential);
         // User info should NOT be persisted (in memory only)
-        expect(mockStorage.data.get('auth-token')).not.toEqual(testUser);
+        expect((mockStorage.data.get('auth-session') as any)?.result).toBeUndefined();
       });
 
       it('should persist both user info and credential when dual persistence is enabled', async () => {
         const mockStorage = new MockStorage<string>();
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'user-info',
-            credentialStorageKey: 'auth-token',
-            persistUserInfo: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), persistKeys: ['result', 'credential'] }
         });
 
         mockGateway.login.mockResolvedValue({
@@ -309,21 +292,17 @@ describe('UserService', () => {
         await service.login(loginParams);
 
         // Both should be persisted
-        expect(mockStorage.data.get('auth-token')).toEqual(testCredential);
-        expect(mockStorage.data.get('user-info')).toEqual(testUser);
+        expect((mockStorage.data.get('auth-session') as any)?.credential).toEqual(testCredential);
+        expect((mockStorage.data.get('auth-session') as any)?.result).toEqual(testUser);
       });
 
       it('should restore credential from storage on initialization', () => {
         const mockStorage = new MockStorage<string>();
         // Pre-populate storage with credential
-        mockStorage.setItem('auth-token', testCredential);
+        mockStorage.setItem('auth-session', { credential: testCredential });
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token',
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
         });
 
         const store = service.getStore();
@@ -333,17 +312,11 @@ describe('UserService', () => {
       it('should restore both user info and credential when dual persistence is enabled', () => {
         const mockStorage = new MockStorage<string>();
         // Pre-populate storage with both
-        mockStorage.setItem('auth-token', testCredential);
-        mockStorage.setItem('user-info', testUser);
+        mockStorage.setItem('auth-session', { credential: testCredential, result: testUser });
+
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'user-info',
-            credentialStorageKey: 'auth-token',
-            persistUserInfo: true,
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), persistKeys: ['result', 'credential'], initRestore: true }
         });
 
         const store = service.getStore();
@@ -354,14 +327,10 @@ describe('UserService', () => {
       it('should return false when credential is restored but status is not SUCCESS', () => {
         const mockStorage = new MockStorage<string>();
         // Pre-populate storage with credential
-        mockStorage.setItem('auth-token', testCredential);
+        mockStorage.setItem('auth-session', { credential: testCredential });
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token',
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
         });
 
         // Credential is restored
@@ -374,14 +343,10 @@ describe('UserService', () => {
 
       it('should return true when credential is restored and status is manually set to SUCCESS', () => {
         const mockStorage = new MockStorage<string>();
-        mockStorage.setItem('auth-token', testCredential);
+        mockStorage.setItem('auth-session', { credential: testCredential });
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token',
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
         });
 
         // Credential is restored but status is DRAFT
@@ -405,17 +370,11 @@ describe('UserService', () => {
       it('should return false when both credential and user info are restored but status is not SUCCESS', () => {
         const mockStorage = new MockStorage<string>();
         // Pre-populate storage with both
-        mockStorage.setItem('auth-token', testCredential);
-        mockStorage.setItem('user-info', testUser);
+        mockStorage.setItem('auth-session', { credential: testCredential, result: testUser });
+
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'user-info',
-            credentialStorageKey: 'auth-token',
-            persistUserInfo: true,
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), persistKeys: ['result', 'credential'], initRestore: true }
         });
 
         // Both are restored
@@ -432,11 +391,7 @@ describe('UserService', () => {
         // Storage is empty
 
         const service = new UserService<TestUser, TestCredential>(mockGateway, {
-          store: {
-            storage: mockStorage,
-            storageKey: 'auth-token',
-            initRestore: true
-          }
+          store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
         });
 
         // isAuthenticated should return false when no credential is restored
@@ -469,14 +424,12 @@ describe('UserService', () => {
 
           const mockStorage = new MockStorage<string>();
           const expiredCredential = { ...testCredential, expiresIn: -1000 }; // Expired
-          mockStorage.setItem('auth-token', expiredCredential);
+          mockStorage.setItem('auth-session', {
+            credential: expiredCredential
+          });
 
           const service = new CustomUserService(mockGateway, {
-            store: {
-              storage: mockStorage,
-              storageKey: 'auth-token',
-              initRestore: true
-            }
+            store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
           });
 
           // Credential is restored but expired
@@ -503,14 +456,10 @@ describe('UserService', () => {
           }
 
           const mockStorage = new MockStorage<string>();
-          mockStorage.setItem('auth-token', testCredential);
+          mockStorage.setItem('auth-session', { credential: testCredential });
 
           const service = new CustomUserService(mockGateway, {
-            store: {
-              storage: mockStorage,
-              storageKey: 'auth-token',
-              initRestore: true
-            }
+            store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
           });
 
           // Credential restored but user info is missing
@@ -576,14 +525,10 @@ describe('UserService', () => {
           }
 
           const mockStorage = new MockStorage<string>();
-          mockStorage.setItem('auth-token', testCredential);
+          mockStorage.setItem('auth-session', { credential: testCredential });
 
           const service = new CustomUserService(mockGateway, {
-            store: {
-              storage: mockStorage,
-              storageKey: 'auth-token',
-              initRestore: true
-            }
+            store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
           });
 
           // Credential is restored and validated in constructor
@@ -624,14 +569,12 @@ describe('UserService', () => {
 
           const mockStorage = new MockStorage<string>();
           const expiredCredential = { ...testCredential, expiresIn: -1000 };
-          mockStorage.setItem('auth-token', expiredCredential);
+          mockStorage.setItem('auth-session', {
+            credential: expiredCredential
+          });
 
           const service = new CustomUserService(mockGateway, {
-            store: {
-              storage: mockStorage,
-              storageKey: 'auth-token',
-              initRestore: true
-            }
+            store: { persist: new KeyStorage('auth-session', mockStorage), initRestore: true }
           });
 
           // Expired credential should be cleared
