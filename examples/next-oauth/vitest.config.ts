@@ -18,7 +18,8 @@ export default defineConfig({
       '@schemas': resolve(__dirname, 'shared/schemas'),
       '@config': resolve(__dirname, 'shared/config'),
       '@interfaces': resolve(__dirname, 'shared/interfaces'),
-      '@shared': resolve(__dirname, 'shared')
+      '@shared': resolve(__dirname, 'shared'),
+      '@locales': resolve(__dirname, 'public/locales')
     }
   }
 });

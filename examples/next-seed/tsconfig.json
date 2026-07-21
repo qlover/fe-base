@@ -27,7 +27,8 @@
       "@config/*": ["./shared/config/*"],
       "@interfaces/*": ["./shared/interfaces/*"],
       "@shared/*": ["./shared/*"],
-      "@server/*": ["./server/*"]
+      "@server/*": ["./server/*"],
+      "@locales/*": ["./public/locales/*"]
     }
   },
   "include": [
