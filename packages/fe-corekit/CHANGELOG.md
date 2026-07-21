@@ -1,8 +1,8 @@
 # @qlover/fe-corekit
 
-## 3.5.0
+## 3.4.6
 
-### Minor Changes
+### Patch Changes
 
 #### ♻️ Refactors
 
