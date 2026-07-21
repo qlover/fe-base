@@ -127,7 +127,7 @@ const isDisabled = bridge.getDisabledSend({
 
 #### `getFirstDraftMessage` (Method)
 
-**Type:** `(draftMessages: ChatMessage<T, unknown>[]) => null \| ChatMessage<T, unknown>`
+**Type:** `(draftMessages: ChatMessage<T, unknown>[]) => ChatMessage<T, unknown> \| null`
 
 #### Parameters
 
@@ -142,7 +142,7 @@ If not provided, defaults to fetching all messages from store. |
 
 ##### `getFirstDraftMessage` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get the first draft message from the message list
 
@@ -205,7 +205,7 @@ const allMessages = store.getMessages();
 
 #### `getSendingMessage` (Method)
 
-**Type:** `(messages: ChatMessage<T, unknown>[]) => null \| ChatMessage<T, unknown>`
+**Type:** `(messages: ChatMessage<T, unknown>[]) => ChatMessage<T, unknown> \| null`
 
 #### Parameters
 
@@ -220,7 +220,7 @@ If not provided, defaults to fetching all messages from store. |
 
 ##### `getSendingMessage` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get the currently sending message
 
@@ -594,7 +594,7 @@ const logPlugin: ChatMessageBridgePlugin<string> = {
 
 ### `DisabledSendParams` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type DisabledSendParams<T>`
 
 Parameters for determining if sending messages should be disabled
 

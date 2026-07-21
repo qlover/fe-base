@@ -70,7 +70,7 @@ executor.exec({
 
 ---
 
-#### `new ApiMockPlugin` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: ApiMockPluginOptions & Object) => ApiMockPlugin`
 
@@ -96,17 +96,19 @@ Plugin configuration options
 
 **Default:** `'ApiMockPlugin'`
 
+Optional plugin name for identification
+
 ---
 
 #### `buildFullUrl` (Method)
 
-**Type:** `(baseURL: undefined \| string, url: string) => string`
+**Type:** `(baseURL: string \| undefined, url: string) => string`
 
 #### Parameters
 
 | Name      | Type                  | Optional | Default | Since | Deprecated | Description         |
 | --------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `baseURL` | `undefined \| string` | ❌       | -       | -     | -          | Base URL (optional) |
+| `baseURL` | `string \| undefined` | ❌       | -       | -     | -          | Base URL (optional) |
 | `url`     | `string`              | ❌       | -       | -     | -          | Request URL path    |
 
 ---
@@ -125,7 +127,7 @@ Full URL string
 
 | Name      | Type                  | Optional | Default | Since | Deprecated | Description         |
 | --------- | --------------------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `baseURL` | `undefined \| string` | ❌       | -       | -     | -          | Base URL (optional) |
+| `baseURL` | `string \| undefined` | ❌       | -       | -     | -          | Base URL (optional) |
 | `url`     | `string`              | ❌       | -       | -     | -          | Request URL path    |
 
 ---
@@ -196,14 +198,14 @@ true if the plugin should be enabled, false otherwise
 
 #### `logMockRequest` (Method)
 
-**Type:** `(key: string, headers: undefined \| Record<string, unknown>, mockData: unknown) => void`
+**Type:** `(key: string, headers: Record<string, unknown> \| undefined, mockData: unknown) => void`
 
 #### Parameters
 
 | Name       | Type                                   | Optional | Default | Since | Deprecated | Description                            |
 | ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
 | `key`      | `string`                               | ❌       | -       | -     | -          | The method + URL key used for matching |
-| `headers`  | `undefined \| Record<string, unknown>` | ❌       | -       | -     | -          | Request headers                        |
+| `headers`  | `Record<string, unknown> \| undefined` | ❌       | -       | -     | -          | Request headers                        |
 | `mockData` | `unknown`                              | ❌       | -       | -     | -          | The resolved mock data                 |
 
 ---
@@ -219,14 +221,14 @@ Logs the mock request information for debugging
 | Name       | Type                                   | Optional | Default | Since | Deprecated | Description                            |
 | ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
 | `key`      | `string`                               | ❌       | -       | -     | -          | The method + URL key used for matching |
-| `headers`  | `undefined \| Record<string, unknown>` | ❌       | -       | -     | -          | Request headers                        |
+| `headers`  | `Record<string, unknown> \| undefined` | ❌       | -       | -     | -          | Request headers                        |
 | `mockData` | `unknown`                              | ❌       | -       | -     | -          | The resolved mock data                 |
 
 ---
 
 #### `matchMockData` (Method)
 
-**Type:** `(mockDataJson: MockDataJson<ApiMockPluginConfig>, method: string, baseURL: undefined \| string, url: string) => unknown`
+**Type:** `(mockDataJson: MockDataJson<ApiMockPluginConfig>, method: string, baseURL: string \| undefined, url: string) => unknown`
 
 #### Parameters
 
@@ -234,7 +236,7 @@ Logs the mock request information for debugging
 | -------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------ |
 | `mockDataJson` | `MockDataJson<ApiMockPluginConfig>` | ❌       | -       | -     | -          | Mock data configuration object |
 | `method`       | `string`                            | ❌       | -       | -     | -          | HTTP method (default: 'GET')   |
-| `baseURL`      | `undefined \| string`               | ❌       | -       | -     | -          | Base URL (optional)            |
+| `baseURL`      | `string \| undefined`               | ❌       | -       | -     | -          | Base URL (optional)            |
 | `url`          | `string`                            | ❌       | -       | -     | -          | Request URL path               |
 
 ---
@@ -261,7 +263,7 @@ The matched mock data value (can be a function or static value)
 | -------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------ |
 | `mockDataJson` | `MockDataJson<ApiMockPluginConfig>` | ❌       | -       | -     | -          | Mock data configuration object |
 | `method`       | `string`                            | ❌       | -       | -     | -          | HTTP method (default: 'GET')   |
-| `baseURL`      | `undefined \| string`               | ❌       | -       | -     | -          | Base URL (optional)            |
+| `baseURL`      | `string \| undefined`               | ❌       | -       | -     | -          | Base URL (optional)            |
 | `url`          | `string`                            | ❌       | -       | -     | -          | Request URL path               |
 
 ---

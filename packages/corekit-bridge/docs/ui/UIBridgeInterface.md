@@ -78,13 +78,13 @@ class CounterBridge implements UIBridgeInterface<UseCounterReturn> {
 
 #### `getUIBridge` (Method)
 
-**Type:** `() => null \| T`
+**Type:** `() => T \| null`
 
 ---
 
 ##### `getUIBridge` (CallSignature)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 ---
 

@@ -32,10 +32,6 @@ Execution Order:
 - All onBefore hooks execute before the task
 - Each hook can see parameter changes from previous hooks
 
-**Returns:**
-
-New parameters to update context, or undefined to keep current parameters
-
 **Example:** Parameter validation
 
 ```typescript
@@ -74,10 +70,6 @@ Return Value Behavior:
 
 - If returns ExecutorError: Replaces the current error
 - If returns undefined: Keeps the current error
-
-**Returns:**
-
-ExecutorError to replace current error, or undefined
 
 **Example:** Error logging
 
@@ -121,10 +113,6 @@ Return Value Behavior:
 - If returns a value: Original task is skipped, returned value is used as result
 - If returns void/undefined: Original task runs normally
 - Can return the task result directly or a new task function
-
-**Returns:**
-
-Result of task execution, or void/undefined to let original task run
 
 **Example:** Task wrapping
 
@@ -203,6 +191,14 @@ onFinally: (ctx) => {
 
 ---
 
+#### `onlyOne` (Property)
+
+**Type:** `boolean`
+
+If true, ensures only one instance of this plugin type
+
+---
+
 #### `onSuccess` (Property)
 
 **Type:** `Object`
@@ -235,14 +231,6 @@ onSuccess: (ctx) => {
   cache.set(ctx.parameters.key, ctx.returnValue);
 };
 ```
-
----
-
-#### `onlyOne` (Property)
-
-**Type:** `boolean`
-
-If true, ensures only one instance of this plugin type
 
 ---
 
@@ -294,7 +282,7 @@ true if plugin should execute, false otherwise
 
 ### `BootstrapPluginOptions` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type BootstrapPluginOptions`
 
 ---
 

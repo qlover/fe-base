@@ -12,133 +12,37 @@
 
 Async store implementation
 
-- Significance: Provides a complete implementation of async operation state management with persistence
-- Core idea: Combine async operation lifecycle management with persistent state storage
-- Main function: Manage async operations (start, stop, success, failure) with automatic state persistence
-- Main purpose: Enable reactive async state management with storage synchronization
-
-Core features:
-
-- Async operation lifecycle: Start, stop, success, failure handling with automatic state updates
-- Persistent storage: Optional automatic state persistence to storage backends
-- Reactive state: Composes <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (default SliceStoreAdapter); use `getStore().subscribe`
-- Status tracking: Complete status management (DRAFT, PENDING, SUCCESS, FAILED, STOPPED)
-- Duration calculation: Track and calculate operation duration from timestamps
-- Flexible storage: Support storing only result value or full state object
-
-Design decisions:
-
-- Storage is optional: Store works without storage for in-memory only scenarios
-- Automatic persistence: State changes are automatically persisted (unless disabled)
-- Storage modes: Can store only result value (default) or full state object
-- Error resilience: Storage failures don't prevent state updates
-- Status management: Status is automatically updated based on operation lifecycle
-
-**Template:** T
-
-The type of the result data from the async operation
-
-**Example:** Basic usage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: () => null
-});
-
-// Start operation
-store.start();
-
-// Handle success
-try {
-  const user = await fetchUser();
-  store.success(user);
-} catch (error) {
-  store.failed(error);
-}
-```
-
-**Example:** Reactive usage
-
-```typescript
-const store = new AsyncStore<User, string>({ storage: null });
-
-const port = store.getStore();
-port.subscribe((state) => {
-  if (state.loading) {
-    console.log('Loading...');
-  } else if (state.result) {
-    console.log('User:', state.result);
-  } else if (state.error) {
-    console.error('Error:', state.error);
-  }
-});
-```
+Persistence writes a partial snapshot of fields listed in `persistKeys` (default `['result']`).
 
 ---
 
-#### `new AsyncStore` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: AsyncStoreOptions<S, Key, Opt>) => AsyncStore<S, Key, Opt>`
 
 #### Parameters
 
-| Name                                                                       | Type                             | Optional | Default | Since | Deprecated | Description                                          |
-| -------------------------------------------------------------------------- | -------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `options`                                                                  | `AsyncStoreOptions<S, Key, Opt>` | ✅       | -       | -     | -          | Optional configuration for storage and initial state |
-| If not provided, store will work without persistence and use default state |
+| Name      | Type                             | Optional | Default | Since | Deprecated | Description                                                        |
+| --------- | -------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------ |
+| `options` | `AsyncStoreOptions<S, Key, Opt>` | ✅       | -       | -     | -          | Persist port, `persistKeys`, default state factory, composed store |
 
 ---
 
-#### `getStorage` (Property)
+#### `persistKeys` (Property)
 
-**Type:** `Object`
+**Type:** `property persistKeys`
 
-When storageResult=true, should return S['result']
-When storageResult=false, should return S
+**Default:** `['result']`
 
----
-
-#### `storage` (Property)
-
-**Type:** `null \| StorageInterface<Key, S, Opt>`
-
-**Default:** `null`
-
-Storage implementation for persisting state, or `null` if persistence is not needed
-When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
+State keys included in the persisted snapshot
 
 ---
 
-#### `storageKey` (Property)
+#### `persistPort` (Property)
 
-**Type:** `null \| Key`
+**Type:** `KeyStorageInterface<Key, Partial<S>, Opt>`
 
-**Default:** `null`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Set during construction from `AsyncStoreOptions.storageKey`.
-
----
-
-#### `storageResult` (Property)
-
-**Type:** `boolean`
-
-**Default:** `true`
-
-Control the type of data stored in persistence
-
-This property controls what data is stored and restored from storage:
-
-- `true`: Store only the result value (`T`). `restore()` returns `T | null`
-- `false`: Store the full state object. `restore()` returns `AsyncStoreStateInterface<T> | null`
-
-**Note:** This is primarily an internal testing property. In most cases, storing
-only the result value (`true`) is sufficient and more efficient.
+Optional persistence port (key + backend bound together)
 
 ---
 
@@ -154,11 +58,11 @@ only the result value (`true`) is sufficient and more efficient.
 
 #### Parameters
 
-| Name              | Type                       | Optional | Default | Since | Deprecated | Description |
-| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `S \| StoreUpdateValue<S>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                   | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                  | ✅       | -       | -     | -          |             |
+| Name              | Type                       | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `S \| StoreUpdateValue<S>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                   | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                  | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
@@ -166,13 +70,15 @@ only the result value (`true`) is sufficient and more efficient.
 
 **Type:** `void`
 
+Apply a state patch, then optionally persist
+
 #### Parameters
 
-| Name              | Type                       | Optional | Default | Since | Deprecated | Description |
-| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `S \| StoreUpdateValue<S>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                   | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                  | ✅       | -       | -     | -          |             |
+| Name              | Type                       | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `S \| StoreUpdateValue<S>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                   | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                  | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
@@ -368,15 +274,29 @@ if (store.getLoading()) {
 
 ---
 
+#### `getPersist` (Method)
+
+**Type:** `() => KeyStorageInterface<Key, Partial<S>, Opt> \| undefined`
+
+---
+
+##### `getPersist` (CallSignature)
+
+**Type:** `KeyStorageInterface<Key, Partial<S>, Opt> \| undefined`
+
+Persistence port, or `undefined` when memory-only
+
+---
+
 #### `getResult` (Method)
 
-**Type:** `() => null \| unknown`
+**Type:** `() => unknown \| null`
 
 ---
 
 ##### `getResult` (CallSignature)
 
-**Type:** `null \| unknown`
+**Type:** `unknown \| null`
 
 Get the result from the async operation
 
@@ -481,6 +401,20 @@ switch (status) {
 
 ---
 
+#### `getStorage` (Method)
+
+**Type:** `() => StorageInterface<Key, S, Opt> \| null`
+
+---
+
+##### `getStorage` (CallSignature)
+
+**Type:** `StorageInterface<Key, S, Opt> \| null`
+
+[PersistentInterface.getStorage](../interface/PersistentInterface.md#getstorage-method) — always `null`; use [getPersist](#getpersist-method)
+
+---
+
 #### `getStore` (Method)
 
 **Type:** `() => StoreInterface<S>`
@@ -493,8 +427,8 @@ switch (status) {
 
 Get the underlying store instance
 
-Returns the composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (typically SliceStoreAdapter), enabling
-reactive subscriptions via <a href="../interface/StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>.
+Returns the composed [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) (typically SliceStoreAdapter), enabling
+reactive subscriptions via [StoreInterface.subscribe](../interface/StoreInterface.md#subscribe-property).
 
 **Returns:**
 
@@ -600,6 +534,32 @@ if (store.isPending()) {
 
 ---
 
+#### `isPersistSnapshotEmpty` (Method)
+
+**Type:** `(picked: AsyncStorePersistValue<S>) => boolean`
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `isPersistSnapshotEmpty` (CallSignature)
+
+**Type:** `boolean`
+
+Whether every picked field is nullish (entry should be removed)
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `isStopped` (Method)
 
 **Type:** `() => boolean`
@@ -659,16 +619,43 @@ if (store.isSuccess()) {
 
 ---
 
+#### `normalizeStoredPatch` (Method)
+
+**Type:** `(stored: unknown) => StoreUpdateValue<S> \| null`
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `normalizeStoredPatch` (CallSignature)
+
+**Type:** `StoreUpdateValue<S> \| null`
+
+Normalize a value read from storage into a state patch for [persistKeys](#persistkeys-property)
+
+Supports object snapshots and legacy single-key raw values.
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `persist` (Method)
 
 **Type:** `(_state: T) => void`
 
 #### Parameters
 
-| Name                                                                      | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| ------------------------------------------------------------------------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state`                                                                  | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
-| This parameter is not used. The method always persists the current state. |
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -676,56 +663,39 @@ if (store.isSuccess()) {
 
 **Type:** `void`
 
-Persist state to storage
-
-Persists the current state to the configured storage backend.
-The data persisted depends on the `storageResult` property:
-
-- If `storageResult` is `true`: Stores only the result value (`T`)
-- If `storageResult` is `false`: Stores the full state object
-
-Behavior:
-
-- Does nothing if storage or storageKey is not configured
-- If `storageResult` is `true` and result is `null`, nothing is stored
-- If `storageResult` is `false`, always stores the full state object (even if result is null)
-- Automatically called by `emit()` when state changes (unless `persist: false` is specified)
-- Always persists the current state (the `_state` parameter is ignored for compatibility with interface)
-
-**Example:** Automatic persistence (via emit)
-
-```typescript
-store.success(user); // Automatically persists to storage
-```
-
-**Example:** Manual persistence
-
-```typescript
-store.persist(); // Persist current state
-```
-
-**Example:** Persist only result value (default)
-
-```typescript
-store.storageResult = true; // default
-store.success(user);
-// Storage contains only the user object
-```
-
-**Example:** Persist full state
-
-```typescript
-store.storageResult = false;
-store.success(user);
-// Storage contains full state object with loading, status, timestamps, etc.
-```
+Write the picked snapshot; remove entry when every picked field is nullish
 
 #### Parameters
 
-| Name                                                                      | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| ------------------------------------------------------------------------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state`                                                                  | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
-| This parameter is not used. The method always persists the current state. |
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
+
+---
+
+#### `pickPersistSnapshot` (Method)
+
+**Type:** `(state: S) => AsyncStorePersistValue<S>`
+
+#### Parameters
+
+| Name    | Type | Optional | Default | Since | Deprecated | Description |
+| ------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `S`  | ❌       | -       | -     | -          |             |
+
+---
+
+##### `pickPersistSnapshot` (CallSignature)
+
+**Type:** `AsyncStorePersistValue<S>`
+
+Build the partial snapshot for the configured [persistKeys](#persistkeys-property)
+
+#### Parameters
+
+| Name    | Type | Optional | Default | Since | Deprecated | Description |
+| ------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `S`  | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -773,51 +743,15 @@ store.reset();
 
 #### `restore` (Method)
 
-**Type:** `() => null \| R`
+**Type:** `() => R \| null`
 
 ---
 
 ##### `restore` (CallSignature)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
-Restore state from storage
-
-Restores state from the configured storage backend. The return type depends
-on the `storageResult` property:
-
-- If `storageResult` is `true`: Returns only the result value (`T`)
-- If `storageResult` is `false`: Returns the full state object
-
-Behavior:
-
-- Checks if storage and storageKey are configured
-- Retrieves data from storage based on `storageResult` mode
-- Updates store state without triggering persistence (prevents circular updates)
-- Returns `null` if storage is not configured, no data found, or restoration fails
-
-**Returns:**
-
-The restored value or state, or `null` if not available
-
-**Example:** Restore result value (storageResult = true)
-
-```typescript
-const result = store.restore(); // Returns T | null
-if (result) {
-  console.log('Restored user:', result);
-}
-```
-
-**Example:** Restore full state (storageResult = false)
-
-```typescript
-store.storageResult = false;
-const state = store.restore(); // Returns AsyncStoreStateInterface<T> | null
-if (state) {
-  console.log('Restored state:', state);
-}
-```
+Restore picked fields from the persist port without writing back
 
 ---
 
@@ -991,29 +925,26 @@ store.success(processedData);
 
 Options for creating an async store instance
 
-Configuration options for initializing an `AsyncStore` with storage support
-and custom state initialization.
+Persistence is optional: pass a single KeyStorageInterface bound to one key.
+Omit `persist` for in-memory-only usage.
 
-**Template:** T
-
-The type of the result data from the async operation
-
-**Example:** Basic usage
+**Example:** Persist `result` only (default pick)
 
 ```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
+import { KeyStorage } from '@qlover/fe-corekit';
+
+const store = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  persist: new KeyStorage('user-state', storageAdapter),
   defaultState: () => null
 });
 ```
 
-**Example:** Without storage
+**Example:** Persist multiple fields
 
 ```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null
+const store = new AsyncStore<UserState, string>({
+  persist: new KeyStorage('session', storageAdapter),
+  persistKeys: ['result', 'credential']
 });
 ```
 
@@ -1023,39 +954,46 @@ const store = new AsyncStore<User, string>({
 
 **Type:** `boolean`
 
-Whether to automatically restore state from storage during construction
+**Default:** `false`
 
-**⚠️ This is primarily a testing/internal property.**
-
-**Initialization Order Issues:**
-When `initRestore` is `true`, `restore()` is called during `super()` execution,
-which happens BEFORE subclass field initialization. This means:
-
-- Subclass fields (e.g., `private readonly storageKey = 'my-key'`) are NOT yet initialized
-- `restore()` cannot access these fields, causing runtime errors or incorrect behavior
-- This is a fundamental limitation of JavaScript/TypeScript class initialization order
+Whether to call `restore()` after the instance is fully constructed
 
 ---
 
-#### `storage` (Property)
+#### `persist` (Property)
 
-**Type:** `null \| StorageInterface<Key, unknown, Opt>`
+**Type:** `KeyStorageInterface<Key, Partial<State>, Opt>`
 
-Storage implementation for persisting state
+Optional persistence port bound to a single storage key
 
-If provided, state changes will be automatically persisted to this storage.
-If `null` or `undefined`, the store will work without persistence.
+When set, `emit` / `persist` / `restore` use this port.
+When omitted, the store stays in-memory only.
+
+**Example:** Use with KeyStorage
+
+```typescript
+import { KeyStorage } from '@qlover/fe-corekit';
+
+const store = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  persist: new KeyStorage('user-state', storageAdapter)
+});
+```
 
 ---
 
-#### `storageKey` (Property)
+#### `persistKeys` (Property)
 
-**Type:** `null \| Key`
+**Type:** `property persistKeys`
 
-Storage key for persisting state
+**Default:** `['result']`
 
-The key used to store state in the storage backend.
-Required if `storage` is provided.
+State keys to include in the persisted snapshot
+
+- Default: `['result']`
+- Example: `['result', 'credential']` for auth stores
+
+Only these fields are written / restored. Ephemeral fields (`loading`, `status`, …)
+are omitted unless listed here.
 
 ---
 
@@ -1063,77 +1001,40 @@ Required if `storage` is provided.
 
 **Type:** `StoreInterface<State>`
 
-Composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> for snapshots (`update` / `getState` / `subscribe` / `reset`)
-
-If omitted, <a href="./createAsyncState.md#createasyncstoreinterface-function" class="tsd-kind-function">createAsyncStoreInterface</a> builds a default SliceStoreAdapter.
-Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping `AsyncStore`.
+Composed [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) for snapshots (`update` / `getState` / `subscribe` / `reset`)
 
 ---
 
 #### `defaultState` (Method)
 
-**Type:** `(storage: null \| StorageInterface<Key, unknown, Opt>, storageKey: null \| Key) => null \| State`
+**Type:** `(persist: KeyStorageInterface<Key, Partial<State>, Opt> \| null) => State \| null`
 
 #### Parameters
 
-| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name      | Type                                                    | Optional | Default | Since | Deprecated | Description                            |
+| --------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `persist` | `KeyStorageInterface<Key, Partial<State>, Opt> \| null` | ✅       | -       | -     | -          | Persistence port from options (if any) |
 
 ---
 
 ##### `defaultState` (CallSignature)
 
-**Type:** `null \| State`
+**Type:** `State \| null`
 
 Create a new state instance
 
-Factory function that creates the initial state for the store.
-This function is called during store initialization and when state is reset.
-
-Behavior:
-
-- If `storage` is provided, the function receives storage and storageKey as parameters
-- If `storage` is not provided, the function receives `undefined` for both parameters
-- If the function returns `null`, a new `AsyncStoreState` instance will be created
-- If the function returns a state object, that object will be used as the initial state
+Called during store initialization and when state is reset.
+Return `null` to use a fresh AsyncStoreState.
 
 **Returns:**
 
-The initial state instance, or `null` to use default state
-
-**Example:** With storage restoration
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: (storage, storageKey) => {
-    const stored = storage?.getItem(storageKey);
-    if (stored) {
-      return new AsyncStoreState<User>(stored);
-    }
-    return null; // Use default state
-  }
-});
-```
-
-**Example:** Without storage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null // Always use default state
-});
-```
+Initial state, or `null` for the default empty async state
 
 #### Parameters
 
-| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name      | Type                                                    | Optional | Default | Since | Deprecated | Description                            |
+| --------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `persist` | `KeyStorageInterface<Key, Partial<State>, Opt> \| null` | ✅       | -       | -     | -          | Persistence port from options (if any) |
 
 ---
 
@@ -1193,7 +1094,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 The result of the async operation if successful
 
@@ -1238,5 +1139,15 @@ Status values are defined by `AsyncStoreStatus`:
 - `SUCCESS`: Operation completed successfully
 - `FAILED`: Operation failed with an error
 - `STOPPED`: Operation was manually stopped
+
+---
+
+### `AsyncStorePersistValue` (TypeAlias)
+
+**Type:** `Partial<State>`
+
+Value type written through [AsyncStoreOptions.persist](#persist-property)
+
+A partial snapshot of state fields listed in [AsyncStoreOptions.persistKeys](#persistkeys-property).
 
 ---

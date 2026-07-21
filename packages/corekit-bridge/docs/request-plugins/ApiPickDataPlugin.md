@@ -14,7 +14,7 @@ Return `RequestAdapterResponse`'s `data` property
 
 ---
 
-#### `new ApiPickDataPlugin` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `() => ApiPickDataPlugin`
 
@@ -26,17 +26,19 @@ Return `RequestAdapterResponse`'s `data` property
 
 **Default:** `'ApiPickDataPlugin'`
 
+Optional plugin name for identification
+
 ---
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>) => void \| Promise<void>`
+**Type:** `(context: ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                                                                                   | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -46,9 +48,9 @@ Return `RequestAdapterResponse`'s `data` property
 
 #### Parameters
 
-| Name      | Type                                                                                                                   | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>>` | ❌       | -       | -     | -          |             |
 
 ---
 

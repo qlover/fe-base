@@ -81,16 +81,16 @@ const userState = await withRequestState(() => fetchUser(id));
 
 ---
 
-#### `new RequestState` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(loading: boolean, result: null \| T, error: unknown) => RequestState<T>`
+**Type:** `(loading: boolean, result: T \| null, error: unknown) => RequestState<T>`
 
 #### Parameters
 
 | Name      | Type        | Optional | Default | Since | Deprecated | Description           |
 | --------- | ----------- | -------- | ------- | ----- | ---------- | --------------------- |
 | `loading` | `boolean`   | ✅       | `false` | -     | -          | Initial loading state |
-| `result`  | `null \| T` | ✅       | `null`  | -     | -          | Initial result value  |
+| `result`  | `T \| null` | ✅       | `null`  | -     | -          | Initial result value  |
 | `error`   | `unknown`   | ✅       | `null`  | -     | -          | Initial error value   |
 
 ---
@@ -132,7 +132,7 @@ Initial loading state
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 **Default:** `null`
 

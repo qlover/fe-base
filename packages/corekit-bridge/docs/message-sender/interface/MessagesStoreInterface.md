@@ -88,7 +88,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 The result of the async operation if successful
 
@@ -185,7 +185,7 @@ Used for UI state management and preventing concurrent operations.
 
 Messages store contract for managing message collections
 
-State snapshots and subscriptions live on <a href="#store-property" class="tsd-kind-property">MessagesStoreInterface.store</a>
+State snapshots and subscriptions live on [MessagesStoreInterface.store](#store-property)
 (`StoreInterface<State>`), not on this interface itself. Message CRUD and
 helpers are defined here.
 
@@ -233,7 +233,7 @@ store.updateMessage(message.id, { content: 'Hello, world!' });
 Backing store for state: `reset`, `update`, `getState`, `subscribe`
 
 Default MessagesStore wiring uses SliceStoreAdapter; callers
-may inject another <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> implementation.
+may inject another [StoreInterface](../../store-state/interface/StoreInterface.md#storeinterface-interface) implementation.
 
 ---
 
@@ -368,7 +368,7 @@ console.log(deleted === undefined); // true
 
 #### `getMessageById` (Method)
 
-**Type:** `(id: string) => undefined \| MessageType`
+**Type:** `(id: string) => MessageType \| undefined`
 
 #### Parameters
 
@@ -380,7 +380,7 @@ console.log(deleted === undefined); // true
 
 ##### `getMessageById` (CallSignature)
 
-**Type:** `undefined \| MessageType`
+**Type:** `MessageType \| undefined`
 
 Get a message by its unique identifier
 
@@ -412,7 +412,7 @@ if (message) {
 
 #### `getMessageByIndex` (Method)
 
-**Type:** `(index: number) => undefined \| MessageType`
+**Type:** `(index: number) => MessageType \| undefined`
 
 #### Parameters
 
@@ -424,7 +424,7 @@ if (message) {
 
 ##### `getMessageByIndex` (CallSignature)
 
-**Type:** `undefined \| MessageType`
+**Type:** `MessageType \| undefined`
 
 Get a message by its index position
 
@@ -756,7 +756,7 @@ localStorage.setItem('messages', jsonString);
 
 #### `updateMessage` (Method)
 
-**Type:** `(id: string, updates: Partial<M>[]) => undefined \| M`
+**Type:** `(id: string, updates: Partial<M>[]) => M \| undefined`
 
 #### Parameters
 
@@ -769,7 +769,7 @@ localStorage.setItem('messages', jsonString);
 
 ##### `updateMessage` (CallSignature)
 
-**Type:** `undefined \| M`
+**Type:** `M \| undefined`
 
 Update an existing message in the store
 

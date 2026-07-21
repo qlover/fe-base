@@ -67,7 +67,7 @@ const plugin = new SenderStrategyPlugin(
 
 ---
 
-#### `new SenderStrategyPlugin` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface<unknown>) => SenderStrategyPlugin<T>`
 
@@ -313,7 +313,7 @@ Newly added message from store
 
 #### `handleSuccess_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderOptions<T>, successData: T) => undefined \| T`
+**Type:** `(parameters: MessageSenderOptions<T>, successData: T) => T \| undefined`
 
 #### Parameters
 
@@ -326,7 +326,7 @@ Newly added message from store
 
 ##### `handleSuccess_KEEP_FAILED` (CallSignature)
 
-**Type:** `undefined \| T`
+**Type:** `T \| undefined`
 
 Handle successful send for KEEP_FAILED strategy
 
@@ -820,13 +820,13 @@ When message update fails for `KEEP_FAILED`/`DELETE_FAILED` strategies
 
 #### `startStreaming` (Method)
 
-**Type:** `(store: MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(store: MessagesStore<MessageStoreMsg<unknown, unknown>>) => void`
 
 #### Parameters
 
-| Name    | Type                                                                                                          | Optional | Default | Since | Deprecated | Description            |
-| ------- | ------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Message store instance |
+| Name    | Type                                               | Optional | Default | Since | Deprecated | Description            |
+| ------- | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message store instance |
 
 ---
 
@@ -841,9 +841,9 @@ This ensures the store properly tracks streaming operations.
 
 #### Parameters
 
-| Name    | Type                                                                                                          | Optional | Default | Since | Deprecated | Description            |
-| ------- | ------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Message store instance |
+| Name    | Type                                               | Optional | Default | Since | Deprecated | Description            |
+| ------- | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message store instance |
 
 ---
 

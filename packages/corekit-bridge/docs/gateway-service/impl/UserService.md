@@ -231,7 +231,7 @@ service.login({ email, password }, {
 
 ---
 
-#### `new UserService` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(gateway: UserServiceGateway<User, Credential, Cfg>, options: UserServiceConfig<User, Credential>) => UserService<User, Credential, Cfg>`
 
@@ -276,13 +276,13 @@ service.login({ email, password }, {
 
 #### `getCredential` (Method)
 
-**Type:** `() => null \| Credential`
+**Type:** `() => Credential \| null`
 
 ---
 
 ##### `getCredential` (CallSignature)
 
-**Type:** `null \| Credential`
+**Type:** `Credential \| null`
 
 Get the current credential
 
@@ -321,13 +321,13 @@ The user store instance containing credential and user state
 
 #### `getUser` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getUser` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get current user from the unified store
 

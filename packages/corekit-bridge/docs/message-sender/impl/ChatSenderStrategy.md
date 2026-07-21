@@ -34,7 +34,7 @@ messageSender.use(strategy);
 
 ---
 
-#### `new ChatSenderStrategy` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface<unknown>) => ChatSenderStrategy`
 
@@ -141,7 +141,7 @@ Called after success, error, or abort operations.
 
 #### `handleBefore_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>) => ChatMessage<string, unknown>`
+**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>) => ChatMessage<string>`
 
 #### Parameters
 
@@ -153,7 +153,7 @@ Called after success, error, or abort operations.
 
 ##### `handleBefore_KEEP_FAILED` (CallSignature)
 
-**Type:** `ChatMessage<string, unknown>`
+**Type:** `ChatMessage<string>`
 
 Handle message before sending for KEEP_FAILED strategy
 
@@ -265,20 +265,20 @@ Updated or added message, or original chunk if not a message
 
 #### `handleSuccess_ADD_ON_SUCCESS` (Method)
 
-**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>, successData: ChatMessage<string, unknown>) => ChatMessage<string, unknown>`
+**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>, successData: ChatMessage) => ChatMessage`
 
 #### Parameters
 
 | Name          | Type                                                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------- | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
 | `parameters`  | `MessageSenderOptions<ChatMessage<string, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `ChatMessage<string, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| `successData` | `ChatMessage`                                        | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 ##### `handleSuccess_ADD_ON_SUCCESS` (CallSignature)
 
-**Type:** `ChatMessage<string, unknown>`
+**Type:** `ChatMessage`
 
 Handle successful send for ADD_ON_SUCCESS strategy
 
@@ -294,26 +294,26 @@ Newly added message from store
 | Name          | Type                                                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------- | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
 | `parameters`  | `MessageSenderOptions<ChatMessage<string, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `ChatMessage<string, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| `successData` | `ChatMessage`                                        | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 #### `handleSuccess_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>, successData: ChatMessage<string, unknown>) => undefined \| ChatMessage<string, unknown>`
+**Type:** `(parameters: MessageSenderOptions<ChatMessage<string, unknown>>, successData: ChatMessage<string>) => ChatMessage<string, unknown> \| undefined`
 
 #### Parameters
 
 | Name          | Type                                                 | Optional | Default | Since | Deprecated | Description                       |
 | ------------- | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
 | `parameters`  | `MessageSenderOptions<ChatMessage<string, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
-| `successData` | `ChatMessage<string, unknown>`                       | ❌       | -       | -     | -          | Success response data             |
+| `successData` | `ChatMessage<string>`                                | ❌       | -       | -     | -          | Success response data             |
 
 ---
 
 ##### `handleSuccess_KEEP_FAILED` (CallSignature)
 
-**Type:** `undefined \| ChatMessage<string, unknown>`
+**Type:** `ChatMessage<string, unknown> \| undefined`
 
 Handle successful send for KEEP_FAILED strategy
 
@@ -357,7 +357,7 @@ Updated message or `undefined` if update failed
 | Name          | Type                                                 | Optional | Default | Since | Deprecated | Description                       |
 | ------------- | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
 | `parameters`  | `MessageSenderOptions<ChatMessage<string, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
-| `successData` | `ChatMessage<string, unknown>`                       | ❌       | -       | -     | -          | Success response data             |
+| `successData` | `ChatMessage<string>`                                | ❌       | -       | -     | -          | Success response data             |
 
 ---
 
@@ -408,14 +408,14 @@ try {
 
 #### `isAssistantMessage` (Method)
 
-**Type:** `(store: ChatMessageStore<string>, message: ChatMessage<string, unknown>) => boolean`
+**Type:** `(store: ChatMessageStore<string>, message: ChatMessage<string>) => boolean`
 
 #### Parameters
 
-| Name      | Type                           | Optional | Default | Since | Deprecated | Description                 |
-| --------- | ------------------------------ | -------- | ------- | ----- | ---------- | --------------------------- |
-| `store`   | `ChatMessageStore<string>`     | ❌       | -       | -     | -          | Chat message store instance |
-| `message` | `ChatMessage<string, unknown>` | ❌       | -       | -     | -          | Message to check            |
+| Name      | Type                       | Optional | Default | Since | Deprecated | Description                 |
+| --------- | -------------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `store`   | `ChatMessageStore<string>` | ❌       | -       | -     | -          | Chat message store instance |
+| `message` | `ChatMessage<string>`      | ❌       | -       | -     | -          | Message to check            |
 
 ---
 
@@ -443,10 +443,10 @@ if (isAssistant) {
 
 #### Parameters
 
-| Name      | Type                           | Optional | Default | Since | Deprecated | Description                 |
-| --------- | ------------------------------ | -------- | ------- | ----- | ---------- | --------------------------- |
-| `store`   | `ChatMessageStore<string>`     | ❌       | -       | -     | -          | Chat message store instance |
-| `message` | `ChatMessage<string, unknown>` | ❌       | -       | -     | -          | Message to check            |
+| Name      | Type                       | Optional | Default | Since | Deprecated | Description                 |
+| --------- | -------------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `store`   | `ChatMessageStore<string>` | ❌       | -       | -     | -          | Chat message store instance |
+| `message` | `ChatMessage<string>`      | ❌       | -       | -     | -          | Message to check            |
 
 ---
 
@@ -920,13 +920,13 @@ strategy.sliceMessages(store, 1);
 
 #### `startStreaming` (Method)
 
-**Type:** `(store: MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(store: MessagesStore<MessageStoreMsg<unknown, unknown>>) => void`
 
 #### Parameters
 
-| Name    | Type                                                                                                          | Optional | Default | Since | Deprecated | Description            |
-| ------- | ------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Message store instance |
+| Name    | Type                                               | Optional | Default | Since | Deprecated | Description            |
+| ------- | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message store instance |
 
 ---
 
@@ -941,8 +941,8 @@ This ensures the store properly tracks streaming operations.
 
 #### Parameters
 
-| Name    | Type                                                                                                          | Optional | Default | Since | Deprecated | Description            |
-| ------- | ------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>, MessagesStateInterface<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Message store instance |
+| Name    | Type                                               | Optional | Default | Since | Deprecated | Description            |
+| ------- | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `store` | `MessagesStore<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message store instance |
 
 ---

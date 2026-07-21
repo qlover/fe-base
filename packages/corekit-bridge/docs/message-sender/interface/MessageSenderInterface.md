@@ -146,13 +146,13 @@ await sender.send({ content: 'Hello' });
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| MessageGetwayInterface`
+**Type:** `() => MessageGetwayInterface \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| MessageGetwayInterface`
+**Type:** `MessageGetwayInterface \| undefined`
 
 Get the gateway instance
 

@@ -11,7 +11,7 @@
 **Since:** `3.1.0`
 
 Async store slice for one CRUD operation name (`create`, `detail`, `update`, or `remove` inside ResourceCRUD).
-Extends <a href="../../store-state/impl/AsyncStore.md#asyncstore-class" class="tsd-kind-class">AsyncStore</a> with an optional <a href="#activedetail-property" class="tsd-kind-property">ResourceCRUDState.activeDetail</a> for edit flows.
+Extends [AsyncStore](../../store-state/impl/AsyncStore.md#asyncstore-class) with an optional [ResourceCRUDState.activeDetail](#activedetail-property) for edit flows.
 
 **Example:** Keep the row being edited in sync with successful `detail`/`update` responses
 
@@ -24,7 +24,7 @@ store.updateActiveDetail({ name: 'Pat' }); // shallow merge into current activeD
 
 ---
 
-#### `new ResourceCRUDStore` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(resourceName: string, options: AsyncStoreOptions<ResourceCRUDState<T>, Key, unknown>) => ResourceCRUDStore<T, Key>`
 
@@ -37,60 +37,27 @@ store.updateActiveDetail({ name: 'Pat' }); // shallow merge into current activeD
 
 ---
 
-#### `getStorage` (Property)
+#### `persistKeys` (Property)
 
-**Type:** `Object`
+**Type:** `property persistKeys`
 
-When storageResult=true, should return S['result']
-When storageResult=false, should return S
+**Default:** `['result']`
+
+State keys included in the persisted snapshot
+
+---
+
+#### `persistPort` (Property)
+
+**Type:** `KeyStorageInterface<Key, Partial<ResourceCRUDState<T>>, unknown>`
+
+Optional persistence port (key + backend bound together)
 
 ---
 
 #### `resourceName` (Property)
 
 **Type:** `string`
-
----
-
-#### `storage` (Property)
-
-**Type:** `null \| StorageInterface<Key, ResourceCRUDState<T>, unknown>`
-
-**Default:** `null`
-
-Storage implementation for persisting state, or `null` if persistence is not needed
-When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
-
----
-
-#### `storageKey` (Property)
-
-**Type:** `null \| Key`
-
-**Default:** `null`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Set during construction from `AsyncStoreOptions.storageKey`.
-
----
-
-#### `storageResult` (Property)
-
-**Type:** `boolean`
-
-**Default:** `true`
-
-Control the type of data stored in persistence
-
-This property controls what data is stored and restored from storage:
-
-- `true`: Store only the result value (`T`). `restore()` returns `T | null`
-- `false`: Store the full state object. `restore()` returns `AsyncStoreStateInterface<T> | null`
-
-**Note:** This is primarily an internal testing property. In most cases, storing
-only the result value (`true`) is sufficient and more efficient.
 
 ---
 
@@ -106,11 +73,11 @@ only the result value (`true`) is sufficient and more efficient.
 
 #### Parameters
 
-| Name              | Type                                                    | Optional | Default | Since | Deprecated | Description |
-| ----------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `ResourceCRUDState<T> \| Partial<ResourceCRUDState<T>>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                                                | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                                               | ✅       | -       | -     | -          |             |
+| Name              | Type                                                    | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `ResourceCRUDState<T> \| Partial<ResourceCRUDState<T>>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                                                | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                                               | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
@@ -118,19 +85,21 @@ only the result value (`true`) is sufficient and more efficient.
 
 **Type:** `void`
 
+Apply a state patch, then optionally persist
+
 #### Parameters
 
-| Name              | Type                                                    | Optional | Default | Since | Deprecated | Description |
-| ----------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `ResourceCRUDState<T> \| Partial<ResourceCRUDState<T>>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                                                | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                                               | ✅       | -       | -     | -          |             |
+| Name              | Type                                                    | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `ResourceCRUDState<T> \| Partial<ResourceCRUDState<T>>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                                                | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                                               | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
 #### `failed` (Method)
 
-**Type:** `(error: unknown, result: null \| T) => void`
+**Type:** `(error: unknown, result: T \| null) => void`
 
 #### Parameters
 
@@ -138,7 +107,7 @@ only the result value (`true`) is sufficient and more efficient.
 | ---------------------------------------------------------------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`   | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| T` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `T \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -206,7 +175,7 @@ try {
 | ---------------------------------------------------------------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`   | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| T` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `T \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -320,15 +289,29 @@ if (store.getLoading()) {
 
 ---
 
+#### `getPersist` (Method)
+
+**Type:** `() => KeyStorageInterface<Key, Partial<ResourceCRUDState<T>>, unknown> \| undefined`
+
+---
+
+##### `getPersist` (CallSignature)
+
+**Type:** `KeyStorageInterface<Key, Partial<ResourceCRUDState<T>>, unknown> \| undefined`
+
+Persistence port, or `undefined` when memory-only
+
+---
+
 #### `getResult` (Method)
 
-**Type:** `() => null \| T`
+**Type:** `() => T \| null`
 
 ---
 
 ##### `getResult` (CallSignature)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 Get the result from the async operation
 
@@ -352,13 +335,13 @@ if (result) {
 
 #### `getState` (Method)
 
-**Type:** `() => ResourceCRUDState<T>`
+**Type:** `() => ResourceCRUDState`
 
 ---
 
 ##### `getState` (CallSignature)
 
-**Type:** `ResourceCRUDState<T>`
+**Type:** `ResourceCRUDState`
 
 Get current store state
 
@@ -433,6 +416,20 @@ switch (status) {
 
 ---
 
+#### `getStorage` (Method)
+
+**Type:** `() => StorageInterface<Key, ResourceCRUDState<T>, unknown> \| null`
+
+---
+
+##### `getStorage` (CallSignature)
+
+**Type:** `StorageInterface<Key, ResourceCRUDState<T>, unknown> \| null`
+
+[PersistentInterface.getStorage](../interface/PersistentInterface.md#getstorage-method) — always `null`; use [getPersist](#getpersist-method)
+
+---
+
 #### `getStore` (Method)
 
 **Type:** `() => StoreInterface<ResourceCRUDState<T>>`
@@ -445,8 +442,8 @@ switch (status) {
 
 Get the underlying store instance
 
-Returns the composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (typically SliceStoreAdapter), enabling
-reactive subscriptions via <a href="../interface/StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>.
+Returns the composed [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) (typically SliceStoreAdapter), enabling
+reactive subscriptions via [StoreInterface.subscribe](../interface/StoreInterface.md#subscribe-property).
 
 **Returns:**
 
@@ -552,6 +549,32 @@ if (store.isPending()) {
 
 ---
 
+#### `isPersistSnapshotEmpty` (Method)
+
+**Type:** `(picked: AsyncStorePersistValue<S>) => boolean`
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `isPersistSnapshotEmpty` (CallSignature)
+
+**Type:** `boolean`
+
+Whether every picked field is nullish (entry should be removed)
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `isStopped` (Method)
 
 **Type:** `() => boolean`
@@ -611,16 +634,43 @@ if (store.isSuccess()) {
 
 ---
 
+#### `normalizeStoredPatch` (Method)
+
+**Type:** `(stored: unknown) => Partial<ResourceCRUDState<T>> \| null`
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `normalizeStoredPatch` (CallSignature)
+
+**Type:** `Partial<ResourceCRUDState<T>> \| null`
+
+Normalize a value read from storage into a state patch for [persistKeys](#persistkeys-property)
+
+Supports object snapshots and legacy single-key raw values.
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `persist` (Method)
 
 **Type:** `(_state: T) => void`
 
 #### Parameters
 
-| Name                                                                      | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| ------------------------------------------------------------------------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state`                                                                  | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
-| This parameter is not used. The method always persists the current state. |
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -628,56 +678,39 @@ if (store.isSuccess()) {
 
 **Type:** `void`
 
-Persist state to storage
-
-Persists the current state to the configured storage backend.
-The data persisted depends on the `storageResult` property:
-
-- If `storageResult` is `true`: Stores only the result value (`T`)
-- If `storageResult` is `false`: Stores the full state object
-
-Behavior:
-
-- Does nothing if storage or storageKey is not configured
-- If `storageResult` is `true` and result is `null`, nothing is stored
-- If `storageResult` is `false`, always stores the full state object (even if result is null)
-- Automatically called by `emit()` when state changes (unless `persist: false` is specified)
-- Always persists the current state (the `_state` parameter is ignored for compatibility with interface)
-
-**Example:** Automatic persistence (via emit)
-
-```typescript
-store.success(user); // Automatically persists to storage
-```
-
-**Example:** Manual persistence
-
-```typescript
-store.persist(); // Persist current state
-```
-
-**Example:** Persist only result value (default)
-
-```typescript
-store.storageResult = true; // default
-store.success(user);
-// Storage contains only the user object
-```
-
-**Example:** Persist full state
-
-```typescript
-store.storageResult = false;
-store.success(user);
-// Storage contains full state object with loading, status, timestamps, etc.
-```
+Write the picked snapshot; remove entry when every picked field is nullish
 
 #### Parameters
 
-| Name                                                                      | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| ------------------------------------------------------------------------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state`                                                                  | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
-| This parameter is not used. The method always persists the current state. |
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
+
+---
+
+#### `pickPersistSnapshot` (Method)
+
+**Type:** `(state: ResourceCRUDState) => AsyncStorePersistValue<S>`
+
+#### Parameters
+
+| Name    | Type                | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `ResourceCRUDState` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `pickPersistSnapshot` (CallSignature)
+
+**Type:** `AsyncStorePersistValue<S>`
+
+Build the partial snapshot for the configured [persistKeys](#persistkeys-property)
+
+#### Parameters
+
+| Name    | Type                | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `ResourceCRUDState` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -725,51 +758,15 @@ store.reset();
 
 #### `restore` (Method)
 
-**Type:** `() => null \| R`
+**Type:** `() => R \| null`
 
 ---
 
 ##### `restore` (CallSignature)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
-Restore state from storage
-
-Restores state from the configured storage backend. The return type depends
-on the `storageResult` property:
-
-- If `storageResult` is `true`: Returns only the result value (`T`)
-- If `storageResult` is `false`: Returns the full state object
-
-Behavior:
-
-- Checks if storage and storageKey are configured
-- Retrieves data from storage based on `storageResult` mode
-- Updates store state without triggering persistence (prevents circular updates)
-- Returns `null` if storage is not configured, no data found, or restoration fails
-
-**Returns:**
-
-The restored value or state, or `null` if not available
-
-**Example:** Restore result value (storageResult = true)
-
-```typescript
-const result = store.restore(); // Returns T | null
-if (result) {
-  console.log('Restored user:', result);
-}
-```
-
-**Example:** Restore full state (storageResult = false)
-
-```typescript
-store.storageResult = false;
-const state = store.restore(); // Returns AsyncStoreStateInterface<T> | null
-if (state) {
-  console.log('Restored state:', state);
-}
-```
+Restore picked fields from the persist port without writing back
 
 ---
 
@@ -789,7 +786,7 @@ if (state) {
 
 **Type:** `void`
 
-Replace <a href="#activedetail-property" class="tsd-kind-property">ResourceCRUDState.activeDetail</a> (does not call the network).
+Replace [ResourceCRUDState.activeDetail](#activedetail-property) (does not call the network).
 
 #### Parameters
 
@@ -801,13 +798,13 @@ Replace <a href="#activedetail-property" class="tsd-kind-property">ResourceCRUDS
 
 #### `start` (Method)
 
-**Type:** `(result: null \| T) => void`
+**Type:** `(result: T \| null) => void`
 
 #### Parameters
 
 | Name                                                                | Type        | Optional | Default | Since | Deprecated | Description                                                  |
 | ------------------------------------------------------------------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `null \| T` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| `result`                                                            | `T \| null` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
@@ -847,21 +844,21 @@ store.start(cachedUser);
 
 | Name                                                                | Type        | Optional | Default | Since | Deprecated | Description                                                  |
 | ------------------------------------------------------------------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `null \| T` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| `result`                                                            | `T \| null` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
 
 #### `stopped` (Method)
 
-**Type:** `(error: unknown, result: null \| T) => void`
+**Type:** `(error: unknown, result: T \| null) => void`
 
 #### Parameters
 
 | Name     | Type        | Optional | Default | Since | Deprecated | Description                                                         |
 | -------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`  | `unknown`   | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `null \| T` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result` | `T \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
@@ -901,19 +898,19 @@ store.stopped(new Error('User cancelled'));
 | Name     | Type        | Optional | Default | Since | Deprecated | Description                                                         |
 | -------- | ----------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`  | `unknown`   | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `null \| T` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result` | `T \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
 #### `success` (Method)
 
-**Type:** `(result: null \| T) => void`
+**Type:** `(result: T \| null) => void`
 
 #### Parameters
 
 | Name                                                   | Type        | Optional | Default | Since | Deprecated | Description                                  |
 | ------------------------------------------------------ | ----------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `null \| T` | ❌       | -       | -     | -          | The result of the successful async operation |
+| `result`                                               | `T \| null` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---
@@ -958,7 +955,7 @@ store.success(processedData);
 
 | Name                                                   | Type        | Optional | Default | Since | Deprecated | Description                                  |
 | ------------------------------------------------------ | ----------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `null \| T` | ❌       | -       | -     | -          | The result of the successful async operation |
+| `result`                                               | `T \| null` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---
@@ -979,7 +976,7 @@ store.success(processedData);
 
 **Type:** `void`
 
-Shallow-merge a patch into the current <a href="#activedetail-property" class="tsd-kind-property">ResourceCRUDState.activeDetail</a>; no-op when `activeDetail` is unset.
+Shallow-merge a patch into the current [ResourceCRUDState.activeDetail](#activedetail-property); no-op when `activeDetail` is unset.
 
 #### Parameters
 
@@ -1053,7 +1050,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 The result of the async operation if successful
 

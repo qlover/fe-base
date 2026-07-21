@@ -455,7 +455,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 The result of the async operation if successful
 
@@ -709,10 +709,10 @@ Core features:
 
 Implementation pattern:
 
-- Typically AsyncStore: extends PersistentStore, composes `StoreInterface<State>`,
+- Typically AsyncStore: implements PersistentInterface, composes `StoreInterface<State>`,
   and implements this interface
 - Combines async operation management with persistent state storage
-- Reactive updates: use `getStore().subscribe(...)` on the returned <a href="./StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a>
+- Reactive updates: use `getStore().subscribe(...)` on the returned [StoreInterface](./StoreInterface.md#storeinterface-interface)
 
 **Example:** Basic usage
 
@@ -797,11 +797,11 @@ const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
 
 #### Parameters
 
-| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                                                        |
-| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
-| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
-| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                                                                    |
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                 |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------- |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot ([StoreUpdateValue](./StoreInterface.md#storeupdatevalue-typealias)) |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                             |
 
 ---
 
@@ -809,7 +809,7 @@ const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
 
 **Type:** `void`
 
-Apply a state patch and optionally persist (see PersistentStore.emit)
+Apply a state patch and optionally persist (see AsyncStore.emit)
 
 **Example:**
 
@@ -820,11 +820,11 @@ asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
 
 #### Parameters
 
-| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                                                        |
-| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
-| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
-| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                                                                    |
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                                                 |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------- |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot ([StoreUpdateValue](./StoreInterface.md#storeupdatevalue-typealias)) |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                                                             |
 
 ---
 
@@ -1131,8 +1131,8 @@ This allows consumers to subscribe to state changes and react to updates.
 
 Implementation note:
 
-- AsyncStore returns its composed <a href="./StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> instance (not `this`)
-- Subscribe with <a href="./StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>; underlying `SliceStore` may still use `observe` internally
+- AsyncStore returns its composed [StoreInterface](./StoreInterface.md#storeinterface-interface) instance (not `this`)
+- Subscribe with [StoreInterface.subscribe](./StoreInterface.md#subscribe-property); underlying `SliceStore` may still use `observe` internally
 
 **Returns:**
 

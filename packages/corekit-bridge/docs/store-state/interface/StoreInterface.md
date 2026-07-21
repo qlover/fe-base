@@ -20,7 +20,7 @@ Minimal store adapter contract (implementation-agnostic)
 Core features:
 
 - `reset` — restore initial or maker-defined state (exact semantics are implementation-defined)
-- `update` — apply a patch or replacement (`State` or <a href="#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>)
+- `update` — apply a patch or replacement (`State` or [StoreUpdateValue](#storeupdatevalue-typealias))
 - `getState` — read the current typed snapshot
 - `subscribe` — reactive updates `(state, prevState) => void`
 

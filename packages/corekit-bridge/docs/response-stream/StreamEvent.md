@@ -47,7 +47,7 @@ const final = event.doned();
 
 ---
 
-#### `new StreamEvent` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(processor: StreamProcessorInterface, decoder: TextDecoder) => StreamEvent`
 
@@ -140,13 +140,13 @@ Business rules:
 
 #### `doned` (Method)
 
-**Type:** `() => undefined \| string`
+**Type:** `() => string \| undefined`
 
 ---
 
 ##### `doned` (CallSignature)
 
-**Type:** `undefined \| string`
+**Type:** `string \| undefined`
 
 Process final data when stream is complete
 

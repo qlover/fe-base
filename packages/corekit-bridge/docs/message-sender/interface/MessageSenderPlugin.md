@@ -561,10 +561,6 @@ Use cases:
 - Return a direct value to bypass task execution
 - Execute the task with custom logic and return the result
 
-**Returns:**
-
-Task result (type R), modified task function, or Promise of either
-
 **Example:** Return a direct value (bypass task) - type automatically inferred
 
 ```typescript
@@ -674,13 +670,13 @@ true if plugin should execute, false otherwise
 
 #### `onBefore` (Method)
 
-**Type:** `(ctx: ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>) => void \| Promise<void> \| MessageSenderOptions<T> \| Promise<MessageSenderOptions<T>>`
+**Type:** `(ctx: ExecutorContextInterface) => void \| Promise<void> \| MessageSenderOptions<T> \| Promise<MessageSenderOptions<T>>`
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description       |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description       |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
@@ -703,9 +699,9 @@ Modified parameters (will update context parameters), void, or Promise of either
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description       |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description       |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
@@ -768,13 +764,13 @@ onConnected: async (context) => {
 
 #### `onError` (Method)
 
-**Type:** `(ctx: ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>) => LifecycleErrorResult \| Promise<LifecycleErrorResult>`
+**Type:** `(ctx: ExecutorContextInterface) => LifecycleErrorResult \| Promise<LifecycleErrorResult>`
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description                                    |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description                                    |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context containing error information |
 
 ---
 
@@ -795,21 +791,21 @@ ExecutorError, Error, void, or Promise of either
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description                                    |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description                                    |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context containing error information |
 
 ---
 
 #### `onFinally` (Method)
 
-**Type:** `(ctx: ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>) => void \| Promise<void>`
+**Type:** `(ctx: ExecutorContextInterface) => void \| Promise<void>`
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description                                          |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description                                          |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
 
 ---
 
@@ -863,9 +859,9 @@ onFinally: (ctx) => {
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description                                          |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description                                          |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
 
 ---
 
@@ -943,13 +939,13 @@ onStream: async (context, chunk) => {
 
 #### `onSuccess` (Method)
 
-**Type:** `(ctx: ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>) => void \| Promise<void>`
+**Type:** `(ctx: ExecutorContextInterface) => void \| Promise<void>`
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description       |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description       |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
@@ -966,9 +962,9 @@ void or Promise<void>
 
 #### Parameters
 
-| Name  | Type                                                                              | Optional | Default | Since | Deprecated | Description       |
-| ----- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
-| `ctx` | `ExecutorContextInterface<MessageSenderOptions<T>, T, MessageSenderHookRuntimes>` | ❌       | -       | -     | -          | Execution context |
+| Name  | Type                       | Optional | Default | Since | Deprecated | Description       |
+| ----- | -------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface` | ❌       | -       | -     | -          | Execution context |
 
 ---
 

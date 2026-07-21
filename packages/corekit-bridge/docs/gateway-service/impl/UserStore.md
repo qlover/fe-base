@@ -13,7 +13,7 @@
 User store implementation
 
 - Significance: Unified store for user authentication operations with credential persistence
-- Core idea: Extends AsyncStore to manage both user info and credential in a single store
+- Core idea: Extends [AsyncStore](../../store-state/impl/AsyncStore.md#asyncstore-class) to manage both user info and credential in a single store
 - Main function: Provide unified state management for authentication operations (login/logout)
 - Main purpose: Enable efficient authentication state management with credential persistence
 
@@ -22,71 +22,51 @@ Other operations (getUserInfo, register, refreshUserInfo) should manage their ow
 
 **Persistence Behavior:**
 
-- **Default behavior**: Only `credential` is persisted to storage, `user info` (result) is stored in memory only
-  - When `storage` and `storageKey` are provided, **credential will be persisted using `storageKey`**
-  - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
-  - User info will NOT be persisted and will be cleared on page reload
-  - This is different from AsyncStore which uses `storageKey` to persist `result` (user info)
-
-- **Dual persistence** (optional): Can persist both user info and credential separately when configured
-  - Set `persistUserInfo: true` and provide a different `credentialStorageKey` from `storageKey`
-  - Credential will be persisted to `credentialStorageKey`
-  - User info will be persisted to `storageKey`
-  - Both will be restored from storage on initialization
+- **Default**: `persistKeys` is `['credential']` — only credential is written to `persist`
+  - User info (`result`) stays in memory unless you add `'result'` to `persistKeys`
+- **Dual pick** (optional): `persistKeys: ['result', 'credential']` stores both in one snapshot
+- When `persist` is set, `initRestore` defaults to `true` (pass `false` to skip)
 
 Core features:
 
 - Unified state: Single store managing both credential and user info for authentication
 - Async lifecycle: Inherits async operation lifecycle from AsyncStore (start, success, failed, reset)
-- Credential persistence: Only credential is persisted by default, user info is stored in memory only
-- Dual persistence: Can persist both user info and credential separately when configured
+- Credential-first persistence: Default pick is credential only
 - Enhanced methods: `start` and `success` support optional credential parameter for convenience
 
 Design decisions:
 
-- Extends AsyncStore: Inherits async operation lifecycle management
+- Extends AsyncStore: Inherits async lifecycle and `persistKeys` pick persistence
 - Dual management: Manages credential and userInfo separately but in unified state
 - Authentication-only: This store is only for login/logout operations
-- Credential-first persistence: Only credential is persisted by default (unlike AsyncStore which persists result)
-- Flexible persistence: Supports persisting both user info and credential separately when configured
-- Enhanced methods: `start` and `success` can accept credential for atomic updates
-
-TODO: Where should we support the `storageResult` of the parent class
+- Restore does **not** set status to `SUCCESS`; callers decide after validation
 
 **Example:** Basic usage (persist only credential)
 
 ```typescript
 const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'auth-token'
+  persist: new KeyStorage('auth-session', storageAdapter)
 });
 
-// Start authentication
 store.start();
-
-// Mark success with user info and credential
 store.success(userInfo, credential);
-// Credential is persisted, user info is in memory only
+// Credential is persisted; user info is in memory only (default persistKeys)
 
-// Check authentication status
 if (store.getStatus() === 'success') {
   const user = store.getUser();
   const token = store.getCredential();
 }
 ```
 
-**Example:** Persist both user info and credential separately
+**Example:** Persist credential and user info in one snapshot
 
 ```typescript
 const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'user-info',
-  credentialStorageKey: 'auth-token',
-  persistUserInfo: true
+  persist: new KeyStorage('auth-session', storageAdapter),
+  persistKeys: ['result', 'credential']
 });
 
 store.success(userInfo, credential);
-// Both user info and credential are persisted separately
 ```
 
 **Example:** Using start with credential
@@ -113,93 +93,33 @@ port.subscribe((state) => {
 
 ---
 
-#### `new UserStore` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: UserStoreOptions<UserStateInterface<User, Credential>, Key, Opt>) => UserStore<User, Credential, Key, Opt>`
 
 #### Parameters
 
-| Name                                                 | Type                                                               | Optional | Default | Since | Deprecated | Description                                                 |
-| ---------------------------------------------------- | ------------------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
-| `options`                                            | `UserStoreOptions<UserStateInterface<User, Credential>, Key, Opt>` | ✅       | -       | -     | -          | Optional configuration for storage and persistence behavior |
-| If not provided, store will work without persistence |
+| Name      | Type                                                               | Optional | Default | Since | Deprecated | Description                                                              |
+| --------- | ------------------------------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------ |
+| `options` | `UserStoreOptions<UserStateInterface<User, Credential>, Key, Opt>` | ✅       | -       | -     | -          | Optional AsyncStore options (`persist`, `persistKeys`, `initRestore`, …) |
 
 ---
 
-#### `credentialStorageKey` (Property)
+#### `persistKeys` (Property)
 
-**Type:** `null \| Key`
+**Type:** `property persistKeys`
 
-**Default:** `null`
+**Default:** `['result']`
 
-Storage key for persisting credential separately from result
-
-If provided, credential will be persisted using this key instead of the default storageKey.
-This allows persisting both user info (result) and credential separately.
+State keys included in the persisted snapshot
 
 ---
 
-#### `getStorage` (Property)
+#### `persistPort` (Property)
 
-**Type:** `Object`
+**Type:** `KeyStorageInterface<Key, Partial<UserStateInterface<User, Credential>>, Opt>`
 
-When storageResult=true, should return S['result']
-When storageResult=false, should return S
-
----
-
-#### `persistUserInfo` (Property)
-
-**Type:** `boolean`
-
-**Default:** `false`
-
-Whether to persist user info (result) in addition to credential
-
-- `true`: Persist both user info and credential (requires separate storage keys)
-- `false`: Only persist credential, not user info (default behavior)
-
----
-
-#### `storage` (Property)
-
-**Type:** `null \| StorageInterface<Key, UserStateInterface<User, Credential>, Opt>`
-
-**Default:** `null`
-
-Storage implementation for persisting state, or `null` if persistence is not needed
-When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
-
----
-
-#### `storageKey` (Property)
-
-**Type:** `null \| Key`
-
-**Default:** `null`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Set during construction from `AsyncStoreOptions.storageKey`.
-
----
-
-#### `storageResult` (Property)
-
-**Type:** `boolean`
-
-**Default:** `true`
-
-Control the type of data stored in persistence
-
-This property controls what data is stored and restored from storage:
-
-- `true`: Store only the result value (`T`). `restore()` returns `T | null`
-- `false`: Store the full state object. `restore()` returns `AsyncStoreStateInterface<T> | null`
-
-**Note:** This is primarily an internal testing property. In most cases, storing
-only the result value (`true`) is sufficient and more efficient.
+Optional persistence port (key + backend bound together)
 
 ---
 
@@ -215,11 +135,11 @@ only the result value (`true`) is sufficient and more efficient.
 
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |             |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
@@ -227,19 +147,21 @@ only the result value (`true`) is sufficient and more efficient.
 
 **Type:** `void`
 
+Apply a state patch, then optionally persist
+
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |             |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |             |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                    |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |                                                |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |                                                |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          | Pass `false` during restore to skip write-back |
 
 ---
 
 #### `failed` (Method)
 
-**Type:** `(error: unknown, result: null \| User) => void`
+**Type:** `(error: unknown, result: User \| null) => void`
 
 #### Parameters
 
@@ -247,7 +169,7 @@ only the result value (`true`) is sufficient and more efficient.
 | ---------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`      | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -315,7 +237,7 @@ try {
 | ---------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`      | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -325,13 +247,13 @@ Useful when operation fails but has partial data to preserve, or when you want t
 
 #### `getCredential` (Method)
 
-**Type:** `() => null \| Credential`
+**Type:** `() => Credential \| null`
 
 ---
 
 ##### `getCredential` (CallSignature)
 
-**Type:** `null \| Credential`
+**Type:** `Credential \| null`
 
 Get the current credential
 
@@ -450,15 +372,29 @@ if (store.getLoading()) {
 
 ---
 
+#### `getPersist` (Method)
+
+**Type:** `() => KeyStorageInterface<Key, Partial<UserStateInterface<User, Credential>>, Opt> \| undefined`
+
+---
+
+##### `getPersist` (CallSignature)
+
+**Type:** `KeyStorageInterface<Key, Partial<UserStateInterface<User, Credential>>, Opt> \| undefined`
+
+Persistence port, or `undefined` when memory-only
+
+---
+
 #### `getResult` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getResult` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get the result from the async operation
 
@@ -482,13 +418,13 @@ if (result) {
 
 #### `getState` (Method)
 
-**Type:** `() => UserStateInterface<User, Credential>`
+**Type:** `() => UserStateInterface`
 
 ---
 
 ##### `getState` (CallSignature)
 
-**Type:** `UserStateInterface<User, Credential>`
+**Type:** `UserStateInterface`
 
 Get current store state
 
@@ -563,6 +499,20 @@ switch (status) {
 
 ---
 
+#### `getStorage` (Method)
+
+**Type:** `() => StorageInterface<Key, UserStateInterface<User, Credential>, Opt> \| null`
+
+---
+
+##### `getStorage` (CallSignature)
+
+**Type:** `StorageInterface<Key, UserStateInterface<User, Credential>, Opt> \| null`
+
+[PersistentInterface.getStorage](../interface/PersistentInterface.md#getstorage-method) — always `null`; use [getPersist](#getpersist-method)
+
+---
+
 #### `getStore` (Method)
 
 **Type:** `() => StoreInterface<UserStateInterface<User, Credential>>`
@@ -575,8 +525,8 @@ switch (status) {
 
 Get the underlying store instance
 
-Returns the composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (typically SliceStoreAdapter), enabling
-reactive subscriptions via <a href="../interface/StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>.
+Returns the composed [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) (typically SliceStoreAdapter), enabling
+reactive subscriptions via [StoreInterface.subscribe](../interface/StoreInterface.md#subscribe-property).
 
 **Returns:**
 
@@ -595,18 +545,18 @@ port.subscribe((state) => {
 
 #### `getUser` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getUser` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get the current user information
 
 Returns the current user information if available. This is a convenience method
-that accesses the state's userInfo property directly.
+that accesses the state's `result` property directly.
 
 **Returns:**
 
@@ -703,6 +653,32 @@ if (store.isPending()) {
 
 ---
 
+#### `isPersistSnapshotEmpty` (Method)
+
+**Type:** `(picked: AsyncStorePersistValue<S>) => boolean`
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `isPersistSnapshotEmpty` (CallSignature)
+
+**Type:** `boolean`
+
+Whether every picked field is nullish (entry should be removed)
+
+#### Parameters
+
+| Name     | Type                        | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `picked` | `AsyncStorePersistValue<S>` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `isStopped` (Method)
 
 **Type:** `() => boolean`
@@ -762,15 +738,43 @@ if (store.isSuccess()) {
 
 ---
 
-#### `persist` (Method)
+#### `normalizeStoredPatch` (Method)
 
-**Type:** `(_state: T \| StoreUpdateValue<T>) => void`
+**Type:** `(stored: unknown) => Partial<UserStateInterface<User, Credential>> \| null`
 
 #### Parameters
 
-| Name     | Type                       | Optional | Default | Since | Deprecated | Description                                                          |
-| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state` | `T \| StoreUpdateValue<T>` | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `normalizeStoredPatch` (CallSignature)
+
+**Type:** `Partial<UserStateInterface<User, Credential>> \| null`
+
+Normalize a value read from storage into a state patch for [persistKeys](#persistkeys-property)
+
+Supports object snapshots and legacy single-key raw values.
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `stored` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `persist` (Method)
+
+**Type:** `(_state: T) => void`
+
+#### Parameters
+
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -778,19 +782,39 @@ if (store.isSuccess()) {
 
 **Type:** `void`
 
-Persist state to storage
-
-Persists credential to storage. If `persistUserInfo` is `true` and `credentialStorageKey`
-is different from `storageKey`, also persists user info to the default storage key.
-
-**Only credential is persisted by default**, user information is stored in memory only.
-Set `persistUserInfo` to `true` and provide a separate `credentialStorageKey` to persist both.
+Write the picked snapshot; remove entry when every picked field is nullish
 
 #### Parameters
 
-| Name     | Type                       | Optional | Default | Since | Deprecated | Description                                                          |
-| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state` | `T \| StoreUpdateValue<T>` | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
+| Name     | Type | Optional | Default | Since | Deprecated | Description |
+| -------- | ---- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T`  | ✅       | -       | -     | -          |             |
+
+---
+
+#### `pickPersistSnapshot` (Method)
+
+**Type:** `(state: UserStateInterface) => AsyncStorePersistValue<S>`
+
+#### Parameters
+
+| Name    | Type                 | Optional | Default | Since | Deprecated | Description |
+| ------- | -------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `UserStateInterface` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `pickPersistSnapshot` (CallSignature)
+
+**Type:** `AsyncStorePersistValue<S>`
+
+Build the partial snapshot for the configured [persistKeys](#persistkeys-property)
+
+#### Parameters
+
+| Name    | Type                 | Optional | Default | Since | Deprecated | Description |
+| ------- | -------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state` | `UserStateInterface` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -838,18 +862,18 @@ store.reset();
 
 #### `restore` (Method)
 
-**Type:** `() => null \| R`
+**Type:** `() => R \| null`
 
 ---
 
 ##### `restore` (CallSignature)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
 Restore state from storage
 
-Restores credential from storage. If `persistUserInfo` is `true` and `credentialStorageKey`
-is different from `storageKey`, also restores user info from the default storage key.
+Restores fields listed in `persistKeys` via [AsyncStore.restore](../../store-state/impl/AsyncStore.md#restore-method).
+Returns the restored credential (or `null`).
 
 **Important Design Decision:**
 This method **does NOT automatically set status to `SUCCESS`** when credential is restored.
@@ -865,63 +889,26 @@ authentication logic. The store only restores the data; it does not make authent
 
 **Returns:**
 
-The restored credential value, or `null` if available, or `null` otherwise
+The restored credential value, or `null` if not available
 
 **Example:** Restore credential and manually set status based on validation
 
 ```typescript
 const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'auth-token',
+  persist: new KeyStorage('auth-session', storageAdapter),
   initRestore: true
 });
 
-// After restore, check if credential is valid
 const credential = store.getCredential();
 if (credential) {
-  // Example: Check if credential has expired
   if (credential.expiresAt && Date.now() < credential.expiresAt) {
-    // Credential is valid, set status to SUCCESS
     store.emit({
       status: AsyncStoreStatus.SUCCESS,
       loading: false,
       error: null
     });
   } else {
-    // Credential expired, clear it
     store.setCredential(null);
-  }
-}
-```
-
-**Example:** Restore credential and validate with server
-
-```typescript
-const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'auth-token',
-  initRestore: true
-});
-
-// After restore, validate credential with server
-const credential = store.getCredential();
-if (credential) {
-  try {
-    // Validate credential with server
-    const isValid = await validateCredential(credential);
-    if (isValid) {
-      store.emit({
-        status: AsyncStoreStatus.SUCCESS,
-        loading: false,
-        error: null
-      });
-    } else {
-      // Invalid credential, clear it
-      store.setCredential(null);
-    }
-  } catch (error) {
-    // Validation failed, keep status as DRAFT
-    store.emit({ error });
   }
 }
 ```
@@ -930,12 +917,10 @@ if (credential) {
 
 ```typescript
 const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'auth-token',
+  persist: new KeyStorage('auth-session', storageAdapter),
   initRestore: true
 });
 
-// After restore, if credential exists, treat as authenticated
 const credential = store.getCredential();
 if (credential) {
   store.emit({
@@ -951,13 +936,13 @@ if (credential) {
 
 #### `setCredential` (Method)
 
-**Type:** `(credential: null \| Credential) => void`
+**Type:** `(credential: Credential \| null) => void`
 
 #### Parameters
 
 | Name         | Type                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------ | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `credential` | `null \| Credential` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
+| `credential` | `Credential \| null` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
 
 ---
 
@@ -967,26 +952,26 @@ if (credential) {
 
 Set the credential
 
-Updates the credential in the store state and persists to storage (if configured).
-**Only credential is persisted**, user information is stored in memory only.
+Updates the credential in the store state and persists when `'credential'` is in
+`persistKeys` (the default).
 
 #### Parameters
 
 | Name         | Type                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------ | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `credential` | `null \| Credential` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
+| `credential` | `Credential \| null` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
 
 ---
 
 #### `setUser` (Method)
 
-**Type:** `(user: null \| User) => void`
+**Type:** `(user: User \| null) => void`
 
 #### Parameters
 
 | Name   | Type           | Optional | Default | Since | Deprecated | Description                                       |
 | ------ | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `user` | `null \| User` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
+| `user` | `User \| null` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
 
 ---
 
@@ -996,15 +981,15 @@ Updates the credential in the store state and persists to storage (if configured
 
 Set the user information
 
-Updates the user information in the store state (in memory only).
-**User information is NOT persisted** - it will be cleared on page reload.
-Only credential is persisted.
+Updates the user information in the store state.
+Persists only when `'result'` is included in `persistKeys`
+(not the default — default pick is credential only).
 
 #### Parameters
 
 | Name   | Type           | Optional | Default | Since | Deprecated | Description                                       |
 | ------ | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `user` | `null \| User` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
+| `user` | `User \| null` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
 
 ---
 
@@ -1070,14 +1055,14 @@ store.start(undefined, credential);
 
 #### `stopped` (Method)
 
-**Type:** `(error: unknown, result: null \| User) => void`
+**Type:** `(error: unknown, result: User \| null) => void`
 
 #### Parameters
 
 | Name     | Type           | Optional | Default | Since | Deprecated | Description                                                         |
 | -------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`  | `unknown`      | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result` | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
@@ -1117,24 +1102,21 @@ store.stopped(new Error('User cancelled'));
 | Name     | Type           | Optional | Default | Since | Deprecated | Description                                                         |
 | -------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`  | `unknown`      | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result` | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
 #### `success` (Method)
 
-**Type:** `(result: null \| User, credential: null \| Credential) => void`
+**Type:** `(result: User \| null, credential: Credential \| null) => void`
 
 #### Parameters
 
-| Name                                                   | Type                 | Optional | Default | Since | Deprecated | Description                                                      |
-| ------------------------------------------------------ | -------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `result`                                               | `null \| User`       | ❌       | -       | -     | -          | User information to store upon successful authentication         |
-| Both `userInfo` and `result` are updated to this value |
-| `credential`                                           | `null \| Credential` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
-
-If provided, credential is set and persisted atomically with user info
-If string is provided, it will be stored as-is (for simple token scenarios) |
+| Name                                                                                | Type                 | Optional | Default | Since | Deprecated | Description                                              |
+| ----------------------------------------------------------------------------------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `result`                                                                            | `User \| null`       | ❌       | -       | -     | -          | User information to store upon successful authentication |
+| `credential`                                                                        | `Credential \| null` | ✅       | -       | -     | -          | Optional credential to store                             |
+| If provided, credential is set and persisted (when in `persistKeys`) with user info |
 
 ---
 
@@ -1156,7 +1138,7 @@ Behavior:
 - Sets `loading` to `false` (operation completed)
 - Records `endTime` timestamp (for performance tracking and duration calculation)
 - Clears `error` (sets to `null`)
-- Updates `userInfo`, `result`, and optionally `credential` if provided
+- Updates `result`, and optionally `credential` if provided
 
 **Example:** Mark success with user info and credential
 
@@ -1166,7 +1148,6 @@ store.success(
   { token: 'abc123', expiresIn: 3600 }
 );
 // Now:
-// - userInfo === { id: '123', name: 'John Doe' }
 // - result === { id: '123', name: 'John Doe' }
 // - credential === { token: 'abc123', expiresIn: 3600 }
 // - status === 'success'
@@ -1177,19 +1158,16 @@ store.success(
 
 ```typescript
 store.success(userInfo);
-// Only updates userInfo and result, credential remains unchanged
+// Only updates result; credential remains unchanged
 ```
 
 #### Parameters
 
-| Name                                                   | Type                 | Optional | Default | Since | Deprecated | Description                                                      |
-| ------------------------------------------------------ | -------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `result`                                               | `null \| User`       | ❌       | -       | -     | -          | User information to store upon successful authentication         |
-| Both `userInfo` and `result` are updated to this value |
-| `credential`                                           | `null \| Credential` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
-
-If provided, credential is set and persisted atomically with user info
-If string is provided, it will be stored as-is (for simple token scenarios) |
+| Name                                                                                | Type                 | Optional | Default | Since | Deprecated | Description                                              |
+| ----------------------------------------------------------------------------------- | -------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `result`                                                                            | `User \| null`       | ❌       | -       | -     | -          | User information to store upon successful authentication |
+| `credential`                                                                        | `Credential \| null` | ✅       | -       | -     | -          | Optional credential to store                             |
+| If provided, credential is set and persisted (when in `persistKeys`) with user info |
 
 ---
 
@@ -1199,54 +1177,9 @@ If string is provided, it will be stored as-is (for simple token scenarios) |
 
 Options for creating a UserStore instance
 
-Extends AsyncStoreOptions with UserStore-specific persistence configuration.
-
----
-
-#### `credentialStorageKey` (Property)
-
-**Type:** `null \| Key`
-
-Storage key for persisting credential separately from user info
-
-**Important:** In UserStore, `storageKey` (from AsyncStoreOptions) is used to store **credential**,
-not user info. This is different from AsyncStore which uses `storageKey` to store `result` (user info).
-
-If provided, credential will be persisted using this key instead of the default `storageKey`.
-This allows persisting both user info (result) and credential separately.
-
-When `credentialStorageKey` is set and different from `storageKey`:
-
-- Credential is persisted to `credentialStorageKey`
-- User info can be persisted to `storageKey` if `persistUserInfo` is `true`
-
-When `credentialStorageKey` is `null` or same as `storageKey`:
-
-- `storageKey` is used to store credential (default behavior)
-- User info is NOT persisted (stored in memory only)
-
-**Example:** Persist only credential (default)
-
-```typescript
-const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'auth-token' // This key stores credential, not user info
-  // credentialStorageKey defaults to storageKey
-  // Only credential is persisted to 'auth-token', user info is in memory only
-});
-```
-
-**Example:** Persist both user info and credential separately
-
-```typescript
-const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'user-info',
-  credentialStorageKey: 'auth-token',
-  persistUserInfo: true
-  // Both user info and credential are persisted separately
-});
-```
+Extends [AsyncStoreOptions](../../store-state/impl/AsyncStore.md#asyncstoreoptions-interface). Persistence uses a single `persist` port with
+`persistKeys` (default `['credential']`). Pass `persistKeys: ['result', 'credential']`
+to also cache user info in the same snapshot.
 
 ---
 
@@ -1254,66 +1187,46 @@ const store = new UserStore<User, Credential>({
 
 **Type:** `boolean`
 
-Whether to automatically restore state from storage during construction
+**Default:** `false`
 
-**⚠️ This is primarily a testing/internal property.**
-
-**Initialization Order Issues:**
-When `initRestore` is `true`, `restore()` is called during `super()` execution,
-which happens BEFORE subclass field initialization. This means:
-
-- Subclass fields (e.g., `private readonly storageKey = 'my-key'`) are NOT yet initialized
-- `restore()` cannot access these fields, causing runtime errors or incorrect behavior
-- This is a fundamental limitation of JavaScript/TypeScript class initialization order
+Whether to call `restore()` after the instance is fully constructed
 
 ---
 
-#### `persistUserInfo` (Property)
+#### `persist` (Property)
 
-**Type:** `boolean`
+**Type:** `KeyStorageInterface<Key, Partial<State>, Opt>`
 
-**Default:** `false`
+Optional persistence port bound to a single storage key
 
-Whether to persist user info (result) in addition to credential
+When set, `emit` / `persist` / `restore` use this port.
+When omitted, the store stays in-memory only.
 
-- `true`: Persist both user info and credential (requires separate storage keys)
-- `false`: Only persist credential, not user info (default behavior)
-
-**Note:** This option only takes effect when `credentialStorageKey` is different from `storageKey`.
-If both keys are the same, only credential will be persisted regardless of this setting.
-
-**Example:** Persist both user info and credential
+**Example:** Use with KeyStorage
 
 ```typescript
-const store = new UserStore<User, Credential>({
-  storage: localStorage,
-  storageKey: 'user-info',
-  credentialStorageKey: 'auth-token',
-  persistUserInfo: true
+import { KeyStorage } from '@qlover/fe-corekit';
+
+const store = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  persist: new KeyStorage('user-state', storageAdapter)
 });
 ```
 
 ---
 
-#### `storage` (Property)
+#### `persistKeys` (Property)
 
-**Type:** `null \| StorageInterface<Key, unknown, Opt>`
+**Type:** `property persistKeys`
 
-Storage implementation for persisting state
+**Default:** `['result']`
 
-If provided, state changes will be automatically persisted to this storage.
-If `null` or `undefined`, the store will work without persistence.
+State keys to include in the persisted snapshot
 
----
+- Default: `['result']`
+- Example: `['result', 'credential']` for auth stores
 
-#### `storageKey` (Property)
-
-**Type:** `null \| Key`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Required if `storage` is provided.
+Only these fields are written / restored. Ephemeral fields (`loading`, `status`, …)
+are omitted unless listed here.
 
 ---
 
@@ -1321,76 +1234,39 @@ Required if `storage` is provided.
 
 **Type:** `StoreInterface<State>`
 
-Composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> for snapshots (`update` / `getState` / `subscribe` / `reset`)
-
-If omitted, <a href="./createAsyncState.md#createasyncstoreinterface-function" class="tsd-kind-function">createAsyncStoreInterface</a> builds a default SliceStoreAdapter.
-Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping `AsyncStore`.
+Composed [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) for snapshots (`update` / `getState` / `subscribe` / `reset`)
 
 ---
 
 #### `defaultState` (Method)
 
-**Type:** `(storage: null \| StorageInterface<Key, unknown, Opt>, storageKey: null \| Key) => null \| State`
+**Type:** `(persist: KeyStorageInterface<Key, Partial<State>, Opt> \| null) => State \| null`
 
 #### Parameters
 
-| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name      | Type                                                    | Optional | Default | Since | Deprecated | Description                            |
+| --------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `persist` | `KeyStorageInterface<Key, Partial<State>, Opt> \| null` | ✅       | -       | -     | -          | Persistence port from options (if any) |
 
 ---
 
 ##### `defaultState` (CallSignature)
 
-**Type:** `null \| State`
+**Type:** `State \| null`
 
 Create a new state instance
 
-Factory function that creates the initial state for the store.
-This function is called during store initialization and when state is reset.
-
-Behavior:
-
-- If `storage` is provided, the function receives storage and storageKey as parameters
-- If `storage` is not provided, the function receives `undefined` for both parameters
-- If the function returns `null`, a new `AsyncStoreState` instance will be created
-- If the function returns a state object, that object will be used as the initial state
+Called during store initialization and when state is reset.
+Return `null` to use a fresh AsyncStoreState.
 
 **Returns:**
 
-The initial state instance, or `null` to use default state
-
-**Example:** With storage restoration
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: (storage, storageKey) => {
-    const stored = storage?.getItem(storageKey);
-    if (stored) {
-      return new AsyncStoreState<User>(stored);
-    }
-    return null; // Use default state
-  }
-});
-```
-
-**Example:** Without storage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null // Always use default state
-});
-```
+Initial state, or `null` for the default empty async state
 
 #### Parameters
 
-| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name      | Type                                                    | Optional | Default | Since | Deprecated | Description                            |
+| --------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `persist` | `KeyStorageInterface<Key, Partial<State>, Opt> \| null` | ✅       | -       | -     | -          | Persistence port from options (if any) |
 
 ---

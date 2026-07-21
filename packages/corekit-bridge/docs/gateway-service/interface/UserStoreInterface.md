@@ -78,7 +78,7 @@ const state: UserServiceState = {
 
 #### `credential` (Property)
 
-**Type:** `null \| Credential`
+**Type:** `Credential \| null`
 
 Authentication credential (typically a token)
 
@@ -132,7 +132,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 The result of the async operation if successful
 
@@ -254,11 +254,11 @@ port.subscribe((state) => {
 
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                                                        |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                                                                    |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot ([StoreUpdateValue](./StoreInterface.md#storeupdatevalue-typealias)) |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                             |
 
 ---
 
@@ -266,7 +266,7 @@ port.subscribe((state) => {
 
 **Type:** `void`
 
-Apply a state patch and optionally persist (see PersistentStore.emit)
+Apply a state patch and optionally persist (see AsyncStore.emit)
 
 **Example:**
 
@@ -277,17 +277,17 @@ asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
 
 #### Parameters
 
-| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                                                        |
-| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (<a href="./StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>) |
-| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                                                       |
-| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                                                                    |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot ([StoreUpdateValue](./StoreInterface.md#storeupdatevalue-typealias)) |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back                                |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                                                             |
 
 ---
 
 #### `failed` (Method)
 
-**Type:** `(error: unknown, result: null \| User) => void`
+**Type:** `(error: unknown, result: User \| null) => void`
 
 #### Parameters
 
@@ -295,7 +295,7 @@ asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
 | ---------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`      | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 | Useful when operation fails but has partial data to preserve     |
 
 ---
@@ -346,20 +346,20 @@ try {
 | ---------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
 | `error`                                                          | `unknown`      | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 | Useful when operation fails but has partial data to preserve     |
 
 ---
 
 #### `getCredential` (Method)
 
-**Type:** `() => null \| Credential`
+**Type:** `() => Credential \| null`
 
 ---
 
 ##### `getCredential` (CallSignature)
 
-**Type:** `null \| Credential`
+**Type:** `Credential \| null`
 
 Get the current credential
 
@@ -491,13 +491,13 @@ if (asyncService.getLoading()) {
 
 #### `getResult` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getResult` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get the result from the async operation
 
@@ -521,13 +521,13 @@ if (result) {
 
 #### `getState` (Method)
 
-**Type:** `() => UserStateInterface<User, Credential>`
+**Type:** `() => UserStateInterface`
 
 ---
 
 ##### `getState` (CallSignature)
 
-**Type:** `UserStateInterface<User, Credential>`
+**Type:** `UserStateInterface`
 
 Get current store state
 
@@ -634,13 +634,13 @@ port.subscribe((state) => {
 
 #### `getUser` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getUser` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get the current user information
 
@@ -836,13 +836,13 @@ asyncService.start();
 
 #### `setCredential` (Method)
 
-**Type:** `(credential: null \| Credential) => void`
+**Type:** `(credential: Credential \| null) => void`
 
 #### Parameters
 
 | Name         | Type                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------ | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `credential` | `null \| Credential` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
+| `credential` | `Credential \| null` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
 
 ---
 
@@ -871,19 +871,19 @@ store.setCredential(null);
 
 | Name         | Type                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------ | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `credential` | `null \| Credential` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
+| `credential` | `Credential \| null` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
 
 ---
 
 #### `setUser` (Method)
 
-**Type:** `(user: null \| User) => void`
+**Type:** `(user: User \| null) => void`
 
 #### Parameters
 
 | Name   | Type           | Optional | Default | Since | Deprecated | Description                                       |
 | ------ | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `user` | `null \| User` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
+| `user` | `User \| null` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
 
 ---
 
@@ -913,13 +913,13 @@ store.setUser(null);
 
 | Name   | Type           | Optional | Default | Since | Deprecated | Description                                       |
 | ------ | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `user` | `null \| User` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
+| `user` | `User \| null` | ❌       | -       | -     | -          | The user information to store, or `null` to clear |
 
 ---
 
 #### `start` (Method)
 
-**Type:** `(result: User, credential: null \| string \| Credential) => void`
+**Type:** `(result: User, credential: string \| Credential \| null) => void`
 
 #### Parameters
 
@@ -927,7 +927,7 @@ store.setUser(null);
 | -------------------------------------------------------------------- | ------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
 | `result`                                                             | `User`                         | ✅       | -       | -     | -          | Optional user information to set before operation starts     |
 | Useful for optimistic updates or when resuming a previous operation  |
-| `credential`                                                         | `null \| string \| Credential` | ✅       | -       | -     | -          | Optional credential to set immediately when operation starts |
+| `credential`                                                         | `string \| Credential \| null` | ✅       | -       | -     | -          | Optional credential to set immediately when operation starts |
 | If provided, credential is set and persisted before operation begins |
 
 ---
@@ -962,14 +962,14 @@ store.start(undefined, credential);
 | -------------------------------------------------------------------- | ------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
 | `result`                                                             | `User`                         | ✅       | -       | -     | -          | Optional user information to set before operation starts     |
 | Useful for optimistic updates or when resuming a previous operation  |
-| `credential`                                                         | `null \| string \| Credential` | ✅       | -       | -     | -          | Optional credential to set immediately when operation starts |
+| `credential`                                                         | `string \| Credential \| null` | ✅       | -       | -     | -          | Optional credential to set immediately when operation starts |
 | If provided, credential is set and persisted before operation begins |
 
 ---
 
 #### `stopped` (Method)
 
-**Type:** `(error: unknown, result: null \| User) => void`
+**Type:** `(error: unknown, result: User \| null) => void`
 
 #### Parameters
 
@@ -977,7 +977,7 @@ store.start(undefined, credential);
 | ----------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`                                                           | `unknown`      | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
 | Can be used to provide cancellation reason or timeout information |
-| `result`                                                          | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result`                                                          | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 | Useful when stopping an operation that has partial data           |
 
 ---
@@ -1018,22 +1018,22 @@ asyncService.stopped(undefined, partialData);
 | ----------------------------------------------------------------- | -------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
 | `error`                                                           | `unknown`      | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
 | Can be used to provide cancellation reason or timeout information |
-| `result`                                                          | `null \| User` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result`                                                          | `User \| null` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 | Useful when stopping an operation that has partial data           |
 
 ---
 
 #### `success` (Method)
 
-**Type:** `(result: null \| User, credential: null \| string \| Credential) => void`
+**Type:** `(result: User \| null, credential: string \| Credential \| null) => void`
 
 #### Parameters
 
 | Name                                                   | Type                           | Optional | Default | Since | Deprecated | Description                                                      |
 | ------------------------------------------------------ | ------------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `result`                                               | `null \| User`                 | ❌       | -       | -     | -          | User information to store upon successful authentication         |
+| `result`                                               | `User \| null`                 | ❌       | -       | -     | -          | User information to store upon successful authentication         |
 | Both `userInfo` and `result` are updated to this value |
-| `credential`                                           | `null \| string \| Credential` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
+| `credential`                                           | `string \| Credential \| null` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
 
 If provided, credential is set and persisted atomically with user info
 If string is provided, it will be stored as-is (for simple token scenarios) |
@@ -1068,9 +1068,9 @@ store.success(userInfo);
 
 | Name                                                   | Type                           | Optional | Default | Since | Deprecated | Description                                                      |
 | ------------------------------------------------------ | ------------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `result`                                               | `null \| User`                 | ❌       | -       | -     | -          | User information to store upon successful authentication         |
+| `result`                                               | `User \| null`                 | ❌       | -       | -     | -          | User information to store upon successful authentication         |
 | Both `userInfo` and `result` are updated to this value |
-| `credential`                                           | `null \| string \| Credential` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
+| `credential`                                           | `string \| Credential \| null` | ✅       | -       | -     | -          | Optional credential to store (Credential object or string token) |
 
 If provided, credential is set and persisted atomically with user info
 If string is provided, it will be stored as-is (for simple token scenarios) |

@@ -105,7 +105,7 @@ processChunk(chunk: string): string[] {
 
 #### `processFinal` (Method)
 
-**Type:** `(data: string) => undefined \| string`
+**Type:** `(data: string) => string \| undefined`
 
 #### Parameters
 
@@ -117,7 +117,7 @@ processChunk(chunk: string): string[] {
 
 ##### `processFinal` (CallSignature)
 
-**Type:** `undefined \| string`
+**Type:** `string \| undefined`
 
 Process remaining data when stream ends
 

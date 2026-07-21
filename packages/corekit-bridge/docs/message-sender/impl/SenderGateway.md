@@ -41,21 +41,21 @@ const options = gateway.createGatewayOptions(
 
 ---
 
-#### `new SenderGateway` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(executor: undefined \| MessageSenderExecutor<MessageType>) => SenderGateway<MessageType>`
+**Type:** `(executor: MessageSenderExecutor<MessageType> \| undefined) => SenderGateway<MessageType>`
 
 #### Parameters
 
 | Name       | Type                                              | Optional | Default | Since | Deprecated | Description                                              |
 | ---------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
-| `executor` | `undefined \| MessageSenderExecutor<MessageType>` | ❌       | -       | -     | -          | Optional message sender executor for plugin coordination |
+| `executor` | `MessageSenderExecutor<MessageType> \| undefined` | ❌       | -       | -     | -          | Optional message sender executor for plugin coordination |
 
 ---
 
 #### `executor` (Property)
 
-**Type:** `undefined \| MessageSenderExecutor<MessageType>`
+**Type:** `MessageSenderExecutor<MessageType> \| undefined`
 
 Optional message sender executor for plugin coordination
 
@@ -63,20 +63,20 @@ Optional message sender executor for plugin coordination
 
 #### `createGatewayOptions` (Method)
 
-**Type:** `(gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>, context: MessageSenderContext<MessageType>) => GatewayOptions<MessageType, Record<string, unknown>>`
+**Type:** `(gatewayOptions: GatewayOptions<MessageType>, context: MessageSenderContext<MessageType>) => GatewayOptions<MessageType>`
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Gateway options from send call               |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context with plugin state |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Gateway options from send call               |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context with plugin state |
 
 ---
 
 ##### `createGatewayOptions` (CallSignature)
 
-**Type:** `GatewayOptions<MessageType, Record<string, unknown>>`
+**Type:** `GatewayOptions<MessageType>`
 
 Create gateway options with plugin integration
 
@@ -155,24 +155,24 @@ const options = gateway.createGatewayOptions(
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Gateway options from send call               |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context with plugin state |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Gateway options from send call               |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context with plugin state |
 
 ---
 
 #### `onChunk` (Method)
 
-**Type:** `(chunk: unknown, gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>, context: MessageSenderContext<MessageType>) => void`
+**Type:** `(chunk: unknown, gatewayOptions: GatewayOptions<MessageType>, context: MessageSenderContext<MessageType>) => void`
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `chunk`          | `unknown`                                              | ❌       | -       | -     | -          | Data chunk received from stream              |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Original gateway options with user callbacks |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `chunk`          | `unknown`                           | ❌       | -       | -     | -          | Data chunk received from stream              |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Original gateway options with user callbacks |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
 
 ---
 
@@ -243,24 +243,24 @@ onChunk(chunk, gatewayOptions, context);
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `chunk`          | `unknown`                                              | ❌       | -       | -     | -          | Data chunk received from stream              |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Original gateway options with user callbacks |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `chunk`          | `unknown`                           | ❌       | -       | -     | -          | Data chunk received from stream              |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Original gateway options with user callbacks |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
 
 ---
 
 #### `onConnected` (Method)
 
-**Type:** `(gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>, context: MessageSenderContext<MessageType>) => void`
+**Type:** `(gatewayOptions: GatewayOptions<MessageType>, context: MessageSenderContext<MessageType>) => void`
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Original gateway options with user callbacks |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Original gateway options with user callbacks |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
 
 ---
 
@@ -303,9 +303,9 @@ gatewayOptions.onConnected = () => console.log('Connected');
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                  |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          | Original gateway options with user callbacks |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description                                  |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          | Original gateway options with user callbacks |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Optional execution context for plugin hooks  |
 
 ---

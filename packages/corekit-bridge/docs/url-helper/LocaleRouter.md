@@ -46,7 +46,7 @@ console.log(newPath); // '/login?foo=bar&lang=zh'
 
 ---
 
-#### `new LocaleRouter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: LocaleRouterOptions) => LocaleRouter`
 
@@ -93,7 +93,7 @@ List of supported language codes.
 
 #### `extractLocaleFromPath` (Method)
 
-**Type:** `(path: string) => null \| string`
+**Type:** `(path: string) => string \| null`
 
 #### Parameters
 
@@ -105,7 +105,7 @@ List of supported language codes.
 
 ##### `extractLocaleFromPath` (CallSignature)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Extracts the current locale from a given URL path based on the configured mode.
 

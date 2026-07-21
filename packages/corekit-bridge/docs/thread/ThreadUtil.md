@@ -10,7 +10,7 @@
 
 ---
 
-#### `new ThreadUtil` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `() => ThreadUtil`
 

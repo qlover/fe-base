@@ -10,7 +10,7 @@
 
 ---
 
-#### `new MessageSenderExecutor` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(config: PluginExecutorConfig) => MessageSenderExecutor<MessageType>`
 
@@ -42,7 +42,7 @@ Type safety is enforced at compile time through generic constraints
 
 #### `createContext` (Method)
 
-**Type:** `(parameters: Params) => ExecutorContextImpl<Params, Result, HookRuntimes>`
+**Type:** `(parameters: Params) => ExecutorContextImpl<Params, Result>`
 
 #### Parameters
 
@@ -54,7 +54,7 @@ Type safety is enforced at compile time through generic constraints
 
 ##### `createContext` (CallSignature)
 
-**Type:** `ExecutorContextImpl<Params, Result, HookRuntimes>`
+**Type:** `ExecutorContextImpl<Params, Result>`
 
 Create a new execution context instance
 
@@ -269,14 +269,14 @@ Get configured finallyHook or default
 
 #### `handler` (Method)
 
-**Type:** `(context: ExecutorContextInterface<Params, Result, HookRuntimes>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
+**Type:** `(context: ExecutorContextInterface<Params, Result>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                                       |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Task function to execute                          |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Task function to execute                          |
 
 ---
 
@@ -340,23 +340,23 @@ onSuccess: (ctx) => console.log('Fetched:', ctx.returnValue);
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                                       |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Task function to execute                          |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Task function to execute                          |
 
 ---
 
 #### `handlerCatch` (Method)
 
-**Type:** `(context: ExecutorContextInterface<unknown, unknown, HookRuntimes>, error: unknown) => Promise<ExecutorError>`
+**Type:** `(context: ExecutorContextInterface<unknown, unknown>, error: unknown) => Promise<ExecutorError>`
 
 #### Parameters
 
-| Name      | Type                                                       | Optional | Default | Since | Deprecated | Description                                    |
-| --------- | ---------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `context` | `ExecutorContextInterface<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
-| `error`   | `unknown`                                                  | ❌       | -       | -     | -          | Original error                                 |
+| Name      | Type                                         | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextInterface<unknown, unknown>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                                    | ❌       | -       | -     | -          | Original error                                 |
 
 ---
 
@@ -419,22 +419,22 @@ onError: (ctx) => {
 
 #### Parameters
 
-| Name      | Type                                                       | Optional | Default | Since | Deprecated | Description                                    |
-| --------- | ---------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `context` | `ExecutorContextInterface<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
-| `error`   | `unknown`                                                  | ❌       | -       | -     | -          | Original error                                 |
+| Name      | Type                                         | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextInterface<unknown, unknown>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                                    | ❌       | -       | -     | -          | Original error                                 |
 
 ---
 
 #### `handlerFinally` (Method)
 
-**Type:** `(context: ExecutorContextInterface<unknown, unknown, HookRuntimes>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<unknown, unknown>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                       | Optional | Default | Since | Deprecated | Description                |
-| --------- | ---------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
-| `context` | `ExecutorContextInterface<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
+| Name      | Type                                         | Optional | Default | Since | Deprecated | Description                |
+| --------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextInterface<unknown, unknown>` | ❌       | -       | -     | -          | Execution context to reset |
 
 ---
 
@@ -502,9 +502,9 @@ onFinally: async (ctx) => {
 
 #### Parameters
 
-| Name      | Type                                                       | Optional | Default | Since | Deprecated | Description                |
-| --------- | ---------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
-| `context` | `ExecutorContextInterface<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
+| Name      | Type                                         | Optional | Default | Since | Deprecated | Description                |
+| --------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextInterface<unknown, unknown>` | ❌       | -       | -     | -          | Execution context to reset |
 
 ---
 
@@ -548,14 +548,14 @@ await startNewStream();
 
 #### `run` (Method)
 
-**Type:** `(context: ExecutorContextInterface<Params, Result, HookRuntimes>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
+**Type:** `(context: ExecutorContextInterface<Params, Result>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
@@ -586,10 +586,10 @@ Promise resolving to task execution result
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
@@ -643,14 +643,14 @@ try {
 
 #### `runExec` (Method)
 
-**Type:** `(context: ExecutorContextInterface<Params, Result, HookRuntimes>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
+**Type:** `(context: ExecutorContextInterface<Params, Result>, actualTask: ExecutorTask<Result, Params>) => Promise<Result>`
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                                               |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and runtime state |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Task function to execute (if no plugin handles it)        |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                                               |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and runtime state |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Task function to execute (if no plugin handles it)        |
 
 ---
 
@@ -733,31 +733,31 @@ onExec: async (ctx, task) => {
 
 #### Parameters
 
-| Name         | Type                                                     | Optional | Default | Since | Deprecated | Description                                               |
-| ------------ | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `context`    | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and runtime state |
-| `actualTask` | `ExecutorTask<Result, Params>`                           | ❌       | -       | -     | -          | Task function to execute (if no plugin handles it)        |
+| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                                               |
+| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `context`    | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and runtime state |
+| `actualTask` | `ExecutorTask<Result, Params>`             | ❌       | -       | -     | -          | Task function to execute (if no plugin handles it)        |
 
 ---
 
 #### `runHook` (Method)
 
-**Type:** `(plugins: MessageSenderPlugin<MessageType>[], hookName: string, context: ExecutorContextInterface<Params, Result, HookRuntimes>, args: unknown[]) => Promise<undefined \| Result>`
+**Type:** `(plugins: MessageSenderPlugin<MessageType>[], hookName: string, context: ExecutorContextInterface<Params, Result>, args: unknown[]) => Promise<Result \| undefined>`
 
 #### Parameters
 
-| Name       | Type                                                     | Optional | Default | Since | Deprecated | Description                                               |
-| ---------- | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `plugins`  | `MessageSenderPlugin<MessageType>[]`                     | ❌       | -       | -     | -          | Array of plugins to execute                               |
-| `hookName` | `string`                                                 | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing data and runtime information |
-| `args`     | `unknown[]`                                              | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
+| Name       | Type                                       | Optional | Default | Since | Deprecated | Description                                               |
+| ---------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `plugins`  | `MessageSenderPlugin<MessageType>[]`       | ❌       | -       | -     | -          | Array of plugins to execute                               |
+| `hookName` | `string`                                   | ❌       | -       | -     | -          | Name of the hook function to execute                      |
+| `context`  | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `args`     | `unknown[]`                                | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 ##### `runHook` (CallSignature)
 
-**Type:** `Promise<undefined \| Result>`
+**Type:** `Promise<Result \| undefined>`
 
 Execute a single plugin hook asynchronously for all plugins
 
@@ -816,33 +816,33 @@ runPluginsHookAsync - The utility function that performs the actual execution
 
 #### Parameters
 
-| Name       | Type                                                     | Optional | Default | Since | Deprecated | Description                                               |
-| ---------- | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `plugins`  | `MessageSenderPlugin<MessageType>[]`                     | ❌       | -       | -     | -          | Array of plugins to execute                               |
-| `hookName` | `string`                                                 | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing data and runtime information |
-| `args`     | `unknown[]`                                              | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
+| Name       | Type                                       | Optional | Default | Since | Deprecated | Description                                               |
+| ---------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `plugins`  | `MessageSenderPlugin<MessageType>[]`       | ❌       | -       | -     | -          | Array of plugins to execute                               |
+| `hookName` | `string`                                   | ❌       | -       | -     | -          | Name of the hook function to execute                      |
+| `context`  | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `args`     | `unknown[]`                                | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 #### `runHooks` (Method)
 
-**Type:** `(plugins: MessageSenderPlugin<MessageType>[], hookNames: string \| string[], context: ExecutorContextInterface<Params, Result, HookRuntimes>, args: unknown[]) => Promise<undefined \| Result>`
+**Type:** `(plugins: MessageSenderPlugin<MessageType>[], hookNames: string \| string[], context: ExecutorContextInterface<Params, Result>, args: unknown[]) => Promise<Result \| undefined>`
 
 #### Parameters
 
-| Name        | Type                                                     | Optional | Default | Since | Deprecated | Description                                                    |
-| ----------- | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `plugins`   | `MessageSenderPlugin<MessageType>[]`                     | ❌       | -       | -     | -          | Array of plugins to execute                                    |
-| `hookNames` | `string \| string[]`                                     | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
-| `args`      | `unknown[]`                                              | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
+| Name        | Type                                       | Optional | Default | Since | Deprecated | Description                                                    |
+| ----------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
+| `plugins`   | `MessageSenderPlugin<MessageType>[]`       | ❌       | -       | -     | -          | Array of plugins to execute                                    |
+| `hookNames` | `string \| string[]`                       | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
+| `context`   | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `args`      | `unknown[]`                                | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
 
 ##### `runHooks` (CallSignature)
 
-**Type:** `Promise<undefined \| Result>`
+**Type:** `Promise<Result \| undefined>`
 
 Execute multiple plugin hooks in sequence asynchronously
 
@@ -912,12 +912,12 @@ const result = await this.runHooks<Data, Data>(
 
 #### Parameters
 
-| Name        | Type                                                     | Optional | Default | Since | Deprecated | Description                                                    |
-| ----------- | -------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `plugins`   | `MessageSenderPlugin<MessageType>[]`                     | ❌       | -       | -     | -          | Array of plugins to execute                                    |
-| `hookNames` | `string \| string[]`                                     | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContextInterface<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
-| `args`      | `unknown[]`                                              | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
+| Name        | Type                                       | Optional | Default | Since | Deprecated | Description                                                    |
+| ----------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
+| `plugins`   | `MessageSenderPlugin<MessageType>[]`       | ❌       | -       | -     | -          | Array of plugins to execute                                    |
+| `hookNames` | `string \| string[]`                       | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
+| `context`   | `ExecutorContextInterface<Params, Result>` | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `args`      | `unknown[]`                                | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
 
@@ -978,13 +978,13 @@ console.log(`Processed ${chunkCount} chunks`);
 
 #### `use` (Method)
 
-**Type:** `(plugin: MessageSenderPlugin<MessageType>) => void`
+**Type:** `(plugin: MessageSenderPlugin) => void`
 
 #### Parameters
 
-| Name     | Type                               | Optional | Default | Since | Deprecated | Description                                                     |
-| -------- | ---------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `plugin` | `MessageSenderPlugin<MessageType>` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
+| Name     | Type                  | Optional | Default | Since | Deprecated | Description                                                     |
+| -------- | --------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
+| `plugin` | `MessageSenderPlugin` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
 
 ---
 
@@ -1020,21 +1020,21 @@ executor.use(new LogPlugin());
 
 #### Parameters
 
-| Name     | Type                               | Optional | Default | Since | Deprecated | Description                                                     |
-| -------- | ---------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `plugin` | `MessageSenderPlugin<MessageType>` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
+| Name     | Type                  | Optional | Default | Since | Deprecated | Description                                                     |
+| -------- | --------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
+| `plugin` | `MessageSenderPlugin` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
 
 ---
 
 #### `validePlugin` (Method)
 
-**Type:** `(plugin: MessageSenderPlugin<MessageType>) => void`
+**Type:** `(plugin: MessageSenderPlugin) => void`
 
 #### Parameters
 
-| Name     | Type                               | Optional | Default | Since | Deprecated | Description |
-| -------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `MessageSenderPlugin<MessageType>` | ❌       | -       | -     | -          |             |
+| Name     | Type                  | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `MessageSenderPlugin` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1044,8 +1044,8 @@ executor.use(new LogPlugin());
 
 #### Parameters
 
-| Name     | Type                               | Optional | Default | Since | Deprecated | Description |
-| -------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `MessageSenderPlugin<MessageType>` | ❌       | -       | -     | -          |             |
+| Name     | Type                  | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `MessageSenderPlugin` | ❌       | -       | -     | -          |             |
 
 ---

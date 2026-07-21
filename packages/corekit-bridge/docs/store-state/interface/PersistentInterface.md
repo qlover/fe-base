@@ -103,13 +103,13 @@ const asyncStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
 
 #### `getStorage` (Method)
 
-**Type:** `() => null \| StorageInterface<Key, T, Opt>`
+**Type:** `() => StorageInterface<Key, T, Opt> \| null`
 
 ---
 
 ##### `getStorage` (CallSignature)
 
-**Type:** `null \| StorageInterface<Key, T, Opt>`
+**Type:** `StorageInterface<Key, T, Opt> \| null`
 
 Get the underlying storage interface
 
@@ -256,13 +256,13 @@ If `undefined` or omitted, persists the current state |
 
 #### `restore` (Method)
 
-**Type:** `() => null \| R`
+**Type:** `() => R \| null`
 
 ---
 
 ##### `restore` (CallSignature)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
 Restore state from storage
 

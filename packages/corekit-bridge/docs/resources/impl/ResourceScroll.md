@@ -10,15 +10,15 @@
 
 **Since:** `3.1.0`
 
-Wraps <a href="../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface" class="tsd-kind-interface">ResourceScrollInterface</a> with async store state: <a href="../../store-state/impl/AsyncStoreState.md#result-property" class="tsd-kind-property">ResourceSearchStoreState.result</a> holds the
-last window; <a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a> tracks the request used for <a href="#refresh-method" class="tsd-kind-method">ResourceScroll.refresh</a>,
-<a href="#loadfirst-method" class="tsd-kind-method">ResourceScroll.loadFirst</a>, and <a href="#loadnext-method" class="tsd-kind-method">ResourceScroll.loadNext</a> when arguments are omitted.
+Wraps [ResourceScrollInterface](../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface) with async store state: [ResourceSearchStoreState.result](../../store-state/impl/AsyncStoreState.md#result-property) holds the
+last window; [ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property) tracks the request used for [ResourceScroll.refresh](#refresh-method),
+[ResourceScroll.loadFirst](#loadfirst-method), and [ResourceScroll.loadNext](#loadnext-method) when arguments are omitted.
 
 **Remarks:**
 
-This class implements <a href="../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface" class="tsd-kind-interface">ResourceScrollInterface</a> on the outside but **only calls**
-<a href="../interfaces/ResourceSearchInterface.md#search-method" class="tsd-kind-method">ResourceSearchInterface.search</a> on the inner `resource` (typed as <a href="../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface" class="tsd-kind-interface">ResourceSearchInterface</a>).
-Adapters that also implement <a href="../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface" class="tsd-kind-interface">ResourceScrollInterface</a> are accepted; any custom `loadNext` / `loadFirst` /
+This class implements [ResourceScrollInterface](../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface) on the outside but **only calls**
+[ResourceSearchInterface.search](../interfaces/ResourceSearchInterface.md#search-method) on the inner `resource` (typed as [ResourceSearchInterface](../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface)).
+Adapters that also implement [ResourceScrollInterface](../interfaces/ResourceScrollInterface.md#resourcescrollinterface-interface) are accepted; any custom `loadNext` / `loadFirst` /
 `refresh` on the inner object is **not** invoked—scroll semantics are driven by this wrapper’s criteria
 normalization and stored state.
 
@@ -33,17 +33,17 @@ await feed.refresh(); // same slice/cursor as last successful request
 
 ---
 
-#### `new ResourceScroll` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(resource: ResourceSearchInterface<TItem, Criteria>, options: Partial<ResourceScrollOptions<TItem, Criteria>>) => ResourceScroll<TItem, Criteria>`
 
 #### Parameters
 
-| Name                                                                | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                                                                                        |
-| ------------------------------------------------------------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resource`                                                          | `ResourceSearchInterface<TItem, Criteria>`        | ❌       | -       | -     | -          | Gateway exposing at least <a href="../interfaces/ResourceSearchInterface.md#search-method" class="tsd-kind-method">ResourceSearchInterface.search</a>; extra scroll methods on the |
+| Name                                                                | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                                                     |
+| ------------------------------------------------------------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resource`                                                          | `ResourceSearchInterface<TItem, Criteria>`        | ❌       | -       | -     | -          | Gateway exposing at least [ResourceSearchInterface.search](../interfaces/ResourceSearchInterface.md#search-method); extra scroll methods on the |
 | same object are **not** called by this wrapper (see class remarks). |
-| `options`                                                           | `Partial<ResourceScrollOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Same shape as ResourceSearch (`serviceName`, store seed, response guard, logger)                                                                                                   |
+| `options`                                                           | `Partial<ResourceScrollOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Same shape as ResourceSearch (`serviceName`, store seed, response guard, logger)                                                                |
 
 ---
 
@@ -84,7 +84,7 @@ Set during construction and remains constant throughout the service lifecycle.
 
 #### `store` (Property)
 
-**Type:** `ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `ResourceSearchStore`
 
 Store instance for state management
 
@@ -96,13 +96,13 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| ResourceSearchInterface<TItem, Criteria>`
+**Type:** `() => ResourceSearchInterface<TItem, Criteria> \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| ResourceSearchInterface<TItem, Criteria>`
+**Type:** `ResourceSearchInterface<TItem, Criteria> \| undefined`
 
 Get the gateway instance
 
@@ -135,13 +135,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 
@@ -166,13 +166,13 @@ if (logger) {
 
 #### `getStore` (Method)
 
-**Type:** `() => ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `() => ResourceSearchStore<TItem, Criteria>`
 
 ---
 
 ##### `getStore` (CallSignature)
 
-**Type:** `ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `ResourceSearchStore<TItem, Criteria>`
 
 ---
 
@@ -186,7 +186,7 @@ if (logger) {
 
 **Type:** `StoreInterface<ResourceSearchStoreState<TItem, Criteria>>`
 
-Subscribe to scroll/search state: async lifecycle + <a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a>.
+Subscribe to scroll/search state: async lifecycle + [ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property).
 
 ---
 
@@ -331,14 +331,14 @@ criteria (including cursor / page).
 
 #### `resolveNextCriteria` (Method)
 
-**Type:** `(base: Criteria, lastWindow: undefined \| null \| ResourceSearchResult<TItem>) => Criteria`
+**Type:** `(base: Criteria, lastWindow: ResourceSearchResult<TItem> \| null \| undefined) => Criteria`
 
 #### Parameters
 
 | Name         | Type                                               | Optional | Default | Since | Deprecated | Description |
 | ------------ | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `base`       | `Criteria`                                         | ❌       | -       | -     | -          |             |
-| `lastWindow` | `undefined \| null \| ResourceSearchResult<TItem>` | ❌       | -       | -     | -          |             |
+| `lastWindow` | `ResourceSearchResult<TItem> \| null \| undefined` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -353,21 +353,21 @@ Derive the next window from the last response and current stored criteria.
 | Name         | Type                                               | Optional | Default | Since | Deprecated | Description |
 | ------------ | -------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `base`       | `Criteria`                                         | ❌       | -       | -     | -          |             |
-| `lastWindow` | `undefined \| null \| ResourceSearchResult<TItem>` | ❌       | -       | -     | -          |             |
+| `lastWindow` | `ResourceSearchResult<TItem> \| null \| undefined` | ❌       | -       | -     | -          |             |
 
 ---
 
 #### `runSearch` (Method)
 
-**Type:** `(criteria: Criteria, resourceOptions: undefined \| ResourceGatewayOptions, criteriaRollback: null \| Criteria, operation: "refresh" \| "loadFirst" \| "loadNext" \| "search") => Promise<ResourceSearchResult<TItem>>`
+**Type:** `(criteria: Criteria, resourceOptions: ResourceGatewayOptions \| undefined, criteriaRollback: Criteria \| null, operation: "refresh" \| "loadFirst" \| "loadNext" \| "search") => Promise<ResourceSearchResult<TItem>>`
 
 #### Parameters
 
 | Name               | Type                                                 | Optional | Default | Since | Deprecated | Description |
 | ------------------ | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `criteria`         | `Criteria`                                           | ❌       | -       | -     | -          |             |
-| `resourceOptions`  | `undefined \| ResourceGatewayOptions`                | ❌       | -       | -     | -          |             |
-| `criteriaRollback` | `null \| Criteria`                                   | ❌       | -       | -     | -          |             |
+| `resourceOptions`  | `ResourceGatewayOptions \| undefined`                | ❌       | -       | -     | -          |             |
+| `criteriaRollback` | `Criteria \| null`                                   | ❌       | -       | -     | -          |             |
 | `operation`        | `"refresh" \| "loadFirst" \| "loadNext" \| "search"` | ❌       | -       | -     | -          |             |
 
 ---
@@ -383,8 +383,8 @@ Commits `criteria` only after success; on failure restores `criteriaRollback` (s
 | Name               | Type                                                 | Optional | Default | Since | Deprecated | Description |
 | ------------------ | ---------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `criteria`         | `Criteria`                                           | ❌       | -       | -     | -          |             |
-| `resourceOptions`  | `undefined \| ResourceGatewayOptions`                | ❌       | -       | -     | -          |             |
-| `criteriaRollback` | `null \| Criteria`                                   | ❌       | -       | -     | -          |             |
+| `resourceOptions`  | `ResourceGatewayOptions \| undefined`                | ❌       | -       | -     | -          |             |
+| `criteriaRollback` | `Criteria \| null`                                   | ❌       | -       | -     | -          |             |
 | `operation`        | `"refresh" \| "loadFirst" \| "loadNext" \| "search"` | ❌       | -       | -     | -          |             |
 
 ---

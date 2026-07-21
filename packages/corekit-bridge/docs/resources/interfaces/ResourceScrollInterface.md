@@ -10,7 +10,7 @@
 
 **Since:** `3.1.0`
 
-Port for **incremental** lists: same <a href="./ResourceSearchInterface.md#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> and `Criteria extends {@link ResourceSearchParams}` as
+Port for **incremental** lists: same [ResourceSearchResult](./ResourceSearchInterface.md#resourcesearchresult-interface) and `Criteria extends {@link ResourceSearchParams}` as
 ResourceSearchInterface. **`search`** is the explicit entry (required `criteria`). **`loadNext`**, **`loadFirst`**,
 and **`refresh`** are shortcuts whose `criteria` may be **omitted** when the implementation holds the last query state
 (e.g. a service field or store).
@@ -19,16 +19,16 @@ and **`refresh`** are shortcuts whose `criteria` may be **omitted** when the imp
 
 **Semantics**
 
-- <a href="#search-method" class="tsd-kind-method">search</a> — always pass `criteria` (same contract as ResourceSearchInterface.search).
-- <a href="#loadnext-method" class="tsd-kind-method">loadNext</a> — next chunk. With `criteria`: caller supplies continuation. **Without `criteria`:** implementation
+- [search](#search-method) — always pass `criteria` (same contract as ResourceSearchInterface.search).
+- [loadNext](#loadnext-method) — next chunk. With `criteria`: caller supplies continuation. **Without `criteria`:** implementation
   uses stored state (last `search` / prior chunk) and advances continuation itself; must `reject` if no state exists.
-- <a href="#loadfirst-method" class="tsd-kind-method">loadFirst</a> — first chunk for the scope. With `criteria`: normalize that object (strip `cursor`, reset page).
+- [loadFirst](#loadfirst-method) — first chunk for the scope. With `criteria`: normalize that object (strip `cursor`, reset page).
   **Without `criteria`:** use stored base filters/keyword/pageSize and load the first page.
-- <a href="#refresh-method" class="tsd-kind-method">refresh</a> — same slice again. With `criteria`: run it unchanged. **Without `criteria`:** re-run the last
+- [refresh](#refresh-method) — same slice again. With `criteria`: run it unchanged. **Without `criteria`:** re-run the last
   request parameters exactly (including `cursor` / `page` if stored).
 - Stateless adapters should require arguments for the three shortcuts (TypeScript cannot enforce—document or reject at runtime).
 - Hard errors reject the `Promise`. Debounce and intersection observers stay in UI code.
-- Optional <a href="./ResourceSearchInterface.md#resourceoptions-typealias" class="tsd-kind-type-alias">ResourceOptions</a> (`resourceOptions`) on each method mirrors ResourceSearchInterface.search.
+- Optional [ResourceOptions](./ResourceSearchInterface.md#resourceoptions-typealias) (`resourceOptions`) on each method mirrors ResourceSearchInterface.search.
 
 **Example:** Calling the port from UI (criteria optional only when the adapter holds state)
 
@@ -88,7 +88,7 @@ First window for this scope. Pass `criteria` to derive scope from, or omit to us
 
 **Type:** `Promise<ResourceSearchResult<TItem>>`
 
-Next window. Pass `criteria` with continuation from the last <a href="./ResourceSearchInterface.md#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a>, or omit to use
+Next window. Pass `criteria` with continuation from the last [ResourceSearchResult](./ResourceSearchInterface.md#resourcesearchresult-interface), or omit to use
 implementation-held state.
 
 #### Parameters

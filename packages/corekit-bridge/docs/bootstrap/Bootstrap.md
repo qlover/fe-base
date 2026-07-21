@@ -23,7 +23,7 @@ await bootstrap.initialize();
 
 ---
 
-#### `new Bootstrap` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: BootstrapConfig<Container>) => Bootstrap<Container>`
 
@@ -63,7 +63,7 @@ Type safety is enforced at compile time through generic constraints
 
 #### `createContext` (Method)
 
-**Type:** `(parameters: Params) => ExecutorContextImpl<Params, Result, HookRuntimes>`
+**Type:** `(parameters: Params) => ExecutorContextImpl<Params, Result>`
 
 #### Parameters
 
@@ -75,7 +75,7 @@ Type safety is enforced at compile time through generic constraints
 
 ##### `createContext` (CallSignature)
 
-**Type:** `ExecutorContextImpl<Params, Result, HookRuntimes>`
+**Type:** `ExecutorContextImpl<Params, Result>`
 
 Create a new execution context instance
 
@@ -303,26 +303,26 @@ Get configured finallyHook or default
 
 #### `getIOCContainer` (Method)
 
-**Type:** `() => undefined \| Container`
+**Type:** `() => Container \| undefined`
 
 ---
 
 ##### `getIOCContainer` (CallSignature)
 
-**Type:** `undefined \| Container`
+**Type:** `Container \| undefined`
 
 ---
 
 #### `handler` (Method)
 
-**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
+**Type:** `(context: ExecutorContextImpl<Params, Result>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                       |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute                          |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Task function to execute                          |
 
 ---
 
@@ -386,23 +386,23 @@ onSuccess: (ctx) => console.log('Fetched:', ctx.returnValue);
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                       |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute                          |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Task function to execute                          |
 
 ---
 
 #### `handlerCatch` (Method)
 
-**Type:** `(context: ExecutorContextImpl<unknown, unknown, HookRuntimes>, error: unknown) => ExecutorError`
+**Type:** `(context: ExecutorContextImpl<unknown, unknown>, error: unknown) => ExecutorError`
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                                    |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
-| `error`   | `unknown`                                             | ❌       | -       | -     | -          | Original error                                 |
+| Name      | Type                                    | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | --------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                               | ❌       | -       | -     | -          | Original error                                 |
 
 ---
 
@@ -466,22 +466,22 @@ onError: (ctx) => {
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                                    |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
-| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
-| `error`   | `unknown`                                             | ❌       | -       | -     | -          | Original error                                 |
+| Name      | Type                                    | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | --------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                               | ❌       | -       | -     | -          | Original error                                 |
 
 ---
 
 #### `handlerFinally` (Method)
 
-**Type:** `(context: ExecutorContextImpl<unknown, unknown, HookRuntimes>) => void`
+**Type:** `(context: ExecutorContextImpl<unknown>) => void`
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
-| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
+| Name      | Type                           | Optional | Default | Since | Deprecated | Description                |
+| --------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextImpl<unknown>` | ❌       | -       | -     | -          | Execution context to reset |
 
 ---
 
@@ -549,9 +549,9 @@ onFinally: (ctx) => {
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
-| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
+| Name      | Type                           | Optional | Default | Since | Deprecated | Description                |
+| --------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextImpl<unknown>` | ❌       | -       | -     | -          | Execution context to reset |
 
 ---
 
@@ -569,14 +569,14 @@ onFinally: (ctx) => {
 
 #### `run` (Method)
 
-**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
+**Type:** `(context: ExecutorContextImpl<Params, Result>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
@@ -607,23 +607,23 @@ Task execution result
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
 #### `runExec` (Method)
 
-**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
+**Type:** `(context: ExecutorContextImpl<Params, Result>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description              |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context        |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description              |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context        |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Task function to execute |
 
 ---
 
@@ -654,16 +654,16 @@ Task execution result
 
 #### Parameters
 
-| Name         | Type                                                | Optional | Default | Since | Deprecated | Description              |
-| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
-| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context        |
-| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute |
+| Name         | Type                                  | Optional | Default | Since | Deprecated | Description              |
+| ------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
+| `context`    | `ExecutorContextImpl<Params, Result>` | ❌       | -       | -     | -          | Execution context        |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`    | ❌       | -       | -     | -          | Task function to execute |
 
 ---
 
 #### `runHook` (Method)
 
-**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookName: string, context: ExecutorContextImpl<Params, unknown, HookRuntimes>, args: unknown[]) => undefined \| Result`
+**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookName: string, context: ExecutorContextImpl<Params, unknown>, args: unknown[]) => Result \| undefined`
 
 #### Parameters
 
@@ -671,14 +671,14 @@ Task execution result
 | ---------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
 | `plugins`  | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
 | `hookName` | `string`                                                                            | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `context`  | `ExecutorContextImpl<Params, unknown>`                                              | ❌       | -       | -     | -          | Execution context containing data and runtime information |
 | `args`     | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 ##### `runHook` (CallSignature)
 
-**Type:** `undefined \| Result`
+**Type:** `Result \| undefined`
 
 Execute a single plugin hook synchronously for all plugins
 
@@ -741,14 +741,14 @@ runPluginsHookSync - The utility function that performs the actual execution
 | ---------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
 | `plugins`  | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
 | `hookName` | `string`                                                                            | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `context`  | `ExecutorContextImpl<Params, unknown>`                                              | ❌       | -       | -     | -          | Execution context containing data and runtime information |
 | `args`     | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 #### `runHooks` (Method)
 
-**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookNames: string \| string[], context: ExecutorContextImpl<Params, unknown, HookRuntimes>, args: unknown[]) => undefined \| Result`
+**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookNames: string \| string[], context: ExecutorContextImpl<Params, unknown>, args: unknown[]) => Result \| undefined`
 
 #### Parameters
 
@@ -756,14 +756,14 @@ runPluginsHookSync - The utility function that performs the actual execution
 | ----------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
 | `plugins`   | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
 | `hookNames` | `string \| string[]`                                                                | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `context`   | `ExecutorContextImpl<Params, unknown>`                                              | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
 | `args`      | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
 
 ##### `runHooks` (CallSignature)
 
-**Type:** `undefined \| Result`
+**Type:** `Result \| undefined`
 
 Execute multiple plugin hooks in sequence synchronously
 
@@ -833,7 +833,7 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 | ----------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
 | `plugins`   | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
 | `hookNames` | `string \| string[]`                                                                | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `context`   | `ExecutorContextImpl<Params, unknown>`                                              | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
 | `args`      | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
@@ -892,10 +892,10 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 
 #### Parameters
 
-| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description |
-| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `BootstrapExecutorPlugin \| BootstrapExecutorPlugin[]` | ❌       | -       | -     | -          |             |
-| `skip`   | `boolean`                                              | ✅       | -       | -     | -          |             |
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                                                     |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
+| `plugin` | `BootstrapExecutorPlugin \| BootstrapExecutorPlugin[]` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
+| `skip`   | `boolean`                                              | ✅       | -       | -     | -          |                                                                 |
 
 ---
 
@@ -903,24 +903,50 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 
 **Type:** `this`
 
+Add a plugin to the executor's execution pipeline
+
+Core concept:
+Registers a plugin to participate in the executor's execution pipeline,
+extending the executor's functionality with additional capabilities.
+Plugin type is enforced at compile time through generic constraints.
+
+Main features:
+
+- Plugin registration: Adds plugins to the execution pipeline
+- Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
+- Deduplication: Prevents duplicate plugins when `onlyOne` is true
+- Order preservation: Maintains plugin execution order
+- Validation: Ensures plugin is a valid object
+
+**Throws:**
+
+When plugin is not a valid object
+
+**Example:**
+
+```typescript
+const executor = new LifecycleExecutor2();
+executor.use(new LogPlugin());
+```
+
 #### Parameters
 
-| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description |
-| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `BootstrapExecutorPlugin \| BootstrapExecutorPlugin[]` | ❌       | -       | -     | -          |             |
-| `skip`   | `boolean`                                              | ✅       | -       | -     | -          |             |
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                                                     |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
+| `plugin` | `BootstrapExecutorPlugin \| BootstrapExecutorPlugin[]` | ❌       | -       | -     | -          | Plugin instance of type Plugin to add to the execution pipeline |
+| `skip`   | `boolean`                                              | ✅       | -       | -     | -          |                                                                 |
 
 ---
 
 #### `validePlugin` (Method)
 
-**Type:** `(plugin: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>) => void`
+**Type:** `(plugin: LifecycleSyncPluginInterface) => void`
 
 #### Parameters
 
-| Name     | Type                                                                              | Optional | Default | Since | Deprecated | Description |
-| -------- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>` | ❌       | -       | -     | -          |             |
+| Name     | Type                           | Optional | Default | Since | Deprecated | Description |
+| -------- | ------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `LifecycleSyncPluginInterface` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -930,9 +956,9 @@ const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 
 #### Parameters
 
-| Name     | Type                                                                              | Optional | Default | Since | Deprecated | Description |
-| -------- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>` | ❌       | -       | -     | -          |             |
+| Name     | Type                           | Optional | Default | Since | Deprecated | Description |
+| -------- | ------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `LifecycleSyncPluginInterface` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -970,7 +996,7 @@ or is a IOCManagerInterface
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface<unknown>`
+**Type:** `LoggerInterface`
 
 logger
 

@@ -137,7 +137,7 @@ if (logger) {
 
 ---
 
-#### `new GatewayService` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: GatewayServiceOptions<T, Gateway>) => GatewayService<T, Store, Gateway>`
 
@@ -198,13 +198,13 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| Gateway`
+**Type:** `() => Gateway \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| Gateway`
+**Type:** `Gateway \| undefined`
 
 Get the gateway instance
 
@@ -237,13 +237,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 
@@ -332,7 +332,7 @@ Core features:
 
 Design decisions:
 
-- Builds on `AsyncStoreOptions` but **omits** `store` and redeclares it as <a href="../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface" class="tsd-kind-interface">AsyncStoreInterface</a>
+- Builds on `AsyncStoreOptions` but **omits** `store` and redeclares it as [AsyncStoreInterface](../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface)
   (gateway services inject an async facade, not a bare StoreInterface)
 - Other async options (`storage`, `defaultState`, …) are unchanged
 
@@ -409,7 +409,7 @@ Should be set during construction and remain constant.
 Async store instance for state management
 
 Narrower than AsyncStoreOptions.store (`StoreInterface`): gateway services
-accept a full <a href="../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface" class="tsd-kind-interface">AsyncStoreInterface</a> implementation (e.g. AsyncStore).
+accept a full [AsyncStoreInterface](../../store-state/interface/AsyncStoreInterface.md#asyncstoreinterface-interface) implementation (e.g. AsyncStore).
 
 ---
 

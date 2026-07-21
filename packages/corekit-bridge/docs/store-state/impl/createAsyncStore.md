@@ -54,15 +54,9 @@ const store = createStore(existingStore);
 
 ```ts
 // Using configuration object
-const store = createStore<User, string>({
-  storage: {
-    key: 'user_data',
-    storage: localStorage,
-    expires: 'day'
-  },
-  defaultState: (defaultStorageState) => {
-    return new AsyncStoreState<User>(defaultStorageState);
-  }
+const store = createAsyncStore<User, string>({
+  persist: new KeyStorage('user_data', storageAdapter),
+  defaultState: () => null
 });
 ```
 
@@ -70,7 +64,7 @@ const store = createStore<User, string>({
 
 ```ts
 // Using default options
-const store = createStore<User, string>();
+const store = createAsyncStore<User, string>();
 ```
 
 #### Parameters

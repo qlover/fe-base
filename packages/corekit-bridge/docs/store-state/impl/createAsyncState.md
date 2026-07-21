@@ -10,9 +10,9 @@
 
 #### Parameters
 
-| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                                                     |
-| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `options` | `AsyncStoreOptions<State, StorageKey, Opt>` | ✅       | -       | -     | -          | Optional async-store configuration (`defaultState`, storage, …) |
+| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                                                       |
+| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
+| `options` | `AsyncStoreOptions<State, StorageKey, Opt>` | ✅       | -       | -     | -          | Optional async-store configuration (`defaultState`, `persist`, …) |
 
 ---
 
@@ -20,7 +20,7 @@
 
 **Type:** `State`
 
-Build initial <a href="./AsyncStore.md#asyncstorestateinterface-interface" class="tsd-kind-interface">AsyncStoreStateInterface</a> for <a href="./AsyncStore.md#asyncstoreoptions-interface" class="tsd-kind-interface">AsyncStoreOptions</a>
+Build initial [AsyncStoreStateInterface](./AsyncStore.md#asyncstorestateinterface-interface) for [AsyncStoreOptions](./AsyncStore.md#asyncstoreoptions-interface)
 
 **Returns:**
 
@@ -28,9 +28,9 @@ Fresh state instance (from `defaultState` or `AsyncStoreState`)
 
 #### Parameters
 
-| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                                                     |
-| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `options` | `AsyncStoreOptions<State, StorageKey, Opt>` | ✅       | -       | -     | -          | Optional async-store configuration (`defaultState`, storage, …) |
+| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                                                       |
+| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
+| `options` | `AsyncStoreOptions<State, StorageKey, Opt>` | ✅       | -       | -     | -          | Optional async-store configuration (`defaultState`, `persist`, …) |
 
 ---
 
@@ -50,10 +50,10 @@ Fresh state instance (from `defaultState` or `AsyncStoreState`)
 
 **Type:** `StoreInterface<State>`
 
-Resolve the <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> used by AsyncStore
+Resolve the [StoreInterface](../interface/StoreInterface.md#storeinterface-interface) used by AsyncStore
 
-- If `options.store` is a <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a>, it is reused.
-- Otherwise a <a href="./SliceStoreAdapter.md#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> is created around <a href="#createasyncstate-function" class="tsd-kind-function">createAsyncState</a>.
+- If `options.store` is a [StoreInterface](../interface/StoreInterface.md#storeinterface-interface), it is reused.
+- Otherwise a [SliceStoreAdapter](./SliceStoreAdapter.md#slicestoreadapter-class) is created around [createAsyncState](#createasyncstate-function).
 
 #### Parameters
 

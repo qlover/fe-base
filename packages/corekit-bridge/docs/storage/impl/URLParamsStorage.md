@@ -64,7 +64,7 @@ const value = storage.getItem('lang', 'en'); // Returns 'en'
 
 ---
 
-#### `new URLParamsStorage` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(url: string \| URL, defaultOptions: URLParamsStorageOptions) => URLParamsStorage<Key>`
 
@@ -79,7 +79,7 @@ const value = storage.getItem('lang', 'en'); // Returns 'en'
 
 #### `cache` (Property)
 
-**Type:** `Map<string, null \| string>`
+**Type:** `Map<string, string \| null>`
 
 **Default:** `{}`
 
@@ -136,7 +136,7 @@ storage.getItem('token'); // Re-parses URL and caches again
 
 #### `findValueFromURL` (Method)
 
-**Type:** `(key: Key, caseSensitive: boolean) => null \| string`
+**Type:** `(key: Key, caseSensitive: boolean) => string \| null`
 
 #### Parameters
 
@@ -149,7 +149,7 @@ storage.getItem('token'); // Re-parses URL and caches again
 
 ##### `findValueFromURL` (CallSignature)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Find value from URL search parameters based on provided key(s) and case sensitivity
 
@@ -223,7 +223,7 @@ getCacheKey(['token', 'Token'], false); // Returns 'token,Token:false'
 
 #### `getItem` (Method)
 
-**Type:** `(key: Key, options: URLParamsStorageOptions) => null \| string`
+**Type:** `(key: Key, options: URLParamsStorageOptions) => string \| null`
 
 #### Parameters
 
@@ -236,7 +236,7 @@ getCacheKey(['token', 'Token'], false); // Returns 'token,Token:false'
 
 ##### `getItem` (CallSignature)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Retrieve an item from URL query parameters with optional default value
 
