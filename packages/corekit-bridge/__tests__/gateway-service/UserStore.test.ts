@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { KeyStorage, type StorageInterface } from '@qlover/fe-corekit';
 import { UserStore } from '../../src/core/gateway-service/impl/UserStore';
+import type { UserStateInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
 import { AsyncStoreStatus } from '../../src/core/store-state';
 
 interface TestCredential {
@@ -18,6 +19,8 @@ interface TestUser {
   name: string;
   email: string;
 }
+
+type TestUserState = UserStateInterface<TestUser, TestCredential>;
 
 class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
@@ -84,7 +87,10 @@ describe('UserStore', () => {
   const SESSION_KEY = 'auth-session';
 
   function sessionPersist() {
-    return new KeyStorage(SESSION_KEY, mockStorage);
+    return new KeyStorage<string, Partial<TestUserState>>(
+      SESSION_KEY,
+      mockStorage as StorageInterface<string, Partial<TestUserState>>
+    );
   }
 
   beforeEach(() => {
@@ -159,7 +165,7 @@ describe('UserStore', () => {
         credential: testCredential
       });
 
-      const restored = new UserStore({
+      const restored = new UserStore<TestUser, TestCredential, string>({
         persist: sessionPersist(),
         persistKeys: ['result', 'credential'],
         initRestore: true

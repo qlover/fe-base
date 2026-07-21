@@ -86,7 +86,14 @@ export interface AsyncStoreOptions<
    * When set, `emit` / `persist` / `restore` use this port.
    * When omitted, the store stays in-memory only.
    *
-   * @optional
+   * @example Use with KeyStorage
+   * ```typescript
+   * import { KeyStorage } from '@qlover/fe-corekit';
+   * 
+   * const store = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+   *   persist: new KeyStorage('user-state', storageAdapter),
+   * });
+   * ```
    */
   persist?: KeyStorageInterface<Key, AsyncStorePersistValue<State>, Opt>;
 
