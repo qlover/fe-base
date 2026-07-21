@@ -4,6 +4,7 @@
   "include": [".plasmo/index.d.ts", "./**/*.ts", "./**/*.tsx"],
   "compilerOptions": {
     "moduleResolution": "bundler",
+    "types": ["node", "chrome"],
     "paths": {
       "~*": ["./src/*"],
       "@/*": ["./src/*"],

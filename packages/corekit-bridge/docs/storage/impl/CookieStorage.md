@@ -35,7 +35,7 @@ storage.clear(); // remove every cookie under the current path/domain
 
 ---
 
-#### `new CookieStorage` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(attrs: CookieAttributes) => CookieStorage`
 
@@ -73,7 +73,7 @@ void
 
 #### `getItem` (Method)
 
-**Type:** `(key: string, defaultValue: T) => null \| T`
+**Type:** `(key: string, defaultValue: T) => T \| null`
 
 #### Parameters
 
@@ -87,7 +87,7 @@ void
 
 ##### `getItem` (CallSignature)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 Retrieve the value associated with a cookie key.
 
@@ -107,7 +107,7 @@ T | null – Found value, `defaultValue`, or `null` when nothing is found.
 
 #### `key` (Method)
 
-**Type:** `(index: number) => null \| string`
+**Type:** `(index: number) => string \| null`
 
 #### Parameters
 
@@ -119,7 +119,7 @@ T | null – Found value, `defaultValue`, or `null` when nothing is found.
 
 ##### `key` (CallSignature)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Obtain the cookie name located at the specified numeric index.
 

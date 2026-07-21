@@ -10,10 +10,10 @@
 
 **Since:** `3.1.0`
 
-Wraps a <a href="../interfaces/ResourceCRUDInterface.md#resourcecrudinterface-interface" class="tsd-kind-interface">ResourceCRUDInterface</a> implementation with async store state for UI binding.
+Wraps a [ResourceCRUDInterface](../interfaces/ResourceCRUDInterface.md#resourcecrudinterface-interface) implementation with async store state for UI binding.
 
-Each operation (`create`, `detail`, `update`, `remove`) drives its own <a href="./ResourceCRUDStore.md#resourcecrudstore-class" class="tsd-kind-class">ResourceCRUDStore</a>: `start` before the
-gateway call, `success` / `failed` after. Use <a href="#getstore-method" class="tsd-kind-method">getStore</a> or <a href="#getstoreinterface-method" class="tsd-kind-method">getStoreInterface</a> to subscribe from components.
+Each operation (`create`, `detail`, `update`, `remove`) drives its own [ResourceCRUDStore](./ResourceCRUDStore.md#resourcecrudstore-class): `start` before the
+gateway call, `success` / `failed` after. Use [getStore](#getstore-method) or [getStoreInterface](#getstoreinterface-method) to subscribe from components.
 
 **Example:** Wire a gateway and read loading state from the detail store
 
@@ -28,16 +28,16 @@ await users.detail('42');
 
 ---
 
-#### `new ResourceCRUD` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(resource: ResourceCRUDInterface<T, Snapshot>, options: Partial<ResourceCRUDOptions<T, Snapshot>>) => ResourceCRUD<T, Snapshot>`
 
 #### Parameters
 
-| Name       | Type                                        | Optional | Default | Since | Deprecated | Description                                                                                                                                                                    |
-| ---------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `resource` | `ResourceCRUDInterface<T, Snapshot>`        | ❌       | -       | -     | -          | Bare <a href="../interfaces/ResourceCRUDInterface.md#resourcecrudinterface-interface" class="tsd-kind-interface">ResourceCRUDInterface</a> implementation (HTTP, RPC, mock, …) |
-| `options`  | `Partial<ResourceCRUDOptions<T, Snapshot>>` | ✅       | -       | -     | -          | `serviceName`, logging, custom stores, <a href="#isresourceresult-property" class="tsd-kind-property">ResourceCRUDOptions.isResourceResult</a>, etc.                           |
+| Name       | Type                                        | Optional | Default | Since | Deprecated | Description                                                                                                                              |
+| ---------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `resource` | `ResourceCRUDInterface<T, Snapshot>`        | ❌       | -       | -     | -          | Bare [ResourceCRUDInterface](../interfaces/ResourceCRUDInterface.md#resourcecrudinterface-interface) implementation (HTTP, RPC, mock, …) |
+| `options`  | `Partial<ResourceCRUDOptions<T, Snapshot>>` | ✅       | -       | -     | -          | `serviceName`, logging, custom stores, [ResourceCRUDOptions.isResourceResult](#isresourceresult-property), etc.                          |
 
 ---
 
@@ -90,7 +90,7 @@ Set during construction and remains constant throughout the service lifecycle.
 
 #### `store` (Property)
 
-**Type:** `ResourceCRUDStore<T, string>`
+**Type:** `ResourceCRUDStore`
 
 Store instance for state management
 
@@ -102,7 +102,7 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `storeMap` (Property)
 
-**Type:** `Record<CRUDResourceName, ResourceCRUDStore<T, string>>`
+**Type:** `Record<CRUDResourceName, ResourceCRUDStore<T>>`
 
 ---
 
@@ -112,10 +112,10 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                                                                                                            |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `payload` | `T \| Snapshot`          | ❌       | -       | -     | -          | Create body (Snapshot DTO or full T when shapes align)                                                                                                                                 |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          | Per-call gateway options (e.g. `signal` from <a href="../interfaces/ResourceCRUDInterface.md#resourcegatewayoptions-typealias" class="tsd-kind-type-alias">ResourceGatewayOptions</a>) |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                                                                     |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `payload` | `T \| Snapshot`          | ❌       | -       | -     | -          | Create body (Snapshot DTO or full T when shapes align)                                                                                          |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          | Per-call gateway options (e.g. `signal` from [ResourceGatewayOptions](../interfaces/ResourceCRUDInterface.md#resourcegatewayoptions-typealias)) |
 
 ---
 
@@ -129,10 +129,10 @@ Persisted resource from the gateway
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                                                                                                            |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `payload` | `T \| Snapshot`          | ❌       | -       | -     | -          | Create body (Snapshot DTO or full T when shapes align)                                                                                                                                 |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          | Per-call gateway options (e.g. `signal` from <a href="../interfaces/ResourceCRUDInterface.md#resourcegatewayoptions-typealias" class="tsd-kind-type-alias">ResourceGatewayOptions</a>) |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                                                                     |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `payload` | `T \| Snapshot`          | ❌       | -       | -     | -          | Create body (Snapshot DTO or full T when shapes align)                                                                                          |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          | Per-call gateway options (e.g. `signal` from [ResourceGatewayOptions](../interfaces/ResourceCRUDInterface.md#resourcegatewayoptions-typealias)) |
 
 ---
 
@@ -179,13 +179,13 @@ Fetches one resource and updates the `'detail'` async store (`start` → `succes
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| ResourceCRUDInterface<T, Snapshot>`
+**Type:** `() => ResourceCRUDInterface<T, Snapshot> \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| ResourceCRUDInterface<T, Snapshot>`
+**Type:** `ResourceCRUDInterface<T, Snapshot> \| undefined`
 
 Get the gateway instance
 
@@ -218,13 +218,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 
@@ -249,7 +249,7 @@ if (logger) {
 
 #### `getStore` (Method)
 
-**Type:** `(name: CRUDResourceName) => ResourceCRUDStore<T, string>`
+**Type:** `(name: CRUDResourceName) => ResourceCRUDStore<T>`
 
 #### Parameters
 
@@ -261,11 +261,11 @@ if (logger) {
 
 ##### `getStore` (CallSignature)
 
-**Type:** `ResourceCRUDStore<T, string>`
+**Type:** `ResourceCRUDStore<T>`
 
 **Returns:**
 
-The <a href="./ResourceCRUDStore.md#resourcecrudstore-class" class="tsd-kind-class">ResourceCRUDStore</a> backing that operation
+The [ResourceCRUDStore](./ResourceCRUDStore.md#resourcecrudstore-class) backing that operation
 
 #### Parameters
 
@@ -291,7 +291,7 @@ The <a href="./ResourceCRUDStore.md#resourcecrudstore-class" class="tsd-kind-cla
 
 **Type:** `StoreInterface<AsyncStoreState<T>>`
 
-Subscribe-friendly view of async state for the given operation (same underlying store as <a href="#getstore-method" class="tsd-kind-method">getStore</a>).
+Subscribe-friendly view of async state for the given operation (same underlying store as [getStore](#getstore-method)).
 
 #### Parameters
 
@@ -304,6 +304,8 @@ Subscribe-friendly view of async state for the given operation (same underlying 
 #### `remove` (Method)
 
 **Type:** `(ref: RefType, options: ResourceGatewayOptions) => Promise<void>`
+
+On success commits `null` into the `'remove'` store via `success(null)` (void operation).
 
 #### Parameters
 
@@ -370,6 +372,8 @@ Subscribe-friendly view of async state for the given operation (same underlying 
 
 **Type:** `(ref: RefType, payload: Snapshot, options: ResourceGatewayOptions) => Promise<T>`
 
+Forwards to the inner gateway’s overloads; updates the `'update'` store’s async state.
+
 #### Parameters
 
 | Name      | Type                     | Optional | Default | Since | Deprecated | Description |
@@ -415,7 +419,7 @@ Subscribe-friendly view of async state for the given operation (same underlying 
 
 ### `ResourceCRUDIdentifiers` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ResourceCRUDIdentifiers`
 
 ---
 

@@ -21,7 +21,7 @@ Requires "reflect-metadata" to be installed and imported once (e.g. in app entry
 
 ---
 
-#### `new ReflectionIOCContainer` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(logger: LoggerInterface<unknown>) => ReflectionIOCContainer`
 
@@ -41,14 +41,14 @@ Requires "reflect-metadata" to be installed and imported once (e.g. in app entry
 
 #### `bind` (Method)
 
-**Type:** `(serviceIdentifier: ServiceIdentifier<unknown>, value: T \| Newable<T>) => void`
+**Type:** `(serviceIdentifier: ServiceIdentifier, value: T \| Newable<T>) => void`
 
 #### Parameters
 
-| Name                | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `serviceIdentifier` | `ServiceIdentifier<unknown>` | ❌       | -       | -     | -          |             |
-| `value`             | `T \| Newable<T>`            | ❌       | -       | -     | -          |             |
+| Name                | Type                | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `serviceIdentifier` | `ServiceIdentifier` | ❌       | -       | -     | -          |             |
+| `value`             | `T \| Newable<T>`   | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -58,23 +58,23 @@ Requires "reflect-metadata" to be installed and imported once (e.g. in app entry
 
 #### Parameters
 
-| Name                | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `serviceIdentifier` | `ServiceIdentifier<unknown>` | ❌       | -       | -     | -          |             |
-| `value`             | `T \| Newable<T>`            | ❌       | -       | -     | -          |             |
+| Name                | Type                | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `serviceIdentifier` | `ServiceIdentifier` | ❌       | -       | -     | -          |             |
+| `value`             | `T \| Newable<T>`   | ❌       | -       | -     | -          |             |
 
 ---
 
 #### `bindFactory` (Method)
 
-**Type:** `(serviceIdentifier: ServiceIdentifier<unknown>, factory: Factory<T>) => void`
+**Type:** `(serviceIdentifier: ServiceIdentifier, factory: Factory<T>) => void`
 
 #### Parameters
 
-| Name                | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `serviceIdentifier` | `ServiceIdentifier<unknown>` | ❌       | -       | -     | -          |             |
-| `factory`           | `Factory<T>`                 | ❌       | -       | -     | -          |             |
+| Name                | Type                | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `serviceIdentifier` | `ServiceIdentifier` | ❌       | -       | -     | -          |             |
+| `factory`           | `Factory<T>`        | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -86,10 +86,10 @@ Bind a factory; the container will call it once per get() and cache the result.
 
 #### Parameters
 
-| Name                | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `serviceIdentifier` | `ServiceIdentifier<unknown>` | ❌       | -       | -     | -          |             |
-| `factory`           | `Factory<T>`                 | ❌       | -       | -     | -          |             |
+| Name                | Type                | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `serviceIdentifier` | `ServiceIdentifier` | ❌       | -       | -     | -          |             |
+| `factory`           | `Factory<T>`        | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -119,13 +119,13 @@ Bind a factory; the container will call it once per get() and cache the result.
 
 #### `getDefaultArguments` (Method)
 
-**Type:** `(constructor: Newable<unknown>) => unknown[]`
+**Type:** `(constructor: Newable) => unknown[]`
 
 #### Parameters
 
-| Name          | Type               | Optional | Default | Since | Deprecated | Description |
-| ------------- | ------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `constructor` | `Newable<unknown>` | ❌       | -       | -     | -          |             |
+| Name          | Type      | Optional | Default | Since | Deprecated | Description |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `constructor` | `Newable` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -135,9 +135,9 @@ Bind a factory; the container will call it once per get() and cache the result.
 
 #### Parameters
 
-| Name          | Type               | Optional | Default | Since | Deprecated | Description |
-| ------------- | ------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `constructor` | `Newable<unknown>` | ❌       | -       | -     | -          |             |
+| Name          | Type      | Optional | Default | Since | Deprecated | Description |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `constructor` | `Newable` | ❌       | -       | -     | -          |             |
 
 ---
 

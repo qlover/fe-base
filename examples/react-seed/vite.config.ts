@@ -10,7 +10,6 @@ import { i18nConfig, i18nLoadPath } from './config/i18n';
 import { routerPrefix } from './config/seed.config';
 import { name, version } from './package.json';
 import { getAllI18nIdentifierFiles } from './tools/i18nIdentifierGenerator';
-import type { Plugin } from 'vite';
 
 const relativePath = (path: string) => resolve(__dirname, path);
 
@@ -30,7 +29,6 @@ export default defineConfig({
     tsconfigPaths({
       projects: ['./tsconfig.test.json']
     }),
-    // @ts-expect-error
     process.env.ANALYZE === 'true' &&
       visualizer({
         filename: 'dist/stats.html',
@@ -50,7 +48,7 @@ export default defineConfig({
       options: getAllI18nIdentifierFiles(
         relativePath('./config/i18n-identifier')
       )
-    }) as Plugin,
+    }),
     process.env.NODE_ENV === 'development' &&
       viteMockServe({
         mockPath: relativePath('./config/mock'), // 指定 mock 文件目录
@@ -58,7 +56,8 @@ export default defineConfig({
         // prodEnabled: false, // 生产环境禁用
         logger: true // 控制台显示请求日志
       })
-  ],
+  // Cast: vitest/vite may resolve different Vite patch versions (Plugin types diverge).
+  ] as never,
   test: {
     watch: false,
     environment: 'jsdom',

@@ -10,14 +10,14 @@
 
 **Since:** `3.1.0`
 
-Wraps <a href="../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface" class="tsd-kind-interface">ResourceSearchInterface</a> with async store state. <a href="../../store-state/impl/AsyncStoreState.md#result-property" class="tsd-kind-property">ResourceSearchStoreState.result</a> holds the last
-<a href="../interfaces/ResourceSearchInterface.md#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> (including `items`); <a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a> holds query params for
-<a href="#refresh-method" class="tsd-kind-method">ResourceSearch.refresh</a> and incremental updates via <a href="./ResourceSearchStore.md#patchcriteria-method" class="tsd-kind-method">ResourceSearchStore.patchCriteria</a> on <a href="#getstore-method" class="tsd-kind-method">ResourceSearch.getStore</a>.
+Wraps [ResourceSearchInterface](../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface) with async store state. [ResourceSearchStoreState.result](../../store-state/impl/AsyncStoreState.md#result-property) holds the last
+[ResourceSearchResult](../interfaces/ResourceSearchInterface.md#resourcesearchresult-interface) (including `items`); [ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property) holds query params for
+[ResourceSearch.refresh](#refresh-method) and incremental updates via [ResourceSearchStore.patchCriteria](./ResourceSearchStore.md#patchcriteria-method) on [ResourceSearch.getStore](#getstore-method).
 
 **Remarks:**
 
-- <a href="#search-method" class="tsd-kind-method">search</a> **replaces** stored criteria with the argument snapshot before calling the gateway.
-- <a href="#refresh-method" class="tsd-kind-method">refresh</a> optionally **shallow-merges** a `Partial<Criteria>`; omit the argument to repeat the last snapshot.
+- [search](#search-method) **replaces** stored criteria with the argument snapshot before calling the gateway.
+- [refresh](#refresh-method) optionally **shallow-merges** a `Partial<Criteria>`; omit the argument to repeat the last snapshot.
 
 **Example:** Table: full criteria on filter change, partial merge on page size change
 
@@ -29,17 +29,17 @@ await list.refresh({ pageSize: 50 }); // keeps keyword, resets page when size ch
 
 ---
 
-#### `new ResourceSearch` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(resource: ResourceSearchInterface<TItem, Criteria>, options: Partial<ResourceSearchOptions<TItem, Criteria>>) => ResourceSearch<TItem, Criteria>`
 
 #### Parameters
 
-| Name                                                                                                                        | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                                                                      |
-| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resource`                                                                                                                  | `ResourceSearchInterface<TItem, Criteria>`        | ❌       | -       | -     | -          | Bare <a href="../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface" class="tsd-kind-interface">ResourceSearchInterface</a> implementation  |
-| `options`                                                                                                                   | `Partial<ResourceSearchOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | `serviceName`, logger, optional <a href="./ResourceSearchStore.md#resourcesearchstore-class" class="tsd-kind-class">ResourceSearchStore</a> / state seed, custom |
-| <a href="#isresourcesearchresult-property" class="tsd-kind-property">ResourceSearchOptions.isResourceSearchResult</a> guard |
+| Name                                                                                   | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                                    |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `resource`                                                                             | `ResourceSearchInterface<TItem, Criteria>`        | ❌       | -       | -     | -          | Bare [ResourceSearchInterface](../interfaces/ResourceSearchInterface.md#resourcesearchinterface-interface) implementation      |
+| `options`                                                                              | `Partial<ResourceSearchOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | `serviceName`, logger, optional [ResourceSearchStore](./ResourceSearchStore.md#resourcesearchstore-class) / state seed, custom |
+| [ResourceSearchOptions.isResourceSearchResult](#isresourcesearchresult-property) guard |
 
 ---
 
@@ -80,7 +80,7 @@ Set during construction and remains constant throughout the service lifecycle.
 
 #### `store` (Property)
 
-**Type:** `ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `ResourceSearchStore`
 
 Store instance for state management
 
@@ -92,13 +92,13 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| ResourceSearchInterface<TItem, Criteria>`
+**Type:** `() => ResourceSearchInterface<TItem, Criteria> \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| ResourceSearchInterface<TItem, Criteria>`
+**Type:** `ResourceSearchInterface<TItem, Criteria> \| undefined`
 
 Get the gateway instance
 
@@ -131,13 +131,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 
@@ -162,13 +162,13 @@ if (logger) {
 
 #### `getStore` (Method)
 
-**Type:** `() => ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `() => ResourceSearchStore<TItem, Criteria>`
 
 ---
 
 ##### `getStore` (CallSignature)
 
-**Type:** `ResourceSearchStore<TItem, Criteria, string>`
+**Type:** `ResourceSearchStore<TItem, Criteria>`
 
 ---
 
@@ -182,7 +182,7 @@ if (logger) {
 
 **Type:** `StoreInterface<ResourceSearchStoreState<TItem, Criteria>>`
 
-Subscribe to full search state: async lifecycle + <a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a>.
+Subscribe to full search state: async lifecycle + [ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property).
 
 ---
 
@@ -203,16 +203,16 @@ Subscribe to full search state: async lifecycle + <a href="./ResourceSearchStore
 
 **Type:** `Promise<ResourceSearchResult<TItem>>`
 
-Same parameter shape as ResourceScrollInterface.refresh: optional criteria, optional <a href="../interfaces/ResourceSearchInterface.md#resourceoptions-typealias" class="tsd-kind-type-alias">ResourceOptions</a>.
+Same parameter shape as ResourceScrollInterface.refresh: optional criteria, optional [ResourceOptions](../interfaces/ResourceSearchInterface.md#resourceoptions-typealias).
 
 **Unlike** ResourceScroll.refresh: when `criteriaPatch` is provided it is **`Partial<Criteria>`** and
-**shallow-merged** via <a href="./ResourceSearchStore.md#patchcriteria-method" class="tsd-kind-method">ResourceSearchStore.patchCriteria</a> (omit keys stay as in the store). When omitted,
+**shallow-merged** via [ResourceSearchStore.patchCriteria](./ResourceSearchStore.md#patchcriteria-method) (omit keys stay as in the store). When omitted,
 repeats the current stored snapshot. When both `page` and `pageSize` are numbers in the patch, and `pageSize` changes
 vs the previous criteria or last result, `page` is forced to `1` before the merge (typical table UX).
 
 **Throws:**
 
-When no criteria have been set (constructor `defaultCriteria`, setCriteria, or a prior <a href="#search-method" class="tsd-kind-method">search</a>).
+When no criteria have been set (constructor `defaultCriteria`, setCriteria, or a prior [search](#search-method)).
 
 #### Parameters
 
@@ -225,15 +225,15 @@ When no criteria have been set (constructor `defaultCriteria`, setCriteria, or a
 
 #### `runSearch` (Method)
 
-**Type:** `(criteria: Criteria, resourceOptions: undefined \| ResourceGatewayOptions, criteriaRollback: null \| Criteria, operation: "refresh" \| "search") => Promise<ResourceSearchResult<TItem>>`
+**Type:** `(criteria: Criteria, resourceOptions: ResourceGatewayOptions \| undefined, criteriaRollback: Criteria \| null, operation: "refresh" \| "search") => Promise<ResourceSearchResult<TItem>>`
 
 #### Parameters
 
 | Name               | Type                                  | Optional | Default | Since | Deprecated | Description |
 | ------------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `criteria`         | `Criteria`                            | ❌       | -       | -     | -          |             |
-| `resourceOptions`  | `undefined \| ResourceGatewayOptions` | ❌       | -       | -     | -          |             |
-| `criteriaRollback` | `null \| Criteria`                    | ❌       | -       | -     | -          |             |
+| `resourceOptions`  | `ResourceGatewayOptions \| undefined` | ❌       | -       | -     | -          |             |
+| `criteriaRollback` | `Criteria \| null`                    | ❌       | -       | -     | -          |             |
 | `operation`        | `"refresh" \| "search"`               | ❌       | -       | -     | -          |             |
 
 ---
@@ -243,15 +243,15 @@ When no criteria have been set (constructor `defaultCriteria`, setCriteria, or a
 **Type:** `Promise<ResourceSearchResult<TItem>>`
 
 Commits `criteria` only after a successful response; on failure restores `criteriaRollback` so
-<a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a> stays aligned with the last successful <a href="../../store-state/impl/AsyncStoreState.md#result-property" class="tsd-kind-property">ResourceSearchStoreState.result</a>.
+[ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property) stays aligned with the last successful [ResourceSearchStoreState.result](../../store-state/impl/AsyncStoreState.md#result-property).
 
 #### Parameters
 
 | Name               | Type                                  | Optional | Default | Since | Deprecated | Description |
 | ------------------ | ------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `criteria`         | `Criteria`                            | ❌       | -       | -     | -          |             |
-| `resourceOptions`  | `undefined \| ResourceGatewayOptions` | ❌       | -       | -     | -          |             |
-| `criteriaRollback` | `null \| Criteria`                    | ❌       | -       | -     | -          |             |
+| `resourceOptions`  | `ResourceGatewayOptions \| undefined` | ❌       | -       | -     | -          |             |
+| `criteriaRollback` | `Criteria \| null`                    | ❌       | -       | -     | -          |             |
 | `operation`        | `"refresh" \| "search"`               | ❌       | -       | -     | -          |             |
 
 ---
@@ -275,8 +275,8 @@ Commits `criteria` only after a successful response; on failure restores `criter
 
 **Remarks:**
 
-**Replaces** <a href="./ResourceSearchStore.md#criteria-property" class="tsd-kind-property">ResourceSearchStoreState.criteria</a> with `criteria`. For the same two-argument shape
-with **partial** merge, use <a href="#refresh-method" class="tsd-kind-method">refresh</a>.
+**Replaces** [ResourceSearchStoreState.criteria](./ResourceSearchStore.md#criteria-property) with `criteria`. For the same two-argument shape
+with **partial** merge, use [refresh](#refresh-method).
 
 #### Parameters
 

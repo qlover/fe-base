@@ -10,7 +10,7 @@ import { SliceStoreAdapter } from './SliceStoreAdapter';
 /**
  * Build initial {@link AsyncStoreStateInterface} for {@link AsyncStoreOptions}
  *
- * @param options - Optional async-store configuration (`defaultState`, storage, …)
+ * @param options - Optional async-store configuration (`defaultState`, `persist`, …)
  * @returns Fresh state instance (from `defaultState` or `AsyncStoreState`)
  */
 export function createAsyncState<
@@ -18,10 +18,10 @@ export function createAsyncState<
   StorageKey,
   Opt
 >(options?: AsyncStoreOptions<State, StorageKey, Opt>): State {
-  const { storage, storageKey, defaultState } = options || {};
+  const { persist, defaultState } = options || {};
 
   if (defaultState) {
-    const state = defaultState(storage, storageKey);
+    const state = defaultState(persist);
     if (state !== null && typeof state === 'object') {
       return state;
     }

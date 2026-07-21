@@ -10,11 +10,11 @@
 
 **Since:** `3.0.0`
 
-<a href="#zustandstoreadapter-class" class="tsd-kind-class">ZustandStoreAdapter</a> implementation wrapping a zustand vanilla StoreApi
+[ZustandStoreAdapter](#zustandstoreadapter-class) implementation wrapping a zustand vanilla StoreApi
 
 ---
 
-#### `new ZustandStoreAdapter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(init: ZustandStoreInstanceInitFn<T, Store>) => ZustandStoreAdapter<T, Store>`
 

@@ -48,7 +48,7 @@ const events = processor.processChunk('event: custom1\nevent: custom2\n');
 
 ---
 
-#### `new SSEStreamProcessor` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(prefix: string) => SSEStreamProcessor`
 
@@ -118,7 +118,7 @@ const events = processor.processChunk(
 
 #### `processFinal` (Method)
 
-**Type:** `(data: string) => undefined \| string`
+**Type:** `(data: string) => string \| undefined`
 
 #### Parameters
 
@@ -130,7 +130,7 @@ const events = processor.processChunk(
 
 ##### `processFinal` (CallSignature)
 
-**Type:** `undefined \| string`
+**Type:** `string \| undefined`
 
 Process remaining SSE data when stream ends
 

@@ -55,6 +55,10 @@ jobs:
         timeout-minutes: 15
         run: pnpm build:packages:force
 
+      - name: Type check
+        timeout-minutes: 10
+        run: pnpm type-check
+
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint:force
@@ -133,6 +137,10 @@ jobs:
       - name: Build (affected force)
         timeout-minutes: 15
         run: pnpm build:packages:force
+
+      - name: Type check
+        timeout-minutes: 10
+        run: pnpm type-check
 
       - name: Lint
         timeout-minutes: 5

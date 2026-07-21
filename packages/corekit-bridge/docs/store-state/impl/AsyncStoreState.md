@@ -55,7 +55,7 @@ const state = new AsyncStoreState<User>({
 
 ---
 
-#### `new AsyncStoreState` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: Partial<AsyncStoreStateInterface<T>>) => AsyncStoreState<T>`
 
@@ -108,7 +108,7 @@ Whether the async operation is currently in progress
 
 #### `result` (Property)
 
-**Type:** `null \| T`
+**Type:** `T \| null`
 
 **Default:** `null`
 

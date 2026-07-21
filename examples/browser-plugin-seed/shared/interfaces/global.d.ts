@@ -3,3 +3,5 @@ declare namespace NodeJS {
     PLASMO_PUBLIC_AUTH_TYPE: string;
   }
 }
+
+declare module '*.css';

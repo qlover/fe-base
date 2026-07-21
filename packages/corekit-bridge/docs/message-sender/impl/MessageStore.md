@@ -55,7 +55,7 @@ adapter.subscribe((s) => console.log(s.messages.length));
 
 ---
 
-#### `new MessagesStore` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(init: MessagesStoreInit<State>) => MessagesStore<MessageType, State>`
 
@@ -73,8 +73,8 @@ adapter.subscribe((s) => console.log(s.messages.length));
 
 Backing store for state: `reset`, `update`, `getState`, `subscribe`
 
-Default <a href="#messagesstore-class" class="tsd-kind-class">MessagesStore</a> wiring uses SliceStoreAdapter; callers
-may inject another <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> implementation.
+Default [MessagesStore](#messagesstore-class) wiring uses SliceStoreAdapter; callers
+may inject another [StoreInterface](../../store-state/interface/StoreInterface.md#storeinterface-interface) implementation.
 
 ---
 
@@ -151,7 +151,7 @@ const message = store.addMessage({
 
 **Type:** `State`
 
-Shallow-clone current state and apply a patch (aligned with <a href="../../store-state/impl/SliceStoreAdapter.md#update-method" class="tsd-kind-method">SliceStoreAdapter.update</a>)
+Shallow-clone current state and apply a patch (aligned with [SliceStoreAdapter.update](../../store-state/impl/SliceStoreAdapter.md#update-method))
 
 #### Parameters
 
@@ -294,10 +294,10 @@ store.deleteMessage('msg-123');
 
 **Type:** `void`
 
-Push a state patch into <a href="#store-property" class="tsd-kind-property">MessagesStore.store</a>
+Push a state patch into [MessagesStore.store](#store-property)
 
 - Callers pass **only the patch** (`Partial<State>`), not a pre-merged snapshot.
-- This method runs <a href="#clonestate-method" class="tsd-kind-method">MessagesStore.cloneState</a> once, then <a href="../../store-state/interface/StoreInterface.md#update-method" class="tsd-kind-method">StoreInterface.update</a>,
+- This method runs [MessagesStore.cloneState](#clonestate-method) once, then [StoreInterface.update](../../store-state/interface/StoreInterface.md#update-method),
   so we avoid double `cloneState` at every call site and keep merge semantics in one place.
 - The adapter may still shallow-merge / emit internally; the important part is a single
   “current + patch” step on this class.
@@ -312,7 +312,7 @@ Push a state patch into <a href="#store-property" class="tsd-kind-property">Mess
 
 #### `getMessageById` (Method)
 
-**Type:** `(id: string) => undefined \| MessageType`
+**Type:** `(id: string) => MessageType \| undefined`
 
 #### Parameters
 
@@ -324,7 +324,7 @@ Push a state patch into <a href="#store-property" class="tsd-kind-property">Mess
 
 ##### `getMessageById` (CallSignature)
 
-**Type:** `undefined \| MessageType`
+**Type:** `MessageType \| undefined`
 
 Get a message by its unique identifier
 
@@ -342,7 +342,7 @@ Message object or `undefined` if not found
 
 #### `getMessageByIndex` (Method)
 
-**Type:** `(index: number) => undefined \| MessageType`
+**Type:** `(index: number) => MessageType \| undefined`
 
 #### Parameters
 
@@ -354,7 +354,7 @@ Message object or `undefined` if not found
 
 ##### `getMessageByIndex` (CallSignature)
 
-**Type:** `undefined \| MessageType`
+**Type:** `MessageType \| undefined`
 
 Get a message by its index position
 
@@ -621,7 +621,7 @@ localStorage.setItem('messages', JSON.stringify(jsonData));
 
 #### `updateMessage` (Method)
 
-**Type:** `(id: string, updates: Partial<M>[]) => undefined \| M`
+**Type:** `(id: string, updates: Partial<M>[]) => M \| undefined`
 
 #### Parameters
 
@@ -634,7 +634,7 @@ localStorage.setItem('messages', JSON.stringify(jsonData));
 
 ##### `updateMessage` (CallSignature)
 
-**Type:** `undefined \| M`
+**Type:** `M \| undefined`
 
 Update an existing message in the store
 
@@ -769,7 +769,7 @@ providing context to the user about what to expect.
 
 #### `result` (Property)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
 The result of the async operation if successful
 
@@ -811,22 +811,22 @@ Tracks the lifecycle state of the message from draft to completion.
 
 ---
 
+### `MessagesStoreInit` (TypeAlias)
+
+**Type:** `Object \| Object`
+
+How [MessagesStore](#messagesstore-class) obtains its [StoreInterface](../../store-state/interface/StoreInterface.md#storeinterface-interface) member
+
+- Pass a state factory: a [SliceStoreAdapter](../../store-state/impl/SliceStoreAdapter.md#slicestoreadapter-class) is created internally (default).
+- Pass `{ store }` to use a custom [StoreInterface](../../store-state/interface/StoreInterface.md#storeinterface-interface) (e.g. zustand adapter).
+
+---
+
 ### `MessageStatusType` (TypeAlias)
 
 **Type:** `type MessageStatusType`
 
 Type representing valid message statuses
-
----
-
-### `MessagesStoreInit` (TypeAlias)
-
-**Type:** `Object \| Object`
-
-How <a href="#messagesstore-class" class="tsd-kind-class">MessagesStore</a> obtains its <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> member
-
-- Pass a state factory: a <a href="../../store-state/impl/SliceStoreAdapter.md#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> is created internally (default).
-- Pass `{ store }` to use a custom <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (e.g. zustand adapter).
 
 ---
 

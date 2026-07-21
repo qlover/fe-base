@@ -10,7 +10,7 @@
 
 ---
 
-#### `new InjectIOC` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: InjectIOCOptions<Container>) => InjectIOC<Container>`
 
@@ -61,10 +61,6 @@ Execution Order:
 - Executed in plugin registration order
 - All onBefore hooks execute before the task
 - Each hook can see parameter changes from previous hooks
-
-**Returns:**
-
-New parameters to update context, or undefined to keep current parameters
 
 **Example:** Parameter validation
 

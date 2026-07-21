@@ -473,7 +473,7 @@ export interface AsyncStateStatusInterface {
  * - Store access: Get underlying store for reactive subscriptions
  *
  * Implementation pattern:
- * - Typically {@link AsyncStore}: extends {@link PersistentStore}, composes `StoreInterface<State>`,
+ * - Typically {@link AsyncStore}: implements {@link PersistentInterface}, composes `StoreInterface<State>`,
  *   and implements this interface
  * - Combines async operation management with persistent state storage
  * - Reactive updates: use `getStore().subscribe(...)` on the returned {@link StoreInterface}
@@ -585,7 +585,7 @@ export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
   getStore(): StoreInterface<State>;
 
   /**
-   * Apply a state patch and optionally persist (see {@link PersistentStore.emit})
+   * Apply a state patch and optionally persist (see {@link AsyncStore.emit})
    *
    * @param state - Patch or full snapshot ({@link StoreUpdateValue})
    * @param options - Pass `{ persist: false }` during restore to avoid write-back

@@ -59,16 +59,16 @@ await sender.send(
 
 ---
 
-#### `new MessageSender` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(messages: MessagesStore<MessageType, MessagesStateInterface<MessageType>>, config: MessageSenderConfig<MessageType>) => MessageSender<MessageType>`
+**Type:** `(messages: MessagesStore<MessageType>, config: MessageSenderConfig<MessageType>) => MessageSender<MessageType>`
 
 #### Parameters
 
-| Name       | Type                                                              | Optional | Default | Since | Deprecated | Description |
-| ---------- | ----------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `messages` | `MessagesStore<MessageType, MessagesStateInterface<MessageType>>` | ❌       | -       | -     | -          |             |
-| `config`   | `MessageSenderConfig<MessageType>`                                | ✅       | -       | -     | -          |             |
+| Name       | Type                               | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `messages` | `MessagesStore<MessageType>`       | ❌       | -       | -     | -          |             |
+| `config`   | `MessageSenderConfig<MessageType>` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -98,7 +98,7 @@ await sender.send(
 
 #### `messages` (Property)
 
-**Type:** `MessagesStore<MessageType, MessagesStateInterface<MessageType>>`
+**Type:** `MessagesStore<MessageType>`
 
 ---
 
@@ -243,13 +243,13 @@ console.log(`Send took ${duration}ms`);
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| MessageGetwayInterface`
+**Type:** `() => MessageGetwayInterface \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| MessageGetwayInterface`
+**Type:** `MessageGetwayInterface \| undefined`
 
 Get the configured gateway instance
 
@@ -261,13 +261,13 @@ Gateway instance or `undefined` if not configured
 
 #### `getMessageStore` (Method)
 
-**Type:** `() => MessagesStore<MessageType, MessagesStateInterface<MessageType>>`
+**Type:** `() => MessagesStore<MessageType>`
 
 ---
 
 ##### `getMessageStore` (CallSignature)
 
-**Type:** `MessagesStore<MessageType, MessagesStateInterface<MessageType>>`
+**Type:** `MessagesStore<MessageType>`
 
 Get the message store instance
 

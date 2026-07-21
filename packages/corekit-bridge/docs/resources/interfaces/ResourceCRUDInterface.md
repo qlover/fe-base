@@ -18,18 +18,18 @@ refresh flows) should live on a separate search/query interface.
 **Strengths**
 
 - Separates mutation + detail from search UX, so implementations are not forced to support query pagination.
-- Two addressing styles: scalar <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> for common APIs, and Snapshot for rows, composite keys, or cached hints.
-- <a href="#create-method" class="tsd-kind-method">create</a> accepts `Snapshot | T` so normal DTOs and occasional full-entity bodies (clone, import) are both expressible without a third generic.
-- <a href="#remove-method" class="tsd-kind-method">remove</a> supports batch deletes via arrays, mirroring many backend bulk-delete endpoints.
+- Two addressing styles: scalar [RefType](#reftype-typealias) for common APIs, and Snapshot for rows, composite keys, or cached hints.
+- [create](#create-method) accepts `Snapshot | T` so normal DTOs and occasional full-entity bodies (clone, import) are both expressible without a third generic.
+- [remove](#remove-method) supports batch deletes via arrays, mirroring many backend bulk-delete endpoints.
 - Only two type parameters; Snapshot stays caller-controlled.
 
 **Limitations / caveats**
 
-- Overload resolution: if Snapshot is structurally similar to <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> or to `RefType[]` (e.g. `Snapshot` is `string`), calls like `update(x)` or `remove([x])` may resolve to an unintended overload—prefer distinct `Snapshot` shapes or explicit typing at the call site.
+- Overload resolution: if Snapshot is structurally similar to [RefType](#reftype-typealias) or to `RefType[]` (e.g. `Snapshot` is `string`), calls like `update(x)` or `remove([x])` may resolve to an unintended overload—prefer distinct `Snapshot` shapes or explicit typing at the call site.
 - Single-argument `update(snapshot)` can overlap with `detail(snapshot)` in shape only; semantics (read vs write) are not enforced by types—callers and implementers must stay consistent.
 - `Snapshot` does not encode whether an update body is a patch vs full replacement; that remains a contract between client and API.
 - Batch `remove` returns `Promise<void>` only: per-id failures, partial success, and empty-array behavior are implementation-defined and not modeled here.
-- <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> is only `string | number` in this module; other scalar keys must use the Snapshot overloads or a widened alias if you fork the type.
+- [RefType](#reftype-typealias) is only `string | number` in this module; other scalar keys must use the Snapshot overloads or a widened alias if you fork the type.
 - Implementations must satisfy every overload signature (often one runtime method branching on argument shape).
 
 **Example:** Gateway class with overload declarations + one runtime implementation each
@@ -133,10 +133,10 @@ Prefer Snapshot for the typical create DTO; pass full T when the body matches th
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -148,10 +148,10 @@ Load full resource by a scalar handle (string id, slug, numeric id — caller co
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -177,10 +177,10 @@ Implementations may skip a network call when the snapshot is already sufficient.
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -192,10 +192,10 @@ Delete a resource, addressed by scalar handle.
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -222,10 +222,10 @@ Delete multiple resources by scalar handles (batch — caller / backend conventi
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                                                                     |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `refs`    | `parameter refs`         | ❌       | -       | -     | -          | One or more <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> values; empty array is implementation-defined (no-op or error) |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                                                                 |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                              |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| `refs`    | `parameter refs`         | ❌       | -       | -     | -          | One or more [RefType](#reftype-typealias) values; empty array is implementation-defined (no-op or error) |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                          |
 
 ---
 
@@ -250,11 +250,11 @@ Delete multiple resources by Snapshot values (batch).
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `payload` | `Snapshot`               | ❌       | -       | -     | -          | Snapshot update body                                                                           |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `payload` | `Snapshot`               | ❌       | -       | -     | -          | Snapshot update body                                    |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -266,11 +266,11 @@ Update a resource: scalar locator plus a Snapshot-shaped body (patch / DTO — c
 
 #### Parameters
 
-| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                                                                    |
-| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `ref`     | `RefType`                | ❌       | -       | -     | -          | <a href="#reftype-typealias" class="tsd-kind-type-alias">RefType</a> reference to the resource |
-| `payload` | `Snapshot`               | ❌       | -       | -     | -          | Snapshot update body                                                                           |
-| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                                                                |
+| Name      | Type                     | Optional | Default | Since | Deprecated | Description                                             |
+| --------- | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
+| `ref`     | `RefType`                | ❌       | -       | -     | -          | [RefType](#reftype-typealias) reference to the resource |
+| `payload` | `Snapshot`               | ❌       | -       | -     | -          | Snapshot update body                                    |
+| `options` | `ResourceGatewayOptions` | ✅       | -       | -     | -          |                                                         |
 
 ---
 
@@ -293,8 +293,8 @@ Update a resource using only a Snapshot (identity + fields in one object — cal
 
 **Type:** `string \| number`
 
-Scalar handle for the first overload of <a href="#detail-method" class="tsd-kind-method">ResourceCRUDInterface.detail</a>, <a href="#update-method" class="tsd-kind-method">ResourceCRUDInterface.update</a>,
-and <a href="#remove-method" class="tsd-kind-method">ResourceCRUDInterface.remove</a> (fork the alias in app code if you need UUID objects, branded ids, etc.).
+Scalar handle for the first overload of [ResourceCRUDInterface.detail](#detail-method), [ResourceCRUDInterface.update](#update-method),
+and [ResourceCRUDInterface.remove](#remove-method) (fork the alias in app code if you need UUID objects, branded ids, etc.).
 
 **Example:**
 
@@ -306,7 +306,7 @@ and <a href="#remove-method" class="tsd-kind-method">ResourceCRUDInterface.remov
 
 ### `ResourceGatewayOptions` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ResourceGatewayOptions`
 
 ---
 

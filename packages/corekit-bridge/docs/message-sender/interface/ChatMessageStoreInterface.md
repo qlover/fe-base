@@ -45,19 +45,19 @@ store.updateDraftMessage(draft.id, { content: 'Hello, world!' });
 Backing store for state: `reset`, `update`, `getState`, `subscribe`
 
 Default MessagesStore wiring uses SliceStoreAdapter; callers
-may inject another <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> implementation.
+may inject another [StoreInterface](../../store-state/interface/StoreInterface.md#storeinterface-interface) implementation.
 
 ---
 
 #### `addDraftMessage` (Method)
 
-**Type:** `(message: Partial<ChatMessage<T, unknown>>) => void`
+**Type:** `(message: Partial<ChatMessage<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                               | Optional | Default | Since | Deprecated | Description                                              |
-| --------- | ---------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
-| `message` | `Partial<ChatMessage<T, unknown>>` | ❌       | -       | -     | -          | Partial message object containing at minimum the content |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                              |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `message` | `Partial<ChatMessage<T>>` | ❌       | -       | -     | -          | Partial message object containing at minimum the content |
 
 ---
 
@@ -81,9 +81,9 @@ store.addDraftMessage({
 
 #### Parameters
 
-| Name      | Type                               | Optional | Default | Since | Deprecated | Description                                              |
-| --------- | ---------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
-| `message` | `Partial<ChatMessage<T, unknown>>` | ❌       | -       | -     | -          | Partial message object containing at minimum the content |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                              |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `message` | `Partial<ChatMessage<T>>` | ❌       | -       | -     | -          | Partial message object containing at minimum the content |
 
 ---
 
@@ -254,7 +254,7 @@ console.log(deleted === undefined); // true
 
 #### `getDarftMessageById` (Method)
 
-**Type:** `(messageId: string) => null \| ChatMessage<T, unknown>`
+**Type:** `(messageId: string) => ChatMessage<T, unknown> \| null`
 
 #### Parameters
 
@@ -266,7 +266,7 @@ console.log(deleted === undefined); // true
 
 ##### `getDarftMessageById` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get draft message by ID
 
@@ -324,13 +324,13 @@ console.log(`You have ${drafts.length} draft(s)`);
 
 #### `getFirstDraftMessage` (Method)
 
-**Type:** `() => null \| ChatMessage<T, unknown>`
+**Type:** `() => ChatMessage<T, unknown> \| null`
 
 ---
 
 ##### `getFirstDraftMessage` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get the first draft message added to the queue
 
@@ -359,7 +359,7 @@ if (firstDraft) {
 
 #### `getMessageById` (Method)
 
-**Type:** `(id: string) => undefined \| ChatMessage<T, unknown>`
+**Type:** `(id: string) => ChatMessage<T, unknown> \| undefined`
 
 #### Parameters
 
@@ -371,7 +371,7 @@ if (firstDraft) {
 
 ##### `getMessageById` (CallSignature)
 
-**Type:** `undefined \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| undefined`
 
 Get a message by its unique identifier
 
@@ -403,7 +403,7 @@ if (message) {
 
 #### `getMessageByIndex` (Method)
 
-**Type:** `(index: number) => undefined \| ChatMessage<T, unknown>`
+**Type:** `(index: number) => ChatMessage<T, unknown> \| undefined`
 
 #### Parameters
 
@@ -415,7 +415,7 @@ if (message) {
 
 ##### `getMessageByIndex` (CallSignature)
 
-**Type:** `undefined \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| undefined`
 
 Get a message by its index position
 
@@ -520,7 +520,7 @@ messages.forEach((msg) => console.log(msg.content));
 
 #### `getReadySendMessage` (Method)
 
-**Type:** `(message: ChatMessage<T, unknown>) => null \| ChatMessage<T, unknown>`
+**Type:** `(message: ChatMessage<T, unknown>) => ChatMessage<T, unknown> \| null`
 
 #### Parameters
 
@@ -532,7 +532,7 @@ messages.forEach((msg) => console.log(msg.content));
 
 ##### `getReadySendMessage` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get the message ready to be sent
 
@@ -749,13 +749,13 @@ store.resetMessages([]);
 
 #### `shiftFirstDraftMessage` (Method)
 
-**Type:** `() => null \| ChatMessage<T, unknown>`
+**Type:** `() => ChatMessage<T, unknown> \| null`
 
 ---
 
 ##### `shiftFirstDraftMessage` (CallSignature)
 
-**Type:** `null \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| null`
 
 Get and remove the first draft message
 
@@ -873,20 +873,20 @@ localStorage.setItem('messages', jsonString);
 
 #### `updateDraftMessage` (Method)
 
-**Type:** `(messageId: string, updates: Partial<ChatMessage<T, unknown>>) => undefined \| ChatMessage<T, unknown>`
+**Type:** `(messageId: string, updates: Partial<ChatMessage<T>>) => ChatMessage<T, unknown> \| undefined`
 
 #### Parameters
 
-| Name        | Type                               | Optional | Default | Since | Deprecated | Description                                      |
-| ----------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `messageId` | `string`                           | ❌       | -       | -     | -          | Unique identifier of the draft message to update |
-| `updates`   | `Partial<ChatMessage<T, unknown>>` | ❌       | -       | -     | -          | Partial message object with fields to update     |
+| Name        | Type                      | Optional | Default | Since | Deprecated | Description                                      |
+| ----------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `messageId` | `string`                  | ❌       | -       | -     | -          | Unique identifier of the draft message to update |
+| `updates`   | `Partial<ChatMessage<T>>` | ❌       | -       | -     | -          | Partial message object with fields to update     |
 
 ---
 
 ##### `updateDraftMessage` (CallSignature)
 
-**Type:** `undefined \| ChatMessage<T, unknown>`
+**Type:** `ChatMessage<T, unknown> \| undefined`
 
 Update an existing draft message
 
@@ -908,16 +908,16 @@ const updated = store.updateDraftMessage('draft-123', {
 
 #### Parameters
 
-| Name        | Type                               | Optional | Default | Since | Deprecated | Description                                      |
-| ----------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `messageId` | `string`                           | ❌       | -       | -     | -          | Unique identifier of the draft message to update |
-| `updates`   | `Partial<ChatMessage<T, unknown>>` | ❌       | -       | -     | -          | Partial message object with fields to update     |
+| Name        | Type                      | Optional | Default | Since | Deprecated | Description                                      |
+| ----------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `messageId` | `string`                  | ❌       | -       | -     | -          | Unique identifier of the draft message to update |
+| `updates`   | `Partial<ChatMessage<T>>` | ❌       | -       | -     | -          | Partial message object with fields to update     |
 
 ---
 
 #### `updateMessage` (Method)
 
-**Type:** `(id: string, updates: Partial<M>[]) => undefined \| M`
+**Type:** `(id: string, updates: Partial<M>[]) => M \| undefined`
 
 #### Parameters
 
@@ -930,7 +930,7 @@ const updated = store.updateDraftMessage('draft-123', {
 
 ##### `updateMessage` (CallSignature)
 
-**Type:** `undefined \| M`
+**Type:** `M \| undefined`
 
 Update an existing message in the store
 

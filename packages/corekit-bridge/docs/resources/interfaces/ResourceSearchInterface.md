@@ -11,25 +11,25 @@
 **Since:** `3.1.0`
 
 Port for browse/search: paged tables, filter changes, refresh (re-run with the same criteria), and cursor/infinite
-scroll when Criteria and <a href="#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> carry cursor fields. Not for single-resource CRUD
+scroll when Criteria and [ResourceSearchResult](#resourcesearchresult-interface) carry cursor fields. Not for single-resource CRUD
 (see ResourceCRUDInterface).
 
 **Remarks:**
 
 **Strengths**
 
-- <a href="#resourcesearchparams-interface" class="tsd-kind-interface">ResourceSearchParams</a> lives in this module; ResourceSearchStore can keep `criteria` typed with the same shape.
+- [ResourceSearchParams](#resourcesearchparams-interface) lives in this module; ResourceSearchStore can keep `criteria` typed with the same shape.
 - A single `search` method covers initial load, page changes, filter updates, and refresh (repeat the same `criteria`).
-- <a href="#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> optional fields allow offset- and cursor-style APIs without forcing unused properties.
-- Multi-field sorting uses <a href="#sort-property" class="tsd-kind-property">ResourceSearchParams.sort</a> (array of <a href="#resourcesortclause-interface" class="tsd-kind-interface">ResourceSortClause</a>).
-- Base params already carry common knobs: <a href="#cursor-property" class="tsd-kind-property">ResourceSearchParams.cursor</a>, <a href="#offset-property" class="tsd-kind-property">ResourceSearchParams.offset</a>, <a href="#keyword-property" class="tsd-kind-property">ResourceSearchParams.keyword</a>, <a href="#filters-property" class="tsd-kind-property">ResourceSearchParams.filters</a>, plus <a href="#facets-property" class="tsd-kind-property">ResourceSearchResult.facets</a> / <a href="#meta-property" class="tsd-kind-property">ResourceSearchResult.meta</a> for rich responses.
+- [ResourceSearchResult](#resourcesearchresult-interface) optional fields allow offset- and cursor-style APIs without forcing unused properties.
+- Multi-field sorting uses [ResourceSearchParams.sort](#sort-property) (array of [ResourceSortClause](#resourcesortclause-interface)).
+- Base params already carry common knobs: [ResourceSearchParams.cursor](#cursor-property), [ResourceSearchParams.offset](#offset-property), [ResourceSearchParams.keyword](#keyword-property), [ResourceSearchParams.filters](#filters-property), plus [ResourceSearchResult.facets](#facets-property) / [ResourceSearchResult.meta](#meta-property) for rich responses.
 
 **Limitations / caveats**
 
 - Real products still need a richer `Criteria` (scopes, date ranges, `include` trees, locale, feature flags). Keep those on your extended type; this package only standardizes the portable core.
 - `filters`, `facets`, and `meta` are intentionally `unknown`; narrow them per API or wrap `search` in your service layer.
 - Semantics of `page` vs `offset`, `total`, `hasMore`, and cursor stability are not enforced; document per adapter.
-- Optional <a href="#resourceoptions-typealias" class="tsd-kind-type-alias">ResourceOptions</a> on each call carries cross-cutting flags (e.g. `signal`); adapter-specific fields
+- Optional [ResourceOptions](#resourceoptions-typealias) on each call carries cross-cutting flags (e.g. `signal`); adapter-specific fields
   can be passed via intersection types at the app layer.
 - No batching or incremental/streaming protocol beyond one `Promise` per call.
 - Error shape, partial failures, and empty results are not modeled on the result type—use `Promise` rejection or wrapper types at the app layer if needed.
@@ -39,10 +39,10 @@ scroll when Criteria and <a href="#resourcesearchresult-interface" class="tsd-ki
 
 - This port keeps **one** `search` entry point: every scenario is “call `search` with the `criteria` you mean”
   (first load, filter change, same-params refresh, next cursor page). No stateful `search()` without arguments here.
-- **Overloads are not required** on implementors; optional fields on <a href="#resourcesearchparams-interface" class="tsd-kind-interface">ResourceSearchParams</a> / `Criteria` carry
+- **Overloads are not required** on implementors; optional fields on [ResourceSearchParams](#resourcesearchparams-interface) / `Criteria` carry
   the varying shapes instead of duplicate method signatures.
 - **Shared `search` with ResourceScrollInterface:** same method name, `Criteria`, and return type
-  <a href="#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a>—one implementation can implement both ports; infinite-scroll UIs simply ignore fields
+  [ResourceSearchResult](#resourcesearchresult-interface)—one implementation can implement both ports; infinite-scroll UIs simply ignore fields
   they do not need (`total`, `facets`, …).
 - **No scroll helpers on this port:** table refresh is `search(criteria)`. For infinite lists,
   ResourceScrollInterface adds ResourceScrollInterface.loadNext, ResourceScrollInterface.loadFirst,
@@ -92,7 +92,7 @@ updates (same argument shape as ResourceScrollInterface.refresh). |
 
 **Type:** `interface ResourceSearchParams`
 
-Shared search/list request fields used by <a href="#resourcesearchinterface-interface" class="tsd-kind-interface">ResourceSearchInterface</a> and ResourceSearchStore state (`criteria` / `searchParams` patterns).
+Shared search/list request fields used by [ResourceSearchInterface](#resourcesearchinterface-interface) and ResourceSearchStore state (`criteria` / `searchParams` patterns).
 Covers common pagination, sort, keyword, and opaque filter/cursor hooks; domain-specific query shapes should extend
 this type (intersection / interface `extends`).
 
@@ -129,9 +129,9 @@ document their own defaults when fields are omitted.
 
 #### `cursor` (Property)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
-Opaque cursor from a prior <a href="#nextcursor-property" class="tsd-kind-property">ResourceSearchResult.nextCursor</a> (infinite scroll / keyset pagination).
+Opaque cursor from a prior [ResourceSearchResult.nextCursor](#nextcursor-property) (infinite scroll / keyset pagination).
 
 ---
 
@@ -192,7 +192,7 @@ One page or window of search results. Field usage depends on the backend (offset
 **Remarks:**
 
 Heavy response payloads (highlight snippets, inner hits, per-row scores, suggested queries) usually belong on `T` or
-on a wrapper list item type, or under <a href="#meta-property" class="tsd-kind-property">ResourceSearchResult.meta</a> / app-specific result types—not every API
+on a wrapper list item type, or under [ResourceSearchResult.meta](#meta-property) / app-specific result types—not every API
 fits this flat shape.
 ResourceScrollInterface reuses this type; lightweight scroll endpoints may leave `total`, `facets`, etc. unset.
 
@@ -230,7 +230,7 @@ Opaque envelope (request id, took/ms, echoed criteria, warnings, debug). Avoid c
 
 #### `nextCursor` (Property)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Next request cursor for infinite scroll / keyset pagination; omit or `null` when no next page.
 
@@ -254,7 +254,7 @@ Page size used for this response.
 
 #### `prevCursor` (Property)
 
-**Type:** `null \| string`
+**Type:** `string \| null`
 
 Previous window cursor when the API supports backward pagination.
 
@@ -314,7 +314,7 @@ Field / column to sort by
 
 **Type:** `ResourceGatewayOptions`
 
-Per-call options for list/search/scroll adapters (e.g. <a href="./ResourceCRUDInterface.md#signal-property" class="tsd-kind-property">ResourceGatewayOptions.signal</a> for cancellation).
-Same shape as <a href="./ResourceCRUDInterface.md#resourcegatewayoptions-typealias" class="tsd-kind-type-alias">ResourceGatewayOptions</a>; intersect with app-specific types at the call site for typed extras.
+Per-call options for list/search/scroll adapters (e.g. [ResourceGatewayOptions.signal](./ResourceCRUDInterface.md#signal-property) for cancellation).
+Same shape as [ResourceGatewayOptions](./ResourceCRUDInterface.md#resourcegatewayoptions-typealias); intersect with app-specific types at the call site for typed extras.
 
 ---

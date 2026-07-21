@@ -474,13 +474,13 @@ class UserService implements UserInfoGetter<User> {
 
 #### `getUser` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getUser` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get current user
 
@@ -1235,13 +1235,13 @@ class MyUserService implements UserServiceInterface<User, TokenCredential> {
 
 #### `getCredential` (Method)
 
-**Type:** `() => null \| Credential`
+**Type:** `() => Credential \| null`
 
 ---
 
 ##### `getCredential` (CallSignature)
 
-**Type:** `null \| Credential`
+**Type:** `Credential \| null`
 
 Get the current credential
 
@@ -1285,13 +1285,13 @@ const isLoading = store.getLoading();
 
 #### `getUser` (Method)
 
-**Type:** `() => null \| User`
+**Type:** `() => User \| null`
 
 ---
 
 ##### `getUser` (CallSignature)
 
-**Type:** `null \| User`
+**Type:** `User \| null`
 
 Get the current user information
 

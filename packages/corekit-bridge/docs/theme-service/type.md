@@ -177,14 +177,6 @@ The current theme
 
 ---
 
-#### `themeTokens` (Property)
-
-**Type:** `Record<string, ThemeTokens>`
-
-Per-theme token sets (theme id → tokens)
-
----
-
 #### `themes` (Property)
 
 **Type:** `string[]`
@@ -196,6 +188,14 @@ The supported themes
 ```ts
 ['light', 'dark'];
 ```
+
+---
+
+#### `themeTokens` (Property)
+
+**Type:** `Record<ThemeId, ThemeTokens>`
+
+Per-theme token sets (theme id → tokens)
 
 ---
 
@@ -217,7 +217,7 @@ The token mapping
 
 ### `ThemeConfig` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ThemeConfig`
 
 ---
 

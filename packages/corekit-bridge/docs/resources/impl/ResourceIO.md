@@ -10,7 +10,7 @@
 
 **Since:** `3.1.0`
 
-Wraps a <a href="../interfaces/ResourceIOInterface.md#resourceiointerface-interface" class="tsd-kind-interface">ResourceIOInterface</a> implementation with async store state per operation (`importData`, `exportData`).
+Wraps a [ResourceIOInterface](../interfaces/ResourceIOInterface.md#resourceiointerface-interface) implementation with async store state per operation (`importData`, `exportData`).
 
 **Example:** Subscribe to import / export loading state
 
@@ -22,16 +22,16 @@ await io.importData(formData);
 
 ---
 
-#### `new ResourceIO` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(resource: ResourceIOInterface<TPayload, TCriteria>, options: Partial<ResourceIOOptions<TPayload, TCriteria>>) => ResourceIO<TPayload, TCriteria>`
 
 #### Parameters
 
-| Name       | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                                                         |
-| ---------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resource` | `ResourceIOInterface<TPayload, TCriteria>`        | ❌       | -       | -     | -          | Bare <a href="../interfaces/ResourceIOInterface.md#resourceiointerface-interface" class="tsd-kind-interface">ResourceIOInterface</a> implementation |
-| `options`  | `Partial<ResourceIOOptions<TPayload, TCriteria>>` | ✅       | -       | -     | -          | `serviceName`, logger, custom stores, optional response guards, etc.                                                                                |
+| Name       | Type                                              | Optional | Default | Since | Deprecated | Description                                                                                                   |
+| ---------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------- |
+| `resource` | `ResourceIOInterface<TPayload, TCriteria>`        | ❌       | -       | -     | -          | Bare [ResourceIOInterface](../interfaces/ResourceIOInterface.md#resourceiointerface-interface) implementation |
+| `options`  | `Partial<ResourceIOOptions<TPayload, TCriteria>>` | ✅       | -       | -     | -          | `serviceName`, logger, custom stores, optional response guards, etc.                                          |
 
 ---
 
@@ -78,7 +78,7 @@ Set during construction and remains constant throughout the service lifecycle.
 
 #### `store` (Property)
 
-**Type:** `ResourceCRUDStore<ResourceInResult, string>`
+**Type:** `ResourceCRUDStore`
 
 Store instance for state management
 
@@ -96,13 +96,13 @@ Protected to allow subclasses to access while preventing external modification.
 
 ##### `exportData` (Property)
 
-**Type:** `ResourceCRUDStore<ResourceOutResult, string>`
+**Type:** `ResourceCRUDStore<ResourceOutResult>`
 
 ---
 
 ##### `importData` (Property)
 
-**Type:** `ResourceCRUDStore<ResourceInResult, string>`
+**Type:** `ResourceCRUDStore<ResourceInResult>`
 
 ---
 
@@ -122,7 +122,7 @@ Protected to allow subclasses to access while preventing external modification.
 
 **Type:** `Promise<ResourceOutResult>`
 
-Runs <a href="../interfaces/ResourceIOInterface.md#exportdata-method" class="tsd-kind-method">ResourceIOInterface.exportData</a> and updates the `exportData` store (`start` → `success` / `failed`).
+Runs [ResourceIOInterface.exportData](../interfaces/ResourceIOInterface.md#exportdata-method) and updates the `exportData` store (`start` → `success` / `failed`).
 
 #### Parameters
 
@@ -134,13 +134,13 @@ Runs <a href="../interfaces/ResourceIOInterface.md#exportdata-method" class="tsd
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| ResourceIOInterface<TPayload, TCriteria>`
+**Type:** `() => ResourceIOInterface<TPayload, TCriteria> \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| ResourceIOInterface<TPayload, TCriteria>`
+**Type:** `ResourceIOInterface<TPayload, TCriteria> \| undefined`
 
 Get the gateway instance
 
@@ -173,13 +173,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 
@@ -208,9 +208,9 @@ if (logger) {
 
 #### Parameters
 
-| Name   | Type             | Optional | Default        | Since | Deprecated | Description                                                                                                                                                                                                     |
-| ------ | ---------------- | -------- | -------------- | ----- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name` | `IOResourceName` | ✅       | `'importData'` | -     | -          | Which operation’s store to return; defaults to `'importData'` (matches the primary <a href="../../gateway-service/impl/GatewayService.md#gatewayservice-class" class="tsd-kind-class">GatewayService</a> store) |
+| Name   | Type             | Optional | Default        | Since | Deprecated | Description                                                                                                                                                                   |
+| ------ | ---------------- | -------- | -------------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` | `IOResourceName` | ✅       | `'importData'` | -     | -          | Which operation’s store to return; defaults to `'importData'` (matches the primary [GatewayService](../../gateway-service/impl/GatewayService.md#gatewayservice-class) store) |
 
 ---
 
@@ -220,9 +220,9 @@ if (logger) {
 
 #### Parameters
 
-| Name   | Type             | Optional | Default        | Since | Deprecated | Description                                                                                                                                                                                                     |
-| ------ | ---------------- | -------- | -------------- | ----- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name` | `IOResourceName` | ✅       | `'importData'` | -     | -          | Which operation’s store to return; defaults to `'importData'` (matches the primary <a href="../../gateway-service/impl/GatewayService.md#gatewayservice-class" class="tsd-kind-class">GatewayService</a> store) |
+| Name   | Type             | Optional | Default        | Since | Deprecated | Description                                                                                                                                                                   |
+| ------ | ---------------- | -------- | -------------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` | `IOResourceName` | ✅       | `'importData'` | -     | -          | Which operation’s store to return; defaults to `'importData'` (matches the primary [GatewayService](../../gateway-service/impl/GatewayService.md#gatewayservice-class) store) |
 
 ---
 
@@ -268,7 +268,7 @@ Subscribe-friendly view of async state for the given operation.
 
 **Type:** `Promise<ResourceInResult>`
 
-Runs <a href="../interfaces/ResourceIOInterface.md#importdata-method" class="tsd-kind-method">ResourceIOInterface.importData</a> and updates the `importData` store (`start` → `success` / `failed`).
+Runs [ResourceIOInterface.importData](../interfaces/ResourceIOInterface.md#importdata-method) and updates the `importData` store (`start` → `success` / `failed`).
 
 #### Parameters
 
@@ -282,13 +282,13 @@ Runs <a href="../interfaces/ResourceIOInterface.md#importdata-method" class="tsd
 
 **Type:** `"importData" \| "exportData"`
 
-Operation key for <a href="#resourceio-class" class="tsd-kind-class">ResourceIO</a> store selection (`importData` | `exportData`).
+Operation key for [ResourceIO](#resourceio-class) store selection (`importData` | `exportData`).
 
 ---
 
 ### `ResourceIOIdentifiers` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ResourceIOIdentifiers`
 
 ---
 

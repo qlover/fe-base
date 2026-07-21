@@ -5,8 +5,8 @@ const localeLoaders: Record<
   string,
   () => Promise<{ default: Record<string, string> }>
 > = {
-  en: () => import('../../public/locales/en.json'),
-  zh: () => import('../../public/locales/zh.json')
+  en: () => import('@locales/en.json'),
+  zh: () => import('@locales/zh.json')
 };
 
 async function loadLocaleFromFile(

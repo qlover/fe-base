@@ -23,7 +23,7 @@ const pastTimestamp = QuickerTime.subtract('minute', 30); // The timestamp of 30
 
 ---
 
-#### `new QuickerTime` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `() => QuickerTime`
 

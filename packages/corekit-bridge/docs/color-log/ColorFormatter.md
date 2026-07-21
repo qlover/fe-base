@@ -10,7 +10,7 @@
 
 ---
 
-#### `new ColorFormatter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(levelColors: Record<string, ColorStyle>) => ColorFormatter`
 
@@ -178,7 +178,7 @@ Transform style object to CSS string
 
 ### `ColorContext` (TypeAlias)
 
-**Type:** `Object`
+**Type:** `type ColorContext`
 
 ---
 

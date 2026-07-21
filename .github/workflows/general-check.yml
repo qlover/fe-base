@@ -53,7 +53,11 @@ jobs:
       - name: Build packages (exclude examples)
         timeout-minutes: 10
         run: pnpm build:packages
-        
+
+      - name: Type check
+        timeout-minutes: 10
+        run: pnpm type-check
+
       - name: Lint
         timeout-minutes: 5
         run: pnpm lint

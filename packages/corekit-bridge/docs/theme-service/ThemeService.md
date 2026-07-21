@@ -8,11 +8,11 @@
 
 **Type:** `class ThemeService`
 
-Theme DOM + optional persistence; reactive state lives on <a href="#store-property" class="tsd-kind-property">ThemeService.store</a>.
+Theme DOM + optional persistence; reactive state lives on [ThemeService.store](#store-property).
 
 ---
 
-#### `new ThemeService` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(props: ThemeServiceProps) => ThemeService`
 
@@ -28,7 +28,7 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 
 **Type:** `StoreInterface<ThemeServiceState>`
 
-<a href="../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> port (default <a href="../store-state/impl/SliceStoreAdapter.md#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a>)
+[StoreInterface](../store-state/interface/StoreInterface.md#storeinterface-interface) port (default [SliceStoreAdapter](../store-state/impl/SliceStoreAdapter.md#slicestoreadapter-class))
 
 ---
 
@@ -76,13 +76,13 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 
 #### `emit` (Method)
 
-**Type:** `(patch: Partial<ThemeServiceState>) => void`
+**Type:** `(patch: StoreUpdateValue<ThemeServiceState>) => void`
 
 #### Parameters
 
-| Name    | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `patch` | `Partial<ThemeServiceState>` | ❌       | -       | -     | -          |             |
+| Name    | Type                                  | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `patch` | `StoreUpdateValue<ThemeServiceState>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -92,9 +92,9 @@ Theme DOM + optional persistence; reactive state lives on <a href="#store-proper
 
 #### Parameters
 
-| Name    | Type                         | Optional | Default | Since | Deprecated | Description |
-| ------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `patch` | `Partial<ThemeServiceState>` | ❌       | -       | -     | -          |             |
+| Name    | Type                                  | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `patch` | `StoreUpdateValue<ThemeServiceState>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -138,6 +138,20 @@ This only get the supported themes from the config
 
 ---
 
+#### `getThemes` (Method)
+
+**Type:** `() => string[]`
+
+---
+
+##### `getThemes` (CallSignature)
+
+**Type:** `string[]`
+
+Get the supported themes, from the store state
+
+---
+
 #### `getThemeTokens` (Method)
 
 **Type:** `(theme: string) => ThemeTokens`
@@ -164,21 +178,7 @@ This only get the supported themes from the config
 
 ##### `getThemeTokens` (CallSignature)
 
-**Type:** `Record<string, ThemeTokens>`
-
----
-
-#### `getThemes` (Method)
-
-**Type:** `() => string[]`
-
----
-
-##### `getThemes` (CallSignature)
-
-**Type:** `string[]`
-
-Get the supported themes, from the store state
+**Type:** `Record<ThemeId, ThemeTokens>`
 
 ---
 

@@ -10,7 +10,7 @@
 
 ---
 
-#### `new InjectGlobal` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(config: InjectGlobalConfig) => InjectGlobal`
 
@@ -59,10 +59,6 @@ Execution Order:
 - Executed in plugin registration order
 - All onBefore hooks execute before the task
 - Each hook can see parameter changes from previous hooks
-
-**Returns:**
-
-New parameters to update context, or undefined to keep current parameters
 
 **Example:** Parameter validation
 

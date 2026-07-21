@@ -45,7 +45,7 @@ const ssePlugin = new ResponseStream({
 
 ---
 
-#### `new ResponseStream` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(config: ResponseStreamConfig) => ResponseStream`
 
@@ -63,11 +63,13 @@ const ssePlugin = new ResponseStream({
 
 **Default:** `'ResponseStream'`
 
+Optional plugin name for identification
+
 ---
 
 #### `handleStreamResponse` (Method)
 
-**Type:** `(response: Response, config: RequestAdapterConfig<unknown> & ResponseStreamConfig) => Promise<undefined \| string>`
+**Type:** `(response: Response, config: RequestAdapterConfig<unknown> & ResponseStreamConfig) => Promise<string \| undefined>`
 
 #### Parameters
 
@@ -80,7 +82,7 @@ const ssePlugin = new ResponseStream({
 
 ##### `handleStreamResponse` (CallSignature)
 
-**Type:** `Promise<undefined \| string>`
+**Type:** `Promise<string \| undefined>`
 
 Handle stream response data
 
@@ -110,13 +112,13 @@ Final processed data or undefined
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<RequestAdapterConfig<unknown>>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                                             | Optional | Default | Since | Deprecated | Description                               |
-| --------- | -------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
-| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Executor context containing response data |
+| Name      | Type                                                      | Optional | Default | Since | Deprecated | Description                               |
+| --------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
+| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Executor context containing response data |
 
 ---
 
@@ -131,15 +133,15 @@ and processing it accordingly.
 
 #### Parameters
 
-| Name      | Type                                                                             | Optional | Default | Since | Deprecated | Description                               |
-| --------- | -------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
-| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Executor context containing response data |
+| Name      | Type                                                      | Optional | Default | Since | Deprecated | Description                               |
+| --------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
+| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Executor context containing response data |
 
 ---
 
 #### `streamWithEvent` (Method)
 
-**Type:** `(reader: ReadableStreamDefaultReader<R>, streamEvent: StreamEvent, config: RequestAdapterConfig<unknown> & ResponseStreamConfig) => Promise<undefined \| string>`
+**Type:** `(reader: ReadableStreamDefaultReader<R>, streamEvent: StreamEvent, config: RequestAdapterConfig<unknown> & ResponseStreamConfig) => Promise<string \| undefined>`
 
 #### Parameters
 
@@ -153,7 +155,7 @@ and processing it accordingly.
 
 ##### `streamWithEvent` (CallSignature)
 
-**Type:** `Promise<undefined \| string>`
+**Type:** `Promise<string \| undefined>`
 
 Process stream data with event handling
 

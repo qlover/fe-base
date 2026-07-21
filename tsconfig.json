@@ -17,6 +17,7 @@
     { "path": "./packages/logger" },
     { "path": "./packages/oauth-wrapper" },
     { "path": "./packages/scripts-context" },
+    { "path": "./packages/tailwind-theme" },
     { "path": "./tsconfig.test.json" }
   ]
 }

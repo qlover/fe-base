@@ -10,7 +10,7 @@
 
 ---
 
-#### `new ThemeStateGetter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `() => ThemeStateGetter`
 

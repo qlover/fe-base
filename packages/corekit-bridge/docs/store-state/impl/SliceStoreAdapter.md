@@ -10,7 +10,7 @@
 
 **Since:** `3.0.0`
 
-<a href="#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> implementation wrapping a SliceStore `Store`
+[SliceStoreAdapter](#slicestoreadapter-class) implementation wrapping a SliceStore `Store`
 
 - Significance: concrete adapter for slice-based apps and tests
 - Core idea: delegate lifecycle to inner `SliceStore` while exposing `SliceStoreUpdateValue` updates
@@ -53,7 +53,7 @@ w.reset();
 
 ---
 
-#### `new SliceStoreAdapter` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(init: SliceStoreInstanceInitFn<T, Store>) => SliceStoreAdapter<T, Store>`
 
@@ -151,9 +151,9 @@ Subscribe to state changes
 
 #### Parameters
 
-| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                                                              |
-| ------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See <a href="../interface/StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a> |
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                       |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------------------- |
+| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See [StoreUpdateValue](../interface/StoreInterface.md#storeupdatevalue-typealias) |
 
 ---
 
@@ -174,9 +174,9 @@ Aligns with `StoreInterface.cloneState` for plain objects (shallow clone + assig
 
 #### Parameters
 
-| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                                                              |
-| ------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See <a href="../interface/StoreInterface.md#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a> |
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description                                                                       |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------------------- |
+| `value` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          | See [StoreUpdateValue](../interface/StoreInterface.md#storeupdatevalue-typealias) |
 
 ---
 
@@ -193,8 +193,8 @@ Union initializer: returns state `T` or an existing SliceStore
 - Main function: support both “wrap state” and “reuse store” in one implementation
 - Main purpose: keep implementation `constructor(init: …)` simple
 
-Prefer the narrower <a href="#slicestorestateinitfn-typealias" class="tsd-kind-type-alias">SliceStoreStateInitFn</a> or <a href="#slicestoreinstanceinitfn-typealias" class="tsd-kind-type-alias">SliceStoreInstanceInitFn</a> overloads on
-<a href="#slicestoreadapter-class" class="tsd-kind-class">SliceStoreAdapter</a> so `Store` is inferred correctly at call sites
+Prefer the narrower [SliceStoreStateInitFn](#slicestorestateinitfn-typealias) or [SliceStoreInstanceInitFn](#slicestoreinstanceinitfn-typealias) overloads on
+[SliceStoreAdapter](#slicestoreadapter-class) so `Store` is inferred correctly at call sites
 
 ---
 

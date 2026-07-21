@@ -101,13 +101,13 @@ Should be set during construction and remain constant.
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| Gateway`
+**Type:** `() => Gateway \| undefined`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| Gateway`
+**Type:** `Gateway \| undefined`
 
 Get the gateway instance
 
@@ -140,13 +140,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface<unknown>`
+**Type:** `() => LoggerInterface<unknown> \| undefined`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface<unknown>`
+**Type:** `LoggerInterface<unknown> \| undefined`
 
 Get the logger instance
 

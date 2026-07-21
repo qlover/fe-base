@@ -12,26 +12,26 @@
 
 #### `createGatewayOptions` (Method)
 
-**Type:** `(gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>, context: MessageSenderContext<MessageType>) => GatewayOptions<MessageType, Record<string, unknown>>`
+**Type:** `(gatewayOptions: GatewayOptions<MessageType>, context: MessageSenderContext<MessageType>) => GatewayOptions<MessageType>`
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          |             |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          |             |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          |             |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          |             |
 
 ---
 
 ##### `createGatewayOptions` (CallSignature)
 
-**Type:** `GatewayOptions<MessageType, Record<string, unknown>>`
+**Type:** `GatewayOptions<MessageType>`
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ❌       | -       | -     | -          |             |
-| `context`        | `MessageSenderContext<MessageType>`                    | ✅       | -       | -     | -          |             |
+| Name             | Type                                | Optional | Default | Since | Deprecated | Description |
+| ---------------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `gatewayOptions` | `GatewayOptions<MessageType>`       | ❌       | -       | -     | -          |             |
+| `context`        | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          |             |
 
 ---

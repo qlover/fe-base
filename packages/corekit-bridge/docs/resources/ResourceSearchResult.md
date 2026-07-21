@@ -20,7 +20,7 @@
 
 **Type:** `callsignature isResourceSearchResult<T>`
 
-Narrow `unknown` to <a href="./interfaces/ResourceSearchInterface.md#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> by requiring a non-null object with an array `items`.
+Narrow `unknown` to [ResourceSearchResult](./interfaces/ResourceSearchInterface.md#resourcesearchresult-interface) by requiring a non-null object with an array `items`.
 Optional fields (`total`, `page`, cursors, `facets`, `meta`, …) are **not** validated.
 
 **Returns:**
@@ -60,8 +60,8 @@ if (isResourceSearchResult<Row>(body)) {
 
 **Type:** `callsignature isResourceSearchResultStrict<T>`
 
-Stricter variant of <a href="#isresourcesearchresult-function" class="tsd-kind-function">isResourceSearchResult</a>: when optional keys exist, their **types** must match
-<a href="./interfaces/ResourceSearchInterface.md#resourcesearchresult-interface" class="tsd-kind-interface">ResourceSearchResult</a> (`total` / `page` / `pageSize` as finite numbers, `nextCursor` / `prevCursor` as
+Stricter variant of [isResourceSearchResult](#isresourcesearchresult-function): when optional keys exist, their **types** must match
+[ResourceSearchResult](./interfaces/ResourceSearchInterface.md#resourcesearchresult-interface) (`total` / `page` / `pageSize` as finite numbers, `nextCursor` / `prevCursor` as
 `string | null | undefined`, `hasMore` as `boolean` when present). Does **not** inspect `facets` or `meta`.
 
 ResourceSearch uses this guard by default before committing to the store.

@@ -4,6 +4,54 @@
 
 ---
 
+### `ResourceInResult` (Interface)
+
+**Type:** `interface ResourceInResult`
+
+**Since:** `3.1.0`
+
+Normalized import response. Only `status` is required; meaning is entirely API-defined (string token or numeric code).
+
+---
+
+#### `count` (Property)
+
+**Type:** `number`
+
+Rows successfully written in this round-trip, when the API reports it.
+
+---
+
+#### `hint` (Property)
+
+**Type:** `string`
+
+Free-form note: human message, vendor error string, or auxiliary code text.
+
+---
+
+#### `id` (Property)
+
+**Type:** `string`
+
+Stable id for the batch, entity, or async job (same slot as a “jobId” if you only have one).
+
+---
+
+#### `status` (Property)
+
+**Type:** `string \| number`
+
+---
+
+#### `url` (Property)
+
+**Type:** `string`
+
+Link to poll status, download an error report, or open a portal page.
+
+---
+
 ### `ResourceIOInterface` (Interface)
 
 **Type:** `interface ResourceIOInterface<TPayload, TCriteria>`
@@ -17,8 +65,8 @@ Port for **bulk ingest** (`importData`) and **bulk export** (`exportData`) on on
 **Contract**
 
 - Use `importData` / `exportData` method names because `import` and `export` are reserved in JavaScript.
-- Hard failures (4xx/5xx, invalid file) should **reject** the `Promise`; <a href="#resourceinresult-interface" class="tsd-kind-interface">ResourceInResult</a> /
-  <a href="#resourceoutresult-interface" class="tsd-kind-interface">ResourceOutResult</a> describe **successful** HTTP responses with a body.
+- Hard failures (4xx/5xx, invalid file) should **reject** the `Promise`; [ResourceInResult](#resourceinresult-interface) /
+  [ResourceOutResult](#resourceoutresult-interface) describe **successful** HTTP responses with a body.
 - `status` values are **not** enumerated here—define constants or enums in your app (e.g. `'ok'`, `'pending'`, `200`).
 - MIME type, headers, and extra vendor fields can live outside these types (e.g. wrapper around `fetch`) or in
   `hint` when a single string is enough.
@@ -65,7 +113,7 @@ class ProductIO implements ResourceIOInterface<FormData, ProductSearchParams> {
 
 **Since:** `3.1.0`
 
-Request an export for the given scope; resolves to a <a href="#resourceoutresult-interface" class="tsd-kind-interface">ResourceOutResult</a> on success.
+Request an export for the given scope; resolves to a [ResourceOutResult](#resourceoutresult-interface) on success.
 
 #### Parameters
 
@@ -93,61 +141,13 @@ Request an export for the given scope; resolves to a <a href="#resourceoutresult
 
 **Since:** `3.1.0`
 
-Submit data to import; resolves to a <a href="#resourceinresult-interface" class="tsd-kind-interface">ResourceInResult</a> on success.
+Submit data to import; resolves to a [ResourceInResult](#resourceinresult-interface) on success.
 
 #### Parameters
 
 | Name     | Type       | Optional | Default | Since | Deprecated | Description |
 | -------- | ---------- | -------- | ------- | ----- | ---------- | ----------- |
 | `source` | `TPayload` | ❌       | -       | -     | -          |             |
-
----
-
-### `ResourceInResult` (Interface)
-
-**Type:** `interface ResourceInResult`
-
-**Since:** `3.1.0`
-
-Normalized import response. Only `status` is required; meaning is entirely API-defined (string token or numeric code).
-
----
-
-#### `count` (Property)
-
-**Type:** `number`
-
-Rows successfully written in this round-trip, when the API reports it.
-
----
-
-#### `hint` (Property)
-
-**Type:** `string`
-
-Free-form note: human message, vendor error string, or auxiliary code text.
-
----
-
-#### `id` (Property)
-
-**Type:** `string`
-
-Stable id for the batch, entity, or async job (same slot as a “jobId” if you only have one).
-
----
-
-#### `status` (Property)
-
-**Type:** `string \| number`
-
----
-
-#### `url` (Property)
-
-**Type:** `string`
-
-Link to poll status, download an error report, or open a portal page.
 
 ---
 
@@ -207,6 +207,6 @@ Signed download URL or landing page when the file is out-of-band.
 **Since:** `3.1.0`
 
 Typical binary/multipart import source (`File` in browsers is a Blob). For structured rows, pick another
-`TPayload` on <a href="#resourceiointerface-interface" class="tsd-kind-interface">ResourceIOInterface</a>.
+`TPayload` on [ResourceIOInterface](#resourceiointerface-interface).
 
 ---

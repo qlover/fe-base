@@ -13,7 +13,7 @@ import { createUserStore } from '../utils/createUserStore';
 import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
-import { ExecutorError, type StorageInterface } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit';
 import type { GatewayResult } from '../interface/GatewayServiceInterface';
 import { createGatewayResultFailed } from '../interface/GatewayServiceInterface';
 
@@ -107,84 +107,39 @@ export type UserServiceConfig<User, Credential> = Omit<
   /**
    * UserStore instance or configuration options
    *
-   * Allows passing a custom UserStore implementation or configuration options.
-   * If a UserStore instance is provided, it will be used directly.
-   * If options are provided, a default UserStore will be created with those options.
-   * If not provided, a default UserStore will be created.
+   * Pass a {@link UserStoreInterface} instance, or {@link UserStoreOptions} with optional
+   * `credentialPersist` / `userPersist` KeyStorage ports.
    *
-   * **Persistence Behavior (inherited from UserStore):**
-   * - **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
-   *   - When `storage` and `storageKey` are provided, **credential will be persisted using `storageKey`**
-   *   - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
-   *   - User info will NOT be persisted and will be cleared on page reload
-   *
-   * - **Dual persistence** (optional): Set `persistUserInfo: true` and provide `credentialStorageKey`
-   *   - Credential will be persisted to `credentialStorageKey`
-   *   - User info will be persisted to `storageKey` (when `credentialStorageKey` is different from `storageKey`)
-   *   - Both will be restored from storage on initialization
-   *
-   * @example Persist only credential (default)
+   * @example Persist only credential
    * ```typescript
    * const userService = new UserService({
    *   store: {
-   *     storage: localStorage,
-   *     storageKey: 'auth-token'  // This key stores credential, not user info
-   *     // Only credential is persisted to 'auth-token', user info is in memory only
+   *     credentialPersist: new KeyStorage('auth-token', storageAdapter)
    *   }
    * });
    * ```
    *
-   * @example Persist both user info and credential
+   * @example Dual persistence
    * ```typescript
    * const userService = new UserService({
    *   store: {
-   *     storage: localStorage,
-   *     storageKey: 'user-info',
-   *     credentialStorageKey: 'auth-token',
-   *     persistUserInfo: true
-   *     // Both user info and credential are persisted separately
+   *     credentialPersist: new KeyStorage('auth-token', storageAdapter),
+   *     userPersist: new KeyStorage('user-info', storageAdapter)
    *   }
    * });
    * ```
    *
-   * @example Use a custom UserStore instance
+   * @example Custom UserStore instance
    * ```typescript
    * const userStore = new UserStore({
-   *   storage: localStorage,
-   *   storageKey: 'user-info'
+   *   credentialPersist: new KeyStorage('auth-token', storageAdapter)
    * });
-   *
-   * const userService = new UserService({
-   *   store: userStore
-   * });
-   *
+   * const userService = new UserService({ store: userStore });
+   * ```
    */
   store?:
     | UserStoreInterface<User, Credential>
-    | (Omit<
-        UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>,
-        'storage'
-      > & {
-        /**
-         * UserStore Persistence Data may be User or Credential,
-         *
-         * The default is User=UserStateInterface<User, Credential>['result']
-         *
-         * It is determined by the `storageResult` of the parent class AsyncStore
-         * - When storageResult=false, the value is UserStateInterface<User, Credential>, which is the state itself
-         * - When storageResult=true, the value is UserStateInterface<User, Credential>['result'], which is the User
-         *
-         * But UserStore default implementation does not contain the storageResult judgment, so we currently force the user and credential to be stored separately
-         * So here we support three cases
-         *
-         * @optional
-         */
-        storage?: StorageInterface<
-          string,
-          Credential | User | UserStateInterface<User, Credential>,
-          unknown
-        > | null;
-      });
+    | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
 
   /**
    * Whether to pull user info after login

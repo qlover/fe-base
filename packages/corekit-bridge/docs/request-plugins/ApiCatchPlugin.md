@@ -14,15 +14,15 @@ Do not throw errors, only return errors and data
 
 ---
 
-#### `new ApiCatchPlugin` (Constructor)
+#### `constructor` (Constructor)
 
-**Type:** `(logger: LoggerInterface<unknown>, feApiRequestCatcher: RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>) => ApiCatchPlugin`
+**Type:** `(logger: LoggerInterface, feApiRequestCatcher: RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>) => ApiCatchPlugin`
 
 #### Parameters
 
 | Name                  | Type                                                                | Optional | Default | Since | Deprecated | Description |
 | --------------------- | ------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `logger`              | `LoggerInterface<unknown>`                                          | ❌       | -       | -     | -          |             |
+| `logger`              | `LoggerInterface`                                                   | ❌       | -       | -     | -          |             |
 | `feApiRequestCatcher` | `RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>` | ❌       | -       | -     | -          |             |
 
 ---
@@ -32,6 +32,8 @@ Do not throw errors, only return errors and data
 **Type:** `"ApiCatchPlugin"`
 
 **Default:** `'ApiCatchPlugin'`
+
+Optional plugin name for identification
 
 ---
 

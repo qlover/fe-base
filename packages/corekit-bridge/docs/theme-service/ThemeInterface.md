@@ -50,6 +50,20 @@ Get the current theme
 
 ---
 
+#### `getThemes` (Method)
+
+**Type:** `() => string[]`
+
+---
+
+##### `getThemes` (CallSignature)
+
+**Type:** `string[]`
+
+Get the supported themes
+
+---
+
 #### `getThemeTokens` (Method)
 
 **Type:** `(theme: string) => ThemeTokens`
@@ -96,23 +110,9 @@ The theme tokens
 
 ##### `getThemeTokens` (CallSignature)
 
-**Type:** `Record<string, ThemeTokens>`
+**Type:** `Record<ThemeId, ThemeTokens>`
 
 Get the theme tokens for the current theme
-
----
-
-#### `getThemes` (Method)
-
-**Type:** `() => string[]`
-
----
-
-##### `getThemes` (CallSignature)
-
-**Type:** `string[]`
-
-Get the supported themes
 
 ---
 

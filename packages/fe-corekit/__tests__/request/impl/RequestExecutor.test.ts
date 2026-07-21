@@ -633,7 +633,9 @@ describe('RequestExecutor', () => {
       expect(merged).not.toBe(defaultConfig);
       expect(merged.getAuth()).toBe('Bearer custom');
       expect(merged.method).toBe('POST');
-      expect(merged.url).toBe('/users');
+      expect((merged as CustomFetchConfig & { url: string }).url).toBe(
+        '/users'
+      );
       // Original adapter defaults must stay untouched
       expect(defaultConfig.method).toBe('GET');
       expect(defaultConfig).not.toHaveProperty('url');

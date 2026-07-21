@@ -56,7 +56,7 @@ const messageWithFiles = new ChatMessage({
 
 ---
 
-#### `new ChatMessage` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(options: Partial<ChatMessage<T, unknown>>) => ChatMessage<T, R>`
 
@@ -153,7 +153,7 @@ is loading or being generated. Commonly used for streaming responses.
 
 #### `result` (Property)
 
-**Type:** `null \| R`
+**Type:** `R \| null`
 
 **Default:** `null`
 

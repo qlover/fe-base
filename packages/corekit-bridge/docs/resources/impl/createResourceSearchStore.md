@@ -10,11 +10,11 @@
 
 #### Parameters
 
-| Name                                                                                                                                     | Type                                                                                                        | Optional | Default | Since | Deprecated | Description                                                                                                                                                                                  |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resourceName`                                                                                                                           | `GatewayServiceName`                                                                                        | ❌       | -       | -     | -          | Namespaced store id (usually matches <a href="../../gateway-service/impl/GatewayService.md#gatewayservicename-typealias" class="tsd-kind-type-alias">GatewayServiceName</a> / `serviceName`) |
-| `store`                                                                                                                                  | `ResourceSearchStore<TItem, Criteria, string> \| Partial<ResourceSearchStoreStateOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Pass a ready-made store, or a partial <a href="./ResourceSearchStore.md#resourcesearchstorestateoptions-interface" class="tsd-kind-interface">ResourceSearchStoreStateOptions</a> to seed    |
-| <a href="./ResourceSearchStore.md#resourcesearchstorestate-class" class="tsd-kind-class">ResourceSearchStoreState</a> via `defaultState` |
+| Name                                                                                                   | Type                                                                                                        | Optional | Default | Since | Deprecated | Description                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resourceName`                                                                                         | `GatewayServiceName`                                                                                        | ❌       | -       | -     | -          | Namespaced store id (usually matches [GatewayServiceName](../../gateway-service/impl/GatewayService.md#gatewayservicename-typealias) / `serviceName`) |
+| `store`                                                                                                | `ResourceSearchStore<TItem, Criteria, string> \| Partial<ResourceSearchStoreStateOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Pass a ready-made store, or a partial [ResourceSearchStoreStateOptions](./ResourceSearchStore.md#resourcesearchstorestateoptions-interface) to seed   |
+| [ResourceSearchStoreState](./ResourceSearchStore.md#resourcesearchstorestate-class) via `defaultState` |
 
 ---
 
@@ -22,11 +22,11 @@
 
 **Type:** `ResourceSearchStore<TItem, Criteria>`
 
-Return an existing <a href="./ResourceSearchStore.md#resourcesearchstore-class" class="tsd-kind-class">ResourceSearchStore</a> or create one with `defaultState` built from optional seed options.
+Return an existing [ResourceSearchStore](./ResourceSearchStore.md#resourcesearchstore-class) or create one with `defaultState` built from optional seed options.
 
 **Returns:**
 
-A concrete <a href="./ResourceSearchStore.md#resourcesearchstore-class" class="tsd-kind-class">ResourceSearchStore</a> instance
+A concrete [ResourceSearchStore](./ResourceSearchStore.md#resourcesearchstore-class) instance
 
 **Example:** Share one store between tests and production wiring
 
@@ -40,10 +40,10 @@ const scroll = new ResourceScroll(gateway, { store });
 
 #### Parameters
 
-| Name                                                                                                                                     | Type                                                                                                        | Optional | Default | Since | Deprecated | Description                                                                                                                                                                                  |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resourceName`                                                                                                                           | `GatewayServiceName`                                                                                        | ❌       | -       | -     | -          | Namespaced store id (usually matches <a href="../../gateway-service/impl/GatewayService.md#gatewayservicename-typealias" class="tsd-kind-type-alias">GatewayServiceName</a> / `serviceName`) |
-| `store`                                                                                                                                  | `ResourceSearchStore<TItem, Criteria, string> \| Partial<ResourceSearchStoreStateOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Pass a ready-made store, or a partial <a href="./ResourceSearchStore.md#resourcesearchstorestateoptions-interface" class="tsd-kind-interface">ResourceSearchStoreStateOptions</a> to seed    |
-| <a href="./ResourceSearchStore.md#resourcesearchstorestate-class" class="tsd-kind-class">ResourceSearchStoreState</a> via `defaultState` |
+| Name                                                                                                   | Type                                                                                                        | Optional | Default | Since | Deprecated | Description                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resourceName`                                                                                         | `GatewayServiceName`                                                                                        | ❌       | -       | -     | -          | Namespaced store id (usually matches [GatewayServiceName](../../gateway-service/impl/GatewayService.md#gatewayservicename-typealias) / `serviceName`) |
+| `store`                                                                                                | `ResourceSearchStore<TItem, Criteria, string> \| Partial<ResourceSearchStoreStateOptions<TItem, Criteria>>` | ✅       | -       | -     | -          | Pass a ready-made store, or a partial [ResourceSearchStoreStateOptions](./ResourceSearchStore.md#resourcesearchstorestateoptions-interface) to seed   |
+| [ResourceSearchStoreState](./ResourceSearchStore.md#resourcesearchstorestate-class) via `defaultState` |
 
 ---

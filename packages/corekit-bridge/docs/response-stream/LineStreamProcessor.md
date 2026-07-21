@@ -42,7 +42,7 @@ const lines = processor.processChunk('line1\r\nline2\r\nline3');
 
 ---
 
-#### `new LineStreamProcessor` (Constructor)
+#### `constructor` (Constructor)
 
 **Type:** `(separator: string) => LineStreamProcessor`
 
@@ -108,7 +108,7 @@ const lines = processor.processChunk('  line1  \n\n  line2  ');
 
 #### `processFinal` (Method)
 
-**Type:** `(data: string) => undefined \| string`
+**Type:** `(data: string) => string \| undefined`
 
 #### Parameters
 
@@ -120,7 +120,7 @@ const lines = processor.processChunk('  line1  \n\n  line2  ');
 
 ##### `processFinal` (CallSignature)
 
-**Type:** `undefined \| string`
+**Type:** `string \| undefined`
 
 Process remaining data when stream ends
 
