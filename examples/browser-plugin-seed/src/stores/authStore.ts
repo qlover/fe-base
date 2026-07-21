@@ -4,7 +4,7 @@ import {
   AsyncStoreStatus,
   type StoreInterface
 } from '@qlover/corekit-bridge/store-state';
-import type { StorageInterface } from '@qlover/fe-corekit';
+import { KeyStorage, type StorageInterface } from '@qlover/fe-corekit';
 import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 
 export type UserCredential = string;
@@ -14,6 +14,8 @@ export interface AuthStoreStateInterface
   openLoginForm: boolean;
   code: string;
 }
+
+type AuthPersistSnapshot = Partial<AuthStoreStateInterface>;
 
 function defaultState(): AuthStoreStateInterface {
   return {
@@ -38,13 +40,11 @@ export class AuthStore extends UserStore<
     return this.getState() as AuthStoreStateInterface;
   }
 
-  constructor(storage: StorageInterface<string, UserSchema, unknown>) {
+  constructor(storage: StorageInterface<string, AuthPersistSnapshot>) {
     super({
       defaultState,
-      storage,
-      persistUserInfo: true,
-      storageKey: 'auth-user',
-      credentialStorageKey: 'auth-credential',
+      persist: new KeyStorage('auth-session', storage),
+      persistKeys: ['result', 'credential'],
       initRestore: true
     });
   }

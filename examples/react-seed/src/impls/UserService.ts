@@ -1,8 +1,9 @@
 import {
   UserService as BridgeUserService,
-  CookieStorage
+  CookieStorage,
+  type UserServiceGateway
 } from '@qlover/corekit-bridge';
-import { StorageExecutor } from '@qlover/fe-corekit/storage';
+import { KeyStorage } from '@qlover/fe-corekit/storage';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import {
   isUserCredential,
@@ -10,6 +11,7 @@ import {
   UserCredential,
   UserSchema
 } from '@/interfaces/schema/UserSchema';
+import { AuthUserStorage } from '@/utils/AuthUserStorage';
 import { I } from '@config/ioc-identifier';
 import { inject } from './Container';
 import { RouteService } from './RouteService';
@@ -17,42 +19,12 @@ import { SeedOAuthClient } from './SeedOAuthClient';
 import { UserGateway } from './UserGateway';
 import type { ReactSeedConfig } from './ReactSeedConfig';
 import type { OAuthLoginResult } from './SeedOAuthClient';
-import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { StorageExecutorPlugin } from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 
 // TODO:
 export type UserGatewayConfig = {
   [key: string]: unknown;
-};
-
-const userStoragePlugin: StorageExecutorPlugin<
-  string,
-  UserCredential,
-  unknown
-> = {
-  get(_, valueFromPrevious) {
-    if (typeof valueFromPrevious === 'string') {
-      try {
-        const parsed = JSON.parse(valueFromPrevious) as unknown;
-        if (isUserCredential(parsed)) {
-          return parsed;
-        }
-      } catch {
-        /* legacy plain token string */
-      }
-      return { token: valueFromPrevious };
-    }
-  },
-  set(_, value) {
-    if (isUserCredential(value)) {
-      const credential = value;
-      return credential.refresh_token
-        ? JSON.stringify(credential)
-        : credential.token;
-    }
-  }
 };
 
 export class UserService extends BridgeUserService<
@@ -77,11 +49,10 @@ export class UserService extends BridgeUserService<
     super(userGateway, {
       logger: logger,
       store: {
-        storageKey: config.userCredentialKey,
-        storage: new StorageExecutor<string, UserSchema | UserCredential>([
-          userStoragePlugin,
-          new CookieStorage()
-        ])
+        persist: new KeyStorage(
+          config.userCredentialKey,
+          new AuthUserStorage(new CookieStorage())
+        )
       }
     });
     this.oauthRevokeOnLogout = config.oauthRevokeOnLogout ?? false;
