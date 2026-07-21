@@ -1,5 +1,26 @@
 # @qlover/corekit-bridge
 
+## 3.4.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- **corekit-bridge:** Standardize constructor headings and update type definitions ([1c0930b](https://github.com/qlover/fe-base/commit/1c0930bb70da1da06d8f6236a86c101315a326ab)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
+#### ♻️ Refactors
+
+- **UserService, UserStore:** Update persistence handling and storage configuration ([e591b23](https://github.com/qlover/fe-base/commit/e591b23da9a6913c5e66cd8cdbe78c9b91a43e12)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
+- **UserService, UserStore:** Simplify session persistence logic ([5de703d](https://github.com/qlover/fe-base/commit/5de703daf5a0b96e269a46e4b9360401da657d6d)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+
+### Patch Changes
+
+- Update dependency **@qlover/fe-corekit** from `3.4.4` to `3.5.0`
+- Update dependency **@qlover/tailwind-theme** from `0.2.1` to `0.3.0`
+
 ## 3.2.1
 
 ### Patch Changes

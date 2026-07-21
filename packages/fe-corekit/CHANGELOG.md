@@ -1,5 +1,13 @@
 # @qlover/fe-corekit
 
+## 3.5.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **UserService, UserStore:** Simplify session persistence logic ([5de703d](https://github.com/qlover/fe-base/commit/5de703daf5a0b96e269a46e4b9360401da657d6d)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
 ## 3.4.4
 
 ### Patch Changes

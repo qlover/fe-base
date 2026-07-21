@@ -1,7 +1,7 @@
 {
   "name": "examples/react-seed",
   "private": true,
-  "version": "1.4.4",
+  "version": "1.5.0",
   "description": "Vite + React 19 SPA seed with corekit, i18n, and Tailwind",
   "type": "module",
   "scripts": {

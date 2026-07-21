@@ -1,5 +1,19 @@
 # @qlover/tailwind-theme
 
+## 0.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **tailwind-theme:** Introduce 'generater' module for theme generation ([24e2345](https://github.com/qlover/fe-base/commit/24e2345d7cc1162702362ea3c29b61b6788d7861)) ([#658](https://github.com/qlover/fe-base/pull/658))
+
+- **next-oauth:** enhance styling and theme generation for improved UI consistency ([c225d16](https://github.com/qlover/fe-base/commit/c225d164d09c5c71070c309022203295a840c024)) ([#657](https://github.com/qlover/fe-base/pull/657))
+
+#### ♻️ Refactors
+
+- **UserService, UserStore:** Simplify session persistence logic ([5de703d](https://github.com/qlover/fe-base/commit/5de703daf5a0b96e269a46e4b9360401da657d6d)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
 ## 0.2.1
 
 ### Patch Changes

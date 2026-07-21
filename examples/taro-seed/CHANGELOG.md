@@ -1,5 +1,23 @@
 # examples/taro-seed
 
+## 2.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **i18n:** Introduce locale support and update path resolutions ([7366382](https://github.com/qlover/fe-base/commit/736638222983f1952c6191c48ed0aef84463afcb)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
+#### ♻️ Refactors
+
+- **AuthStore, UserService:** Enhance authentication storage and session management ([6cc85e5](https://github.com/qlover/fe-base/commit/6cc85e5258c3422470b13e1219cb4efb5c834839)) ([#669](https://github.com/qlover/fe-base/pull/669))
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.3.0` to `3.4.0`
+- Update dependency **@qlover/fe-corekit** from `3.4.4` to `3.5.0`
+- Update dependency **@qlover/tailwind-theme** from `0.2.1` to `0.3.0`
+
 ## 2.2.4
 
 ### Patch Changes
