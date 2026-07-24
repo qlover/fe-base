@@ -1,6 +1,6 @@
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import { API_CALLBACK_EMAIL_LOGIN, ROUTE_HOME } from '@config/route';
+import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
 import { UserRole, userSchema, type UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { AuthProviderInterface } from '@server/interfaces/AuthProviderInterface';
@@ -9,6 +9,7 @@ import type {
   SignWithOtpParams,
   VerifyOtpParams
 } from '@server/interfaces/AuthTypes';
+import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
 import { SessionService } from '@server/services/SessionService';
 import { PasswordEncrypt } from '@server/utils/PasswordEncrypt';
@@ -62,6 +63,8 @@ function supabaseSessionToUserSchema(session: Session): UserSchema {
 export class SupabaseAuthProvider implements AuthProviderInterface {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
+  @inject(I.ServerContextInterface)
+  protected serverContext!: ServerContextInterface;
 
   protected readonly appHost: string;
   protected readonly session: SessionService;
@@ -265,11 +268,12 @@ export class SupabaseAuthProvider implements AuthProviderInterface {
     const supabase = await this.supabaseRepo.getSupabase();
 
     if ('email' in params) {
-      // PKCE magic-link returns ?code= — same exchange path as SSO provider-login.
-      const redirectTo = new URL(API_CALLBACK_EMAIL_LOGIN, this.appHost);
-      redirectTo.searchParams.set('next', ROUTE_HOME);
-      const emailRedirectTo =
-        params.options?.emailRedirectTo ?? redirectTo.toString();
+      const locale = await this.serverContext.getLocale();
+      const redirectTo = new URL(
+        localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale),
+        this.appHost
+      ).toString();
+      const emailRedirectTo = params.options?.emailRedirectTo ?? redirectTo;
 
       this.logger.debug('Supabase email OTP redirectTo: ', emailRedirectTo);
 

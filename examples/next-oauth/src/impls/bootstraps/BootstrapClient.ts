@@ -1,6 +1,7 @@
 import { Bootstrap } from '@qlover/corekit-bridge';
 import { browserGlobalsName } from '@config/common';
 import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
+import { isAuthCallbackPath } from '@config/route';
 import * as globals from '../globals';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
@@ -62,10 +63,13 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
     const i18nService = this.IOC(I.I18nServiceInterface);
     i18nService.setPathname(pathname ?? '');
 
-    const bootstrapList: BootstrapExecutorPlugin[] = [
-      i18nService,
-      restoreUserService
-    ];
+    const bootstrapList: BootstrapExecutorPlugin[] = [i18nService];
+
+    // Auth callback pages (/callback/*) establish session first;
+    // skip premature /api/user/session restore.
+    if (!isAuthCallbackPath(pathname ?? '')) {
+      bootstrapList.push(restoreUserService);
+    }
 
     if (!appConfig.isProduction) {
       bootstrapList.push(printBootstrap);

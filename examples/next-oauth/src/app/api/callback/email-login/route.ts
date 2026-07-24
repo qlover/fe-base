@@ -1,13 +1,13 @@
 /**
  * ─── Email OTP / Magic Link callback ───
  *
- * GET  /api/callback/email-login?code=...&next=/developer/apps
- *   Supabase PKCE redirect target (same exchange as provider-login SSO).
- *   exchangeCodeForSession → loginWithSession → redirect.
+ * GET  /api/callback/email-login?code=...&next=...
+ *   Direct PKCE exchange + redirect (no UI).
  *
  * POST /api/callback/email-login
- *   Legacy / page-driven establish: body has access_token + refresh_token
- *   after client setSession / exchangeCodeForSession.
+ *   JSON establish (used by callback page):
+ *   - { code } — PKCE exchange + app session
+ *   - { access_token, refresh_token } — session from tokens
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -41,6 +41,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const code = typeof body.code === 'string' ? body.code.trim() : '';
+  if (code) {
+    try {
+      return await new NextApiServer(
+        API_CALLBACK_EMAIL_LOGIN,
+        request
+      ).runWithJson(async ({ parameters: { IOC } }) => {
+        await IOC(UserController).loginWithProviderCallback({
+          code,
+          origin: request.nextUrl.origin
+        });
+        return { success: true };
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return NextResponse.json({ success: false, message }, { status: 500 });
+    }
+  }
+
   const accessToken = body.access_token as string | undefined;
   const refreshToken = body.refresh_token as string | undefined;
 
@@ -48,7 +67,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: 'access_token and refresh_token are required'
+        message: 'code or access_token/refresh_token is required'
       },
       { status: 400 }
     );

@@ -17,10 +17,8 @@ export const ROUTE_LOGIN = '/auth/login' as const;
 export const ROUTE_REGISTER = '/auth/register' as const;
 
 /**
- * Email OTP / Magic Link login callback page (legacy fallback).
- *
- * New magic links use GET /api/callback/email-login?code=... (PKCE).
- * This page still handles ?code= or legacy #access_token when linked here.
+ * Email OTP / Magic Link callback page.
+ * Shows loading UI, exchanges PKCE ?code=, then POSTs to /api/callback/email-login.
  */
 export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
@@ -70,7 +68,6 @@ export const OAUTH_MACHINE_ROUTES = [
   ROUTE_OAUTH_TOKEN,
   ROUTE_OAUTH_REVOKE,
   ROUTE_OAUTH_USERINFO,
-  // 回调路由
   ROUTE_CALLBACK_EMAIL_LOGIN
 ] as const;
 
@@ -151,6 +148,15 @@ export function isOAuthRoutePath(pathname: string): boolean {
   return OAUTH_MACHINE_ROUTES.some(
     (route) => pathname === route || pathname.endsWith(route)
   );
+}
+
+/**
+ * Whether the path is an auth callback page under `/callback/*`
+ * (e.g. `/en/callback/email-login`). These pages establish session first,
+ * so bootstrap must not call `/api/user/session` prematurely.
+ */
+export function isAuthCallbackPath(pathname: string): boolean {
+  return /(?:^|\/)callback(?:\/|$)/.test(pathname);
 }
 
 /**

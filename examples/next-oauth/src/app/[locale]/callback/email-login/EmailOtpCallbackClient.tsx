@@ -1,24 +1,24 @@
 'use client';
 
 /**
- * Email OTP / Magic Link callback page (legacy + fallback).
+ * Email OTP / Magic Link callback — client UX only (no Supabase browser client).
  *
- * New magic links redirect to GET /api/callback/email-login?code=... (PKCE).
- * This page still handles:
- *   - ?code=... (PKCE, if emailRedirectTo still points here)
- *   - #access_token=... (implicit / older emails)
+ * Reads ?code= from the magic-link URL, POSTs it to /api/callback/email-login,
+ * then refreshes user info and navigates. Bootstrap skips /api/user/session
+ * restore on this page so session is established before any session fetch.
  */
 
 import { useEffect, useState } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { createClient } from '@shared/supabase/client';
+import type { UserService } from '@/impls/UserService';
+import { useIOC } from '@/uikit/hook/useIOC';
 import type { EmailOtpCallbackI18nInterface } from '@config/i18n-mapping/emailOtpCallbackI18n';
+import { I } from '@config/ioc-identifiter';
 import {
   API_CALLBACK_EMAIL_LOGIN,
   ROUTE_DEVELOPER_APPS,
   ROUTE_LOGIN
 } from '@config/route';
-import type { Session } from '@supabase/supabase-js';
 
 type CallbackStatus = 'authenticating' | 'establishing' | 'error';
 
@@ -26,22 +26,9 @@ interface EmailOtpCallbackClientProps {
   tt: EmailOtpCallbackI18nInterface;
 }
 
-async function establishAppSession(session: Session): Promise<boolean> {
-  const establishRes = await fetch(API_CALLBACK_EMAIL_LOGIN, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
-      expires_in: String(session.expires_in ?? 3600),
-      token_type: session.token_type ?? 'bearer'
-    })
-  });
-  return establishRes.ok;
-}
-
 export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
   const router = useRouter();
+  const userService = useIOC(I.UserServiceInterface) as UserService;
   const [status, setStatus] = useState<CallbackStatus>('authenticating');
 
   const statusMessages: Record<CallbackStatus, string> = {
@@ -63,65 +50,44 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
 
     async function handleCallback() {
       const search = new URLSearchParams(window.location.search);
-      const hash = window.location.hash.substring(1);
-      const hashParams = new URLSearchParams(hash);
-
-      const error = search.get('error') ?? hashParams.get('error');
+      const error = search.get('error');
       if (error) {
         await failToLogin(
-          `Supabase magic link error: ${error} ${search.get('error_description') ?? hashParams.get('error_description') ?? ''}`
+          `Supabase magic link error: ${error} ${search.get('error_description') ?? ''}`
         );
         return;
       }
 
+      const code = search.get('code');
+      if (!code) {
+        await failToLogin('Missing PKCE code in email callback URL');
+        return;
+      }
+
       try {
-        const supabase = createClient();
-        let session: Session | null = null;
-
-        // PKCE: ?code=...
-        const code = search.get('code');
-        if (code) {
-          const { data, error: exchangeError } =
-            await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError || !data.session) {
-            await failToLogin(
-              `exchangeCodeForSession failed: ${exchangeError?.message ?? 'no session'}`
-            );
-            return;
-          }
-          session = data.session;
-        } else {
-          // Implicit (legacy): #access_token=...&refresh_token=...
-          const accessToken = hashParams.get('access_token');
-          const refreshToken = hashParams.get('refresh_token');
-          if (!accessToken || !refreshToken) {
-            await failToLogin(
-              'Missing code or hash tokens in email callback URL'
-            );
-            return;
-          }
-
-          const { data, error: sessionError } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken
-          });
-          if (sessionError || !data.session) {
-            await failToLogin(
-              `setSession failed: ${sessionError?.message ?? 'no session'}`
-            );
-            return;
-          }
-          session = data.session;
-        }
-
         if (cancelled) return;
         setStatus('establishing');
 
-        const ok = await establishAppSession(session);
-        if (!ok) {
-          await failToLogin('Failed to establish app session');
+        const res = await fetch(API_CALLBACK_EMAIL_LOGIN, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        if (!res.ok) {
+          let message = 'Failed to establish app session';
+          try {
+            const data = (await res.json()) as { message?: string };
+            if (data.message) message = data.message;
+          } catch {
+            // ignore parse errors
+          }
+          await failToLogin(message);
           return;
         }
+
+        // Session cookie is set — now load user into the client store.
+        await userService.refreshUser({ disabledDialogError: true });
 
         if (cancelled) return;
         router.replace(ROUTE_DEVELOPER_APPS);
@@ -137,7 +103,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, userService]);
 
   return (
     <div

@@ -1,8 +1,8 @@
 /**
- * ─── Email OTP / Magic Link 登录回调页面（服务端组件） ───
+ * Email OTP / Magic Link callback page (server component).
  *
- * 新邮件链接（PKCE）默认跳到 GET /api/callback/email-login?code=...。
- * 本页面仍作为兜底：处理指向此处的 ?code= 或旧的 #access_token hash。
+ * Magic links redirect here with ?code=... (PKCE). The client shows loading UI
+ * and POSTs { code } to /api/callback/email-login — no browser Supabase client.
  */
 
 import { notFound } from 'next/navigation';
