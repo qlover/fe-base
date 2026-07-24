@@ -24,7 +24,7 @@ export function BootstrapsProvider(props: { children: React.ReactNode }) {
 
   useStrictEffect(() => {
     bootstrap
-      .startup(window)
+      .startup(window, window.location.pathname)
       .then(() => {
         setIocMounted(true);
       })

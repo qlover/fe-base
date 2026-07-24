@@ -87,7 +87,7 @@ shared/   # Shared across server/client: config (routes, i18n), interfaces, sche
 | `/api/user/login`, `/register`, `/logout`, `/session`   | Auth APIs                                      |
 | `/api/user/otp/login`, `/otp/verify`                    | Email/phone OTP sign-in                        |
 | `/api/user/login/provider`                              | Third-party sign-in (Supabase SSO)             |
-| `/api/callback/email-login`, `/callback/provider-login` | Login callbacks                                |
+| `/api/callback/email-login`, `/api/callback/provider-login` | Login callbacks                                |
 | `/api/locales/json`                                     | i18n messages JSON                             |
 
 ---
