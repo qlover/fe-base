@@ -43,7 +43,24 @@ env.get('NODE_ENV');
 ```ts
 const env = Env.searchEnv({
   cwd: '/path/to/start',
-  preloadList: ['.env'],
+  preloadList: ['.env.local', '.env'],
+});
+```
+
+### Prefer file by environment variable
+
+When a runtime env var is set (e.g. `cross-env APP_ENV=local`), pass `envVar` to prepend `.env.<value>` to the front of `preloadList`:
+
+```ts
+// APP_ENV=staging → resolved order: ['.env.staging', '.env.local', '.env']
+const env = Env.searchEnv({
+  envVar: 'APP_ENV',
+  preloadList: ['.env.local', '.env'],
+});
+
+env.load({
+  envVar: 'APP_ENV',
+  preloadList: ['.env.local', '.env'],
 });
 ```
 
@@ -61,6 +78,8 @@ env.get('NODE_ENV');
 The Env class provides some configuration options to control the loading and searching behavior of environment variables.
 
 - `cwd`: Specify the root directory for searching.
-- `preloadList`: Specify the list of .env files to load.
+- `preloadList`: Specify the list of .env files to load. Default: `['.env.local', '.env']`.
+- `envVar`: Env var name; when set, prepends `.env.<value>` to `preloadList` (deduplicated).
+- `encoding` / `override` / `debug`, etc.: Forwarded to dotenv (`path` is excluded and resolved from `preloadList`).
 - `maxDepth`: Specify the maximum depth for searching.
 - `logger`: Specify the logger.
