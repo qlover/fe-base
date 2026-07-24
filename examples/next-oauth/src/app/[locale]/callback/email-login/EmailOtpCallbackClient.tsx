@@ -1,10 +1,12 @@
 'use client';
 
 /**
- * ─── Email OTP Callback — 客户端交互逻辑 ───
+ * Email OTP / Magic Link callback page (legacy + fallback).
  *
- * 此组件由 page.tsx（服务端组件）渲染，接收已解析的 i18n 翻译作为 props。
- * 实际处理 Supabase magic link 回调的 hash fragment 逻辑在此执行。
+ * New magic links redirect to GET /api/callback/email-login?code=... (PKCE).
+ * This page still handles:
+ *   - ?code=... (PKCE, if emailRedirectTo still points here)
+ *   - #access_token=... (implicit / older emails)
  */
 
 import { useEffect, useState } from 'react';
@@ -16,11 +18,26 @@ import {
   ROUTE_DEVELOPER_APPS,
   ROUTE_LOGIN
 } from '@config/route';
+import type { Session } from '@supabase/supabase-js';
 
 type CallbackStatus = 'authenticating' | 'establishing' | 'error';
 
 interface EmailOtpCallbackClientProps {
   tt: EmailOtpCallbackI18nInterface;
+}
+
+async function establishAppSession(session: Session): Promise<boolean> {
+  const establishRes = await fetch(API_CALLBACK_EMAIL_LOGIN, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      expires_in: String(session.expires_in ?? 3600),
+      token_type: session.token_type ?? 'bearer'
+    })
+  });
+  return establishRes.ok;
 }
 
 export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
@@ -36,81 +53,82 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
   useEffect(() => {
     let cancelled = false;
 
+    async function failToLogin(message?: string) {
+      if (message) {
+        console.error(message);
+      }
+      if (!cancelled) setStatus('error');
+      router.replace(ROUTE_LOGIN);
+    }
+
     async function handleCallback() {
-      // ── Step 0: 从 URL hash fragment 中提取参数 ──
+      const search = new URLSearchParams(window.location.search);
       const hash = window.location.hash.substring(1);
-      console.log('callback email-login url', window.location);
-      if (!hash) {
-        router.replace(ROUTE_LOGIN);
-        return;
-      }
+      const hashParams = new URLSearchParams(hash);
 
-      const params = new URLSearchParams(hash);
-      const error = params.get('error');
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token');
-
-      // ── Supabase 返回错误（token 过期、无效等） ──
+      const error = search.get('error') ?? hashParams.get('error');
       if (error) {
-        const desc = params.get('error_description');
-        console.error('Supabase magic link error:', error, desc);
-        router.replace(ROUTE_LOGIN);
-        return;
-      }
-
-      // ── 必须同时有 access_token 和 refresh_token ──
-      if (!accessToken || !refreshToken) {
-        router.replace(ROUTE_LOGIN);
+        await failToLogin(
+          `Supabase magic link error: ${error} ${search.get('error_description') ?? hashParams.get('error_description') ?? ''}`
+        );
         return;
       }
 
       try {
-        // ── Step 1: 建立 Supabase session（写入 Supabase auth cookie） ──
         const supabase = createClient();
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken
-        });
+        let session: Session | null = null;
 
-        if (sessionError) {
-          console.error('Failed to set Supabase session:', sessionError);
-          if (!cancelled) setStatus('error');
-          router.replace(ROUTE_LOGIN);
-          return;
+        // PKCE: ?code=...
+        const code = search.get('code');
+        if (code) {
+          const { data, error: exchangeError } =
+            await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError || !data.session) {
+            await failToLogin(
+              `exchangeCodeForSession failed: ${exchangeError?.message ?? 'no session'}`
+            );
+            return;
+          }
+          session = data.session;
+        } else {
+          // Implicit (legacy): #access_token=...&refresh_token=...
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          if (!accessToken || !refreshToken) {
+            await failToLogin(
+              'Missing code or hash tokens in email callback URL'
+            );
+            return;
+          }
+
+          const { data, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          if (sessionError || !data.session) {
+            await failToLogin(
+              `setSession failed: ${sessionError?.message ?? 'no session'}`
+            );
+            return;
+          }
+          session = data.session;
         }
 
         if (cancelled) return;
         setStatus('establishing');
 
-        // ── Step 2: 通知后端建立应用级 session（OAuth wrapper cookie） ──
-        const establishRes = await fetch(API_CALLBACK_EMAIL_LOGIN, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: params.get('expires_in') ?? '3600',
-            token_type: params.get('type') ?? 'bearer'
-          })
-        });
-
-        if (!establishRes.ok) {
-          console.error('Failed to establish app session');
-          if (!cancelled) setStatus('error');
-          router.replace(ROUTE_LOGIN);
+        const ok = await establishAppSession(session);
+        if (!ok) {
+          await failToLogin('Failed to establish app session');
           return;
         }
 
         if (cancelled) return;
-
-        // ── Step 3: 登录成功，跳转到应用首页 ──
         router.replace(ROUTE_DEVELOPER_APPS);
       } catch (err) {
         console.error('Email OTP callback error:', err);
         if (!cancelled) setStatus('error');
-        if (!cancelled) {
-          router.replace(ROUTE_LOGIN);
-        }
+        if (!cancelled) router.replace(ROUTE_LOGIN);
       }
     }
 

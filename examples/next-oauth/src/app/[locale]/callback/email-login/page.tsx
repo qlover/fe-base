@@ -1,28 +1,8 @@
 /**
  * ─── Email OTP / Magic Link 登录回调页面（服务端组件） ───
  *
- * 触发场景：
- *   用户在登录页输入邮箱后，Supabase 发送一封 Magic Link 邮件。
- *   用户点击邮件中的链接，Supabase 验证 token 后将浏览器重定向到本页面，
- *   并在 URL 的 hash fragment（#）中附带 auth tokens。
- *
- * 为什么需要前端处理：
- *   URL hash fragment（#access_token=...）**永远不会**发送到服务端，
- *   所以必须在客户端 JavaScript 中读取并处理。
- *
- * 处理流程：
- *   1. 读取 location.hash，解析出 access_token / refresh_token 等参数
- *   2. 调用 supabase.auth.setSession() 将 Supabase auth cookie 写入浏览器
- *   3. POST API_AUTH_EMAIL_OTP_ESTABLISH —— 通知后端建立应用级 session
- *   4. 跳转到 /developer/apps（登录成功后的首页）
- *
- * 错误处理：
- *   如果 Supabase 返回 #error=... 或缺少必要 token，则跳转回登录页。
- *
- * 相关页面（未来可扩展）：
- *   - /auth/email-verify-callback  —— 邮箱验证回调
- *   - /auth/register-success       —— 注册成功
- *   - /auth/register-error         —— 注册失败
+ * 新邮件链接（PKCE）默认跳到 GET /api/callback/email-login?code=...。
+ * 本页面仍作为兜底：处理指向此处的 ?code= 或旧的 #access_token hash。
  */
 
 import { notFound } from 'next/navigation';

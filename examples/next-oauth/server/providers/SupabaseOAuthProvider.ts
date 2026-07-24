@@ -2,11 +2,10 @@ import { LoginParams } from '@qlover/corekit-bridge';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
+import { API_CALLBACK_EMAIL_LOGIN, ROUTE_DEVELOPER_APPS } from '@config/route';
 import { UserRole, userSchema, type UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
@@ -74,8 +73,6 @@ export class SupabaseOAuthProvider
 {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
-  @inject(I.ServerContextInterface)
-  protected serverContext!: ServerContextInterface;
 
   protected readonly appHost: string;
 
@@ -360,15 +357,18 @@ export class SupabaseOAuthProvider
     const supabase = await this.supabaseRepo.getSupabase();
 
     if ('email' in params) {
-      const locale = await this.serverContext.getLocale();
-      const redirectTo =
-        this.appHost + localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale);
+      // PKCE magic-link returns ?code= — same exchange path as SSO provider-login.
+      const redirectTo = new URL(API_CALLBACK_EMAIL_LOGIN, this.appHost);
+      redirectTo.searchParams.set('next', ROUTE_DEVELOPER_APPS);
 
-      this.logger.debug('Supabase email OTP redirectTo: ', redirectTo);
+      this.logger.debug(
+        'Supabase email OTP redirectTo: ',
+        redirectTo.toString()
+      );
 
       const result = await supabase.auth.signInWithOtp({
         email: params.email,
-        options: { emailRedirectTo: redirectTo }
+        options: { emailRedirectTo: redirectTo.toString() }
       });
       this.supabaseRepo.throwIfError(result);
 

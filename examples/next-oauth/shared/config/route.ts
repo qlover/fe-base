@@ -17,15 +17,10 @@ export const ROUTE_LOGIN = '/auth/login' as const;
 export const ROUTE_REGISTER = '/auth/register' as const;
 
 /**
- * Email OTP / Magic Link 登录回调页面
+ * Email OTP / Magic Link login callback page (legacy fallback).
  *
- * 用户点击邮件中的 magic link 后，Supabase 重定向到此页面。
- * 前端 client component 读取 URL hash fragment 中的 tokens 并建立 session。
- *
- * 未来可能增加的回调页面：
- *   - /callback/email-verify-callback  邮箱验证回调
- *   - /callback/register-success       注册成功
- *   - /callback/register-error         注册失败
+ * New magic links use GET /api/callback/email-login?code=... (PKCE).
+ * This page still handles ?code= or legacy #access_token when linked here.
  */
 export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
