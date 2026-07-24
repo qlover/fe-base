@@ -22,8 +22,9 @@
     "types": ["vitest/globals"],
     "paths": {
       "@qlover/code2markdown": ["./packages/code2markdown/src"],
-      "@qlover/corekit-bridge": ["./packages/corekit-bridge/src"],
-      "@qlover/corekit-bridge/*": ["./packages/corekit-bridge/src/*"],
+      "@qlover/corekit-bridge": ["./packages/corekit-bridge/src/core"],
+      "@qlover/corekit-bridge/build/*": ["./packages/corekit-bridge/src/build/*"],
+      "@qlover/corekit-bridge/*": ["./packages/corekit-bridge/src/core/*"],
       "@qlover/corekit-node": ["./packages/corekit-node/src"],
       "@qlover/create-app": ["./packages/create-app/src"],
       "@qlover/env-loader": ["./packages/env-loader/src"],
@@ -36,7 +37,9 @@
       "@qlover/oauth-wrapper": ["./packages/oauth-wrapper/src/server"],
       "@qlover/oauth-wrapper/client": ["./packages/oauth-wrapper/src/client"],
       "@qlover/oauth-wrapper/core": ["./packages/oauth-wrapper/src/core"],
-      "@qlover/scripts-context": ["./packages/scripts-context/src"]
+      "@qlover/scripts-context": ["./packages/scripts-context/src"],
+      "@qlover/tailwind-theme": ["./packages/tailwind-theme/src"],
+      "@qlover/tailwind-theme/*": ["./packages/tailwind-theme/src/*"]
     }
   },
   "ts-node": {
