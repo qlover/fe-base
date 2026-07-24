@@ -39,6 +39,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
     async function handleCallback() {
       // ── Step 0: 从 URL hash fragment 中提取参数 ──
       const hash = window.location.hash.substring(1);
+      console.log('callback email-login url', window.location);
       if (!hash) {
         router.replace(ROUTE_LOGIN);
         return;
@@ -107,7 +108,9 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
       } catch (err) {
         console.error('Email OTP callback error:', err);
         if (!cancelled) setStatus('error');
-        if (!cancelled) router.replace(ROUTE_LOGIN);
+        if (!cancelled) {
+          router.replace(ROUTE_LOGIN);
+        }
       }
     }
 
@@ -121,7 +124,7 @@ export function EmailOtpCallbackClient({ tt }: EmailOtpCallbackClientProps) {
   return (
     <div
       data-testid="EmailOtpCallbackClient"
-      className="bg-primary flex min-h-screen items-center justify-center font-sans p-4"
+      className="bg-primary flex w-full min-h-screen items-center justify-center font-sans p-4"
     >
       <div className="bg-bg-container border-primary-border w-full max-w-sm rounded-xl border p-8 text-center shadow-sm">
         <span className="border-primary-border text-brand mb-6 inline-flex items-center rounded-full border bg-primary-bg px-3 py-1 text-xs font-semibold tracking-wide uppercase">

@@ -22,8 +22,20 @@ function parseCsvEnv(
   );
 }
 
+/**
+ * Require `SITE_URL` and normalize it to always end with `/`.
+ */
+function requireSiteUrl(value: unknown): string {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error('SITE_URL must be a non-empty string');
+  }
+  const trimmed = value.trim();
+  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+}
+
 export class ServerConfig implements SeedServerConfigInterface {
-  public readonly siteUrl: string = process.env.SITE_URL ?? '';
+  public readonly siteUrl: string = requireSiteUrl(process.env.SITE_URL);
+  public readonly appHost: string = this.siteUrl;
   public readonly env: string = process.env.APP_ENV ?? 'development';
   public readonly name: string = name;
   public readonly version: string = version;
@@ -35,7 +47,6 @@ export class ServerConfig implements SeedServerConfigInterface {
     process.env.NEXT_PUBLIC_USER_TOKEN_KEY ?? '';
 
   public readonly jwtSecret: string = process.env.JWT_SECRET ?? '';
-  public readonly appHost: string = process.env.SITE_URL ?? '';
   /**
    * login user token expires in
    *
