@@ -43,7 +43,24 @@ env.get('NODE_ENV');
 ```ts
 const env = Env.searchEnv({
   cwd: '/path/to/start',
-  preloadList: ['.env'],
+  preloadList: ['.env.local', '.env'],
+});
+```
+
+### 按环境变量优先加载
+
+运行时若设置了环境变量（例如 `cross-env APP_ENV=local`），可通过 `envVar` 将 `.env.<value>` 插到 `preloadList` 最前面：
+
+```ts
+// APP_ENV=staging → 实际顺序: ['.env.staging', '.env.local', '.env']
+const env = Env.searchEnv({
+  envVar: 'APP_ENV',
+  preloadList: ['.env.local', '.env'],
+});
+
+env.load({
+  envVar: 'APP_ENV',
+  preloadList: ['.env.local', '.env'],
 });
 ```
 
@@ -61,6 +78,8 @@ env.get('NODE_ENV');
 Env类提供了一些配置选项，可以用来控制环境变量的加载和搜索行为。
 
 - `cwd`: 指定搜索的根目录。
-- `preloadList`: 指定要加载的.env文件列表。
+- `preloadList`: 指定要加载的.env文件列表，默认 `['.env.local', '.env']`。
+- `envVar`: 指定环境变量名；若该变量有值，则将 `.env.<value>` 插入到 `preloadList` 最前（去重）。
+- `encoding` / `override` / `debug` 等：透传给 dotenv（`path` 除外，由本包根据 `preloadList` 解析）。
 - `maxDepth`: 指定搜索的最大深度。
 - `logger`: 指定日志记录器。
