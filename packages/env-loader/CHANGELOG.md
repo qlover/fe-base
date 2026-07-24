@@ -1,5 +1,13 @@
 # @qlover/env-loader
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **env-loader:** support envVar preload priority and dotenv options ([c6c70d8](https://github.com/qlover/fe-base/commit/c6c70d89dd54bfb688821c813d63937cdcce8ace)) ([#671](https://github.com/qlover/fe-base/pull/671))
+
 ## 1.0.2
 
 ### Patch Changes
