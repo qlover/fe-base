@@ -50,9 +50,14 @@ jobs:
             nx-cache-${{ github.ref_name }}-
             nx-cache-master-
       
+      # 使用 build:packages:force，而不是 build:packages（nx affected）。
+      # examples 通过 package.json 解析 @qlover/* 类型到 dist/*.d.ts，且 dist 被 gitignore。
+      # 当 PR 只改 examples 时，nx affected:build --exclude=examples 往往不会构建任何 package，
+      # type-check 会因缺少 dist 报 TS2307。强制构建全部 packages，保证 example type-check 前
+      # dist 一定存在（与 release.yml 一致）。
       - name: Build packages (exclude examples)
         timeout-minutes: 10
-        run: pnpm build:packages
+        run: pnpm build:packages:force
 
       - name: Type check
         timeout-minutes: 10
