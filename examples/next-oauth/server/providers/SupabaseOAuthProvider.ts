@@ -348,8 +348,10 @@ export class SupabaseOAuthProvider
     });
 
     const oauthRepo = this.getOAuthRepo();
+    // oauth-wrapper reads provider_session_token as the upstream refresh token
+    // when exchanging authorization codes (fetchProviderAccessToken).
     await oauthRepo.upsertUserCredentials(profile.id, {
-      provider_session_token: profile.credential_token
+      provider_session_token: refreshToken
     });
   }
 
