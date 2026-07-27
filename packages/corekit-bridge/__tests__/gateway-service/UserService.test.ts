@@ -32,7 +32,7 @@ import type {
   UserStateInterface,
   UserStoreInterface
 } from '../../src/core/gateway-service/interface/UserStoreInterface';
-import { UserStore } from '@qlover/corekit-bridge/core';
+import { UserStore } from '../../src/core';
 import type { GatewayResult } from '../../src/core/gateway-service/interface/GatewayServiceInterface';
 
 /**

@@ -1,28 +1,33 @@
 /**
- * ─── Email OTP / Magic Link — 建立应用 Session ───
+ * ─── Email OTP / Magic Link callback ───
+ *
+ * GET  /api/callback/email-login?code=...&next=...
+ *   Direct PKCE exchange + redirect (no UI).
  *
  * POST /api/callback/email-login
- *
- * 调用方：前端 /callback/email-login 页面（client component）。
- * 前端已通过 supabase.auth.setSession() 设置了 Supabase auth cookie，
- * 本接口在此基础上建立应用级 session cookie，
- * 使得后续请求能被应用识别为已登录状态。
- *
- * 请求体：
- *   { access_token, refresh_token, expires_in, token_type }
- *
- * 流程：
- *   1. 从请求体中取出 Supabase tokens
- *   2. 调用 provider.loginWithSession()：
- *      a. 用 refresh_token 刷新 Supabase session（同时获取最新 user info）
- *      b. 生成应用 session payload 并写入 cookie
- *   3. 返回 { success: true }
+ *   JSON establish (used by callback page):
+ *   - { code } — PKCE exchange + app session
+ *   - { access_token, refresh_token } — session from tokens
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
+import { API_CALLBACK_EMAIL_LOGIN } from '@config/apiRoutes';
 import { I } from '@config/ioc-identifiter';
 import { BootstrapServer } from '@server/BootstrapServer';
+import { UserController } from '@server/controllers/UserController';
+import { NextApiServer } from '@server/NextApiServer';
 import type { Session } from '@supabase/supabase-js';
+
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url);
+  const rawQuery = Object.fromEntries(searchParams.entries());
+  rawQuery.origin = origin;
+
+  return await new NextApiServer(API_CALLBACK_EMAIL_LOGIN).runWithRedirect(
+    async ({ parameters: { IOC } }) =>
+      IOC(UserController).loginWithProviderCallback(rawQuery)
+  );
+}
 
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
@@ -35,6 +40,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const code = typeof body.code === 'string' ? body.code.trim() : '';
+  if (code) {
+    try {
+      return await new NextApiServer(
+        API_CALLBACK_EMAIL_LOGIN,
+        request
+      ).runWithJson(async ({ parameters: { IOC } }) => {
+        await IOC(UserController).loginWithProviderCallback({
+          code,
+          origin: request.nextUrl.origin
+        });
+        return { success: true };
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return NextResponse.json({ success: false, message }, { status: 500 });
+    }
+  }
+
   const accessToken = body.access_token as string | undefined;
   const refreshToken = body.refresh_token as string | undefined;
 
@@ -42,7 +66,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: 'access_token and refresh_token are required'
+        message: 'code or access_token/refresh_token is required'
       },
       { status: 400 }
     );

@@ -24,6 +24,7 @@
   "references": [
     { "path": "../fe-corekit" },
     { "path": "../logger" },
-    { "path": "../env-loader" }
+    { "path": "../env-loader" },
+    { "path": "../tailwind-theme" }
   ]
 }

@@ -12,8 +12,8 @@ export const ROUTE_LOGIN = '/auth/login' as const;
 export const ROUTE_REGISTER = '/auth/register' as const;
 
 /**
- * Email OTP / Magic Link login callback.
- * After the user clicks the magic link, Supabase redirects here.
+ * Email OTP / Magic Link callback page.
+ * Shows loading UI, exchanges PKCE ?code=, then POSTs to /api/callback/email-login.
  */
 export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
@@ -59,6 +59,15 @@ export function isPublicPath(pathname: string): boolean {
 
 export function localePage(route: string, locale: LocaleType): string {
   return locale + route;
+}
+
+/**
+ * Whether the path is an auth callback page under `/callback/*`
+ * (e.g. `/en/callback/email-login`). These pages establish session first,
+ * so bootstrap must not call `/api/user/session` prematurely.
+ */
+export function isAuthCallbackPath(pathname: string): boolean {
+  return /(?:^|\/)callback(?:\/|$)/.test(pathname);
 }
 
 /**

@@ -361,8 +361,13 @@ export class SupabaseOAuthProvider
 
     if ('email' in params) {
       const locale = await this.serverContext.getLocale();
-      const redirectTo =
-        this.appHost + localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale);
+      const redirectTo = new URL(
+        localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale),
+        this.appHost
+      ).toString();
+
+      this.logger.debug('Supabase email OTP redirectTo: ', redirectTo);
+
       const result = await supabase.auth.signInWithOtp({
         email: params.email,
         options: { emailRedirectTo: redirectTo }

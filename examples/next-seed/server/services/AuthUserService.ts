@@ -260,7 +260,10 @@ export class AuthUserService
     const nextPathname = query.next ?? '/';
     const siteUrl = query.origin ?? this.config.siteUrl;
     return {
-      redirectUrl: siteUrl + nextPathname
+      redirectUrl: new URL(
+        nextPathname,
+        siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`
+      ).toString()
     };
   }
 }
