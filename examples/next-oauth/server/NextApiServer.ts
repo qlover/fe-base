@@ -1,6 +1,7 @@
 import { isPlainObject, pick } from 'lodash-es';
 import { NextResponse, type NextRequest } from 'next/server';
 import { I } from '@config/ioc-identifiter';
+import { oauthI18nIdToRfc } from '@config/oauthErrors';
 import type {
   AppApiResult,
   AppApiSuccessInterface
@@ -132,6 +133,53 @@ export class NextApiServer extends BootstrapServer {
   ): Promise<NextResponse> {
     const result = await this.run(task);
     return this.returnJson(result, init);
+  }
+
+  /**
+   * Machine OAuth endpoints (token / userinfo / revoke) for RFC clients
+   * such as Supabase Custom OAuth providers.
+   *
+   * Success: return the payload itself (no `{ success, data }` envelope).
+   * Error: `{ error, error_description }` per RFC 6749 §5.2.
+   */
+  public async runWithOAuthJson<Result>(
+    task?: RunWithTask<Result>,
+    init?: RunWithInit
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+    const contextHttpStatus = this.serverContext.getState('httpStatus');
+    const noStoreHeaders = {
+      'Cache-Control': 'no-store',
+      Pragma: 'no-cache'
+    };
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          error: oauthI18nIdToRfc(result.id ?? 'server_error'),
+          error_description:
+            result.message?.trim() || result.id || 'OAuth error'
+        },
+        {
+          status: contextHttpStatus ?? 400,
+          headers: {
+            ...noStoreHeaders,
+            ...init?.errorHeaders
+          }
+        }
+      );
+    }
+
+    const body =
+      result.data === undefined || result.data === null ? {} : result.data;
+
+    return NextResponse.json(body as object, {
+      status: contextHttpStatus ?? 200,
+      headers: {
+        ...noStoreHeaders,
+        ...init?.successHeaders
+      }
+    });
   }
 
   /**

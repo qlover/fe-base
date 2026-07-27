@@ -4,17 +4,20 @@ import {
   SignWithOtpSchema,
   VerifyOtpParams
 } from '@qlover/oauth-wrapper';
-import { Provider } from '@supabase/supabase-js';
 import { isEmpty } from 'lodash-es';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
 import { API_CALLBACK_PROVIDER_LOGIN } from '@config/apiRoutes';
-import { LoginProviderType } from '@config/common';
+import {
+  LoginProviderType,
+  resolveSupabaseOAuthProvider
+} from '@config/common';
 import {
   API_NOT_AUTHORIZED,
   API_USER_NOT_FOUND
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
+import { ROUTE_LOGIN } from '@config/route';
 import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
@@ -33,6 +36,7 @@ import type {
 } from '../interfaces/UserServiceInterface';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
+import type { Provider } from '@supabase/supabase-js';
 
 @injectable()
 export class OAuthUserService
@@ -208,18 +212,18 @@ export class OAuthUserService
   }): Promise<LoginProviderResult> {
     const supabase = await this.supabaseRepo.getSupabase();
 
-    // FIXME: toLocaleLowerCase 不够严谨
-    const supabsaeProvider = provider.toLocaleLowerCase() as Provider;
-    const redirectTo = this.config.siteUrl + API_CALLBACK_PROVIDER_LOGIN;
+    const supabaseProvider = resolveSupabaseOAuthProvider(provider);
+    const siteBase = this.config.siteUrl.replace(/\/$/, '');
+    const redirectTo = `${siteBase}${API_CALLBACK_PROVIDER_LOGIN}`;
 
     this.logger.debug(
       'loginwithProvider:',
-      supabsaeProvider,
+      supabaseProvider,
       'redirectTo:',
       redirectTo
     );
     const result = await supabase.auth.signInWithOAuth({
-      provider: supabsaeProvider,
+      provider: supabaseProvider as Provider,
       options: {
         redirectTo
       }
@@ -239,6 +243,34 @@ export class OAuthUserService
   public async loginWithProviderCallback(
     query: LoginWithProviderCallbackSchema
   ): Promise<ResultHandlerContext> {
+    const siteUrl = query.origin ?? this.config.siteUrl;
+    const siteBase = siteUrl.replace(/\/$/, '');
+
+    if (query.error) {
+      const description =
+        query.error_description?.trim() ||
+        query.error_code?.trim() ||
+        query.error;
+      this.logger.error('OAuth provider callback error', {
+        error: query.error,
+        error_code: query.error_code,
+        error_description: query.error_description
+      });
+
+      const loginUrl = new URL(ROUTE_LOGIN, `${siteBase}/`);
+      loginUrl.searchParams.set('oauth_error', description);
+      return {
+        redirectUrl: loginUrl.toString()
+      };
+    }
+
+    if (!query.code?.trim()) {
+      throw new ExecutorError(
+        API_NOT_AUTHORIZED,
+        'OAuth callback missing authorization code'
+      );
+    }
+
     const supabase = await this.supabaseRepo.getSupabase();
 
     const result = await supabase.auth.exchangeCodeForSession(query.code);
@@ -248,12 +280,8 @@ export class OAuthUserService
     await this.oauthProvider.loginWithSession?.(result.data.session!);
 
     const nextPathname = query.next ?? '/';
-    const siteUrl = query.origin ?? this.config.siteUrl;
     return {
-      redirectUrl: new URL(
-        nextPathname,
-        siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`
-      ).toString()
+      redirectUrl: new URL(nextPathname, `${siteBase}/`).toString()
     };
   }
 }

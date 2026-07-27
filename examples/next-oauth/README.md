@@ -230,7 +230,10 @@ npm run dev:prod     # 生产配置态本地调试
 机器端点 **不带 locale 前缀**，且由 `src/proxy.ts` 跳过会话中间件：
 
 - `POST /oauth/token`
-- `GET /userinfo`
+- `GET /oauth/userinfo`
+- `POST /oauth/revoke`
+
+上述端点返回 **扁平 RFC JSON**（`runWithOAuthJson`），可被 Supabase Custom Auth Provider 等标准客户端消费。详见 [docs/oauth-as-supabase-custom-provider.md](./docs/oauth-as-supabase-custom-provider.md)。
 
 ### HTTP 端点一览
 

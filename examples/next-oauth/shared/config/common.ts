@@ -103,6 +103,18 @@ export const loginProviders = {
 export type LoginProviderType = ValueOf<typeof loginProviders>;
 
 /**
+ * Maps UI `loginProviders` names to Supabase Auth `signInWithOAuth` provider ids.
+ *
+ * Built-ins: `GitHub` → `github`. For Supabase Custom Auth Providers, extend this
+ * map to return ids like `custom:my-idp` (do not rely on naive toLowerCase).
+ */
+export function resolveSupabaseOAuthProvider(
+  provider: LoginProviderType
+): string {
+  return provider.toLowerCase();
+}
+
+/**
  * Upstream identity provider for the Next OAuth template.
  * Read via AppConfig / ServerConfig from `NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER`.
  *

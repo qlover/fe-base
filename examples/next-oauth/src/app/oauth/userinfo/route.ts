@@ -35,6 +35,7 @@ export async function OPTIONS(req: NextRequest) {
  * OAuth 2.0 / OIDC userinfo endpoint.
  *
  * Requires `Authorization: Bearer <access_token>` from `POST /oauth/token`.
+ * Returns flat OIDC claims (`sub`, `email`, …) without the app API envelope.
  */
 export async function GET(req: NextRequest) {
   const corsHeaders = buildApiCorsHeaders(req, corsConfig);
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
     name: ROUTE_OAUTH_USERINFO,
     nextRequest: req,
     event_type: 'oauth-wrapper'
-  }).runWithJson(
+  }).runWithOAuthJson(
     async ({ parameters: { IOC } }) => {
       const accessToken = parseBearerAuthorization(
         req.headers.get('authorization')
@@ -57,14 +58,17 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      return await IOC(OAuthWrapperController).getUserInfo(accessToken!);
+      const user = await IOC(OAuthWrapperController).getUserInfo(accessToken!);
+
+      return {
+        sub: String(user.id),
+        email: user.email,
+        email_verified: true,
+        name: user.email
+      };
     },
     {
-      successHeaders: {
-        'Cache-Control': 'no-store',
-        Pragma: 'no-cache',
-        ...corsHeaders
-      },
+      successHeaders: corsHeaders,
       errorHeaders: corsHeaders
     }
   );

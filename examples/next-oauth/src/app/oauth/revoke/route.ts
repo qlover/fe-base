@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     name: ROUTE_OAUTH_REVOKE,
     nextRequest: req,
     event_type: 'oauth-wrapper'
-  }).runWithJson(
+  }).runWithOAuthJson(
     async ({ parameters: { IOC } }) =>
       IOC(OAuthWrapperController).revokeToken(
         await parseOAuthTokenRequest(req)
