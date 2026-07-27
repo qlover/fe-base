@@ -90,6 +90,9 @@ export async function OPTIONS(req: NextRequest) {
  *
  * Supports `grant_type=authorization_code` and `grant_type=refresh_token`.
  * Client authentication via HTTP Basic or form body parameters.
+ *
+ * Response is a flat token JSON (not the app `{ success, data }` envelope)
+ * so standard OAuth clients (e.g. Supabase Custom Providers) can parse it.
  */
 export async function POST(req: NextRequest) {
   const corsHeaders = buildApiCorsHeaders(req, corsConfig);
@@ -98,7 +101,7 @@ export async function POST(req: NextRequest) {
     name: ROUTE_OAUTH_TOKEN,
     nextRequest: req,
     event_type: 'oauth-wrapper'
-  }).runWithJson(
+  }).runWithOAuthJson(
     async ({ parameters: { IOC } }) =>
       IOC(OAuthWrapperController).exchangeToken(
         await parseOAuthTokenRequest(req)

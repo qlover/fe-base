@@ -230,13 +230,16 @@ npm run dev:prod     # 生产配置态本地调试
 机器端点 **不带 locale 前缀**，且由 `src/proxy.ts` 跳过会话中间件：
 
 - `POST /oauth/token`
-- `GET /userinfo`
+- `GET /oauth/userinfo`
+- `POST /oauth/revoke`
+
+上述端点返回 **扁平 RFC JSON**（`runWithOAuthJson`），可被 Supabase Custom Auth Provider 等标准客户端消费。详见 [docs/oauth-as-supabase-custom-provider.md](./docs/oauth-as-supabase-custom-provider.md)。
 
 ### HTTP 端点一览
 
 | 端点 | 方法 | 说明 |
 | ---- | ---- | ---- |
-| `/[locale]/oauth/authorize` | GET | 授权同意页（需已登录会话） |
+| `/[locale]/oauth/authorize` | GET | 授权同意页（`LOGINED_PAGES`；未登录经中间件跳 `/auth/login?redirect=<完整 authorize URL>`，登录后回跳继续同意） |
 | `/api/oauth/verify` | POST | 邮箱密码登录，写入会话 + 上游凭证（JSON body：`email`, `password`） |
 | `/api/oauth/consent` | POST | 用户同意/拒绝，返回 `redirectUrl`（含 `code` 或 `error`） |
 | `/api/oauth/playground/validate` | POST | Playground：校验授权查询参数 |

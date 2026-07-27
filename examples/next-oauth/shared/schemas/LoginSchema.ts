@@ -27,9 +27,12 @@ export const loginWithProviderSchema = z.object({
 });
 
 export const loginWithProviderCallbackSchema = z.object({
-  code: z.string(),
+  code: z.string().optional(),
   next: z.string().optional(),
-  origin: z.string().optional()
+  origin: z.string().optional(),
+  error: z.string().optional(),
+  error_description: z.string().optional(),
+  error_code: z.string().optional()
 });
 
 export type LoginWithProviderCallbackSchema = z.infer<

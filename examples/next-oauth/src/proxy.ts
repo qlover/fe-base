@@ -45,6 +45,15 @@ export default async function proxy(request: NextRequest) {
     isAuthGuestOnlyPath(pathname) &&
     oauthSession.hasSessionFromRequest(request)
   ) {
+    // Prefer post-login return URL (e.g. OAuth authorize with full query).
+    const returnTo =
+      request.nextUrl.searchParams.get('redirect') ||
+      request.nextUrl.searchParams.get('return_to') ||
+      request.nextUrl.searchParams.get('returnUrl');
+    if (returnTo?.startsWith('/') && !returnTo.startsWith('//')) {
+      return NextResponse.redirect(new URL(returnTo, request.nextUrl.origin));
+    }
+
     const url = request.nextUrl.clone();
     // Keep locale prefix, e.g. /en/auth/login → /en
     const localeMatch = pathname.match(/^\/([^/]+)\/auth\//);
