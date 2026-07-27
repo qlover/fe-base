@@ -239,7 +239,7 @@ npm run dev:prod     # 生产配置态本地调试
 
 | 端点 | 方法 | 说明 |
 | ---- | ---- | ---- |
-| `/[locale]/oauth/authorize` | GET | 授权同意页（需已登录会话） |
+| `/[locale]/oauth/authorize` | GET | 授权同意页（`LOGINED_PAGES`；未登录经中间件跳 `/auth/login?redirect=<完整 authorize URL>`，登录后回跳继续同意） |
 | `/api/oauth/verify` | POST | 邮箱密码登录，写入会话 + 上游凭证（JSON body：`email`, `password`） |
 | `/api/oauth/consent` | POST | 用户同意/拒绝，返回 `redirectUrl`（含 `code` 或 `error`） |
 | `/api/oauth/playground/validate` | POST | Playground：校验授权查询参数 |

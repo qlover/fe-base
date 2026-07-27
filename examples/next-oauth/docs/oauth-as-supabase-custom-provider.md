@@ -43,6 +43,12 @@ Playground 使用 `readOAuthMachineJson` 解析上述端点。
 
 Authorization URL 建议带 locale：`/{locale}/oauth/authorize`；Token / Userinfo **无** locale。
 
+未登录用户打开 authorize 时，`src/proxy.ts` 会因 `LOGINED_PAGES` 含 `ROUTE_OAUTH_AUTHORIZE`，经 `redirectToPath` 跳到：
+
+`/{locale}/auth/login?redirect=/{locale}/oauth/authorize?client_id=...&...`
+
+密码登录后 `useReturnTo` 读 `redirect`，回到完整授权 URL 再同意。勿在未登录时直接渲染同意页（否则 consent 会报 `User session expired`）。
+
 ## 3. 消费方 SSO 回调错误处理
 
 `/api/callback/provider-login` 在只有 `error` / `error_description`（无 `code`）时应重定向到登录页并展示错误，避免 Zod 强制 `code: string` 误报。

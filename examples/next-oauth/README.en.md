@@ -129,7 +129,7 @@ cp .env.template .env
 
 | Endpoint | Method | Notes |
 | -------- | ------ | ----- |
-| `/[locale]/oauth/authorize` | GET | Consent UI (requires session) |
+| `/[locale]/oauth/authorize` | GET | Consent UI (`LOGINED_PAGES`; unauthenticated → `/auth/login?redirect=<full authorize URL>`, then resume consent) |
 | `/api/oauth/verify` | POST | Email/password login → session + stored upstream tokens |
 | `/api/oauth/consent` | POST | Approve/deny → `redirectUrl` with `code` or OAuth error |
 | `/oauth/token` | POST | Token endpoint (form body, optional HTTP Basic) |

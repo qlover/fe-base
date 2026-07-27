@@ -96,7 +96,10 @@ export const AUTH_ROUTES = [
 export const LOGINED_PAGES = [
   ROUTE_REQUEST_LOGS,
   ROUTE_DEVELOPER_APPS,
-  ROUTE_OAUTH_PLAYGROUND
+  ROUTE_OAUTH_PLAYGROUND,
+  // Consent requires an app session; gate here so unauthenticated users
+  // are sent to login with `?redirect=<full authorize URL>` via redirectToPath.
+  ROUTE_OAUTH_AUTHORIZE
 ] as const;
 
 /**
