@@ -23,6 +23,7 @@
     "paths": {
       "@qlover/code2markdown": ["./packages/code2markdown/src"],
       "@qlover/corekit-bridge": ["./packages/corekit-bridge/src/core"],
+      "@qlover/corekit-bridge/core": ["./packages/corekit-bridge/src/core"],
       "@qlover/corekit-bridge/build/*": ["./packages/corekit-bridge/src/build/*"],
       "@qlover/corekit-bridge/*": ["./packages/corekit-bridge/src/core/*"],
       "@qlover/corekit-node": ["./packages/corekit-node/src"],
