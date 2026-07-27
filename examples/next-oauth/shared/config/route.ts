@@ -71,6 +71,16 @@ export const OAUTH_MACHINE_ROUTES = [
   ROUTE_CALLBACK_EMAIL_LOGIN
 ] as const;
 
+/**
+ * OAuth endpoints mounted at `src/app/oauth/*` (no `[locale]` segment).
+ * next-intl must not rewrite these to `/zh/oauth/token` etc.
+ */
+export const OAUTH_LOCALE_AGNOSTIC_ROUTES = [
+  ROUTE_OAUTH_TOKEN,
+  ROUTE_OAUTH_REVOKE,
+  ROUTE_OAUTH_USERINFO
+] as const;
+
 /** Routes that are allowed without authentication (public routes). */
 export const AUTH_ROUTES = [
   ROUTE_HOME,
@@ -94,6 +104,16 @@ export const LOGINED_PAGES = [
  */
 export function isOAuthMachinePath(pathname: string): boolean {
   return OAUTH_MACHINE_ROUTES.some(
+    (route) => pathname === route || pathname.endsWith(route)
+  );
+}
+
+/**
+ * Returns true if pathname is a locale-agnostic OAuth endpoint
+ * (`/oauth/token`, `/oauth/revoke`, `/oauth/userinfo`).
+ */
+export function isOAuthLocaleAgnosticPath(pathname: string): boolean {
+  return OAUTH_LOCALE_AGNOSTIC_ROUTES.some(
     (route) => pathname === route || pathname.endsWith(route)
   );
 }

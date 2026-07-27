@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
-import { isAuthGuestOnlyPath, ROUTE_HOME } from '@config/route';
+import {
+  isAuthGuestOnlyPath,
+  isOAuthLocaleAgnosticPath,
+  ROUTE_HOME
+} from '@config/route';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { routing } from './i18n/routing';
@@ -12,6 +16,14 @@ import { routing } from './i18n/routing';
  * 3. 已登录访问 guest-only auth 页时，重定向到首页
  */
 export default async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // `/oauth/token|revoke|userinfo` live under `src/app/oauth/*` (no locale).
+  // Skip next-intl so POST /oauth/token is not redirected to /zh/oauth/token.
+  if (isOAuthLocaleAgnosticPath(pathname)) {
+    return NextResponse.next();
+  }
+
   // ---------- 第一步：处理国际化 ----------
   const localPathResponse = createMiddleware(routing)(request);
 
@@ -29,7 +41,6 @@ export default async function proxy(request: NextRequest) {
   }
 
   // ---------- 第三步：已登录用户不应再访问 login / register ----------
-  const pathname = request.nextUrl.pathname;
   if (
     isAuthGuestOnlyPath(pathname) &&
     oauthSession.hasSessionFromRequest(request)
@@ -50,6 +61,7 @@ export default async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/',
-    '/((?!api|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml|manifest.webmanifest).*)'
+    // Exclude App Router OAuth machine endpoints (no locale prefix).
+    '/((?!api|oauth/token|oauth/revoke|oauth/userinfo|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml|manifest.webmanifest).*)'
   ]
 };
