@@ -91,7 +91,7 @@ export function RoutePageLayout({
                 </LocaleLink>
               )}
               {headerSubtitle && (
-                <span className="hidden sm:inline text-sm text-secondary-text border-l border-primary-border pl-3 shrink-0">
+                <span className="max-sm:hidden inline text-sm text-secondary-text border-l border-primary-border pl-3 shrink-0">
                   {headerSubtitle}
                 </span>
               )}

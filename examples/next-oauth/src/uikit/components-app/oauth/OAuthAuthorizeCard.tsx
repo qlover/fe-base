@@ -173,10 +173,8 @@ export function OAuthAuthorizeCard({
             ))}
           </div>
           <div
-            className={clsx(
-              'mt-2 pl-5 text-xs text-secondary-text border-l-2 border-brand/40',
-              !extraOpen && 'hidden'
-            )}
+            hidden={!extraOpen}
+            className="mt-2 pl-5 text-xs text-secondary-text border-l-2 border-brand/40"
           >
             <p>{tt.extraPermNote}</p>
           </div>

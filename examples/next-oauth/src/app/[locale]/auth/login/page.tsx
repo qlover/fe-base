@@ -69,7 +69,7 @@ export default async function LoginPage(props: PageParamsProps) {
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
     >
-      <div className="hidden lg:flex bg-secondary lg:w-1/2 flex-col p-12">
+      <div className="max-lg:hidden flex bg-secondary lg:w-1/2 flex-col p-12">
         <span className="border-primary-border text-brand mb-4 inline-flex w-fit items-center rounded-full border bg-bg-container px-3 py-1 text-xs font-semibold tracking-wide uppercase">
           OAuth 2.0
         </span>
