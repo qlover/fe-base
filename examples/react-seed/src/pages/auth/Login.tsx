@@ -66,7 +66,7 @@ export default function LoginPage(_props: RouterRenderProps) {
       className="grid min-h-screen w-full lg:grid-cols-2"
     >
       <div
-        className="relative hidden overflow-hidden lg:block"
+        className="relative max-lg:hidden overflow-hidden block"
         style={{
           background:
             'linear-gradient(135deg, rgb(var(--color-brand) / 0.14) 0%, rgb(var(--color-brand) / 0.06) 40%, rgb(var(--color-brand) / 0.02) 100%)'

@@ -64,7 +64,7 @@ export default async function LoginPage(props: PageParamsProps) {
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
     >
-      <div className="hidden lg:flex bg-secondary lg:w-1/2 flex-col p-12">
+      <div className="max-lg:hidden flex bg-secondary lg:w-1/2 flex-col p-12">
         <p className="text-secondary-text mb-6 text-sm font-medium">
           {tt.badge}
         </p>

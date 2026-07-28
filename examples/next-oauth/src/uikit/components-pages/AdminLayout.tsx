@@ -189,7 +189,7 @@ export function AdminLayout({
             <Button
               variant="ghost"
               size="sm"
-              className="hidden md:inline-flex"
+              className="max-md:hidden inline-flex"
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               onClick={handleToggleDesktop}
             >
@@ -211,10 +211,10 @@ export function AdminLayout({
                 Admin
               </span>
             </LocaleLink>
-            <span className="bg-primary-border hidden h-4 w-px sm:block" />
+            <span className="bg-primary-border max-sm:hidden h-4 w-px block" />
             <span
               data-testid="admin-header-title"
-              className="text-secondary-text hidden truncate text-sm sm:inline"
+              className="text-secondary-text max-sm:hidden truncate text-sm inline"
             >
               {seoMetadata.title}
             </span>
@@ -232,7 +232,7 @@ export function AdminLayout({
         <aside
           data-testid="AdminLayoutSidebar"
           className={clsx(
-            'border-primary-border bg-secondary hidden h-full shrink-0 flex-col border-r transition-[width] duration-200 ease-out md:flex',
+            'border-primary-border bg-secondary max-md:hidden h-full shrink-0 flex-col border-r transition-[width] duration-200 ease-out flex',
             collapsed ? 'w-16' : 'w-56'
           )}
         >

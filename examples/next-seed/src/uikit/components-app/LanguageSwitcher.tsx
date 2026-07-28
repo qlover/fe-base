@@ -82,7 +82,7 @@ export function LanguageSwitcher() {
         aria-label={currentLocaleLabel}
       >
         <LanguageIcon className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="hidden sm:inline">{currentLocaleLabel}</span>
+        <span className="max-sm:hidden inline">{currentLocaleLabel}</span>
       </Button>
     </Dropdown>
   );

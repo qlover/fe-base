@@ -62,7 +62,7 @@ export default async function LoginPage(props: PageParamsProps) {
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
     >
-      <div className="hidden lg:flex bg-secondary lg:w-1/2 p-12 flex-col">
+      <div className="max-lg:hidden flex bg-secondary lg:w-1/2 p-12 flex-col">
         <h1 className="text-4xl font-bold text-primary-text mb-4">
           {tt.welcome}
         </h1>
