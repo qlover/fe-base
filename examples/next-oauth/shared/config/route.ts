@@ -23,6 +23,17 @@ export const ROUTE_REGISTER = '/auth/register' as const;
 export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
 /**
+ * Admin console home. Pages Router: `src/pages/[locale]/admin/index.tsx`.
+ * Entry gate: middleware via LOGINED_PAGES (not a page-level client auth wrapper).
+ */
+export const ROUTE_ADMIN = '/admin' as const;
+
+/**
+ * Admin users management. Pages Router: `src/pages/[locale]/admin/users.tsx`.
+ */
+export const ROUTE_ADMIN_USERS = '/admin/users' as const;
+
+/**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
  */
 export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
@@ -92,8 +103,21 @@ export const AUTH_ROUTES = [
   ROUTE_DEMO_UI
 ] as const;
 
-/** 需要登陆才能访问的页面 */
+/**
+ * Pages that require a valid session cookie (middleware entry gate).
+ *
+ * Auth layering:
+ * - Middleware ({@link hasSessionPath} + OAuthSessionService) is the only
+ *   page-entry gate; unauthenticated users are redirected to login.
+ * - Client `useUserAuth` is for local UI only (auth buttons, admin visibility).
+ * - Do not wrap these pages in a fullscreen client auth gate.
+ *
+ * Router split: App Router = public / SSG-oriented; Pages Router = logged-in
+ * CSR consoles (admin/*, developer/apps). Keep new console routes listed here.
+ */
 export const LOGINED_PAGES = [
+  ROUTE_ADMIN,
+  ROUTE_ADMIN_USERS,
   ROUTE_REQUEST_LOGS,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_PLAYGROUND,
@@ -183,8 +207,7 @@ export function isAuthCallbackPath(pathname: string): boolean {
 }
 
 /**
- * 是否需要登录才能访问的页面
- * @param pathname
+ * Whether the path requires a logged-in session (middleware page-entry gate).
  */
 export function hasSessionPath(pathname: string): boolean {
   return LOGINED_PAGES.some(

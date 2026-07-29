@@ -25,17 +25,18 @@ import {
   COMMON_THEME_PINK
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { themeConfig } from '@config/theme';
+import { themeConfig, type SupportedTheme } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
-import type { DefaultTheme } from '@wrksz/themes/client';
 
 const { supportedThemes, storageKey } = themeConfig;
-const themesList = ['system', ...supportedThemes];
+const themesList = ['system', ...supportedThemes] as const;
 const iconClassName = 'h-4 w-4';
 
+type ThemeMenuKey = SupportedTheme | 'system';
+
 const colorMap: Record<
-  string,
+  ThemeMenuKey,
   {
     i18nkey: string;
     selectedColor: string;
@@ -74,26 +75,33 @@ const colorMap: Record<
   }
 };
 
+/**
+ * Theme menu: selection is the preference (`system` | `light` | `dark` | …).
+ * DOM rendering still follows `resolvedTheme` (system → OS dark/light).
+ */
 export function ThemeSwitcher() {
-  const { theme: currentTheme, resolvedTheme, setTheme } = useTheme();
+  const { theme: currentTheme, setTheme } = useTheme<SupportedTheme>();
   const mounted = useMountedClient();
   const cookieStorage = useIOC(I.CookieStorage);
   const t = useWarnTranslations();
 
+  const selectedTheme: ThemeMenuKey =
+    mounted && currentTheme && currentTheme in colorMap
+      ? currentTheme
+      : 'system';
+
   useEffect(() => {
-    if (resolvedTheme) {
-      cookieStorage.setItem(storageKey, resolvedTheme);
+    if (!mounted || !currentTheme) {
+      return;
     }
-  }, [resolvedTheme, cookieStorage]);
+    cookieStorage.setItem(storageKey, currentTheme);
+  }, [mounted, currentTheme, cookieStorage]);
 
   const items = useMemo(() => {
     return themesList.map((themeName) => {
       const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =
-        colorMap[themeName] || colorMap.light;
-
-      const isCurrentTheme =
-        currentTheme === themeName ||
-        (themeName === resolvedTheme && currentTheme === 'system');
+        colorMap[themeName];
+      const isSelected = selectedTheme === themeName;
 
       return {
         key: themeName,
@@ -101,10 +109,10 @@ export function ThemeSwitcher() {
           <span
             className={clsx(
               'flex items-center gap-2',
-              isCurrentTheme ? selectedColor : normalColor
+              isSelected ? selectedColor : normalColor
             )}
           >
-            {isCurrentTheme ? (
+            {isSelected ? (
               <SelectedIcon className={iconClassName} />
             ) : (
               <Icon className={iconClassName} />
@@ -114,28 +122,21 @@ export function ThemeSwitcher() {
         )
       };
     });
-  }, [currentTheme, resolvedTheme, t]);
+  }, [selectedTheme, t]);
 
-  const ThemeIcon =
-    mounted && resolvedTheme === 'dark' ? MoonOutlineIcon : SunOutlineIcon;
+  const ThemeIcon = colorMap[selectedTheme].Icon;
 
-  const themeAriaLabel = useMemo(() => {
-    const themeKey =
-      mounted && resolvedTheme && colorMap[resolvedTheme]
-        ? resolvedTheme
-        : 'system';
-    return t(colorMap[themeKey].i18nkey);
-  }, [mounted, resolvedTheme, t]);
+  const themeAriaLabel = t(colorMap[selectedTheme].i18nkey);
 
   return (
     <Dropdown
       data-testid="ThemeSwitcherDropdown"
       items={items}
-      selectedKeys={mounted && resolvedTheme ? [resolvedTheme] : []}
+      selectedKeys={mounted ? [selectedTheme] : []}
       placement="bottom-end"
       onSelect={(key) => {
         if (!mounted) return;
-        setTheme(key as DefaultTheme);
+        setTheme(key as SupportedTheme | 'system');
       }}
     >
       <Button

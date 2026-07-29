@@ -1,6 +1,4 @@
 import dynamic from 'next/dynamic';
-import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
-import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { defaultNavItems } from '@config/adminNavs';
 import { i18nConfig } from '@config/i18n';
@@ -23,15 +21,17 @@ interface AdminIndexProps {
 
 const namespace = 'admin_home';
 
+/**
+ * Admin home (Pages Router / CSR).
+ * Entry auth is middleware via LOGINED_PAGES.
+ */
 export default function AdminIndex({}: AdminIndexProps) {
   const seoMetadata = useI18nMapping(admin18n);
 
   return (
-    <WithUserAuth failedElement={<UserAuthFailed />}>
-      <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
-        <div>{seoMetadata.description}</div>
-      </AdminLayout>
-    </WithUserAuth>
+    <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
+      <div>{seoMetadata.description}</div>
+    </AdminLayout>
   );
 }
 

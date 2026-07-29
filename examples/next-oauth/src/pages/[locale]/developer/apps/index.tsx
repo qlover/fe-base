@@ -1,10 +1,7 @@
-import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
-import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { AppRoutePagePages } from '@/uikit/components-app/AppRoutePagePages';
-import type { DeveloperAppsPageProps } from '@/uikit/components-app/developer/apps/DeveloperAppsPage';
-import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
+import { DeveloperAppsPageComponent } from '@/uikit/components-app/developer/apps/DeveloperAppsPage';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
@@ -14,14 +11,6 @@ import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { OAuthClientListItem } from '@qlover/oauth-wrapper';
 import type { GetStaticPropsContext } from 'next';
 
-const DeveloperAppsPageComponent = dynamic<DeveloperAppsPageProps>(
-  () =>
-    import('@/uikit/components-app/developer/apps/DeveloperAppsPage').then(
-      (mod) => mod.DeveloperAppsPageComponent
-    ),
-  { ssr: false }
-);
-
 interface DeveloperAppsProps {
   messages: Record<string, string>;
   initialApps: OAuthClientListItem[];
@@ -29,6 +18,10 @@ interface DeveloperAppsProps {
 
 const pageNamespaces = ['developer_apps', 'page_home'] as const;
 
+/**
+ * Developer apps console (Pages Router / CSR).
+ * Entry auth is middleware via LOGINED_PAGES; page renders shell immediately.
+ */
 export default function DeveloperApps({ initialApps }: DeveloperAppsProps) {
   const i18nInterface = useMemo(() => {
     return {
@@ -39,24 +32,20 @@ export default function DeveloperApps({ initialApps }: DeveloperAppsProps) {
   const seoMetadata = useI18nMapping(i18nInterface);
 
   return (
-    <WithUserAuth
-      failedElement={({ error }) => <UserAuthFailed error={error} />}
+    <AppRoutePagePages
+      tt={{
+        title: seoMetadata.consoleSubtitle,
+        adminTitle: seoMetadata.adminTitle
+      }}
+      headerTitleClassName="text-brand"
+      showAdminButton={false}
+      showAuthButton
+      authButtonShowLogoutLabel
+      mainProps={{ className: 'flex flex-1 flex-col bg-primary' }}
     >
-      <AppRoutePagePages
-        tt={{
-          title: seoMetadata.consoleSubtitle,
-          adminTitle: seoMetadata.adminTitle
-        }}
-        headerTitleClassName="text-brand"
-        showAdminButton={false}
-        showAuthButton
-        authButtonShowLogoutLabel
-        mainProps={{ className: 'flex flex-1 flex-col bg-primary' }}
-      >
-        <ClientSeo i18nInterface={seoMetadata} />
-        <DeveloperAppsPageComponent initialApps={initialApps} />
-      </AppRoutePagePages>
-    </WithUserAuth>
+      <ClientSeo i18nInterface={seoMetadata} />
+      <DeveloperAppsPageComponent initialApps={initialApps} />
+    </AppRoutePagePages>
   );
 }
 

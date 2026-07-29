@@ -1,31 +1,22 @@
-import { ClientThemeProvider } from '@wrksz/themes/client';
-import dynamic from 'next/dynamic';
+import { ThemeProvider } from '@wrksz/themes';
 import { NextIntlClientProvider } from 'next-intl';
 import '@/styles/pages.css';
+import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
 import type { PagesRouterProps } from '@interfaces/PagesRouter';
 
 /**
- * 动态导入 ClientRootProvider，禁用 SSR，确保只在客户端渲染
+ * Pages Router app shell for logged-in CSR consoles (admin/*, developer/*).
  *
- * 为什么需要禁用 SSR？
- * 1. ClientRootProvider / DialogUIHost use browser-only IOC hooks
- * 2. Theme providers may touch localStorage / window during init
+ * Entry auth is middleware (LOGINED_PAGES); this shell only provides IOC,
+ * i18n, theme, and client bootstrap.
  *
- * Pages Router uses dynamic import with ssr: false so the shell stays client-only.
+ * Use `ThemeProvider` from `@wrksz/themes` (not `/client`) so the anti-FOUC
+ * inline script runs before paint — App→Pages navigations otherwise flash
+ * default theme then restore `fe_theme` from storage.
  */
-const ClientRootProvider = dynamic(
-  () =>
-    import('@/uikit/components/ClientRootProvider').then(
-      (mod) => mod.ClientRootProvider
-    ),
-  {
-    ssr: false
-  }
-);
-
 export default function App({
   Component,
   pageProps,
@@ -36,18 +27,19 @@ export default function App({
   return (
     <IOCProvider>
       <NextIntlClientProvider locale={locale} messages={pageProps.messages}>
-        <ClientThemeProvider
+        <ThemeProvider
           themes={themeConfig.supportedThemes as unknown as string[]}
           attribute={themeConfig.domAttribute}
           defaultTheme={themeConfig.defaultTheme}
           enableSystem={themeConfig.enableSystem}
           enableColorScheme={false}
           storageKey={themeConfig.storageKey}
+          disableTransitionOnChange
         >
           <ClientRootProvider>
             <Component {...pageProps} />
           </ClientRootProvider>
-        </ClientThemeProvider>
+        </ThemeProvider>
       </NextIntlClientProvider>
     </IOCProvider>
   );

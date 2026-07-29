@@ -10,6 +10,7 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
+import { useLocale } from 'next-intl';
 import {
   useCallback,
   useEffect,
@@ -17,9 +18,9 @@ import {
   useState,
   type FormEvent
 } from 'react';
-import { Link } from '@/i18n/routing';
 import type { DialogHandler } from '@/impls/DialogHandler';
 import { Button, buttonClassName } from '@/uikit/components/Button';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import {
   DeveloperConfirmDialog,
   type DeveloperConfirmOptions
@@ -73,10 +74,11 @@ async function copyText(text: string) {
 export function DeveloperAppsPageComponent({
   initialApps
 }: DeveloperAppsPageProps) {
+  const locale = useLocale();
   const tt = useI18nMapping(developerAppsI18n);
   const dialogHandler = useIOC(I.DialogHandler) as DialogHandler;
   const [apps, setApps] = useState<OAuthClientListItem[]>(initialApps);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialApps.length === 0);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingApp, setEditingApp] = useState<OAuthClientListItem | null>(
@@ -455,13 +457,15 @@ export function DeveloperAppsPageComponent({
                   </h1>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
-                  <Link
+                  <LocaleLink
                     href={ROUTE_OAUTH_PLAYGROUND}
+                    locale={locale}
+                    title={tt.playgroundLink || 'OAuth playground'}
                     className={buttonClassName({ variant: 'secondary' })}
                   >
                     <BeakerIcon className="h-4 w-4" />
                     {tt.playgroundLink || 'OAuth playground'}
-                  </Link>
+                  </LocaleLink>
                   <Button variant="primary" onClick={openCreateModal}>
                     <PlusIcon className="h-4 w-4" />
                     {tt.createButton || 'Create New App'}
