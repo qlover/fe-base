@@ -26,6 +26,12 @@ const userSelector = (
   state: UserStateInterface<UserSchema, UserCredential>
 ): UserSchema | undefined => state.result as UserSchema | undefined;
 
+/**
+ * Client user-session selectors for local UI (auth button, admin affordances).
+ *
+ * Not a page-entry gate — middleware + LOGINED_PAGES owns that. Prefer reading
+ * `loading` / `success` only to adapt local chrome, never to blank the page.
+ */
 export function useUserAuth() {
   const userService = useIOC(I.UserServiceInterface);
 

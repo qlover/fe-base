@@ -11,13 +11,13 @@ import { LocaleLink } from './LocaleLink';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 export interface UserAuthFailedProps {
-  /** Error from auth check, optional when used as failedElement in WithUserAuth */
+  /** Optional error detail when session/API auth fails */
   error?: unknown;
 }
 
 /**
- * Shown when user auth check fails (e.g. not signed in or session invalid).
- * Renders a centered message and a link to the login page.
+ * Fallback UI when client-side user state is unavailable or invalid.
+ * Page entry remains middleware; prefer redirect-on-401 for API failures.
  */
 export function UserAuthFailed({ error }: UserAuthFailedProps) {
   const t = useWarnTranslations();

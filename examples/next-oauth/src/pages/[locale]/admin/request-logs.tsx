@@ -8,9 +8,7 @@ import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { RequestLogsApi } from '@/impls/appApi/RequestLogsApi';
 import { Button } from '@/uikit/components/Button';
-import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
-import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
 import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -125,36 +123,34 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
 
   return (
     <PageI18nProvider value={seoMetadata}>
-      <WithUserAuth failedElement={<UserAuthFailed />}>
-        <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
-          <div>
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h1 className="text-2xl font-semibold text-primary-text">
-                  {seoMetadata.title}
-                </h1>
-                <p className="text-secondary-text mt-2">
-                  {seoMetadata.description}
-                </p>
-              </div>
-              <Button
-                variant="danger"
-                disabled={clearing || loading || total === 0}
-                onClick={handleClearLogs}
-              >
-                <TrashIcon className="h-4 w-4" />
-                {seoMetadata.clear}
-              </Button>
+      <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
+        <div>
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-semibold text-primary-text">
+                {seoMetadata.title}
+              </h1>
+              <p className="text-secondary-text mt-2">
+                {seoMetadata.description}
+              </p>
             </div>
-            <RequestLogsTable
-              rows={rows}
-              locale={locale}
-              loading={loading || clearing}
-              pagination={tablePagination}
-            />
+            <Button
+              variant="danger"
+              disabled={clearing || loading || total === 0}
+              onClick={handleClearLogs}
+            >
+              <TrashIcon className="h-4 w-4" />
+              {seoMetadata.clear}
+            </Button>
           </div>
-        </AdminLayout>
-      </WithUserAuth>
+          <RequestLogsTable
+            rows={rows}
+            locale={locale}
+            loading={loading || clearing}
+            pagination={tablePagination}
+          />
+        </div>
+      </AdminLayout>
     </PageI18nProvider>
   );
 }
