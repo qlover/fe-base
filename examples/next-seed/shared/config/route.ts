@@ -19,7 +19,9 @@ export const ROUTE_CALLBACK_EMAIL_LOGIN = '/callback/email-login' as const;
 
 export const ROUTE_HOME = '/' as const;
 
-/** Simple admin dashboard template (Pages Router). */
+/** Simple admin dashboard template (Pages Router).
+ * Entry gate: middleware via LOGINED_PAGES (not a page-level client auth wrapper).
+ */
 export const ROUTE_ADMIN = '/admin' as const;
 
 /** Routes that skip locale middleware (callbacks). */
@@ -33,7 +35,14 @@ export const AUTH_ROUTES = [
   ROUTE_CALLBACK_EMAIL_LOGIN
 ] as const;
 
-/** Pages that require login. */
+/** Pages that require a valid session cookie (middleware entry gate).
+ *
+ * Auth layering:
+ * - Middleware ({@link hasSessionPath} + SessionService) is the only
+ *   page-entry gate; unauthenticated users are redirected to login.
+ * - Client `useUserAuth` is for local UI only (auth buttons, admin visibility).
+ * - Do not wrap these pages in a fullscreen client auth gate.
+ */
 export const LOGINED_PAGES = [ROUTE_ADMIN] as const;
 
 /** Auth pages for unauthenticated users only (signed-in users should redirect away). */

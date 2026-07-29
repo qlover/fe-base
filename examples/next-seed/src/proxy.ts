@@ -6,10 +6,14 @@ import { SessionService } from '@server/services/SessionService';
 import { routing } from './i18n/routing';
 
 /**
- * 中间件主逻辑
- * 1. 处理国际化路径前缀（使用 next-intl）
- * 2. 检查是否需要登录，若未登录则重定向到登录页
- * 3. 已登录访问 guest-only auth 页时，重定向到首页
+ * Middleware main logic
+ *
+ * Auth layering:
+ * 1. next-intl locale prefix handling
+ * 2. Page-entry gate for LOGINED_PAGES via SessionService
+ * 3. Redirect signed-in users away from guest-only auth pages
+ *
+ * Client `useUserAuth` is not an entry gate — only local UI / user store.
  */
 export default async function proxy(request: NextRequest) {
   // ---------- 第一步：处理国际化 ----------

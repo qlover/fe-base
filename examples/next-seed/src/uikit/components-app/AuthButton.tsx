@@ -4,8 +4,11 @@ import { AuthButtonUI } from './AuthButtonUI';
 import { useUserAuth } from '../hook/useUserAuth';
 
 /**
- * Client component: uses user store from bootstrap (one session fetch in restoreUserService).
- * Avoids ServerAuth/cookies on the server so pages using this can be statically generated.
+ * Header auth control: local UI only (login / logout).
+ *
+ * Page entry is gated by middleware; this reads the client user store from
+ * bootstrap (`restoreUserService`) and shows a compact skeleton while loading
+ * so the rest of the page is never blocked.
  */
 export function AuthButton(props: {
   loginOnly?: boolean;
