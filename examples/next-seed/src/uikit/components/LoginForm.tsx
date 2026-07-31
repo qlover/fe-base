@@ -1,18 +1,18 @@
 'use client';
 
+import { useReturnTo } from '@qlover/next-kit/client';
+import { LoginValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import { LoginValidator } from '@shared/validators/LoginValidator';
 import { URLParamsKeys } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_HOME, ROUTE_REGISTER } from '@config/route';
-import type { LoginSchema } from '@schemas/LoginSchema';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
-import { useReturnTo } from '../hook/useReturnTo';
+import type { LoginSchema } from '@qlover/next-kit/common';
 
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';

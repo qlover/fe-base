@@ -2,11 +2,11 @@
  * Static (no cookies/headers) helpers for App Router page params.
  * Use in layout and pages that should be statically generated.
  */
+import { TranslateI18nUtil } from '@qlover/next-kit/common';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { filterMessagesByNamespace } from '@/i18n/loadMessages';
-import { TranslateI18nUtil } from '@/impls/TranslateI18nUtil';
 import { i18nConfig } from '@config/i18n';
-import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
+import type { PageI18nInterface } from '@qlover/next-kit/common';
 
 export interface PageParamsType {
   locale?: string;
@@ -40,8 +40,8 @@ export async function getI18nInterface<T extends PageI18nInterface>(
   _namespace?: string
 ): Promise<T> {
   const t = await getTranslations({ locale });
-  return TranslateI18nUtil.translate<T>(
-    i18nInterface,
+  return TranslateI18nUtil.translate(
+    i18nInterface as T & Record<string, unknown>,
     TranslateI18nUtil.overrideTranslateT(t)
   );
 }

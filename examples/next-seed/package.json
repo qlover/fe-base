@@ -30,6 +30,7 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
+    "@qlover/next-kit": "workspace:*",
     "@qlover/slice-store-react": "^1.4.2",
     "@qlover/tailwind-theme": "workspace:*",
     "@supabase/postgrest-js": "^2.87.1",

@@ -1,15 +1,15 @@
 'use client';
 
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
+import { Tooltip } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback } from 'react';
-import { Button } from '@/uikit/components/Button';
 import {
   COMMON_LOGOUT_DIALOG_CONTENT,
   COMMON_LOGOUT_DIALOG_TITLE
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { Tooltip } from '../components/Tooltip';
 import { useI18nMapping } from '../hook/useI18nMapping';
 import { useIOC } from '../hook/useIOC';
 

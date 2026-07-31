@@ -7,20 +7,20 @@ import {
   UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
+import { ClientSeo } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useState, type ComponentType } from 'react';
-import { Button } from '@/uikit/components/Button';
 import { BrandMark } from '@/uikit/components/icons';
 import type { NavItemInterface } from '@config/adminNavs';
-import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { ClientSeo } from '../components/ClientSeo';
 import { LocaleLink } from '../components/LocaleLink';
 import { LogoutButton } from '../components-app/LogoutButton';
 import { ThemeSwitcher } from '../components-app/ThemeSwitcher';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
+import type { PageI18nInterface } from '@qlover/next-kit/common';
 
 export interface AdminLayoutTT {
   title: string;

@@ -1,51 +1,26 @@
-import { isPlainObject, pick } from 'lodash-es';
-import { NextResponse, type NextRequest } from 'next/server';
+import {
+  ApiServer,
+  createLogger,
+  isApiServerContext,
+  type ApiServerContext,
+  type BootstrapServerPlugin
+} from '@qlover/next-kit/server';
+import { type NextRequest } from 'next/server';
 import { I } from '@config/ioc-identifiter';
-import type {
-  AppApiResult,
-  AppApiSuccessInterface
-} from '@interfaces/AppApiInterface';
-import { BootstrapServer } from '@server/BootstrapServer';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
-import { NextApiHandler } from './utils/NextApiHandler';
-import type {
-  BootstrapServerContextOptions,
-  BootstrapServerPlugin
-} from './interfaces/BootstrapServerInterface';
+import { ServerConfig } from './ServerConfig';
+import { createServerIoc } from './serverIoc';
+import type { NextSeedServerIocMap } from './BootstrapServer';
 import type { ServerContextInterface } from './interfaces/ServerContextInterface';
-import type { ResultHandlerInterface } from './utils/NextApiHandler';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
-import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 
-export type NextApiServerContext = {
-  name?: string;
-  nextRequest?: NextRequest;
-  /**
-   * @default 'http.request'
-   */
-  event_type: string;
-};
+export type NextApiServerContext = ApiServerContext;
 
-type RunWithInit = {
-  successHeaders?: HeadersInit;
-  errorHeaders?: HeadersInit;
-  httpStatus?: number;
-};
-type RunWithTask<Result> = ExecutorAsyncTask<
-  Result | AppApiResult<Result>,
-  BootstrapServerContextOptions
->;
-
-function isNextApiServerContext(
-  value: unknown
-): value is Partial<NextApiServerContext> {
-  return isPlainObject(value);
-}
-export class NextApiServer extends BootstrapServer {
-  protected resultHandler: ResultHandlerInterface;
-  protected serverContext: ServerContextInterface;
-  protected nextRequest?: NextRequest;
-
+/**
+ * App Next.js API server: wires ServerConfig + IOC, resolves ServerContext,
+ * and registers nextApiServerBackstop.
+ */
+export class NextApiServer extends ApiServer<NextSeedServerIocMap> {
   constructor(name?: string, nextRequest?: NextRequest);
   constructor(context?: Partial<NextApiServerContext>);
 
@@ -53,121 +28,46 @@ export class NextApiServer extends BootstrapServer {
     nameOrContext?: string | Partial<NextApiServerContext>,
     nextRequest?: NextRequest
   ) {
-    let context: NextApiServerContext;
-    if (isNextApiServerContext(nameOrContext)) {
-      const { name } = nameOrContext ?? {};
+    const serverConfig = new ServerConfig();
 
-      super(name);
-      context = {
-        ...nameOrContext,
-        event_type: 'http.request'
-      };
-    } else {
-      super(nameOrContext);
-      context = {
-        name: nameOrContext,
-        nextRequest,
-        event_type: 'http.request'
-      };
-    }
-    this.nextRequest = context.nextRequest;
-    this.serverContext = this.IOC(I.ServerContextInterface);
-    this.resultHandler = new NextApiHandler(this.logger, this.serverContext);
+    if (isApiServerContext(nameOrContext)) {
+      const name = nameOrContext.name ?? serverConfig.name;
+      const logger = createLogger(name, serverConfig);
+      const ioc = createServerIoc(logger, serverConfig);
 
-    this.serverContext.reset({
-      name: context.name,
-      uid: this.root.uuid,
-      event_type: context.event_type
-    });
-  }
-
-  public async run<Result>(
-    task?: ExecutorAsyncTask<
-      Result | AppApiResult<Result>,
-      BootstrapServerContextOptions
-    >
-  ): Promise<AppApiResult<Result>> {
-    if (this.nextRequest) {
-      this.serverContext.changeState({ request: this.nextRequest });
-    }
-
-    const result = await this.execNoError(task);
-
-    const envelope = this.resultHandler.handler<Result>(
-      result,
-      this.serverContext
-    );
-
-    return envelope;
-  }
-
-  protected returnJson<Result>(
-    result: AppApiResult<Result>,
-    init?: RunWithInit
-  ): NextResponse {
-    const contextHttpStatus = this.serverContext.getState('httpStatus');
-
-    if (!result.success) {
-      return NextResponse.json(this.getSafeAppApiResult(result), {
-        status: contextHttpStatus ?? 400,
-        headers: init?.errorHeaders
+      super({
+        name,
+        logger,
+        ioc,
+        nextRequest: nameOrContext.nextRequest,
+        event_type: nameOrContext.event_type ?? 'http.request'
       });
+      return;
     }
 
-    return NextResponse.json(this.getSafeAppApiResult(result), {
-      headers: init?.successHeaders
-    });
-  }
+    const name = nameOrContext ?? serverConfig.name;
+    const logger = createLogger(name, serverConfig);
+    const ioc = createServerIoc(logger, serverConfig);
 
-  public async runWithJson<Result>(
-    task?: RunWithTask<Result>,
-    init?: RunWithInit
-  ): Promise<NextResponse> {
-    const result = await this.run(task);
-    return this.returnJson(result, init);
+    super({
+      name,
+      logger,
+      ioc,
+      nextRequest,
+      event_type: 'http.request'
+    });
   }
 
   /**
-   * 支持在运行时重定向接口
-   *
-   * 如果没有发生重定向，则会默认返回 json
-   *
-   * @param task
-   * @param init
-   * @returns
+   * @override
    */
-  public async runWithRedirect<Result>(
-    task?: RunWithTask<Result>,
-    init?: RunWithInit
-  ): Promise<NextResponse> {
-    const result = await this.run(task);
-
-    const contextHttpStatus = this.serverContext.getState('httpStatus');
-
-    const redirectUrl = this.serverContext.getState('redirectUrl');
-    if (redirectUrl) {
-      return NextResponse.redirect(redirectUrl, {
-        status: contextHttpStatus ?? 307,
-        headers: init?.errorHeaders
-      });
-    }
-
-    return this.returnJson(result, init);
+  protected resolveServerContext(): ServerContextInterface {
+    return this.IOC(I.ServerContextInterface);
   }
 
-  protected getSafeAppApiResult<T>(result: AppApiResult<T>): AppApiResult<T> {
-    return pick(result, [
-      'success',
-      'id',
-      'requestId',
-      'message',
-      'data'
-    ]) as AppApiSuccessInterface<T>;
-  }
-
-  public override getPlugins(
+  public getPlugins(
     _seedConfig: SeedConfigInterface
-  ): BootstrapServerPlugin[] {
+  ): BootstrapServerPlugin<NextSeedServerIocMap>[] {
     const plugins = super.getPlugins(_seedConfig);
     return [...plugins, nextApiServerBackstop];
   }

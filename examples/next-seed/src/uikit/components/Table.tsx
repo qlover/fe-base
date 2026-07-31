@@ -1,9 +1,9 @@
 'use client';
 
+import { Button } from '@qlover/next-kit/client';
+import { Loading } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { type Key, type ReactNode } from 'react';
-import { Button } from '@/uikit/components/Button';
-import { Loading } from '@/uikit/components/Loading';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { adminTableI18n } from '@config/i18n-mapping/admin18n';
 

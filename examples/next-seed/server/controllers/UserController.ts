@@ -1,26 +1,26 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { Base64Serializer } from '@qlover/fe-corekit/serializer';
-import { z } from 'zod';
-import { inject, injectable } from '@shared/container';
-import { StringEncryptor } from '@shared/StringEncryptor';
-import { LoginValidator } from '@shared/validators/LoginValidator';
-import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
+import { StringEncryptor } from '@qlover/next-kit/common';
+import { LoginValidator } from '@qlover/next-kit/common';
 import {
   loginWithProviderCallbackSchema,
   loginWithProviderSchema,
   type LoginSchema
-} from '@schemas/LoginSchema';
-import type { UserSchema } from '@schemas/UserSchema';
+} from '@qlover/next-kit/common';
+import { ResultHandlerContext } from '@qlover/next-kit/server';
+import { z } from 'zod';
+import { inject, injectable } from '@shared/container';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { AuthUserService } from '@server/services/AuthUserService';
-import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type { SignOtpResult } from '../interfaces/AuthTypes';
 import type {
   UserLoginContext,
   UserServiceInterface
 } from '../interfaces/UserServiceInterface';
+import type { UserSchema } from '@qlover/next-kit/common';
+import type { ValidatorInterface } from '@qlover/next-kit/common';
 
 /** Local replacements for the removed `@qlover/oauth-wrapper` OTP request schemas. */
 const signWithPhoneOtpSchema = z.object({

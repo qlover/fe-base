@@ -10,7 +10,12 @@ export const i18nConfig = {
   supportedLngs: ['en', 'zh'] as const,
   localeDetection: true,
   defaultNamespaces: ['common', 'api'],
-  storageKey: 'NEXT_LOCALE'
+  storageKey: 'NEXT_LOCALE',
+  /**
+   * Required for Pages Router `NextIntlClientProvider` (no RSC inheritance).
+   * Keeps SSR/CSR date formatting aligned and avoids ENVIRONMENT_FALLBACK.
+   */
+  timeZone: 'Asia/Shanghai'
 } as const;
 
 export type LocaleType = (typeof i18nConfig.supportedLngs)[number];

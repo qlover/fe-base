@@ -1,5 +1,4 @@
 import type { LoginProviderType } from '@config/common';
-import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   SignOtpResult,
   SignWithOtpParams
@@ -8,6 +7,7 @@ import type {
   UserService as CorekitBridgeUserServiceInterface,
   UserServiceGateway
 } from '@qlover/corekit-bridge';
+import type { UserCredential, UserSchema } from '@qlover/next-kit/common';
 
 export type { SignOtpResult, SignWithOtpParams };
 

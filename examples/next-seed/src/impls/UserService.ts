@@ -1,7 +1,6 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
-import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   SignOtpResult,
   SignWithOtpParams,
@@ -14,6 +13,7 @@ import type {
   SliceStoreAdapter,
   UserStateInterface
 } from '@qlover/corekit-bridge';
+import type { UserCredential, UserSchema } from '@qlover/next-kit/common';
 
 /** Mirrors {@link UserRole} without importing the Zod-backed schema module. */
 const USER_ROLES = new Set([0, 1]);

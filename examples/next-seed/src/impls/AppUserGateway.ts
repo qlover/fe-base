@@ -2,7 +2,6 @@ import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit/request';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
-import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
   UserApiLoginTransaction,
@@ -21,6 +20,7 @@ import {
   AppApiRequesterContext
 } from './appApi/AppApiRequester';
 import type { GatewayResult, LoginParams } from '@qlover/corekit-bridge';
+import type { UserCredential, UserSchema } from '@qlover/next-kit/common';
 
 /**
  * UserApi

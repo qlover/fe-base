@@ -1,4 +1,9 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { LoginWithProviderCallbackSchema } from '@qlover/next-kit/common';
+import { UserRole, userSchema, type UserSchema } from '@qlover/next-kit/common';
+import { ResultHandlerContext } from '@qlover/next-kit/server';
+import { PasswordEncrypt } from '@qlover/next-kit/server';
+import { SupabaseRepo } from '@qlover/next-kit/server';
 import { isEmpty } from 'lodash-es';
 import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
@@ -9,8 +14,6 @@ import {
   API_USER_NOT_FOUND
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
-import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
-import { UserRole, userSchema, type UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { AuthProviderInterface } from '@server/interfaces/AuthProviderInterface';
@@ -19,9 +22,6 @@ import type {
   SignWithOtpSchema,
   VerifyOtpParams
 } from '@server/interfaces/AuthTypes';
-import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
-import { ResultHandlerContext } from '@server/utils/NextApiHandler';
-import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserLoginContext,
@@ -250,6 +250,10 @@ export class AuthUserService
     query: LoginWithProviderCallbackSchema
   ): Promise<ResultHandlerContext> {
     const supabase = await this.supabaseRepo.getSupabase();
+
+    if (!query.code) {
+      throw new ExecutorError(API_NOT_AUTHORIZED, 'Missing OAuth code');
+    }
 
     const result = await supabase.auth.exchangeCodeForSession(query.code);
 

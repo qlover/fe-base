@@ -2,8 +2,8 @@
 import { ColorFormatter } from '@qlover/corekit-bridge';
 import { JSONSerializer } from '@qlover/fe-corekit/serializer';
 import { Logger, ConsoleHandler } from '@qlover/logger';
+import { DialogHandler } from '@qlover/next-kit/client';
 import { AppConfig } from '@/impls/AppConfig';
-import { DialogHandler } from '@/impls/DialogHandler';
 import { loggerStyles } from '@config/common';
 
 export const appConfig = new AppConfig();

@@ -1,9 +1,9 @@
 'use client';
 
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from '@/uikit/components/Button';
 import { ROUTE_ADMIN } from '@config/route';
 import type { ReactNode } from 'react';
 

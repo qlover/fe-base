@@ -17,7 +17,17 @@ async function loadLocaleFromFile(
     throw new Error(`Unsupported locale: ${locale}`);
   }
   const mod = await loader();
-  return mod.default;
+  const base = mod.default;
+
+  try {
+    const nextKitMod =
+      locale === 'zh'
+        ? await import('@locales/next_kit.zh.json')
+        : await import('@locales/next_kit.en.json');
+    return { ...base, ...nextKitMod.default };
+  } catch {
+    return base;
+  }
 }
 
 /**

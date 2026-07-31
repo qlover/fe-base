@@ -1,4 +1,4 @@
-import type { UserSchema } from '@schemas/UserSchema';
+import type { UserSchema } from '@qlover/next-kit/common';
 
 export interface ServerAuthInterface {
   setAuth(credential_token: string): Promise<void>;

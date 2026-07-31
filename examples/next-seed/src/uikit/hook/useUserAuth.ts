@@ -1,9 +1,9 @@
 import { AsyncStoreStatus } from '@qlover/corekit-bridge';
-import { useStore } from '@/uikit/hook/useStore';
+import { useStore } from '@qlover/next-kit/client';
 import { I } from '@config/ioc-identifiter';
-import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import { useIOC } from './useIOC';
 import type { UserStateInterface } from '@qlover/corekit-bridge';
+import type { UserCredential, UserSchema } from '@qlover/next-kit/common';
 
 const successSelector = (
   state: UserStateInterface<UserSchema, UserCredential>

@@ -1,7 +1,9 @@
+import { UserRole, userSchema, type UserSchema } from '@qlover/next-kit/common';
+import { PasswordEncrypt } from '@qlover/next-kit/server';
+import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
-import { UserRole, userSchema, type UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { AuthProviderInterface } from '@server/interfaces/AuthProviderInterface';
 import type {
@@ -10,9 +12,7 @@ import type {
   VerifyOtpParams
 } from '@server/interfaces/AuthTypes';
 import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
-import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
 import { SessionService } from '@server/services/SessionService';
-import { PasswordEncrypt } from '@server/utils/PasswordEncrypt';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 import type { Session, User } from '@supabase/supabase-js';

@@ -1,8 +1,8 @@
 import { RequestPlugin, ResponsePlugin } from '@qlover/fe-corekit/request';
 import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StringEncryptor } from '@qlover/next-kit/common';
 import { DialogErrorPlugin } from '@/impls/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/impls/RequestEncryptPlugin';
-import { StringEncryptor } from '@shared/StringEncryptor';
 import { I } from '@config/ioc-identifiter';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { AppApiPlugin } from './AppApiPlugin';
