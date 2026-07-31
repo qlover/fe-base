@@ -1,13 +1,12 @@
 export { Loading } from './Loading';
 export { With } from './With';
+export { Button, type ButtonProps } from './Button';
 export {
-  Button,
   buttonClassName,
-  type ButtonProps,
   type ButtonSize,
-  type ButtonVariant
-} from './Button';
-export type { ButtonClassNameOptions } from './buttonClassName';
+  type ButtonVariant,
+  type ButtonClassNameOptions
+} from './buttonClassName';
 export { Modal, type ModalProps } from './Modal';
 export { DialogUIHost, type DialogUIHostProps } from './DialogUIHost';
 export {
@@ -34,8 +33,5 @@ export {
   type TooltipProps,
   type TooltipPlacement
 } from './Tooltip';
-export {
-  PageI18nProvider,
-  usePageI18nMapping
-} from './PageI18nProvider';
+export { PageI18nProvider } from './PageI18nProvider';
 export { ClientSeo } from './ClientSeo';

@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { TranslateI18nUtil } from '../i18n/TranslateI18nUtil';
-import type { TranslateI18nOptions } from '../i18n/TranslateI18nUtil';
+import {
+  TranslateI18nUtil,
+  type TranslateI18nOptions
+} from '../../common/i18n';
 import { useWarnTranslations } from './useWarnTranslations';
 
 /**

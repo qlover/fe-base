@@ -14,6 +14,9 @@ export type TranslateI18nOptions = {
 
 /**
  * Map i18n key bags through a translator, with optional missing-key warnings.
+ *
+ * Lives in `common` so App Router Server Components / `server/render` can use it
+ * without pulling the client React entry.
  */
 export class TranslateI18nUtil {
   public static translate<T extends Record<string, unknown>>(

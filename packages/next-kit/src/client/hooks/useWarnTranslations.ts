@@ -4,7 +4,7 @@ import {
   TranslateI18nUtil,
   type TranslateFn,
   type TranslateI18nOptions
-} from '../i18n/TranslateI18nUtil';
+} from '../../common/i18n';
 
 /**
  * next-intl `useTranslations` wrapped with optional missing-key warnings.

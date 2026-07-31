@@ -25,6 +25,15 @@ export { SUPABASE_URL, SUPABASE_KEY } from './supabase/conts';
 
 export { StringEncryptor } from './StringEncryptor';
 export { Datetime } from './utils/Datetime';
+export {
+  getPagesThemeInitScript,
+  type PagesThemeInitOptions
+} from './utils/getPagesThemeInitScript';
+export {
+  TranslateI18nUtil,
+  type TranslateFn,
+  type TranslateI18nOptions
+} from './i18n';
 
 export * from './interfaces/NextKitApi';
 export * from './interfaces/I18nServiceInterface';

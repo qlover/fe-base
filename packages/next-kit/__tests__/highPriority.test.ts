@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { TranslateI18nUtil } from '../src/client/i18n/TranslateI18nUtil';
+import { TranslateI18nUtil } from '../src/common/i18n/TranslateI18nUtil';
 import { createIOCReact } from '../src/client/ioc/createIOCReact';
-import { PageI18nInterface } from '../src/common';
+import type { PageI18nInterface } from '../src/common';
 
 describe('TranslateI18nUtil', () => {
   it('maps string values through t', () => {

@@ -73,7 +73,6 @@ export { createLogger, type ServerLoggerConfig } from './utils/createLogger';
 export {
   NextApiHandler,
   ResultContext,
-  ResultCotnext,
   type ResultHandlerContext,
   type ResultHandlerInterface
 } from './utils/NextApiHandler';

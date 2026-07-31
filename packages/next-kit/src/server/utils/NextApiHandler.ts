@@ -25,9 +25,6 @@ export class ResultContext {
   }
 }
 
-/** @deprecated Typo alias kept for migration; prefer {@link ResultContext}. */
-export class ResultCotnext extends ResultContext {}
-
 function isResultHandlerContext(value: unknown): value is ResultHandlerContext {
   if (value instanceof ResultContext) {
     return true;

@@ -5,9 +5,6 @@ import {
   type ButtonVariant
 } from './buttonClassName';
 
-export type { ButtonSize, ButtonVariant };
-export { buttonClassName };
-
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -25,6 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       type = 'button',
       className,
       children,
+      disabled,
       ...props
     },
     ref
@@ -37,6 +35,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         data-variant={variant}
         className={buttonClassName({ variant, size, className })}
         {...props}
+        // Omit when false so SSR/client HTML stay aligned (no disabled="").
+        disabled={disabled ? true : undefined}
       >
         {children}
       </button>

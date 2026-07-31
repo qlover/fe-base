@@ -38,7 +38,6 @@ export {
   Dropdown,
   Tooltip,
   PageI18nProvider,
-  usePageI18nMapping,
   ClientSeo,
   type ButtonProps,
   type ButtonSize,
@@ -65,21 +64,22 @@ export {
   useSliceStoreAdapter,
   isSliceStoreAdapter,
   useWarnTranslations,
-  useI18nMapping
+  useI18nMapping,
+  usePageI18nMapping
 } from './hooks';
+
+export type {
+  TranslateFn,
+  TranslateI18nOptions
+} from '../common/i18n';
 
 export {
   createIOCReact,
   type CreateIOCReactResult
 } from './ioc';
 
-export {
-  TranslateI18nUtil,
-  type TranslateFn,
-  type TranslateI18nOptions
-} from './i18n';
-
+/** @deprecated Import from `@qlover/next-kit/common` — pure helper, not client-only. */
 export {
   getPagesThemeInitScript,
   type PagesThemeInitOptions
-} from './utils/getPagesThemeInitScript';
+} from '../common/utils/getPagesThemeInitScript';

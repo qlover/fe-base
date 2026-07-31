@@ -8,3 +8,4 @@ export {
 } from './useStore';
 export { useWarnTranslations } from './useWarnTranslations';
 export { useI18nMapping } from './useI18nMapping';
+export { usePageI18nMapping } from './usePageI18nMapping';

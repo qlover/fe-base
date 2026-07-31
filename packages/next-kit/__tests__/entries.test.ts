@@ -8,7 +8,8 @@ import {
   joinI18nKey,
   loginSchema,
   LoginValidator,
-  UserRole
+  UserRole,
+  getPagesThemeInitScript
 } from '../src/common';
 import {
   NEXT_KIT_SERVER,
@@ -34,7 +35,6 @@ import {
   ClientRenderProvider,
   UserAuthFailed,
   useMountedClient,
-  getPagesThemeInitScript,
   Dropdown,
   Tooltip,
   useReturnTo
@@ -75,14 +75,6 @@ describe('@qlover/next-kit/client', () => {
     expect(typeof ClientRenderProvider).toBe('function');
     expect(typeof UserAuthFailed).toBe('function');
     expect(typeof useMountedClient).toBe('function');
-    expect(
-      getPagesThemeInitScript({
-        storageKey: 'theme',
-        domAttribute: 'data-theme',
-        defaultTheme: 'light',
-        supportedThemes: ['light', 'dark']
-      })
-    ).toContain('data-theme');
     expect(typeof Dropdown).toBe('function');
     expect(typeof Tooltip).toBe('function');
     expect(typeof useReturnTo).toBe('function');
@@ -94,6 +86,17 @@ describe('@qlover/next-kit/common', () => {
   it('exposes shared schema constants', () => {
     expect(DeleteStatus.UNDELETE).toBe(0);
     expect(UserRole.ADMIN).toBe(0);
+  });
+
+  it('builds pages theme init script', () => {
+    expect(
+      getPagesThemeInitScript({
+        storageKey: 'theme',
+        domAttribute: 'data-theme',
+        defaultTheme: 'light',
+        supportedThemes: ['light', 'dark']
+      })
+    ).toContain('data-theme');
   });
 
   it('validates i18n keys', () => {

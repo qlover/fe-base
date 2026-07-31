@@ -9,8 +9,8 @@ export type PagesThemeInitOptions = {
 
 /**
  * Inline anti-FOUC script for Pages Router `_document`.
- * Mirrors typical theme-init: read storage, resolve system, set attribute
- * on `<html>` before body paints.
+ * Pure string helper — lives in `common` so `_document` does not import
+ * the React client entry.
  */
 export function getPagesThemeInitScript(
   options: PagesThemeInitOptions
