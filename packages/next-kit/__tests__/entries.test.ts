@@ -23,7 +23,21 @@ import {
   NavigateBridge,
   I18nService,
   RouterService,
-  DialogHandler
+  DialogHandler,
+  Loading,
+  With,
+  Button,
+  Modal,
+  DialogUIHost,
+  buttonClassName,
+  LocaleLink,
+  ClientRenderProvider,
+  UserAuthFailed,
+  useMountedClient,
+  getPagesThemeInitScript,
+  Dropdown,
+  Tooltip,
+  useReturnTo
 } from '../src/client';
 
 describe('@qlover/next-kit entries', () => {
@@ -52,6 +66,27 @@ describe('@qlover/next-kit/client', () => {
 
     expect(new LocalStorage()).toBeInstanceOf(LocalStorage);
     expect(new DialogHandler()).toBeInstanceOf(DialogHandler);
+    expect(typeof Loading).toBe('function');
+    expect(typeof With).toBe('function');
+    expect(Button).toBeTruthy();
+    expect(typeof Modal).toBe('function');
+    expect(typeof DialogUIHost).toBe('function');
+    expect(typeof LocaleLink).toBe('function');
+    expect(typeof ClientRenderProvider).toBe('function');
+    expect(typeof UserAuthFailed).toBe('function');
+    expect(typeof useMountedClient).toBe('function');
+    expect(
+      getPagesThemeInitScript({
+        storageKey: 'theme',
+        domAttribute: 'data-theme',
+        defaultTheme: 'light',
+        supportedThemes: ['light', 'dark']
+      })
+    ).toContain('data-theme');
+    expect(typeof Dropdown).toBe('function');
+    expect(typeof Tooltip).toBe('function');
+    expect(typeof useReturnTo).toBe('function');
+    expect(buttonClassName({ variant: 'primary' })).toContain('bg-brand');
   });
 });
 

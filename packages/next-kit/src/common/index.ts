@@ -29,6 +29,7 @@ export { Datetime } from './utils/Datetime';
 export * from './interfaces/NextKitApi';
 export * from './interfaces/I18nServiceInterface';
 export * from './interfaces/RouterInterface';
+export * from './interfaces/PageI18nInterface';
 
 export * from './schemas/common';
 export * from './schemas/LoginSchema';

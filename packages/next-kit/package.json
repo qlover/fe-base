@@ -36,7 +36,8 @@
     "package.json",
     "README.md",
     "README_EN.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "MIGRATION.md"
   ],
   "scripts": {
     "lint": "eslint src --fix",
@@ -67,23 +68,29 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.18",
     "lodash-es": "^4.17.22",
     "uuid": "^13.0.0"
   },
   "peerDependencies": {
+    "@qlover/oauth-wrapper": ">=0.4.0",
+    "@qlover/slice-store-react": "^1.4.0",
     "@supabase/supabase-js": "^2.57.0",
     "inversify": "^7.0.0",
     "next": ">=14",
+    "next-intl": ">=3",
     "react": ">=18",
     "react-dom": ">=18",
     "reflect-metadata": "^0.2.0",
     "sonner": "^1.0.0 || ^2.0.0",
-    "zod": "^3.0.0 || ^4.0.0",
-    "@qlover/oauth-wrapper": ">=0.4.0"
+    "zod": "^3.0.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {
     "next": {
+      "optional": true
+    },
+    "next-intl": {
       "optional": true
     },
     "react": {
@@ -98,16 +105,25 @@
     "@qlover/oauth-wrapper": {
       "optional": true
     },
+    "@qlover/slice-store-react": {
+      "optional": true
+    },
     "@supabase/supabase-js": {
       "optional": true
     }
   },
   "devDependencies": {
     "@qlover/oauth-wrapper": "workspace:*",
+    "@qlover/slice-store-react": "^1.4.2",
     "@supabase/supabase-js": "^2.57.2",
+    "@testing-library/react": "^16.3.0",
     "@types/lodash-es": "^4.17.12",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "inversify": "^7.8.1",
+    "jsdom": "^26.1.0",
     "next": "^16.1.6",
+    "next-intl": "^4.8.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "reflect-metadata": "^0.2.2",

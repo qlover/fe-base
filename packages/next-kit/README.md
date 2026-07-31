@@ -53,7 +53,7 @@ Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
 
 ## Status
 
-`0.0.1` — `common`, first `server` slice (`ApiServer`, repos, crypto/CORS/logger), and first `client` slice (`LocalStorage`, `NavigateBridge`, `I18nService`, `RouterService`, `DialogHandler`). Example rewires come next.
+`0.0.1` — `common`, `server`, and `client` (services + shell UI: Loading/With/Button/Modal/DialogUIHost/LocaleLink/ClientRenderProvider/UserAuthFailed, hooks, theme init script). Example rewires come next.
 
 ## Develop
 

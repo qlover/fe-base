@@ -51,7 +51,7 @@ Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
 
 ## Status
 
-`0.0.1` — `common`, first `server` slice, and first `client` slice. Example rewires come next.
+`0.0.1` — `common`, first `server` slice, and first `client` slice (services + shell UI). Example rewires come next.
 
 ## Develop
 
