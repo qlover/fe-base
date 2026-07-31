@@ -15,10 +15,10 @@ import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import { NextApiHandler } from './utils/NextApiHandler';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
-import type { ServerContextInterface } from './interfaces/ServerContextInterface';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 import type { NextKitApiResult } from '@qlover/next-kit/common';
+import type { ServerContextInterface } from '@qlover/next-kit/server';
 
 export type NextApiServerContext = ApiServerContext;
 

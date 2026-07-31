@@ -2,8 +2,8 @@ import { OAuthClientsService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerAuthInterface } from '@server/interfaces/ServerAuthInterface';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type {
   OAuthClientCreate,
   OAuthClientCreateResponse,

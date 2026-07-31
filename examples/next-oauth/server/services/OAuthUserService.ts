@@ -25,7 +25,6 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
-import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserLoginContext,
   UserLoginParams,
@@ -35,6 +34,7 @@ import type {
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 import type { UserSchema } from '@qlover/next-kit/common';
+import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type { Provider } from '@supabase/supabase-js';
 
 @injectable()

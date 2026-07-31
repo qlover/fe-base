@@ -5,15 +5,16 @@ import { TokenEncryption } from '@qlover/next-kit/server';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
+import type { LocaleType } from '@config/i18n';
 import { I } from '@config/ioc-identifiter';
 import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
+import type { ServerContextInterface } from '@qlover/next-kit/server';
 import type {
   OAuthSessionPayload,
   OAuthWrapperAccessToken,
@@ -362,7 +363,7 @@ export class SupabaseOAuthProvider
     const supabase = await this.supabaseRepo.getSupabase();
 
     if ('email' in params) {
-      const locale = await this.serverContext.getLocale();
+      const locale = (await this.serverContext.getLocale()) as LocaleType;
       const redirectTo = new URL(
         localePage(ROUTE_CALLBACK_EMAIL_LOGIN, locale),
         this.appHost

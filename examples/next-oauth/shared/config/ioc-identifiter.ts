@@ -4,7 +4,6 @@ import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import type { ServerContextInterface } from '@server/interfaces/ServerContextInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type { JSONSerializer } from '@qlover/fe-corekit/serializer';
 import type {
@@ -13,6 +12,7 @@ import type {
 } from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
 import type { DialogHandler } from '@qlover/next-kit/client';
+import type { ServerContextInterface } from '@qlover/next-kit/server';
 
 /**
  * IOC identifier
