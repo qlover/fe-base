@@ -14,7 +14,7 @@ import type { NextRequest } from 'next/server';
  *     description: |
  *       Paged `request_logs` for the signed-in user (RLS). Query mirrors {@link ResourceSearchParams}:
  *       `page`, `pageSize`, `offset`, `cursor`, `keyword`, `filters` (JSON string), `sort` (JSON array), or flat `orderBy`+`order` for the first sort clause.
- *       Parsed and validated by `RequestLogsSearchParamsValidator` in the controller; JSON body uses `AppApiSuccessInterface`; `data` is `ResourceSearchResult` (`items`, `total`, `page`, `pageSize`, `hasMore`).
+ *       Parsed and validated by `RequestLogsSearchParamsValidator` in the controller; JSON body uses `NextKitApiSuccess`; `data` is `ResourceSearchResult` (`items`, `total`, `page`, `pageSize`, `hasMore`).
  *     parameters:
  *       - in: query
  *         name: page
