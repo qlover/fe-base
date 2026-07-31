@@ -1,28 +1,25 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StringEncryptor } from '@qlover/next-kit/common';
+import { LoginValidator } from '@qlover/next-kit/common';
+import { SearchParamsValidator } from '@qlover/next-kit/common';
+import {
+  loginWithProviderCallbackSchema,
+  loginWithProviderSchema,
+  type LoginSchema
+} from '@qlover/next-kit/common';
+import { RequestLogsRepository } from '@qlover/next-kit/server';
 import {
   SignOtpResult,
   signWithPhoneOtpSchema,
   signWithEmailOtpSchema
 } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
-import { StringEncryptor } from '@shared/StringEncryptor';
-import { LoginValidator } from '@shared/validators/LoginValidator';
-import { SearchParamsValidator } from '@shared/validators/SearchParamsValidator';
-import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
-import {
-  loginWithProviderCallbackSchema,
-  loginWithProviderSchema,
-  type LoginSchema
-} from '@schemas/LoginSchema';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
-import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
-import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import type {
   UserLoginContext,
   UserServiceInterface
@@ -31,6 +28,9 @@ import type {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
+import type { RequestLogRow } from '@qlover/next-kit/common';
+import type { ValidatorInterface } from '@qlover/next-kit/common';
+import type { UserSchema } from '@qlover/next-kit/common';
 
 @injectable()
 export class UserController {

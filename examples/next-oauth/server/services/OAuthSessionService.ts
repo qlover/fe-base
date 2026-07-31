@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { hasSessionPath, redirectToPath } from '@config/route';
-import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthSessionServiceInterface } from '@server/interfaces/OAuthSessionServiceInterface';
+import type { UserSchema } from '@qlover/next-kit/common';
 import type {
   OAuthSessionInterface,
   OAuthSessionPayload

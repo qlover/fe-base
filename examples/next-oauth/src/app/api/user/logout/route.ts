@@ -1,11 +1,11 @@
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@qlover/next-kit/server';
 import { API_USER_LOGOUT } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
-import {
-  apiCorsPreflightResponse,
-  buildApiCorsHeaders
-} from '@server/utils/apiCors';
 import type { NextRequest } from 'next/server';
 
 const corsConfig = new ServerConfig();

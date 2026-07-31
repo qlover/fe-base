@@ -1,6 +1,6 @@
+import { PageI18nProvider } from '@qlover/next-kit/client';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { OAuthPlayground } from '@/uikit/components-app/oauth/OAuthPlayground';
-import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import {
   oauthPlaygroundI18n,

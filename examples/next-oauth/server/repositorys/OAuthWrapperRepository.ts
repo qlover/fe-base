@@ -1,6 +1,6 @@
+import { SupabaseRepo } from '@qlover/next-kit/server';
 import { verifyClientSecret, hashClientSecret } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
-import { SupabaseRepo } from './SupabaseRepo';
 import type {
   OAuthClientRow,
   OAuthClientListItem,

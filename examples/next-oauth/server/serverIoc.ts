@@ -4,6 +4,8 @@ import {
   type IOCContainerInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
+import { RequestLogsRepository, SupabaseRepo } from '@qlover/next-kit/server';
+import { createAdminClient, createServerClient } from '@shared/supabase/server';
 import { oauthUpstreamProviders } from '@config/common';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
@@ -19,9 +21,8 @@ type ServerIocOptions = {
 };
 
 /**
- * Builds a fresh server IOC bound to the given logger.
- * Not a process singleton: each {@link BootstrapServer} / {@link NextApiServer}
- * instance must use the same logger for plugins and for `I.Logger` in services.
+ * 构建绑定了当前 logger 的全新 server IOC。
+ * 非进程单例：每个 BootstrapServer / NextApiServer 实例应使用同一套 logger 与 I.Logger。
  */
 export function createServerIoc(
   logger: LoggerInterface,
@@ -52,8 +53,23 @@ const ServerIocRegister: IOCRegisterInterface<
     ioc.bind(I.AppConfig, serverConfig);
     ioc.bind(I.ServerContextInterface, ioc.get(ServerContext));
 
-    // Default path is identical to historical next-oauth: SupabaseOAuthProvider.
-    // Opt into BrainUser only via NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=brain-user.
+    const supabaseDeps = {
+      logger,
+      getUserClient: createServerClient,
+      getAdminClient: createAdminClient
+    };
+
+    ioc.bind(SupabaseRepo, new SupabaseRepo('', supabaseDeps));
+    ioc.bind(
+      RequestLogsRepository,
+      new RequestLogsRepository({
+        ...supabaseDeps,
+        serverContext: ioc.get(I.ServerContextInterface)
+      })
+    );
+
+    // 默认路径与历史 next-oauth 一致：SupabaseOAuthProvider。
+    // 仅当 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=brain-user 时启用 BrainUser。
     if (
       serverConfig.oauthUpstreamProvider === oauthUpstreamProviders.brainUser
     ) {

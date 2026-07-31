@@ -1,6 +1,5 @@
 import { inject } from '@shared/container';
 import { API_USER_REQUEST_LOGS } from '@config/route';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 import { AppApiRequester } from './AppApiRequester';
 import type {
@@ -9,6 +8,7 @@ import type {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
+import type { RequestLogRow } from '@qlover/next-kit/common';
 
 function sortCriteriaToQuery(
   criteria: ResourceSearchParams

@@ -4,8 +4,8 @@ import {
   ArrowPathIcon,
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
 import { useState } from 'react';
-import { Button } from '@/uikit/components/Button';
 import { DeveloperOverlayModal } from './DeveloperOverlayModal';
 
 export type DeveloperConfirmOptions = {

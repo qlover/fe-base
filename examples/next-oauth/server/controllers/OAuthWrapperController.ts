@@ -1,18 +1,18 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StringEncryptor } from '@qlover/next-kit/common';
+import { LoginValidator } from '@qlover/next-kit/common';
+import { LoginSchema } from '@qlover/next-kit/common';
+import { UserSchema } from '@qlover/next-kit/common';
 import { OAuthTokenResponse } from '@qlover/oauth-wrapper';
 import { injectable, inject } from '@shared/container';
-import { StringEncryptor } from '@shared/StringEncryptor';
-import { LoginValidator } from '@shared/validators/LoginValidator';
-import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
-import { LoginSchema } from '@schemas/LoginSchema';
-import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import type { ValidatorInterface } from '@qlover/next-kit/common';
 import type {
   OAuthAuthorizePageData,
   OAuthAuthorizeValidationError,

@@ -1,5 +1,5 @@
 import type { LocaleType } from '@config/i18n';
-import type { UUIDType } from '@schemas/common';
+import type { UUIDType } from '@qlover/next-kit/common';
 import type { NextRequest } from 'next/server';
 
 export interface ServerState {

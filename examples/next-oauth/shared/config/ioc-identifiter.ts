@@ -1,4 +1,3 @@
-import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
@@ -13,6 +12,7 @@ import type {
   StorageInterface
 } from '@qlover/fe-corekit/storage';
 import type { LoggerInterface } from '@qlover/logger';
+import type { DialogHandler } from '@qlover/next-kit/client';
 
 /**
  * IOC identifier

@@ -1,8 +1,8 @@
 import type { LoginProviderType } from '@config/common';
-import type { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
-import type { UserSchema } from '@schemas/UserSchema';
 import type { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { ResultHandlerContext } from '@server/utils/NextApiHandler';
+import type { LoginWithProviderCallbackSchema } from '@qlover/next-kit/common';
+import type { UserSchema } from '@qlover/next-kit/common';
 import type { SignOtpResult, SignWithOtpSchema } from '@qlover/oauth-wrapper';
 
 export type UserServiceRegisterParams = {

@@ -1,79 +1,41 @@
 'use client';
 
-import { clsx } from 'clsx';
+import {
+  UserAuthFailed as KitUserAuthFailed,
+  type UserAuthFailedProps as KitProps
+} from '@qlover/next-kit/client';
+import { useLocaleRoutes } from '@config/common';
+import { i18nConfig } from '@config/i18n';
 import {
   COMMON_USER_AUTH_FAILED_DESCRIPTION,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN,
   COMMON_USER_AUTH_FAILED_TITLE
 } from '@config/i18n-identifier/common/common';
 import { ROUTE_LOGIN } from '@config/route';
-import { LocaleLink } from './LocaleLink';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 
-export interface UserAuthFailedProps {
-  /** Optional error detail when session/API auth fails */
+export type UserAuthFailedProps = {
   error?: unknown;
-}
+  className?: string;
+};
 
 /**
  * Fallback UI when client-side user state is unavailable or invalid.
- * Page entry remains middleware; prefer redirect-on-401 for API failures.
  */
-export function UserAuthFailed({ error }: UserAuthFailedProps) {
+export function UserAuthFailed({ error, className }: UserAuthFailedProps) {
   const t = useWarnTranslations();
 
-  const title = t(COMMON_USER_AUTH_FAILED_TITLE);
-  const description = t(COMMON_USER_AUTH_FAILED_DESCRIPTION);
-  const goToLoginLabel = t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN);
+  const props: KitProps = {
+    error,
+    className,
+    title: t(COMMON_USER_AUTH_FAILED_TITLE),
+    description: t(COMMON_USER_AUTH_FAILED_DESCRIPTION),
+    goToLoginLabel: t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN),
+    loginHref: ROUTE_LOGIN,
+    fallbackLocale: i18nConfig.fallbackLng,
+    useLocaleRoutes,
+    defaultLocale: i18nConfig.fallbackLng
+  };
 
-  return (
-    <div
-      data-testid="UserAuthFailedRoot"
-      className={clsx(
-        'flex flex-col justify-center items-center min-h-[60vh] px-4',
-        'text-center'
-      )}
-      style={{ backgroundColor: 'var(--fe-color-bg-container, transparent)' }}
-    >
-      <div
-        data-testid="UserAuthFailedCard"
-        className={clsx(
-          'rounded-lg border p-6 max-w-md w-full',
-          'border-primary-border',
-          'bg-(--fe-color-elevated,#fff)'
-        )}
-      >
-        <h2
-          className="text-lg font-semibold mb-2"
-          style={{ color: 'var(--fe-color-text,inherit)' }}
-        >
-          {title}
-        </h2>
-        <p className="text-sm mb-4 opacity-90  text-secondary-text">
-          {description}
-        </p>
-        {error != null && (
-          <p
-            data-testid="UserAuthFailedError"
-            className="text-md text-red-600 mb-4 font-mono truncate max-w-full"
-            title={String(error)}
-          >
-            {String(error)}
-          </p>
-        )}
-        <LocaleLink
-          href={ROUTE_LOGIN}
-          title={goToLoginLabel}
-          className={clsx(
-            'inline-flex items-center justify-center px-4 py-2 rounded-md font-medium',
-            'bg-(--fe-color-primary,#1976d2) text-white',
-            'hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2',
-            'focus:ring-(--fe-color-primary,#1976d2)'
-          )}
-        >
-          {goToLoginLabel}
-        </LocaleLink>
-      </div>
-    </div>
-  );
+  return <KitUserAuthFailed {...props} />;
 }

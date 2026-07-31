@@ -3,14 +3,14 @@ import {
   ExecutorError,
   type LifecyclePluginInterface
 } from '@qlover/fe-corekit/executor';
+import { isI18nKey } from '@qlover/next-kit/common';
 import { inject, injectable } from '@shared/container';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
-import { isI18nKey } from '@schemas/i18nKey';
-import type { I18nServiceInterface } from '@interfaces/I18nServiceInterface';
-import type { DialogHandlerOptions } from './DialogHandler';
 import type { RouterService } from './RouterService';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';
+import type { DialogHandlerOptions } from '@qlover/next-kit/client';
+import type { I18nServiceInterface } from '@qlover/next-kit/common';
 
 export type DialogErrorConfig = {
   disabledDialogError?: boolean;

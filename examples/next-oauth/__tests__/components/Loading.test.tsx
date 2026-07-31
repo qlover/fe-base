@@ -1,6 +1,6 @@
+import { Loading } from '@qlover/next-kit/client';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Loading } from '@/uikit/components/Loading';
 
 describe('Loading', () => {
   let container: HTMLDivElement;

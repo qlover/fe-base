@@ -1,11 +1,11 @@
 'use client';
 
+import { LoginValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_REGISTER } from '@config/route';

@@ -10,8 +10,8 @@ import {
   ShareIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
+import { buttonClassName } from '@qlover/next-kit/client';
 import { Link } from '@/i18n/routing';
-import { buttonClassName } from '@/uikit/components/Button';
 import { GithubIcon } from '@/uikit/components/icons';
 import type { HomeI18nInterface } from '@config/i18n-mapping/HomeI18n';
 import {

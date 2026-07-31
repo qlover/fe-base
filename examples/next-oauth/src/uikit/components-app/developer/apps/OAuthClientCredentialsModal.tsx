@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/uikit/components/Button';
+import { Button } from '@qlover/next-kit/client';
 import { DeveloperOverlayModal } from '@/uikit/components-app/developer/DeveloperOverlayModal';
 import { oauthLabelClass } from '@config/component';
 import { CopyableCredential } from './CopyableCredential';
