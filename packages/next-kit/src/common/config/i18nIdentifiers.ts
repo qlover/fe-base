@@ -37,3 +37,6 @@ export const V_INVALID_ID = 'next_kit:v_invalid_id';
 
 /** i18n key string format is invalid. */
 export const COMMON_I18N_KEY_INVALID = 'next_kit:i18n_key_invalid';
+
+/** Unhandled server / API error. */
+export const API_SERVER_ERROR = 'next_kit:api_server_error';

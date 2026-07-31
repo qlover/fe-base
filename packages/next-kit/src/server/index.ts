@@ -8,5 +8,72 @@
  */
 
 export { NEXT_KIT_COMMON } from '../common/markers';
+export { NEXT_KIT_SERVER } from './markers';
 
-export const NEXT_KIT_SERVER = 'server' as const;
+export type { UserLoginContext } from './interfaces/UserLoginContext';
+export type {
+  BootstrapServerRoot,
+  BootstrapServerContextOptions,
+  BootstrapServerPlugin,
+  BootstrapServerContext,
+  BootstrapServerInterface
+} from './interfaces/BootstrapServerInterface';
+export type {
+  ServerState,
+  ServerContextResetParams,
+  ServerContextInterface
+} from './interfaces/ServerContextInterface';
+export type { ServerAuthInterface } from './interfaces/ServerAuthInterface';
+export {
+  Operators,
+  type WhereOperation,
+  type Where,
+  type OperatorType,
+  type FilterTriple,
+  type RepoSearchParams,
+  type RepoSearchInterface,
+  type RepoInsertParams,
+  type RepoInsertGetParams,
+  type RepositoryInterface
+} from './interfaces/DBBridgeInterface';
+
+export {
+  BootstrapServer,
+  type BootstrapServerDeps
+} from './BootstrapServer';
+export {
+  ApiServer,
+  isApiServerContext,
+  type ApiServerContext,
+  type ApiServerDeps
+} from './ApiServer';
+
+export { BaseRepository } from './repositorys/BaseRepository';
+export {
+  SupabaseRepo,
+  type SupabaseRepoDeps
+} from './repositorys/SupabaseRepo';
+export {
+  RequestLogsRepository,
+  type RequestLogsRepositoryDeps,
+  type HttpRequestLogParams
+} from './repositorys/RequestLogsRepository';
+
+export {
+  PasswordEncrypt
+} from './utils/PasswordEncrypt';
+export { TokenEncryption } from './utils/TokenEncryption';
+export {
+  isApiCorsEnabled,
+  buildApiCorsHeaders,
+  apiCorsPreflightResponse,
+  type ApiCorsConfig
+} from './utils/apiCors';
+export { createLogger, type ServerLoggerConfig } from './utils/createLogger';
+export {
+  NextApiHandler,
+  ResultContext,
+  ResultCotnext,
+  type ResultHandlerContext,
+  type ResultHandlerInterface
+} from './utils/NextApiHandler';

@@ -10,7 +10,13 @@ import {
   LoginValidator,
   UserRole
 } from '../src/common';
-import { NEXT_KIT_SERVER } from '../src/server';
+import {
+  NEXT_KIT_SERVER,
+  PasswordEncrypt,
+  isApiCorsEnabled,
+  createLogger,
+  ApiServer
+} from '../src/server';
 import { NEXT_KIT_BROWSER } from '../src/browser';
 
 describe('@qlover/next-kit entries', () => {
@@ -73,5 +79,43 @@ describe('@qlover/next-kit/common', () => {
     if (reflect && original !== undefined) {
       reflect.getMetadata = original;
     }
+  });
+});
+
+describe('@qlover/next-kit/server', () => {
+  it('hashes passwords with PasswordEncrypt', () => {
+    const encryptor = new PasswordEncrypt();
+    expect(encryptor.encrypt('secret')).toMatch(/^[a-f0-9]{32}$/);
+  });
+
+  it('detects disabled CORS when origins empty', () => {
+    expect(
+      isApiCorsEnabled({
+        apiCorsAllowedOrigins: [],
+        apiCorsAllowedMethods: ['GET']
+      })
+    ).toBe(false);
+  });
+
+  it('requires serverContext on ApiServer by default', () => {
+    const logger = createLogger('test', {
+      logPrefixTemplate: '[{level}]',
+      logLevel: 'error'
+    });
+    const ioc = Object.assign(
+      () => {
+        throw new Error('unused');
+      },
+      { implemention: undefined }
+    );
+
+    expect(
+      () =>
+        new ApiServer({
+          name: 'test',
+          logger,
+          ioc: ioc as never
+        })
+    ).toThrow(/serverContext/);
   });
 });

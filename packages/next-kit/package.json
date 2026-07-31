@@ -66,15 +66,20 @@
   "dependencies": {
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
-    "dayjs": "^1.11.18"
+    "@qlover/logger": "workspace:*",
+    "dayjs": "^1.11.18",
+    "lodash-es": "^4.17.22",
+    "uuid": "^13.0.0"
   },
   "peerDependencies": {
+    "@supabase/supabase-js": "^2.57.0",
     "inversify": "^7.0.0",
     "next": ">=14",
     "react": ">=18",
     "react-dom": ">=18",
     "reflect-metadata": "^0.2.0",
-    "zod": "^3.0.0 || ^4.0.0"
+    "zod": "^3.0.0 || ^4.0.0",
+    "@qlover/oauth-wrapper": ">=0.4.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -85,9 +90,18 @@
     },
     "react-dom": {
       "optional": true
+    },
+    "@qlover/oauth-wrapper": {
+      "optional": true
+    },
+    "@supabase/supabase-js": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@qlover/oauth-wrapper": "workspace:*",
+    "@supabase/supabase-js": "^2.57.2",
+    "@types/lodash-es": "^4.17.12",
     "inversify": "^7.8.1",
     "next": "^16.1.6",
     "react": "19.2.4",

@@ -1326,10 +1326,28 @@ importers:
       '@qlover/fe-corekit':
         specifier: workspace:*
         version: link:../fe-corekit
+      '@qlover/logger':
+        specifier: workspace:*
+        version: link:../logger
       dayjs:
         specifier: ^1.11.18
         version: 1.11.21
+      lodash-es:
+        specifier: ^4.17.22
+        version: 4.18.1
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.2
     devDependencies:
+      '@qlover/oauth-wrapper':
+        specifier: workspace:*
+        version: link:../oauth-wrapper
+      '@supabase/supabase-js':
+        specifier: ^2.57.2
+        version: 2.107.0
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       inversify:
         specifier: ^7.8.1
         version: 7.11.0(reflect-metadata@0.2.2)

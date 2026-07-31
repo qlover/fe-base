@@ -49,7 +49,7 @@ Same pattern as `@qlover/oauth-wrapper` (`server` / `core` / `client`): one vers
 
 ## Status
 
-`0.0.1` — `common` now includes container, schemas, validators, cookies, `StringEncryptor`, `Datetime`, and supabase env constants. `server` / `browser` runtimes and example rewires come next.
+`0.0.1` — `common` and first `server` slice (`ApiServer`, `SupabaseRepo`, `RequestLogsRepository`, crypto/CORS/logger helpers). `browser` runtime and example rewires come next.
 
 ## Develop
 
