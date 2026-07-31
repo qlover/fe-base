@@ -13,8 +13,9 @@ import type { PagesRouterProps } from '@interfaces/PagesRouter';
  * Entry auth is middleware (LOGINED_PAGES); this shell only provides IOC,
  * i18n, theme, and client bootstrap.
  *
- * Use `ClientThemeProvider` (no inline script in the React tree). Anti-FOUC
- * for App→Pages navigations is handled by `_document` via
+ * Use `ClientThemeProvider` (no React-tree theme script). `@wrksz/themes`
+ * `ThemeProvider` embeds `themeScript.toString()`, which often mismatches
+ * between SSR and client bundles. Anti-FOUC is handled by `_document` via
  * {@link getPagesThemeInitScript}.
  */
 export default function App({
