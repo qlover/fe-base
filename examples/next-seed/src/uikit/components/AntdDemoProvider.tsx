@@ -3,6 +3,7 @@
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
+import { useMountedClient } from '@qlover/next-kit/client';
 import { themeConfig } from '@config/theme';
 import type { ReactNode } from 'react';
 import '@/styles/antd-themes/index.css';
@@ -13,8 +14,17 @@ import '@/styles/antd-themes/index.css';
  *
  * Antd CSS variable overrides load here (not in global styles) so homepage
  * and other antd-free routes avoid ~57KB of render-blocking CSS.
+ *
+ * Mount only on the client: AntdThemeProvider adds `fe-theme` / css-var
+ * classes after theme resolve, which otherwise mismatches SSR HTML.
  */
 export function AntdDemoProvider({ children }: { children: ReactNode }) {
+  const mounted = useMountedClient();
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <AntdThemeProvider
       data-testid="AntdDemoProvider"
