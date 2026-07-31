@@ -7,6 +7,6 @@
  * - May use Node APIs, `next/server`, cookies, headers, etc.
  */
 
-export { NEXT_KIT_COMMON } from '../common';
+export { NEXT_KIT_COMMON } from '../common/markers';
 
 export const NEXT_KIT_SERVER = 'server' as const;

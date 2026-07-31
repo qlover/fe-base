@@ -1326,10 +1326,13 @@ importers:
       '@qlover/fe-corekit':
         specifier: workspace:*
         version: link:../fe-corekit
-      '@qlover/logger':
-        specifier: workspace:*
-        version: link:../logger
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.21
     devDependencies:
+      inversify:
+        specifier: ^7.8.1
+        version: 7.11.0(reflect-metadata@0.2.2)
       next:
         specifier: ^16.1.6
         version: 16.2.7(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.100.0)
@@ -1339,6 +1342,12 @@ importers:
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      zod:
+        specifier: ^4.3.6
+        version: 4.4.3
 
   packages/oauth-wrapper:
     dependencies:

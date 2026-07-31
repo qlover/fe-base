@@ -66,12 +66,15 @@
   "dependencies": {
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
-    "@qlover/logger": "workspace:*"
+    "dayjs": "^1.11.18"
   },
   "peerDependencies": {
+    "inversify": "^7.0.0",
     "next": ">=14",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "reflect-metadata": "^0.2.0",
+    "zod": "^3.0.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -85,8 +88,11 @@
     }
   },
   "devDependencies": {
+    "inversify": "^7.8.1",
     "next": "^16.1.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.3.6"
   }
 }

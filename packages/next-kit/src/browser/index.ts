@@ -7,6 +7,6 @@
  * - Keep free of Node-only modules (`fs`, `next/headers`, etc.)
  */
 
-export { NEXT_KIT_COMMON } from '../common';
+export { NEXT_KIT_COMMON } from '../common/markers';
 
 export const NEXT_KIT_BROWSER = 'browser' as const;

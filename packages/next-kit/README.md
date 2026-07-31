@@ -31,6 +31,18 @@ browser ✕── server
 
 Root export (`.`) is **common only**. Always import `/server` or `/browser` explicitly when you need those runtimes.
 
+## Peer side effects (app responsibility)
+
+This package does **not** import `reflect-metadata`, and does **not** re-export `inject` / `injectable` — apps choose their IOC decorators (e.g. `@qlover/corekit-bridge/ioc` or `inversify`). If you use {@link InversifyContainer} or decorators, import the polyfill once at your app entry:
+
+```ts
+import 'reflect-metadata';
+```
+
+`InversifyContainer` will throw a clear error if the polyfill is missing. Keeping the side-effect out of the kit avoids pulling it into unrelated client bundles.
+
+Shared validator messages use the **`next_kit:`** key namespace (e.g. `next_kit:v_email_invalid`) so they do not collide with app-local `common:v:*` keys. Apps own the locale strings for these identifiers.
+
 ## Why one package (not three)
 
 Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
@@ -41,7 +53,7 @@ Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
 
 ## Status
 
-Scaffold only (`0.0.1`). Shell code from examples will be migrated in follow-up commits.
+`0.0.1` — `common` now includes container, schemas, validators, cookies, `StringEncryptor`, `Datetime`, and supabase env constants. `server` / `browser` runtimes and example rewires come next.
 
 ## Develop
 
