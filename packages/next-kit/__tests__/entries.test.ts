@@ -24,6 +24,7 @@ import {
   NavigateBridge,
   I18nService,
   RouterService,
+  type ClientRouterBridge,
   DialogHandler,
   Loading,
   With,
@@ -51,7 +52,7 @@ describe('@qlover/next-kit entries', () => {
 describe('@qlover/next-kit/client', () => {
   it('constructs client helpers without IOC decorators', () => {
     const logger = { debug: () => undefined } as never;
-    const bridge = new NavigateBridge(logger);
+    const bridge = new NavigateBridge<ClientRouterBridge>(logger);
     expect(bridge.getUIBridge()).toBeNull();
 
     const i18n = new I18nService({
@@ -130,21 +131,15 @@ describe('@qlover/next-kit/common', () => {
   });
 
   it('prompts when reflect-metadata is missing', () => {
-    const reflect = (
-      globalThis as typeof globalThis & {
-        Reflect?: { getMetadata?: unknown };
-      }
-    ).Reflect;
-    const original = reflect?.getMetadata;
-    if (reflect) {
-      delete reflect.getMetadata;
-    }
+    const reflect = globalThis.Reflect as unknown as {
+      getMetadata?: unknown;
+    };
+    const original = reflect.getMetadata;
+    reflect.getMetadata = undefined;
 
     expect(() => assertReflectMetadata()).toThrow(/reflect-metadata/);
 
-    if (reflect && original !== undefined) {
-      reflect.getMetadata = original;
-    }
+    reflect.getMetadata = original;
   });
 });
 
