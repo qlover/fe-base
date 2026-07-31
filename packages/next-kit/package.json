@@ -1,6 +1,6 @@
 {
   "name": "@qlover/next-kit",
-  "description": "Shared Next.js app shell: isomorphic common layer, server runtime, and browser runtime",
+  "description": "Shared Next.js app shell: isomorphic common layer, server runtime, and client runtime",
   "version": "0.0.1",
   "type": "module",
   "private": false,
@@ -25,10 +25,10 @@
       "import": "./dist/server.js",
       "require": "./dist/server.cjs"
     },
-    "./browser": {
-      "types": "./dist/browser.d.ts",
-      "import": "./dist/browser.js",
-      "require": "./dist/browser.cjs"
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
     }
   },
   "files": [
@@ -78,6 +78,7 @@
     "react": ">=18",
     "react-dom": ">=18",
     "reflect-metadata": "^0.2.0",
+    "sonner": "^1.0.0 || ^2.0.0",
     "zod": "^3.0.0 || ^4.0.0",
     "@qlover/oauth-wrapper": ">=0.4.0"
   },
@@ -89,6 +90,9 @@
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "sonner": {
       "optional": true
     },
     "@qlover/oauth-wrapper": {
@@ -107,6 +111,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "reflect-metadata": "^0.2.2",
+    "sonner": "^2.0.3",
     "zod": "^4.3.6"
   }
 }

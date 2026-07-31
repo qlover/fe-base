@@ -12,7 +12,7 @@ const external = [
 const entry = {
   common: 'src/common/index.ts',
   server: 'src/server/index.ts',
-  browser: 'src/browser/index.ts'
+  client: 'src/client/index.ts'
 };
 
 export default defineConfig([

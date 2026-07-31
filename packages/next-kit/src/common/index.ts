@@ -2,7 +2,7 @@
  * Isomorphic layer — safe in Node, Edge, and browser.
  *
  * Rules:
- * - Must NOT import from `../server` or `../browser`
+ * - Must NOT import from `../server` or `../client`
  * - Prefer pure types, schemas, validators, and environment-agnostic helpers
  */
 
@@ -27,6 +27,8 @@ export { StringEncryptor } from './StringEncryptor';
 export { Datetime } from './utils/Datetime';
 
 export * from './interfaces/NextKitApi';
+export * from './interfaces/I18nServiceInterface';
+export * from './interfaces/RouterInterface';
 
 export * from './schemas/common';
 export * from './schemas/LoginSchema';

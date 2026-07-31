@@ -17,13 +17,41 @@ import {
   createLogger,
   ApiServer
 } from '../src/server';
-import { NEXT_KIT_BROWSER } from '../src/browser';
+import {
+  NEXT_KIT_CLIENT,
+  LocalStorage,
+  NavigateBridge,
+  I18nService,
+  RouterService,
+  DialogHandler
+} from '../src/client';
 
 describe('@qlover/next-kit entries', () => {
   it('exports runtime markers', () => {
     expect(NEXT_KIT_COMMON).toBe('common');
     expect(NEXT_KIT_SERVER).toBe('server');
-    expect(NEXT_KIT_BROWSER).toBe('browser');
+    expect(NEXT_KIT_CLIENT).toBe('client');
+  });
+});
+
+describe('@qlover/next-kit/client', () => {
+  it('constructs client helpers without IOC decorators', () => {
+    const logger = { debug: () => undefined } as never;
+    const bridge = new NavigateBridge(logger);
+    expect(bridge.getUIBridge()).toBeNull();
+
+    const i18n = new I18nService({
+      fallbackLng: 'en',
+      supportedLngs: ['en', 'zh']
+    });
+    expect(i18n.isValidLanguage('zh')).toBe(true);
+    expect(i18n.t('missing')).toBe('missing');
+
+    const router = new RouterService(bridge, { homePath: '/home' });
+    expect(router.getLocale()).toBe('');
+
+    expect(new LocalStorage()).toBeInstanceOf(LocalStorage);
+    expect(new DialogHandler()).toBeInstanceOf(DialogHandler);
   });
 });
 

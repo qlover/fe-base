@@ -1,5 +1,5 @@
 /**
- * Standard JSON API envelope used by next-kit server/browser helpers.
+ * Standard JSON API envelope used by next-kit server/client helpers.
  *
  * Shape is intentionally framework-agnostic; apps may alias these types
  * locally if they prefer shorter names.

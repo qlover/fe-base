@@ -2,54 +2,56 @@
 
 Shared Next.js app shell extracted from `examples/next-seed` / `examples/next-oauth`.
 
-One package with three runtime entries so Node-only and browser-only code stay isolated.
+One package with three runtime entries so Node-only and client-only code stay isolated.
 
 ## Entries
 
-| Import | Runtime | Allowed |
+| Import | Runtime | May use |
 |--------|---------|---------|
 | `@qlover/next-kit` / `@qlover/next-kit/common` | isomorphic | types, schemas, pure helpers |
 | `@qlover/next-kit/server` | Node / Next route handlers | `next/server`, cookies, Node APIs |
-| `@qlover/next-kit/browser` | Client / browser | React client hooks, DOM |
+| `@qlover/next-kit/client` | Client (`"use client"`) | React hooks, DOM, sonner toasts |
 
 ```ts
 import { /* ... */ } from '@qlover/next-kit/common';
 import { /* ... */ } from '@qlover/next-kit/server';
-import { /* ... */ } from '@qlover/next-kit/browser';
+import { /* ... */ } from '@qlover/next-kit/client';
 ```
 
 ## Dependency rules
 
 ```
-common  → (nothing in this package)
-server  → common
-browser → common
+common → (nothing in this package)
+server → common
+client → common
 
-server  ↛ browser
-browser ↛ server
+server  ↛ client
+client  ↛ server
 ```
 
-The root export (`.`) is **common only**. Import `/server` or `/browser` explicitly when needed.
+The root export (`.`) is **common only**. Import `/server` or `/client` explicitly when needed.
 
 ## Peer side effects (app responsibility)
 
-This package does **not** import `reflect-metadata`, and does **not** re-export `inject` / `injectable` — apps choose their IOC decorators (e.g. `@qlover/corekit-bridge/ioc` or `inversify`). If you use `InversifyContainer` or decorators, import the polyfill once at your app entry:
+This package does **not** import `reflect-metadata`, and does **not** re-export `inject` / `injectable`. Apps own IOC decorator choice and must import the polyfill at their entry if needed:
 
 ```ts
 import 'reflect-metadata';
 ```
 
-`InversifyContainer` throws if the polyfill is missing, so the side effect stays out of unrelated client bundles.
+Shared validator messages use the **`next_kit:`** key namespace (e.g. `next_kit:v_email_invalid`).
 
-Shared validator messages use the **`next_kit:`** key namespace (e.g. `next_kit:v_email_invalid`) so they do not collide with app-local `common:v:*` keys. Apps own the locale strings for these identifiers.
+## Why one package (not three)
 
-## Why one package
+Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
 
-Same pattern as `@qlover/oauth-wrapper` (`server` / `core` / `client`): one version, one dependency for apps, isolation via entry points.
+- One version bump when a shell bug fix touches types + server + client
+- Apps depend on a single package
+- Environment isolation via **entry points + directory rules**
 
 ## Status
 
-`0.0.1` — `common` and first `server` slice (`ApiServer`, `SupabaseRepo`, `RequestLogsRepository`, crypto/CORS/logger helpers). `browser` runtime and example rewires come next.
+`0.0.1` — `common`, first `server` slice, and first `client` slice. Example rewires come next.
 
 ## Develop
 

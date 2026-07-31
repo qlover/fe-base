@@ -2,7 +2,7 @@
 
 Shared Next.js app shell extracted from `examples/next-seed` / `examples/next-oauth`.
 
-One package, three runtime entries — so Node-only and browser-only code never get mixed by accident.
+One package, three runtime entries — so Node-only and client-only code never get mixed by accident.
 
 ## Entries
 
@@ -10,12 +10,12 @@ One package, three runtime entries — so Node-only and browser-only code never 
 |--------|---------|---------|
 | `@qlover/next-kit` / `@qlover/next-kit/common` | isomorphic | types, schemas, pure helpers |
 | `@qlover/next-kit/server` | Node / Next route handlers | `next/server`, cookies, Node APIs |
-| `@qlover/next-kit/browser` | Client / browser | React client hooks, DOM |
+| `@qlover/next-kit/client` | Client (`"use client"`) | React hooks, DOM, sonner toasts |
 
 ```ts
 import { /* ... */ } from '@qlover/next-kit/common';
 import { /* ... */ } from '@qlover/next-kit/server';
-import { /* ... */ } from '@qlover/next-kit/browser';
+import { /* ... */ } from '@qlover/next-kit/client';
 ```
 
 ## Dependency rules
@@ -23,13 +23,13 @@ import { /* ... */ } from '@qlover/next-kit/browser';
 ```
 common  ──► (nothing in this package)
 server  ──► common
-browser ──► common
+client  ──► common
 
-server  ✕── browser
-browser ✕── server
+server  ✕── client
+client  ✕── server
 ```
 
-Root export (`.`) is **common only**. Always import `/server` or `/browser` explicitly when you need those runtimes.
+Root export (`.`) is **common only**. Always import `/server` or `/client` explicitly when you need those runtimes.
 
 ## Peer side effects (app responsibility)
 
@@ -53,7 +53,7 @@ Same approach as `@qlover/oauth-wrapper` (`server` / `core` / `client`):
 
 ## Status
 
-`0.0.1` — `common` and first `server` slice including base `ApiServer` (subclass for app plugins / request logs / OAuth JSON). `browser` runtime and example rewires come next.
+`0.0.1` — `common`, first `server` slice (`ApiServer`, repos, crypto/CORS/logger), and first `client` slice (`LocalStorage`, `NavigateBridge`, `I18nService`, `RouterService`, `DialogHandler`). Example rewires come next.
 
 ## Develop
 

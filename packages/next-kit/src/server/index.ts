@@ -3,7 +3,7 @@
  *
  * Rules:
  * - May import from `../common`
- * - Must NOT import from `../browser`
+ * - Must NOT import from `../client`
  * - May use Node APIs, `next/server`, cookies, headers, etc.
  */
 
