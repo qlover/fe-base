@@ -1,5 +1,47 @@
 # examples/next-oauth
 
+## 1.0.0
+
+### Major Changes
+
+#### 🐞 Bug Fixes
+
+- **vitest:** 修复 next-kit 在 create-release-pr 下的测试失败 ([1fb152c](https://github.com/qlover/fe-base/commit/1fb152c803987ce64f100b96b8f77daedac4dd70)) ([#680](https://github.com/qlover/fe-base/pull/680))
+
+- **next-oauth:** Pages 主题与 kit 样式扫描 ([9472b11](https://github.com/qlover/fe-base/commit/9472b11dc42362d9256aad656f30ccbb2c19cebc)) ([#679](https://github.com/qlover/fe-base/pull/679))
+
+- **examples:** 修复 tailwind.config 重复导出 ([201c51f](https://github.com/qlover/fe-base/commit/201c51f5609eca3f9ed10d9118f8cd392ae5c3b4)) ([#679](https://github.com/qlover/fe-base/pull/679))
+
+- **examples:** 语言切换时保留 next-intl 动态路由 params ([dc21ff1](https://github.com/qlover/fe-base/commit/dc21ff19ccb819df67ed8142a50cfcd414842006)) ([#678](https://github.com/qlover/fe-base/pull/678))
+
+- **next-oauth:** middleware page auth gate and Pages theme FOUC sync ([a36ba9a](https://github.com/qlover/fe-base/commit/a36ba9a39186b395b43b083b2e72cbbfbe76d6ce)) ([#677](https://github.com/qlover/fe-base/pull/677))
+
+- **examples:** 避免裸 hidden 类被浏览器扩展覆盖显示 ([e456658](https://github.com/qlover/fe-base/commit/e456658f65b45d0785993cc1ddf6cebc929ea741)) ([#676](https://github.com/qlover/fe-base/pull/676))
+
+- **next-oauth:** OAuth 机器端点返回扁平 RFC JSON 并完善 SSO 回调 ([6ec0793](https://github.com/qlover/fe-base/commit/6ec0793b2e818f24cd3cf8275d6d26f8ab828762)) ([#675](https://github.com/qlover/fe-base/pull/675))
+
+- **next-oauth:** authorize 未登录跳转登录并经 redirect 回跳继续同意 ([c345c40](https://github.com/qlover/fe-base/commit/c345c4047097fb303931c7daa25f58f3ad991fe8)) ([#675](https://github.com/qlover/fe-base/pull/675))
+
+- **next-oauth:** skip locale rewrite for OAuth endpoints and store refresh token ([cf7ee09](https://github.com/qlover/fe-base/commit/cf7ee09b5160e2222a7f5c84f2eabf269173b9e1)) ([#674](https://github.com/qlover/fe-base/pull/674))
+
+#### ♻️ Refactors
+
+- **next-oauth:** 接入 next-kit 包 ([59c9b66](https://github.com/qlover/fe-base/commit/59c9b6649db4d90be222bc83fc8cbd14eed8575c)) ([#679](https://github.com/qlover/fe-base/pull/679))
+
+- **next-oauth:** 服务端接口改用 next-kit ([19deea6](https://github.com/qlover/fe-base/commit/19deea689d0f4c3cbebdb5fc2d58d3b4112f2a29)) ([#679](https://github.com/qlover/fe-base/pull/679))
+
+- **examples:** 去掉 shared 与 next-kit 重复代码 ([3fe0867](https://github.com/qlover/fe-base/commit/3fe08674406c089a3180611230153be09c328c21)) ([#679](https://github.com/qlover/fe-base/pull/679))
+
+- **ServerConfig, SupabaseOAuthProvider:** Normalize SITE_URL handling and enhance logging ([dcf824f](https://github.com/qlover/fe-base/commit/dcf824f3a309488a0528bf4f227f60f8dd94cddf)) ([#673](https://github.com/qlover/fe-base/pull/673))
+
+- **SupabaseOAuthProvider, EmailOtpCallbackClient:** Update email login handling and improve URL management ([7eb54ce](https://github.com/qlover/fe-base/commit/7eb54ce29e1c82bc7060190dcd99f405e9ea8221)) ([#673](https://github.com/qlover/fe-base/pull/673))
+
+- **SupabaseOAuthProvider, EmailOtpCallbackClient:** Enhance email login flow and URL handling ([05b7cdb](https://github.com/qlover/fe-base/commit/05b7cdba522d02e23a1eba8abb41d7394bd80114)) ([#673](https://github.com/qlover/fe-base/pull/673))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `0.0.2` to `1.0.0`
+
 ## 0.3.0
 
 ### Minor Changes

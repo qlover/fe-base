@@ -1,5 +1,13 @@
 # @qlover/create-app
 
+## 4.0.0
+
+### Major Changes
+
+#### 🐞 Bug Fixes
+
+- **vitest:** 修复 next-kit 在 create-release-pr 下的测试失败 ([1fb152c](https://github.com/qlover/fe-base/commit/1fb152c803987ce64f100b96b8f77daedac4dd70)) ([#680](https://github.com/qlover/fe-base/pull/680))
+
 ## 3.3.5
 
 ### Patch Changes
