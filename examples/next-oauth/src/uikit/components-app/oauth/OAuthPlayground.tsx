@@ -8,6 +8,8 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
+import { Button, buttonClassName } from '@qlover/next-kit/client';
+import { usePageI18nMapping } from '@qlover/next-kit/client';
 import {
   computePkceS256Challenge,
   generatePkceVerifier
@@ -23,12 +25,10 @@ import {
 } from 'react';
 import { Link } from '@/i18n/routing';
 import { AppUserGateway } from '@/impls/AppUserGateway';
-import { Button, buttonClassName } from '@/uikit/components/Button';
 import {
   readAppApiJson,
   readOAuthMachineJson
 } from '@/uikit/components-app/developer/apps/readAppApiJson';
-import { usePageI18nMapping } from '@/uikit/context/PageI18nContext';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import {

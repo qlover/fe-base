@@ -1,7 +1,5 @@
 import { inject } from '@shared/container';
 import { API_USER_REQUEST_LOGS } from '@config/route';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
-import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 import { AppApiRequester } from './AppApiRequester';
 import type {
   ResourceOptions,
@@ -9,6 +7,8 @@ import type {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
+import type { NextKitApiSuccess } from '@qlover/next-kit/common';
+import type { RequestLogRow } from '@qlover/next-kit/common';
 
 function sortCriteriaToQuery(
   criteria: ResourceSearchParams
@@ -61,7 +61,7 @@ export class RequestLogsApi implements ResourceSearchInterface<RequestLogRow> {
       signal: resourceOptions?.signal
     });
 
-    const envelope = response.data as AppApiSuccessInterface<
+    const envelope = response.data as NextKitApiSuccess<
       ResourceSearchResult<RequestLogRow>
     >;
     const data = envelope.data;
@@ -74,7 +74,7 @@ export class RequestLogsApi implements ResourceSearchInterface<RequestLogRow> {
   /** Permanently clear all request logs. */
   public async clear(): Promise<{ deleted: number }> {
     const response = await this.appApiRequester.delete(API_USER_REQUEST_LOGS);
-    const envelope = response.data as AppApiSuccessInterface<{
+    const envelope = response.data as NextKitApiSuccess<{
       deleted: number;
     }>;
     return envelope.data ?? { deleted: 0 };

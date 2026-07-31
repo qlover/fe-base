@@ -1,8 +1,10 @@
-import type { BootstrapServerPlugin } from '@server/interfaces/BootstrapServerInterface';
+import type { NextSeedServerIocMap } from '@server/BootstrapServer';
+import type { BootstrapServerPlugin } from '@qlover/next-kit/server';
 
-export const printRequestIdPlugin: BootstrapServerPlugin = {
-  pluginName: 'print-request-id',
-  onBefore({ parameters: { logger, root } }) {
-    logger.info('Request id: ' + root.uuid);
-  }
-};
+export const printRequestIdPlugin: BootstrapServerPlugin<NextSeedServerIocMap> =
+  {
+    pluginName: 'print-request-id',
+    onBefore({ parameters: { logger, root } }) {
+      logger.info('Request id: ' + root.uuid);
+    }
+  };

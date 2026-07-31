@@ -1,9 +1,9 @@
-import type { UserSchema } from '@schemas/UserSchema';
 import type {
   SignOtpResult,
   SignWithOtpParams,
   VerifyOtpParams
 } from './AuthTypes';
+import type { UserSchema } from '@qlover/next-kit/common';
 import type { Session } from '@supabase/supabase-js';
 
 /**

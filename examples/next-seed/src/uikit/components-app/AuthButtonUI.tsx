@@ -1,7 +1,7 @@
 'use client';
 
+import { buttonClassName } from '@qlover/next-kit/client';
 import { Link } from '@/i18n/routing';
-import { buttonClassName } from '@/uikit/components/Button';
 import {
   COMMON_AUTH_NAV_SIGN_UP,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN

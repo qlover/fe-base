@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal, type ModalProps } from '@/uikit/components/Modal';
+import { Modal, type ModalProps } from '@qlover/next-kit/client';
 import type { ReactNode } from 'react';
 
 export type DeveloperOverlayModalProps = {

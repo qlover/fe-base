@@ -1,14 +1,14 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
 
+import { useStrictEffect } from '@qlover/next-kit/client';
 import { useLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { BootstrapClient } from '@/impls/bootstraps/BootstrapClient';
 import { I } from '@config/ioc-identifiter';
-import type { I18nServiceLocale } from '@interfaces/I18nServiceInterface';
 import { useIOC } from '../hook/useIOC';
-import { useStrictEffect } from '../hook/useStrictEffect';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
+import type { I18nServiceLocale } from '@qlover/next-kit/common';
 
 export function BootstrapsProvider(props: { children: React.ReactNode }) {
   const IOC = useIOC();

@@ -1,18 +1,18 @@
 'use client';
 
+import { Button } from '@qlover/next-kit/client';
+import { Dropdown } from '@qlover/next-kit/client';
+import { Modal } from '@qlover/next-kit/client';
+import { Tooltip } from '@qlover/next-kit/client';
 import { Table } from 'antd';
 import { useState } from 'react';
-import type { DialogHandler } from '@/impls/DialogHandler';
 import { AntdDemoProvider } from '@/uikit/components/AntdDemoProvider';
-import { Button } from '@/uikit/components/Button';
-import { Dropdown } from '@/uikit/components/Dropdown';
-import { Modal } from '@/uikit/components/Modal';
-import { Tooltip } from '@/uikit/components/Tooltip';
 import { ZustandCounterCard } from '@/uikit/components-app/ZustandCounterCard';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { demoUiI18n } from '@config/i18n-mapping/demoUiI18n';
 import { I } from '@config/ioc-identifiter';
+import type { DialogHandler } from '@qlover/next-kit/client';
 
 function Section({
   title,

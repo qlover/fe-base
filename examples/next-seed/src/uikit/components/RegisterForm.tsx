@@ -1,15 +1,15 @@
 'use client';
 
+import { useStore } from '@qlover/next-kit/client';
+import { RegisterValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useStore } from '@/uikit/hook/useStore';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import { RegisterValidator } from '@shared/validators/RegisterValidator';
 import type { RegisterI18nInterface } from '@config/i18n-mapping/register18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_LOGIN } from '@config/route';
-import type { RegisterSchema } from '@schemas/RegisterSchema';
+import type { RegisterSchema } from '@qlover/next-kit/common';
 
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';

@@ -1,4 +1,4 @@
-import { buttonClassName } from './button';
+import { buttonClassName } from '@qlover/next-kit/client';
 
 /**
  * Shared Tailwind class strings for OAuth developer / playground UI.

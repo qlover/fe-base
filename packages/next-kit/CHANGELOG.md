@@ -1,0 +1,11 @@
+# @qlover/next-kit
+
+## 0.0.1
+
+### Minor Changes
+
+- Initial package scaffold with `common` / `server` / `client` entry points.
+- Migrate isomorphic app-shell building blocks into `common` (container, schemas, validators, cookies, encryptor, supabase env constants).
+- Keep `reflect-metadata` as an app-entry side effect; use `next_kit:` i18n key namespace.
+- Add first `server` slice: BootstrapServer (injected deps), ApiServer, NextApiHandler, CORS/logger/crypto utils, BaseRepository.
+- Add `SupabaseRepo` and `RequestLogsRepository` (client factories injected; no IOC decorators).

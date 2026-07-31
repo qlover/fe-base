@@ -3,12 +3,12 @@
 import { useMountedClient } from '@brain-toolkit/react-kit';
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
+import { Button } from '@qlover/next-kit/client';
+import { Dropdown } from '@qlover/next-kit/client';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { Button } from '@/uikit/components/Button';
-import { Dropdown } from '@/uikit/components/Dropdown';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';

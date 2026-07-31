@@ -3,36 +3,43 @@ import {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
+import { localesSchema, type LocalesSchema } from '@qlover/next-kit/common';
+import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
-import { localesSchema, type LocalesSchema } from '@schemas/LocalesSchema';
-import { Datetime } from '@server/utils/Datetime';
-import { SupabaseRepo } from './SupabaseRepo';
+import { createAdminClient, createServerClient } from '@shared/supabase/server';
+import { I } from '@config/ioc-identifiter';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface UpsertChunkResult {
   success: boolean;
   chunkIndex: number;
-  inputData: Partial<LocalesSchema>[]; // Original data sent to upsert
-  returnedData?: LocalesSchema[]; // Actual data returned from database
-  affectedCount?: number; // Number of rows affected
+  inputData: Partial<LocalesSchema>[];
+  returnedData?: LocalesSchema[];
+  affectedCount?: number;
   error?: string;
 }
 
 export interface UpsertResult {
-  totalCount: number; // Total items attempted
-  successCount: number; // Successfully upserted items
-  failureCount: number; // Failed items
+  totalCount: number;
+  successCount: number;
+  failureCount: number;
   successChunks: UpsertChunkResult[];
   failureChunks: UpsertChunkResult[];
-  allReturnedData: LocalesSchema[]; // All successfully upserted data combined
+  allReturnedData: LocalesSchema[];
 }
 
 const TABLE = 'next_app_locales';
+
 @injectable()
 export class LocalesRepository extends SupabaseRepo<LocalesSchema> {
   protected safeFields = Object.keys(localesSchema.shape);
 
-  constructor(@inject(Datetime) protected datetime: Datetime) {
-    super(TABLE);
+  constructor(@inject(I.Logger) logger: LoggerInterface) {
+    super(TABLE, {
+      logger,
+      getUserClient: createServerClient,
+      getAdminClient: createAdminClient
+    });
   }
 
   public async getAll(): Promise<LocalesSchema[]> {
@@ -61,12 +68,10 @@ export class LocalesRepository extends SupabaseRepo<LocalesSchema> {
   }
 
   /**
-   * batch upsert data, support chunk processing and concurrency control
-   * @param data - data to upsert
-   * @param options - options
-   * @param options.chunkSize - chunk size, default 100
-   * @param options.concurrency - concurrency, default 3
-   * @returns UpsertResult - contains success/failure details with returned data
+   * 批量 upsert，支持分片与并发控制。
+   * @param data - 待 upsert 数据
+   * @param options.chunkSize - 分片大小，默认 100
+   * @param options.concurrency - 并发数，默认 3
    */
   public async upsert(
     data: Partial<LocalesSchema>[],

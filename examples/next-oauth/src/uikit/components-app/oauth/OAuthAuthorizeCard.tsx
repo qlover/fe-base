@@ -10,10 +10,10 @@ import {
   QuestionMarkCircleIcon,
   Squares2X2Icon
 } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
-import { Button } from '@/uikit/components/Button';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';

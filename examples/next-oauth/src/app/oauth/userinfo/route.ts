@@ -1,13 +1,13 @@
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@qlover/next-kit/server';
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { isEmpty } from 'lodash-es';
 import { ROUTE_OAUTH_USERINFO } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
-import {
-  apiCorsPreflightResponse,
-  buildApiCorsHeaders
-} from '@server/utils/apiCors';
 import type { NextRequest } from 'next/server';
 
 const corsConfig = new ServerConfig();

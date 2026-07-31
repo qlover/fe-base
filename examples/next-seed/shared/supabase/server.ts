@@ -1,7 +1,7 @@
+import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
 /**
  * Especially important if using Fluid compute: Don't put this client in a

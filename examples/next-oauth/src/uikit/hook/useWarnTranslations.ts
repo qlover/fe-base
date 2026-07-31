@@ -1,11 +1,15 @@
-import { useTranslations as useNextTranslations } from 'next-intl';
-import { useMemo } from 'react';
-import { TranslateI18nUtil } from '@/impls/TranslateI18nUtil';
+import {
+  useWarnTranslations as useKitWarnTranslations,
+  type TranslateI18nOptions
+} from '@qlover/next-kit/client';
+import { logger } from '@/impls/globals';
+import { i18nWarnMissingTranslation } from '@config/common';
 
-export function useWarnTranslations() {
-  const t = useNextTranslations();
+const defaultOptions: TranslateI18nOptions = {
+  warnMissing: i18nWarnMissingTranslation,
+  logger
+};
 
-  const overrideT = useMemo(() => TranslateI18nUtil.overrideTranslateT(t), [t]);
-
-  return Object.assign(overrideT, t);
+export function useWarnTranslations(options?: TranslateI18nOptions) {
+  return useKitWarnTranslations({ ...defaultOptions, ...options });
 }

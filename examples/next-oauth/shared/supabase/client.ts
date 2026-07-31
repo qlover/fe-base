@@ -1,6 +1,6 @@
+import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createBrowserClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
 export function createClient() {
   return createBrowserClient(SUPABASE_URL!, SUPABASE_KEY!);

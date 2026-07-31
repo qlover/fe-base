@@ -1,8 +1,8 @@
+import { PageI18nProvider } from '@qlover/next-kit/client';
 import { Suspense } from 'react';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { OAuthAuthorizeCard } from '@/uikit/components-app/oauth/OAuthAuthorizeCard';
 import { OAuthAuthorizeErrorCard } from '@/uikit/components-app/oauth/OAuthAuthorizeErrorCard';
-import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import {
   oauthAuthorizeI18n,

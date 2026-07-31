@@ -1,7 +1,7 @@
 import type { AppApiTransaction } from '@/impls/appApi/AppApiRequester';
-import type { LoginSchema } from '@schemas/LoginSchema';
-import type { UserSchema } from '@schemas/UserSchema';
 import type { OAuthConsentPayload } from './UserServiceInterface';
+import type { LoginSchema } from '@qlover/next-kit/common';
+import type { UserSchema } from '@qlover/next-kit/common';
 
 export type UserApiLoginTransaction = AppApiTransaction<
   LoginSchema,

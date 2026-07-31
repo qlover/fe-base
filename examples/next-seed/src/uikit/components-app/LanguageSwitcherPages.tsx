@@ -2,11 +2,10 @@
 
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
+import { Button, Dropdown, useMountedClient } from '@qlover/next-kit/client';
 import { useRouter } from 'next/router';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
-import { Button } from '@/uikit/components/Button';
-import { Dropdown } from '@/uikit/components/Dropdown';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
@@ -18,6 +17,7 @@ export function LanguageSwitcherPages() {
   const router = useRouter();
   const currentLocale = useLocale() as LocaleType;
   const [isPending, setIsPending] = useState(false);
+  const mounted = useMountedClient();
 
   const localeRouter = useMemo(
     () =>
@@ -41,7 +41,9 @@ export function LanguageSwitcherPages() {
 
   const handleLanguageChange = useCallback(
     (value: string) => {
-      if (isPending || value === currentLocale || !router.isReady) return;
+      if (!mounted || isPending || value === currentLocale || !router.isReady) {
+        return;
+      }
 
       setIsPending(true);
 
@@ -53,7 +55,7 @@ export function LanguageSwitcherPages() {
         setIsPending(false);
       }
     },
-    [isPending, currentLocale, router, localeRouter]
+    [mounted, isPending, currentLocale, router, localeRouter]
   );
 
   const currentLocaleLabel =
@@ -72,7 +74,7 @@ export function LanguageSwitcherPages() {
       <Button
         variant="header"
         data-testid="LanguageSwitcher"
-        disabled={isPending || !router.isReady}
+        disabled={!mounted || isPending}
         aria-label={currentLocaleLabel}
       >
         <LanguageIcon className="h-4 w-4 shrink-0" aria-hidden />

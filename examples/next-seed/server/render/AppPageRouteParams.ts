@@ -2,10 +2,10 @@ import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
 import { themeConfig } from '@config/theme';
 import { getI18nInterface, getI18nMessages } from './pageRouteParams';
 import type { RouteParamsnHandlerInterface } from '../interfaces/RouteParamsnHandlerInterface';
+import type { PageI18nInterface } from '@qlover/next-kit/common';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;

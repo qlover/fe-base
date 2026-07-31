@@ -13,11 +13,11 @@ import {
   MoonIcon as MoonSolidIcon,
   SunIcon as SunSolidIcon
 } from '@heroicons/react/24/solid';
+import { Button } from '@qlover/next-kit/client';
+import { Dropdown } from '@qlover/next-kit/client';
 import { useTheme } from '@wrksz/themes/client';
 import { clsx } from 'clsx';
 import { useEffect, useMemo } from 'react';
-import { Button } from '@/uikit/components/Button';
-import { Dropdown } from '@/uikit/components/Dropdown';
 import {
   COMMON_THEME_DARK,
   COMMON_THEME_DEFAULT,

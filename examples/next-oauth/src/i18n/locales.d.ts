@@ -11,3 +11,13 @@ declare module '@locales/zh.json' {
   const messages: Record<string, string>;
   export = messages;
 }
+
+declare module '@locales/next_kit.en.json' {
+  const messages: Record<string, string>;
+  export = messages;
+}
+
+declare module '@locales/next_kit.zh.json' {
+  const messages: Record<string, string>;
+  export = messages;
+}

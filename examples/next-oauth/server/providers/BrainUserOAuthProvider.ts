@@ -5,15 +5,15 @@ import {
   createBrainUserOptions
 } from '@brain-toolkit/brain-user';
 import { LoginParams } from '@qlover/corekit-bridge';
+import { UserRole, UserSchema } from '@qlover/next-kit/common';
+import { TokenEncryption } from '@qlover/next-kit/server';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import { UserRole, UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
-import { TokenEncryption } from '@server/utils/TokenEncryption';
 import type { LoggerInterface } from '@qlover/logger';
 import type {
   OAuthSessionPayload,

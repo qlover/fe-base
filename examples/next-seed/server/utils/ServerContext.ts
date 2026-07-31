@@ -5,7 +5,7 @@ import type {
   ServerContextInterface,
   ServerContextResetParams,
   ServerState
-} from '@server/interfaces/ServerContextInterface';
+} from '@qlover/next-kit/server';
 import type { NextRequest } from 'next/server';
 
 @injectable()

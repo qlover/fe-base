@@ -3,8 +3,6 @@ import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
-import type { UserCredential, UserSchema } from '@schemas/UserSchema';
-import { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
@@ -21,6 +19,8 @@ import {
   AppApiRequesterContext
 } from './appApi/AppApiRequester';
 import type { GatewayResult, LoginParams } from '@qlover/corekit-bridge';
+import type { NextKitApiResult } from '@qlover/next-kit/common';
+import type { UserCredential, UserSchema } from '@qlover/next-kit/common';
 
 /**
  * UserApi
@@ -176,7 +176,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
    */
   public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
     const response = await this.client.request<
-      AppApiResult<SignOtpResult>,
+      NextKitApiResult<SignOtpResult>,
       SignWithOtpParams
     >({
       url: apiRoutes.API_USER_OTP_LOGIN,
@@ -202,7 +202,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     params: { phone: string; token: string } | { email: string; token: string }
   ): Promise<SignOtpResult> {
     const response = await this.client.request<
-      AppApiResult<SignOtpResult>,
+      NextKitApiResult<SignOtpResult>,
       typeof params
     >({
       url: apiRoutes.API_USER_OTP_VERIFY,
@@ -227,7 +227,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     provider: LoginProviderType;
   }): Promise<LoginProviderResult> {
     const response = await this.client.request<
-      AppApiResult<LoginProviderResult>,
+      NextKitApiResult<LoginProviderResult>,
       { provider: LoginProviderType }
     >({
       url: apiRoutes.API_USER_LOGIN_PROVIDER,

@@ -1,52 +1,35 @@
-import Link from 'next/link';
+'use client';
+
+import {
+  LocaleLink as KitLocaleLink,
+  type LocaleLinkProps
+} from '@qlover/next-kit/client';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
-import type { LinkProps } from 'next/link';
-import type { ReactNode } from 'react';
 
-interface LocaleLinkProps
-  extends
-    Omit<LinkProps, 'href'>,
-    Omit<React.HTMLAttributes<HTMLAnchorElement>, 'children'> {
-  href:
-    | string
-    | {
-        pathname: string;
-        query?: Record<string, string>;
-        hash?: string;
-      };
-  locale?: string;
-  title: string;
-  children: ReactNode;
-  defaultLocale?: string;
-  className?: string;
-}
+type AppLocaleLinkProps = Omit<
+  LocaleLinkProps,
+  'fallbackLocale' | 'useLocaleRoutes'
+> & {
+  fallbackLocale?: string;
+  useLocaleRoutes?: boolean;
+};
 
-export const LocaleLink: React.FC<LocaleLinkProps> = ({
-  href,
-  locale,
-  children,
-  defaultLocale,
-  ...props
-}) => {
-  locale = locale || i18nConfig.fallbackLng;
-
-  const isDefaultLocale = locale === defaultLocale;
-  const shouldAddLocale = useLocaleRoutes && !isDefaultLocale;
-
-  let localizedHref: typeof href;
-  if (typeof href === 'string') {
-    localizedHref = shouldAddLocale ? `/${locale}${href}` : href;
-  } else {
-    localizedHref = {
-      ...href,
-      pathname: shouldAddLocale ? `/${locale}${href.pathname}` : href.pathname
-    };
-  }
+/**
+ * App LocaleLink — injects i18n / routing defaults from config.
+ */
+export function LocaleLink(props: AppLocaleLinkProps) {
+  const {
+    fallbackLocale = i18nConfig.fallbackLng,
+    useLocaleRoutes: useLocaleRoutesProp = useLocaleRoutes,
+    ...rest
+  } = props;
 
   return (
-    <Link data-testid="locale-link" {...props} href={localizedHref}>
-      {children}
-    </Link>
+    <KitLocaleLink
+      {...rest}
+      fallbackLocale={fallbackLocale}
+      useLocaleRoutes={useLocaleRoutesProp}
+    />
   );
-};
+}

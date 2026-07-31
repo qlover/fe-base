@@ -1,4 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { LoginWithProviderCallbackSchema } from '@qlover/next-kit/common';
+import { PasswordEncrypt } from '@qlover/next-kit/server';
+import { RequestLogsRepository, SupabaseRepo } from '@qlover/next-kit/server';
 import {
   SignOtpResult,
   SignWithOtpSchema,
@@ -18,16 +21,10 @@ import {
 } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_LOGIN } from '@config/route';
-import { LoginWithProviderCallbackSchema } from '@schemas/LoginSchema';
-import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import { SupabaseRepo } from '@server/repositorys/SupabaseRepo';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
-import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
-import { PasswordEncrypt } from '../utils/PasswordEncrypt';
-import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserLoginContext,
   UserLoginParams,
@@ -36,6 +33,8 @@ import type {
 } from '../interfaces/UserServiceInterface';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
+import type { UserSchema } from '@qlover/next-kit/common';
+import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type { Provider } from '@supabase/supabase-js';
 
 @injectable()

@@ -1,10 +1,11 @@
+import type { NextSeedServerIocMap } from '@server/BootstrapServer';
+import { AuthUserService } from '@server/services/AuthUserService';
 import type {
   BootstrapServerContext,
   BootstrapServerPlugin
-} from '@server/interfaces/BootstrapServerInterface';
-import { AuthUserService } from '@server/services/AuthUserService';
+} from '@qlover/next-kit/server';
 
-export class ServerAuthPlugin implements BootstrapServerPlugin {
+export class ServerAuthPlugin implements BootstrapServerPlugin<NextSeedServerIocMap> {
   public readonly pluginName = 'ServerAuthPlugin';
 
   /**
@@ -12,7 +13,7 @@ export class ServerAuthPlugin implements BootstrapServerPlugin {
    */
   public async onBefore({
     parameters: { IOC }
-  }: BootstrapServerContext): Promise<void> {
+  }: BootstrapServerContext<NextSeedServerIocMap>): Promise<void> {
     await IOC(AuthUserService).throwIfNotAuth();
   }
 }

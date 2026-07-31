@@ -4,8 +4,9 @@
 @import 'tailwindcss' source(none);
 @import './generated/theme.css';
 
-@source '../../shared/config/button.ts';
 @source '../../shared/config/component.ts';
+/* Scan kit dist so published package utilities are generated once in app CSS. */
+@source '../../node_modules/@qlover/next-kit/dist';
 @source '../app';
 @source '../uikit/components';
 @source '../uikit/components-app';

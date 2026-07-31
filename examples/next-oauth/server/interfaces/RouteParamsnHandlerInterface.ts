@@ -1,4 +1,4 @@
-import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
+import type { PageI18nInterface } from '@qlover/next-kit/common';
 
 /**
  * 用于处理页面渲染的路由参数处理接口

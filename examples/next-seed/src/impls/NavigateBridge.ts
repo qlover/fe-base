@@ -1,32 +1,14 @@
+import { NavigateBridge as KitNavigateBridge } from '@qlover/next-kit/client';
 import type { useRouter } from '@/i18n/routing';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import type { UIBridgeInterface } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 
 type AppRouterInstance = ReturnType<typeof useRouter>;
 
 @injectable()
-export class NavigateBridge implements UIBridgeInterface<AppRouterInstance> {
-  protected navigate: AppRouterInstance | null = null;
-
-  constructor(@inject(I.Logger) protected logger: LoggerInterface) {}
-
-  /**
-   * @override
-   */
-  public setUIBridge(ui: AppRouterInstance): void {
-    this.navigate = ui;
-  }
-
-  /**
-   * @override
-   */
-  public getUIBridge(): AppRouterInstance | null {
-    if (!this.navigate) {
-      this.logger.debug('NavigateBridge this.navigate is not set');
-    }
-
-    return this.navigate;
+export class NavigateBridge extends KitNavigateBridge<AppRouterInstance> {
+  constructor(@inject(I.Logger) logger: LoggerInterface) {
+    super(logger);
   }
 }

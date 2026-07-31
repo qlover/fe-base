@@ -3,7 +3,7 @@
  * Kept intentionally small: only what AuthUserService / AuthProviderInterface /
  * SessionService actually need.
  */
-import type { UserSchema } from '@schemas/UserSchema';
+import type { UserSchema } from '@qlover/next-kit/common';
 
 export interface SessionPayload {
   userId: string;

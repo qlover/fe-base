@@ -1,17 +1,17 @@
 import {
-  isAppApiErrorInterface,
-  isAppApiSuccessInterface,
-  type AppApiResult
-} from '@interfaces/AppApiInterface';
+  isNextKitApiError,
+  isNextKitApiSuccess,
+  type NextKitApiResult
+} from '@qlover/next-kit/common';
 
 export async function readAppApiJson<T>(response: Response): Promise<T> {
-  const body = (await response.json()) as AppApiResult<T>;
+  const body = (await response.json()) as NextKitApiResult<T>;
 
-  if (isAppApiErrorInterface(body)) {
+  if (isNextKitApiError(body)) {
     throw new Error(body.message ?? body.id);
   }
 
-  if (!isAppApiSuccessInterface<T>(body)) {
+  if (!isNextKitApiSuccess<T>(body)) {
     throw new Error('Invalid API response');
   }
 

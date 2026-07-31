@@ -1,65 +1,29 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Toaster } from 'sonner';
-import type {
-  DialogHandler,
-  DialogHandlerOptions
-} from '@/impls/DialogHandler';
 import {
-  DeveloperConfirmDialog,
-  type DeveloperConfirmOptions
-} from '@/uikit/components-app/developer/DeveloperConfirmDialog';
+  ArrowPathIcon,
+  ExclamationCircleIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
+import { DialogUIHost as KitDialogUIHost } from '@qlover/next-kit/client';
 import { I } from '@config/ioc-identifiter';
 import { useIOC } from '../hook/useIOC';
 
 /**
- * Bridges imperative {@link DialogHandler} confirm/toast to React UI.
+ * Bridges imperative DialogHandler confirm/toast to React UI (kit).
+ * Developer-specific confirms stay on DeveloperConfirmDialog call sites.
  */
 export function DialogUIHost() {
   const dialogHandler = useIOC(I.DialogHandler);
-  const [confirmOptions, setConfirmOptions] =
-    useState<DeveloperConfirmOptions | null>(null);
-
-  useEffect(() => {
-    return dialogHandler.bindConfirmHost({
-      open: (options: DialogHandlerOptions) => {
-        setConfirmOptions({
-          title: String(options.title ?? ''),
-          content: options.content,
-          okText: options.okText ?? 'OK',
-          cancelText: options.cancelText ?? 'Cancel',
-          variant: options.okType === 'danger' ? 'danger' : 'default',
-          onConfirm: async () => {
-            await options.onOk?.();
-          }
-        });
-      }
-    });
-  }, [dialogHandler]);
 
   return (
-    <>
-      <Toaster
-        position="top-center"
-        richColors
-        closeButton
-        toastOptions={{
-          classNames: {
-            toast:
-              'border border-primary-border bg-primary text-primary-text shadow-lg',
-            title: 'text-primary-text',
-            description: 'text-secondary-text'
-          }
-        }}
-      />
-      <DeveloperConfirmDialog
-        open={confirmOptions != null}
-        options={confirmOptions}
-        onClose={() => {
-          setConfirmOptions(null);
-        }}
-      />
-    </>
+    <KitDialogUIHost
+      dialogHandler={dialogHandler}
+      pendingIcon={<ArrowPathIcon className="h-4 w-4 animate-spin" />}
+      warningIcon={
+        <ExclamationCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
+      }
+      closeIcon={<XMarkIcon className="h-5 w-5" />}
+    />
   );
 }

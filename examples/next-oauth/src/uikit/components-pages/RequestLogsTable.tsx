@@ -1,13 +1,13 @@
 'use client';
 
+import { usePageI18nMapping } from '@qlover/next-kit/client';
 import {
   Table,
   type TableColumn,
   type TablePaginationConfig
 } from '@/uikit/components/Table';
 import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
-import type { RequestLogRow } from '@schemas/RequestLogSchema';
-import { usePageI18nMapping } from '../context/PageI18nContext';
+import type { RequestLogRow } from '@qlover/next-kit/common';
 
 export type RequestLogsTableTt = {
   colTime: string;

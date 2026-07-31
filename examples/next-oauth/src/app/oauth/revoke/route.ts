@@ -1,11 +1,11 @@
+import {
+  apiCorsPreflightResponse,
+  buildApiCorsHeaders
+} from '@qlover/next-kit/server';
 import { ROUTE_OAUTH_REVOKE } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
 import { ServerConfig } from '@server/ServerConfig';
-import {
-  apiCorsPreflightResponse,
-  buildApiCorsHeaders
-} from '@server/utils/apiCors';
 import { parseOAuthTokenRequest } from '../token/route';
 import type { NextRequest } from 'next/server';
 

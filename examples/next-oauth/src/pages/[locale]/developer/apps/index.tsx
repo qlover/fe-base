@@ -1,5 +1,5 @@
+import { ClientSeo } from '@qlover/next-kit/client';
 import { useMemo } from 'react';
-import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { AppRoutePagePages } from '@/uikit/components-app/AppRoutePagePages';
 import { DeveloperAppsPageComponent } from '@/uikit/components-app/developer/apps/DeveloperAppsPage';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';

@@ -1,10 +1,10 @@
+import { TranslateI18nUtil } from '@qlover/next-kit/common';
 import { loadMessages } from '@/i18n/loadMessages';
-import { TranslateI18nUtil } from '@/impls/TranslateI18nUtil';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
 import { themeConfig } from '@config/theme';
 import type { RouteParamsnHandlerInterface } from '../interfaces/RouteParamsnHandlerInterface';
+import type { PageI18nInterface } from '@qlover/next-kit/common';
 import type { useTranslations } from 'next-intl';
 import type { ParsedUrlQuery } from 'querystring';
 
@@ -131,8 +131,8 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
       return message;
     };
 
-    return TranslateI18nUtil.translate<T>(
-      i18nInterface,
+    return TranslateI18nUtil.translate(
+      i18nInterface as T & Record<string, unknown>,
       t as ReturnType<typeof useTranslations>
     );
   }

@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/uikit/components/Button';
+import { Button } from '@qlover/next-kit/client';
+import { useStore } from '@qlover/next-kit/client';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useStore } from '@/uikit/hook/useStore';
 import { I } from '@config/ioc-identifiter';
 
 export function ZustandCounterCard() {

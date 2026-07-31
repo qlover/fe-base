@@ -1,8 +1,8 @@
 'use client';
 
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { Button } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
-import { Button } from '@/uikit/components/Button';
 
 export function CopyableCredential(props: {
   value: string;

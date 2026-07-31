@@ -1,6 +1,8 @@
 // src/i18n/request.ts
 
+import { IntlErrorCode } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
+import { i18nConfig } from '@config/i18n';
 import { loadMessages } from './loadMessages';
 import { routing, type Locale } from './routing';
 
@@ -19,13 +21,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages,
-    // 将 MISSING_MESSAGE 错误转换为警告
+    timeZone: i18nConfig.timeZone,
     onError: (error) => {
-      if (error.message.includes('MISSING_MESSAGE')) {
-        console.warn(`[i18n] Missing translation: ${error.message}`);
-        return error.message; // 返回 key 作为 fallback 文本
+      if (
+        error.code === IntlErrorCode.MISSING_MESSAGE ||
+        error.code === IntlErrorCode.ENVIRONMENT_FALLBACK
+      ) {
+        console.warn(`[i18n] ${error.code}: ${error.message}`);
+        return;
       }
-      throw error; // 其他错误仍然抛出
+      throw error;
     }
   };
 });

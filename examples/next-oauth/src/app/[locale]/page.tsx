@@ -1,3 +1,4 @@
+import { PageI18nProvider } from '@qlover/next-kit/client';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import {
   HomeApiSnippet,
@@ -7,7 +8,6 @@ import {
   HomeFooter,
   HomeHero
 } from '@/uikit/components-app/home/HomeSections';
-import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { i18nConfig } from '@config/i18n';
 import { homeI18n, homeI18nNamespace } from '@config/i18n-mapping/HomeI18n';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';

@@ -1,7 +1,7 @@
+import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { isPublicPath, redirectToPath } from '@config/route';
-import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
 export async function supabaseProxySession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

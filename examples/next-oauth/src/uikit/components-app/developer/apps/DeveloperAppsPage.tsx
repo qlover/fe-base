@@ -9,6 +9,7 @@ import {
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
+import { Button, buttonClassName } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import {
@@ -18,8 +19,6 @@ import {
   useState,
   type FormEvent
 } from 'react';
-import type { DialogHandler } from '@/impls/DialogHandler';
-import { Button, buttonClassName } from '@/uikit/components/Button';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import {
   DeveloperConfirmDialog,
@@ -47,6 +46,7 @@ import {
   type OAuthCredentials
 } from './OAuthClientCredentialsModal';
 import { readAppApiJson } from './readAppApiJson';
+import type { DialogHandler } from '@qlover/next-kit/client';
 import type {
   OAuthClientListItem,
   OAuthClientCreate,
