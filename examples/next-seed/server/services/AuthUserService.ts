@@ -22,7 +22,6 @@ import type {
   SignWithOtpSchema,
   VerifyOtpParams
 } from '@server/interfaces/AuthTypes';
-import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserLoginContext,
   UserLoginParams,
@@ -31,6 +30,7 @@ import type {
 } from '../interfaces/UserServiceInterface';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
+import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type { Provider } from '@supabase/supabase-js';
 
 @injectable()

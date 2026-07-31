@@ -11,8 +11,8 @@ import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import type { NextSeedServerIocMap } from './BootstrapServer';
-import type { ServerContextInterface } from './interfaces/ServerContextInterface';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
+import type { ServerContextInterface } from '@qlover/next-kit/server';
 
 export type NextApiServerContext = ApiServerContext;
 
