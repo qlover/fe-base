@@ -155,14 +155,16 @@ export class SupabaseRepo<Raw, T = Raw> extends BaseRepository<Raw, T> {
   ): Promise<ResourceSearchResult<T>> {
     const [query, { offset, pageSize }] = await this.getSearchBuilder(params);
     const { data, error, count } = await query;
+
+    if (error) {
+      this.logger.error('SupabaseRepo.search ', error);
+      this.throwIfError({ error });
+    }
+
     const items = (data || []) as T[];
     const total = count || 0;
     const hasMore =
       offset !== undefined ? offset + items.length < total : false;
-
-    if (error) {
-      this.logger.error('SupabaseRepo.search ', error);
-    }
 
     return {
       items,
@@ -281,13 +283,24 @@ export class SupabaseRepo<Raw, T = Raw> extends BaseRepository<Raw, T> {
     );
   }
 
+  /**
+   * Apply a single AND condition to the query.
+   *
+   * PostgREST `in` / `not.in` must be `in.(a,b)`. Using `.filter(col, 'in', array)`
+   * emits illegal `in.a,b` and fails with PGRST100. Use `.in()` / `.notIn()` instead.
+   */
   protected applyFilter(query: FilterBuilder, cond: unknown): FilterBuilder {
     const [field, op, value] = this.normalizeCondition(cond);
-    const supabaseOp = this.mapOperator(op);
 
-    if ((op === 'IN' || op === 'NOT IN') && !Array.isArray(value)) {
-      return query.filter(field, supabaseOp, [value]) as FilterBuilder;
+    if (op === Operators.in || op === Operators.notIn) {
+      const values = (Array.isArray(value) ? value : [value]) as unknown[];
+      if (op === Operators.in) {
+        return query.in(field, values) as FilterBuilder;
+      }
+      return query.notIn(field, values) as FilterBuilder;
     }
+
+    const supabaseOp = this.mapOperator(op);
     return query.filter(field, supabaseOp, value) as FilterBuilder;
   }
 
