@@ -1,5 +1,13 @@
 # @qlover/next-kit
 
+## 1.0.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **next-kit:** 修复 SupabaseRepo IN 查询生成非法 PostgREST 过滤器 ([678a738](https://github.com/qlover/fe-base/commit/678a738302a209eae960e0243d8f408055b87ba5)) ([#682](https://github.com/qlover/fe-base/pull/682))
+
 ## 1.0.0
 
 ### Major Changes
