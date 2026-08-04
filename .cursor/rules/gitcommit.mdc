@@ -1,15 +1,11 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+description: Git commit message standards for this repo
+alwaysApply: true
 ---
-这个文档目前cursor还不支持自定义说明, 未来可能支持
-
-This document currently cursor does not support custom descriptions, which may be supported in the future.
 
 ## Git Commit Standards
 
-All commit messages must be in English
+All commit messages must be in English.
 
 ### Format
 
@@ -17,9 +13,16 @@ All commit messages must be in English
 type(scope?): subject
 
 body?
-
-footer?
 ```
+
+Do **not** add author attribution footers such as:
+
+- `Co-authored-by:`
+- `Signed-off-by:`
+- `Made-with: Cursor`
+- other tool/author trailers
+
+Keep the message to type/subject and optional body only (breaking-change / issue refs are OK if needed).
 
 ### Length Limits
 
@@ -43,7 +46,7 @@ footer?
 - Subject: Must be concise (max 50 chars), present tense, no period
 - Scope (Optional): Component name (e.g., auth, api)
 - Body (Optional): Wrap text at 72 chars, use bullet points for multiple items
-- Footer (Optional): Breaking changes, issues
+- Do not put file lists or author info in the footer
 
 ### Examples
 
@@ -52,7 +55,3 @@ feat(auth): implement google oauth login
 fix(api): fix session timeout issue
 docs: add installation steps
 ```
-
-### notes
-
-如果可以将修改的文件列表列在 Footer 中
