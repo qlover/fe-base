@@ -190,13 +190,15 @@ describe('OAuthWrapperService', () => {
   });
 
   describe('getUserInfo', () => {
-    it('maps provider profile to OIDC userinfo claims', async () => {
+    it('maps provider profile through local identity (passthrough without store)', async () => {
       const userinfo = await service.getUserInfoWithAccessToken('access-token');
 
       expect(userinfo).toEqual({
-        id: 42,
+        id: '42',
         email: 'user@example.com',
-        name: 'Test User'
+        name: 'Test User',
+        external_user_id: '42',
+        provider: 'oauth'
       });
     });
 
@@ -208,6 +210,50 @@ describe('OAuthWrapperService', () => {
       await expect(
         service.getUserInfoWithAccessToken('bad-token')
       ).rejects.toBeInstanceOf(OAuthWrapperError);
+    });
+  });
+
+  describe('login + identity store', () => {
+    it('writes session with local UUID when identity store is set', async () => {
+      const store = {
+        findAuthUserIdByExternalId: vi.fn(async () => null),
+        findByEmail: vi.fn(async () => null),
+        createUser: vi.fn(async () => 'uuid-local'),
+        upsertLink: vi.fn(async () => undefined),
+        refreshMetadata: vi.fn(async () => undefined)
+      };
+      service.getIdentityStore = () => store;
+      service.toLocalUserDraft = async () => ({
+        provider: 'brain',
+        externalUserId: '42',
+        email: 'user@example.com',
+        name: 'Test User'
+      });
+      service.providerLogin.mockResolvedValue({
+        userId: '',
+        providerRefreshToken: 'brain-session',
+        user: { id: 42 }
+      });
+      service.providerGetUserInfo.mockResolvedValue({
+        id: 42,
+        email: 'user@example.com',
+        name: 'Test User'
+      });
+      session.setSession = vi.fn(async (payload) => {
+        session.session = payload;
+      });
+      repo.upsertUserCredentials = vi.fn(async () => undefined);
+
+      const result = await service.login({
+        email: 'user@example.com',
+        password: 'secret'
+      });
+
+      expect(result.userId).toBe('uuid-local');
+      expect(store.createUser).toHaveBeenCalled();
+      expect(session.setSession).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 'uuid-local' })
+      );
     });
   });
 });
