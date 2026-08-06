@@ -9,6 +9,7 @@
 drop table if exists public.n_oauth_wrapper__authorization_codes cascade;
 drop table if exists public.n_oauth_wrapper__refresh_tokens cascade;
 drop table if exists public.n_oauth_wrapper__user_credentials cascade;
+drop table if exists public.n_oauth_wrapper__user_links cascade;
 drop table if exists public.n_oauth_wrapper__clients cascade;
 
 -- ---------------------------------------------------------------------------
@@ -97,3 +98,25 @@ create table public.n_oauth_wrapper__user_credentials (
 comment on column public.n_oauth_wrapper__user_credentials.provider_refresh_token is 'Encrypted upstream provider refresh_token for long-lived user credentials.';
 
 alter table public.n_oauth_wrapper__user_credentials enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- n_oauth_wrapper__user_links — external IdP id ↔ auth.users.id
+-- ---------------------------------------------------------------------------
+
+create table public.n_oauth_wrapper__user_links (
+  auth_user_id uuid primary key references auth.users (id) on delete cascade,
+  provider text not null default 'brain',
+  external_user_id text not null,
+  extra jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (provider, external_user_id)
+);
+
+create index idx_n_oauth_wrapper__user_links_external
+  on public.n_oauth_wrapper__user_links (provider, external_user_id);
+
+comment on table public.n_oauth_wrapper__user_links is
+  'Maps upstream IdP user ids to local auth.users ids; optional extra profile JSON.';
+
+alter table public.n_oauth_wrapper__user_links enable row level security;

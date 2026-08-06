@@ -6,6 +6,20 @@ const PREFIX = 'scrypt';
 const KEY_LEN = 64;
 
 /**
+ * Cryptographically random OAuth client_id (`client_<hex>`).
+ */
+export function generateOAuthClientId(): string {
+  return `client_${randomBytes(12).toString('hex')}`;
+}
+
+/**
+ * Cryptographically random OAuth client_secret (base64url).
+ */
+export function generateOAuthClientSecret(): string {
+  return randomBytes(32).toString('base64url');
+}
+
+/**
  * Hashes OAuth client secrets for storage (scrypt, Node built-in).
  *
  * @example

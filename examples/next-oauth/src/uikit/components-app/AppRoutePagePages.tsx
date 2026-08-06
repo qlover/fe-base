@@ -3,6 +3,7 @@
 import { useLocale } from 'next-intl';
 import { Suspense } from 'react';
 import { AdminButton } from './AdminButton';
+import { AppBridgePages } from './AppBridgePages';
 import { AppHeaderNavPages } from './AppHeaderNavPages';
 import { DeveloperButton } from './DeveloperButton';
 import { LanguageSwitcherPages } from './LanguageSwitcherPages';
@@ -37,6 +38,7 @@ export function AppRoutePagePages({
       tt={tt}
       showHeaderLogo={showHeaderLogo}
       headerNav={resolvedHeaderNav}
+      topSlot={<AppBridgePages />}
       authSlot={
         showAuthButton ? (
           <LogoutButton

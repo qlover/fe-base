@@ -5,7 +5,7 @@ alwaysApply: true
 
 ## Git Commit Standards
 
-All commit messages must be in English.
+Commit messages use Chinese (subject and body).
 
 ### Format
 
@@ -51,7 +51,7 @@ Keep the message to type/subject and optional body only (breaking-change / issue
 ### Examples
 
 ```
-feat(auth): implement google oauth login
-fix(api): fix session timeout issue
-docs: add installation steps
+feat(auth): 实现 Google OAuth 登录
+fix(api): 修复会话超时问题
+docs: 补充安装步骤
 ```

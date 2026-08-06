@@ -16,7 +16,7 @@ export interface RoutePageLayoutProps extends HTMLAttributes<HTMLDivElement> {
   showHeaderLogo?: boolean;
   headerTitleClassName?: string;
   mainProps?: HTMLAttributes<HTMLElement>;
-  /** Rendered before header (e.g. AppBridge). Omit on Pages Router. */
+  /** Rendered before header (`AppBridge` / `AppBridgePages`). */
   topSlot?: ReactNode;
   authSlot?: ReactNode;
   languageSlot: ReactNode;

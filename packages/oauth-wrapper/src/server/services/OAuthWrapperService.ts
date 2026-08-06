@@ -2,7 +2,14 @@ import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
 import {
   OAuthAuthorizeQuerySchema,
   OAuthConsentBodySchema,
-  OAuthRfcCodes
+  OAuthRfcCodes,
+  ensureOAuthLocalUser,
+  DEFAULT_OAUTH_SYNTHETIC_EMAIL_DOMAIN,
+  resolveOAuthRealEmail,
+  buildOAuthSyntheticEmail,
+  type OAuthIdentityStore,
+  type OAuthLocalUserDraft,
+  type OAuthLocalUserRecord
 } from '../../core';
 import { OAuthWrapperError } from '../utils/OAuthWrapperError';
 import type * as Types from '../../core';
@@ -62,6 +69,114 @@ export abstract class OAuthWrapperService<
   }): Promise<Types.WithUserSession<SessionPayload, User>>;
 
   /**
+   * Optional local identity store (auth.users + links). Default: none (passthrough).
+   */
+  protected getIdentityStore(): OAuthIdentityStore | null {
+    return null;
+  }
+
+  /**
+   * Domain for synthetic emails when upstream has no email.
+   */
+  protected getSyntheticEmailDomain(): string {
+    return DEFAULT_OAUTH_SYNTHETIC_EMAIL_DOMAIN;
+  }
+
+  /**
+   * Map upstream User → draft for local persistence. Subclasses override for
+   * provider name / nested email fields.
+   */
+  protected toLocalUserDraft(
+    upstream: User
+  ): OAuthLocalUserDraft | Promise<OAuthLocalUserDraft> {
+    const record =
+      upstream && typeof upstream === 'object'
+        ? (upstream as Record<string, unknown>)
+        : {};
+    const rawId = record.id ?? record.sub;
+    const externalUserId = rawId != null ? String(rawId).trim() : '';
+    if (!externalUserId) {
+      throw new Error('Upstream user missing id');
+    }
+
+    return {
+      provider: 'oauth',
+      externalUserId,
+      email: typeof record.email === 'string' ? record.email : null,
+      name: typeof record.name === 'string' ? record.name : null,
+      phone: typeof record.phone === 'string' ? record.phone : null,
+      extra: null
+    };
+  }
+
+  /**
+   * Rewrite upstream User with local auth id / email / name.
+   */
+  protected applyLocalUser(upstream: User, local: OAuthLocalUserRecord): User {
+    if (upstream && typeof upstream === 'object') {
+      return {
+        ...(upstream as object),
+        id: local.authUserId,
+        email: local.email,
+        name: local.name,
+        external_user_id: local.externalUserId,
+        provider: local.provider
+      } as User;
+    }
+    return upstream;
+  }
+
+  /**
+   * Find-or-create local identity. Without a store, returns passthrough record.
+   */
+  protected async ensureLocalUser(
+    draft: OAuthLocalUserDraft
+  ): Promise<OAuthLocalUserRecord> {
+    const store = this.getIdentityStore();
+    if (!store) {
+      const externalUserId = String(draft.externalUserId ?? '').trim();
+      if (!externalUserId) {
+        throw new Error('externalUserId is required');
+      }
+      const provider = String(draft.provider ?? 'oauth').trim() || 'oauth';
+      const name = (draft.name ?? '').trim() || externalUserId;
+      const email =
+        resolveOAuthRealEmail(draft.email, this.getSyntheticEmailDomain()) ??
+        buildOAuthSyntheticEmail(
+          provider,
+          externalUserId,
+          this.getSyntheticEmailDomain()
+        );
+      return {
+        authUserId: externalUserId,
+        provider,
+        externalUserId,
+        email,
+        name
+      };
+    }
+
+    return ensureOAuthLocalUser(store, draft, {
+      syntheticEmailDomain: this.getSyntheticEmailDomain()
+    });
+  }
+
+  /**
+   * Resolve upstream profile to a session-ready local user.
+   */
+  protected async resolvePersistedUser(upstream: User): Promise<{
+    local: OAuthLocalUserRecord;
+    user: User;
+  }> {
+    const draft = await this.toLocalUserDraft(upstream);
+    const local = await this.ensureLocalUser(draft);
+    return {
+      local,
+      user: this.applyLocalUser(upstream, local)
+    };
+  }
+
+  /**
    * @override
    */
   public async login(params: LoginParams): Promise<SessionPayload> {
@@ -73,16 +188,19 @@ export abstract class OAuthWrapperService<
     }
 
     const userInfo = await this.providerGetUserInfo(sessionToken);
+    const mergedUpstream = {
+      ...(session.user as object | undefined),
+      ...(userInfo as object)
+    } as User;
+    const { local, user } = await this.resolvePersistedUser(mergedUpstream);
 
     const sessionPayload = {
       ...session,
-      user: {
-        ...session.user,
-        ...userInfo
-      }
+      userId: local.authUserId,
+      user
     };
 
-    this.oauthSession.setSession(sessionPayload);
+    await this.oauthSession.setSession(sessionPayload);
 
     const oauthrepo = this.getOAuthRepo();
 
@@ -144,10 +262,13 @@ export abstract class OAuthWrapperService<
   public async getUserInfoWithAccessToken(accessToken: string): Promise<User> {
     try {
       const profile = await this.providerGetUserInfoByAccessToken(accessToken);
-
-      return this.toUser(profile);
-    } catch {
-      throw new OAuthWrapperError(OAuthRfcCodes.INVALID_TOKEN, 401);
+      const { user } = await this.resolvePersistedUser(profile);
+      return this.toUser(user);
+    } catch (error) {
+      if (error instanceof OAuthWrapperError) {
+        throw error;
+      }
+      throw new OAuthWrapperError(OAuthRfcCodes.INVALID_TOKEN, 401, error);
     }
   }
 
