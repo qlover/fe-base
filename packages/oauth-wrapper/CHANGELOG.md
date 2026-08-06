@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **oauth-wrapper:** 增加本地身份映射并 await 会话 ([b9b228e](https://github.com/qlover/fe-base/commit/b9b228ef65e730aa624f431c88164be13ba840a9)) ([#685](https://github.com/qlover/fe-base/pull/685))
+
+#### 🐞 Bug Fixes
+
+- **oauth-wrapper:** 修复 identity store 测试类型错误 ([0955288](https://github.com/qlover/fe-base/commit/0955288a019bab5490cdbe2bc066663ff05152a0)) ([#685](https://github.com/qlover/fe-base/pull/685))
+
 ## 0.6.3
 
 ### Patch Changes
