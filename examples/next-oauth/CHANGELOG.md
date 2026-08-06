@@ -1,5 +1,21 @@
 # examples/next-oauth
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 接入本地身份并保留登录语言 ([8008fbc](https://github.com/qlover/fe-base/commit/8008fbcc558cc3bb06b5ce451d59475887ed546e)) ([#685](https://github.com/qlover/fe-base/pull/685))
+
+#### 🐞 Bug Fixes
+
+- **examples:** LocaleLink uses current locale ([8219c5a](https://github.com/qlover/fe-base/commit/8219c5a2a29e4c183b846b5202c8c468ee3a87ec)) ([#684](https://github.com/qlover/fe-base/pull/684))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.6.3` to `0.7.0`
+
 ## 1.0.0
 
 ### Major Changes
