@@ -1,5 +1,10 @@
 import { SupabaseRepo } from '@qlover/next-kit/server';
-import { verifyClientSecret, hashClientSecret } from '@qlover/oauth-wrapper';
+import {
+  verifyClientSecret,
+  hashClientSecret,
+  generateOAuthClientId,
+  generateOAuthClientSecret
+} from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import type {
   OAuthClientRow,
@@ -300,15 +305,13 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     const supabase = await this.supabaseBridge.getAdminSupabase();
 
     const confidential = input.confidential ?? true;
-    const clientId = `client_${Math.random().toString(36).substring(2, 15)}`;
+    const clientId = generateOAuthClientId();
 
     let clientSecret: string | undefined;
     let clientSecretHash: string | null = null;
 
     if (confidential) {
-      clientSecret =
-        Math.random().toString(36).substring(2, 20) +
-        Math.random().toString(36).substring(2, 20);
+      clientSecret = generateOAuthClientSecret();
       clientSecretHash = await hashClientSecret(clientSecret);
     }
 
@@ -387,9 +390,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     const supabase = await this.supabaseBridge.getAdminSupabase();
 
     // Generate new secret
-    const clientSecret =
-      Math.random().toString(36).substring(2, 20) +
-      Math.random().toString(36).substring(2, 20);
+    const clientSecret = generateOAuthClientSecret();
     const clientSecretHash = await hashClientSecret(clientSecret);
 
     const { error } = await supabase

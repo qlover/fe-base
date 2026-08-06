@@ -1,4 +1,5 @@
 import { API_CLIENTS_2 } from './apiRoutes';
+import { useLocaleRoutes } from './common';
 import { i18nConfig } from './i18n';
 import type { LocaleType } from './i18n';
 import type { NextURL } from 'next/dist/server/web/next-url';
@@ -256,7 +257,21 @@ export function redirectToPath(
 
   const url = request.nextUrl.clone();
   const returnPath = `${pathnmae2}${request.nextUrl.search}`;
-  url.pathname = targetRoute;
+
+  let pathname = targetRoute;
+  if (useLocaleRoutes && targetRoute === ROUTE_LOGIN) {
+    const first = pathnmae2.split('/').filter(Boolean)[0];
+    if (
+      first &&
+      (i18nConfig.supportedLngs as readonly string[]).includes(first)
+    ) {
+      pathname = `/${first}${ROUTE_LOGIN}`;
+    } else {
+      pathname = `/${i18nConfig.fallbackLng}${ROUTE_LOGIN}`;
+    }
+  }
+
+  url.pathname = pathname;
   url.search = `redirect=${encodeURIComponent(returnPath)}`;
   return url;
 }

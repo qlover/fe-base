@@ -342,7 +342,7 @@ export class SupabaseOAuthProvider
 
     const profile = supabaseSessionToUserSchema(session);
 
-    this.oauthSession.setSession({
+    await this.oauthSession.setSession({
       userId: profile.id,
       user: profile,
       providerRefreshToken: refreshToken

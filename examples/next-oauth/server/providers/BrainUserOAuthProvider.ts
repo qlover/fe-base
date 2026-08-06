@@ -7,28 +7,43 @@ import {
 import { LoginParams } from '@qlover/corekit-bridge';
 import { UserRole, UserSchema } from '@qlover/next-kit/common';
 import { TokenEncryption } from '@qlover/next-kit/server';
-import { OAuthWrapperService } from '@qlover/oauth-wrapper';
+import {
+  OAuthWrapperService,
+  type OAuthIdentityStore,
+  type OAuthLocalUserDraft,
+  type OAuthSessionPayload,
+  type OAuthWrapperRepositoryInterface,
+  type SignWithOtpParams,
+  type VerifyOtpParams,
+  type SignOtpResult,
+  type WithUserSession,
+  type OAuthWrapperAccessToken
+} from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
+import { oauthLocalUserConfig } from '@config/oauthLocalUser';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
+import { SupabaseOAuthIdentityStore } from '@server/services/SupabaseOAuthIdentityStore';
 import type { LoggerInterface } from '@qlover/logger';
-import type {
-  OAuthSessionPayload,
-  OAuthWrapperRepositoryInterface,
-  SignWithOtpParams,
-  VerifyOtpParams,
-  SignOtpResult,
-  WithUserSession,
-  OAuthWrapperAccessToken
-} from '@qlover/oauth-wrapper';
+
+function resolveBrainEmail(user: BrainUser): string {
+  if (typeof user.email === 'string' && user.email.trim()) {
+    return user.email.trim();
+  }
+  const nested = user.profile as { google_email?: string } | undefined;
+  if (typeof nested?.google_email === 'string' && nested.google_email.trim()) {
+    return nested.google_email.trim();
+  }
+  return '';
+}
 
 function brainUserToUserSchema(user: BrainUser & BrainCredentials): UserSchema {
   return {
     id: String(user.id),
-    email: user.email,
+    email: resolveBrainEmail(user),
     role: user.roles?.includes('admin') ? UserRole.ADMIN : UserRole.USER,
     credential_token: user.token ?? user.auth_token.key,
     created_at: user.created_at!
@@ -40,7 +55,7 @@ export interface BrainUserSession
 
 /**
  * Optional upstream provider: wraps Brain User login API as an OAuth AS backend.
- * Not the default — bind via ServerConfig.oauthUpstreamProvider / `serverIoc`.
+ * Local identity is auth.users UUID via IdentityStore + OAuthWrapperService hooks.
  */
 @injectable()
 export class BrainUserOAuthProvider
@@ -52,9 +67,12 @@ export class BrainUserOAuthProvider
 
   protected gateway: BrainUserGateway;
   protected tokenEncryption: TokenEncryption;
+
   constructor(
     @inject(I.AppConfig) config: SeedServerConfigInterface,
-    @inject(OAuthWrapperRepository) oauthRepo: OAuthWrapperRepositoryInterface
+    @inject(OAuthWrapperRepository) oauthRepo: OAuthWrapperRepositoryInterface,
+    @inject(SupabaseOAuthIdentityStore)
+    protected readonly identityStore: SupabaseOAuthIdentityStore
   ) {
     const oauthSession = new OAuthSessionService(config);
     const tokenEncryption = new TokenEncryption(config.encryptionKey);
@@ -63,6 +81,36 @@ export class BrainUserOAuthProvider
       createBrainUserOptions().requestAdapter
     );
     this.tokenEncryption = tokenEncryption;
+  }
+
+  /**
+   * @override
+   */
+  protected override getIdentityStore(): OAuthIdentityStore | null {
+    return this.identityStore;
+  }
+
+  /**
+   * @override
+   */
+  protected override getSyntheticEmailDomain(): string {
+    return oauthLocalUserConfig.syntheticEmailDomain;
+  }
+
+  /**
+   * @override
+   */
+  protected override toLocalUserDraft(
+    upstream: UserSchema
+  ): OAuthLocalUserDraft {
+    const extra: Record<string, unknown> = {};
+    return {
+      provider: oauthLocalUserConfig.provider,
+      externalUserId: String(upstream.id ?? '').trim(),
+      email: upstream.email || null,
+      name: upstream.email || String(upstream.id),
+      extra: Object.keys(extra).length > 0 ? extra : null
+    };
   }
 
   /**
@@ -161,7 +209,22 @@ export class BrainUserOAuthProvider
       return null;
     }
 
-    return await this.providerGetUserInfo(session2.providerRefreshToken);
+    const withUser = session2 as WithUserSession<BrainUserSession, UserSchema>;
+    if (withUser.user) {
+      return {
+        ...withUser.user,
+        id: String(session2.userId),
+        credential_token: session2.providerRefreshToken
+      };
+    }
+
+    return {
+      id: String(session2.userId),
+      email: '',
+      role: UserRole.USER,
+      credential_token: session2.providerRefreshToken,
+      created_at: new Date().toISOString()
+    };
   }
 
   /**
@@ -179,115 +242,14 @@ export class BrainUserOAuthProvider
       throw new Error('Email is not supported');
     }
     this.logger.debug('BrainUser send phone otp', params);
-
-    // const credentialsResult = await this.gateway.verifySignOtp(params);
-    // const credentials = credentialsResult.data;
-
-    // if (!credentials) {
-    //   throw credentialsResult.error;
-    // }
-
-    const credentials = {
-      message: 'Waiting on OTP.',
-      OTP_EXP: 60,
-      required: 'otp',
-      expired: 1781059615940
-    };
-
-    return {
-      ...credentials,
-      expired: credentials.OTP_EXP ? Date.now() + credentials.OTP_EXP * 1000 : 0
-    };
+    throw new Error('Phone OTP is not implemented');
   }
 
   /**
    * @override
    */
-  public async verifyOtp(params: VerifyOtpParams): Promise<SignOtpResult> {
-    if ('email' in params) {
-      throw new Error('Email is not supported');
-    }
-
-    if (!params.token) {
-      throw new Error('Token is required for OTP verification');
-    }
-
-    // const credentialsResult = await this.gateway.verifySignOtp({
-    //   otp: params.token,
-    //   phone: params.phone
-    // });
-    // const credentials = credentialsResult.data;
-    // if (!credentials) {
-    //   throw credentialsResult.error;
-    // }
-
-    const credentials = {
-      existing: true,
-      required_fields: {
-        first_name: 'qrj',
-        last_name: 'q',
-        email: '',
-        phone_number: '+8613990101204',
-        google_email: 'renjie.qin@brain.im'
-      },
-      token: '8d0dcca414d2986fd2b678990e372772da9124fe'
-    };
-
-    const sessionToken = credentials.token;
-    if (!sessionToken) {
-      throw new Error('User provider login did not return a session token');
-    }
-
-    const userResult = await this.gateway.getUserInfo({
-      token: sessionToken
-    });
-    this.logger.debug('BrainUserProvider getUserInfo', userResult);
-
-    if (userResult.error) {
-      throw userResult.error;
-    }
-
-    const userInfo = userResult.data;
-    const userId = String(userInfo.id);
-
-    // Brain user 使用手机号登陆可能没有邮箱
-    const profileEmail = userInfo.email || userInfo.profile?.google_email;
-
-    if (!profileEmail) {
-      throw new Error(
-        'User email is required but not provided by Brain User API'
-      );
-    }
-
-    const accessResult = await this.gateway.getAccessToken({
-      token: sessionToken
-    });
-    if (accessResult.error) {
-      throw accessResult.error;
-    }
-
-    const access = accessResult.data;
-    await this.oauthSession.setSession({
-      token: access.access_token,
-      refresh_token: access.refresh_token,
-      access_token: access.access_token,
-      userId: userId,
-      providerRefreshToken: access.refresh_token
-    });
-
-    await this.oauthRepo.upsertUserCredentials(userId, {
-      provider_session_token: sessionToken,
-      provider_refresh_token: access.refresh_token
-        ? this.tokenEncryption.encrypt(access.refresh_token)
-        : null
-    });
-
-    this.logger.info('OAuth login with phone success', credentials);
-
-    return {
-      ...credentials,
-      expired: -1
-    };
+  public async verifyOtp(_params: VerifyOtpParams): Promise<SignOtpResult> {
+    throw new Error('Phone OTP is not implemented');
   }
 
   /**
@@ -310,5 +272,12 @@ export class BrainUserOAuthProvider
       providerRefreshToken:
         session.refresh_token ?? session.providerRefreshToken
     };
+  }
+
+  /**
+   * @override
+   */
+  public clearSession(): Promise<void> {
+    return super.clearSession();
   }
 }

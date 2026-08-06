@@ -111,7 +111,17 @@ export class OAuthUserService
       user_id: user?.id
     });
 
-    await this.clear();
+    if (user?.id) {
+      await this.oauthProvider.logout(String(user.id));
+    } else {
+      await this.oauthProvider.clearSession();
+    }
+
+    const legacyKey = this.config.userTokenKey;
+    if (legacyKey) {
+      const cookieStore = await cookies();
+      cookieStore.delete(legacyKey);
+    }
   }
 
   /**
