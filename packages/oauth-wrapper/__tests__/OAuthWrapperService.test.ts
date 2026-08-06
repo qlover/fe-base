@@ -8,6 +8,10 @@ import type {
   WithUserSession
 } from '../src/core/interfaces/OAuthSessionInterface';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
+import type {
+  OAuthIdentityStore,
+  OAuthLocalUserDraft
+} from '../src/core/localUser';
 import { OAuthWrapperService } from '../src/server/services/OAuthWrapperService';
 import { OAuthWrapperError } from '../src/server/utils/OAuthWrapperError';
 import { createMockOAuthClient } from './helpers/mockOAuthClient';
@@ -29,6 +33,8 @@ class MockOAuthRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public findClientById = vi.fn(async () => this.client);
 
   public create = vi.fn(async () => undefined);
+
+  public upsertUserCredentials = vi.fn(async () => undefined);
 }
 
 type TestUser = Record<string, unknown>;
@@ -58,6 +64,9 @@ class TestOAuthWrapperService extends OAuthWrapperService<
   TestUser,
   OAuthSessionPayload
 > {
+  public identityStore: OAuthIdentityStore | null = null;
+  public localUserDraft: OAuthLocalUserDraft | null = null;
+
   // TODO: test refresh user
   public refreshUser(_params?: {
     refresh_token: string;
@@ -78,6 +87,19 @@ class TestOAuthWrapperService extends OAuthWrapperService<
     repo: OAuthWrapperRepositoryInterface
   ) {
     super(session, new MockEncryptor(), repo);
+  }
+
+  protected getIdentityStore(): OAuthIdentityStore | null {
+    return this.identityStore;
+  }
+
+  protected toLocalUserDraft(
+    upstream: TestUser
+  ): OAuthLocalUserDraft | Promise<OAuthLocalUserDraft> {
+    if (this.localUserDraft) {
+      return this.localUserDraft;
+    }
+    return super.toLocalUserDraft(upstream);
   }
 }
 
@@ -215,20 +237,20 @@ describe('OAuthWrapperService', () => {
 
   describe('login + identity store', () => {
     it('writes session with local UUID when identity store is set', async () => {
-      const store = {
+      const store: OAuthIdentityStore = {
         findAuthUserIdByExternalId: vi.fn(async () => null),
         findByEmail: vi.fn(async () => null),
         createUser: vi.fn(async () => 'uuid-local'),
         upsertLink: vi.fn(async () => undefined),
         refreshMetadata: vi.fn(async () => undefined)
       };
-      service.getIdentityStore = () => store;
-      service.toLocalUserDraft = async () => ({
+      service.identityStore = store;
+      service.localUserDraft = {
         provider: 'brain',
         externalUserId: '42',
         email: 'user@example.com',
         name: 'Test User'
-      });
+      };
       service.providerLogin.mockResolvedValue({
         userId: '',
         providerRefreshToken: 'brain-session',
@@ -242,7 +264,6 @@ describe('OAuthWrapperService', () => {
       session.setSession = vi.fn(async (payload) => {
         session.session = payload;
       });
-      repo.upsertUserCredentials = vi.fn(async () => undefined);
 
       const result = await service.login({
         email: 'user@example.com',
@@ -253,6 +274,12 @@ describe('OAuthWrapperService', () => {
       expect(store.createUser).toHaveBeenCalled();
       expect(session.setSession).toHaveBeenCalledWith(
         expect.objectContaining({ userId: 'uuid-local' })
+      );
+      expect(repo.upsertUserCredentials).toHaveBeenCalledWith(
+        'uuid-local',
+        expect.objectContaining({
+          provider_session_token: 'brain-session'
+        })
       );
     });
   });
