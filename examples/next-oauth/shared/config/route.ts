@@ -1,4 +1,4 @@
-import { API_CLIENTS_2 } from './apiRoutes';
+import { API_CLIENTS_2, API_CLIENTS_ROTATE_SECRET } from './apiRoutes';
 import { useLocaleRoutes } from './common';
 import { i18nConfig } from './i18n';
 import type { LocaleType } from './i18n';
@@ -178,7 +178,7 @@ export function apiClientDetail<T extends string>(
 }
 
 export function apiClientRotateSecret(clientId: string): string {
-  return apiClientDetail(clientId).replace(
+  return API_CLIENTS_ROTATE_SECRET.replace(
     ':clientId',
     encodeURIComponent(clientId)
   );
