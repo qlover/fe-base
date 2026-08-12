@@ -110,6 +110,14 @@ export const DEVELOPER_APPS_APP_NAME_REQUIRED =
   'developer_apps:app_name_required';
 
 /**
+ * @description Redirect URIs required validation message
+ * @localZh 请至少填写一个重定向 URI
+ * @localEn Please enter at least one redirect URI
+ */
+export const DEVELOPER_APPS_REDIRECT_URIS_REQUIRED =
+  'developer_apps:redirect_uris_required';
+
+/**
  * @description Redirect URIs textarea placeholder
  * @localZh https://your-app.com/callback\nhttps://localhost:3000/callback
  * @localEn https://your-app.com/callback\nhttps://localhost:3000/callback
@@ -132,6 +140,28 @@ export const DEVELOPER_APPS_REDIRECT_URIS_HINT =
  */
 export const DEVELOPER_APPS_CLIENT_URI_LABEL =
   'developer_apps:client_uri_label';
+
+/**
+ * @description Logo URI form label
+ * @localZh Logo 图片 URL (可选)
+ * @localEn Logo image URL (Optional)
+ */
+export const DEVELOPER_APPS_LOGO_URI_LABEL = 'developer_apps:logo_uri_label';
+
+/**
+ * @description Logo URI form hint
+ * @localZh 填写可公开访问的图片地址，将显示在授权页与应用列表
+ * @localEn Public image URL shown on the consent screen and app list
+ */
+export const DEVELOPER_APPS_LOGO_URI_HINT = 'developer_apps:logo_uri_hint';
+
+/**
+ * @description Logo URI invalid message
+ * @localZh 请输入有效的图片 URL
+ * @localEn Please enter a valid image URL
+ */
+export const DEVELOPER_APPS_LOGO_URI_INVALID =
+  'developer_apps:logo_uri_invalid';
 
 /**
  * @description Cancel button text
@@ -295,6 +325,13 @@ export const DEVELOPER_APPS_COPY_SECRET_SUCCESS =
  * @localEn Loading applications…
  */
 export const DEVELOPER_APPS_LOADING = 'developer_apps:loading';
+
+/**
+ * @description Saving / submitting state label
+ * @localZh 保存中...
+ * @localEn Saving...
+ */
+export const DEVELOPER_APPS_SAVING = 'developer_apps:saving';
 
 /**
  * @description Link to OAuth flow playground

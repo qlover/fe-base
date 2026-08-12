@@ -30,10 +30,14 @@ export const developerAppsI18n = Object.freeze({
   // form fields
   appNameLabel: developerAppsKeys.DEVELOPER_APPS_APP_NAME_LABEL,
   appNameRequired: developerAppsKeys.DEVELOPER_APPS_APP_NAME_REQUIRED,
+  redirectUrisRequired: developerAppsKeys.DEVELOPER_APPS_REDIRECT_URIS_REQUIRED,
   redirectUrisPlaceholder:
     developerAppsKeys.DEVELOPER_APPS_REDIRECT_URIS_PLACEHOLDER,
   redirectUrisHint: developerAppsKeys.DEVELOPER_APPS_REDIRECT_URIS_HINT,
   clientUriLabel: developerAppsKeys.DEVELOPER_APPS_CLIENT_URI_LABEL,
+  logoUriLabel: developerAppsKeys.DEVELOPER_APPS_LOGO_URI_LABEL,
+  logoUriHint: developerAppsKeys.DEVELOPER_APPS_LOGO_URI_HINT,
+  logoUriInvalid: developerAppsKeys.DEVELOPER_APPS_LOGO_URI_INVALID,
 
   // buttons
   cancelButton: commonKeys.COMMON_CANCEL,
@@ -67,6 +71,7 @@ export const developerAppsI18n = Object.freeze({
   copyClientIdSuccess: developerAppsKeys.DEVELOPER_APPS_COPY_CLIENT_ID_SUCCESS,
   copySecretSuccess: developerAppsKeys.DEVELOPER_APPS_COPY_SECRET_SUCCESS,
   loading: developerAppsKeys.DEVELOPER_APPS_LOADING,
+  saving: developerAppsKeys.DEVELOPER_APPS_SAVING,
   playgroundLink: developerAppsKeys.DEVELOPER_APPS_PLAYGROUND_LINK,
   clientTypeLabel: developerAppsKeys.DEVELOPER_APPS_CLIENT_TYPE_LABEL,
   clientTypeConfidential:

@@ -71,6 +71,7 @@ export type OAuthClientDetail = z.infer<typeof OAuthClientDetailSchema>;
 export const OAuthClientCreateSchema = z.object({
   client_name: z.string().min(1).max(100),
   client_uri: z.string().url().optional().or(z.literal('')),
+  logo_uri: z.string().url().optional().or(z.literal('')),
   redirect_uris: z.array(oauthRedirectUriSchema).min(1),
   /** `true` = confidential (client_secret); `false` = public (PKCE required). */
   confidential: z.boolean().default(true)
@@ -81,6 +82,7 @@ export type OAuthClientCreate = z.infer<typeof OAuthClientCreateSchema>;
 export const OAuthClientUpdateSchema = z.object({
   client_name: z.string().min(1).max(100),
   client_uri: z.string().url().optional().or(z.literal('')),
+  logo_uri: z.string().url().optional().or(z.literal('')),
   redirect_uris: z.array(oauthRedirectUriSchema).min(1)
 });
 
