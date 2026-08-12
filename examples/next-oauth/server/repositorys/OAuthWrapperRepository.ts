@@ -322,6 +322,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
         client_secret_hash: clientSecretHash,
         client_name: input.client_name,
         client_uri: input.client_uri || null,
+        logo_uri: input.logo_uri || null,
         redirect_uris: input.redirect_uris,
         grant_types: ['authorization_code', 'refresh_token'],
         scopes: ['openid', 'profile', 'email'],
@@ -356,6 +357,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
       .update({
         client_name: input.client_name,
         client_uri: input.client_uri || null,
+        logo_uri: input.logo_uri || null,
         redirect_uris: input.redirect_uris,
         updated_at: new Date().toISOString()
       })
