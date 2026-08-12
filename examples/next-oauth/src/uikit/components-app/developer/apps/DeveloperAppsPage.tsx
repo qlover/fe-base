@@ -16,6 +16,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent
 } from 'react';
@@ -63,6 +64,47 @@ function parseRedirectUris(raw: string): string[] {
     .filter((uri) => uri.length > 0);
 }
 
+function AppListLogo({
+  name,
+  logoUri
+}: {
+  name: string;
+  logoUri?: string | null;
+}) {
+  const [broken, setBroken] = useState(false);
+  const initial = (name.trim().charAt(0) || '?').toUpperCase();
+  const src = logoUri?.trim();
+  const boxClass =
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-primary-border bg-secondary text-sm font-semibold text-brand sm:h-9 sm:w-9';
+
+  useEffect(() => {
+    setBroken(false);
+  }, [src]);
+
+  if (!src || broken) {
+    return (
+      <div
+        data-testid="DeveloperAppsPageLogoFallback"
+        className={boxClass}
+        aria-hidden
+      >
+        {initial}
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- external logo URL from developer input
+    <img
+      data-testid="DeveloperAppsPageLogo"
+      src={src}
+      alt=""
+      className="h-8 w-8 shrink-0 rounded-lg border border-primary-border object-cover bg-secondary sm:h-9 sm:w-9"
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
 export interface DeveloperAppsPageProps {
   initialApps: OAuthClientListItem[];
 }
@@ -81,6 +123,9 @@ export function DeveloperAppsPageComponent({
   const [loading, setLoading] = useState(initialApps.length === 0);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editDetailLoading, setEditDetailLoading] = useState(false);
+  const [createSubmitting, setCreateSubmitting] = useState(false);
+  const [editSubmitting, setEditSubmitting] = useState(false);
   const [editingApp, setEditingApp] = useState<OAuthClientListItem | null>(
     null
   );
@@ -100,12 +145,15 @@ export function DeveloperAppsPageComponent({
   const [editFieldErrors, setEditFieldErrors] = useState<
     Partial<Record<keyof OAuthClientFormValues, string>>
   >({});
+  const editLoadSeqRef = useRef(0);
 
   const formLabels = useMemo(
     () => ({
       appNameLabel: tt.appNameLabel || 'Application Name',
       appNameRequired: tt.appNameRequired || 'Please enter application name',
       redirectUrisLabel: tt.redirectUrisLabel || 'Redirect URIs (one per line)',
+      redirectUrisRequired:
+        tt.redirectUrisRequired || 'Please enter at least one redirect URI',
       redirectUrisPlaceholder:
         tt.redirectUrisPlaceholder ||
         'https://your-app.com/callback\nhttps://localhost:3000/callback',
@@ -114,6 +162,11 @@ export function DeveloperAppsPageComponent({
         'Multiple callback URLs supported, one per line. Must use HTTPS (http://localhost allowed for local development).',
       clientUriLabel:
         tt.clientUriLabel || 'Application Homepage URL (Optional)',
+      logoUriLabel: tt.logoUriLabel || 'Logo image URL (Optional)',
+      logoUriHint:
+        tt.logoUriHint ||
+        'Public image URL shown on the consent screen and app list',
+      logoUriInvalid: tt.logoUriInvalid || 'Please enter a valid image URL',
       clientTypeLabel: tt.clientTypeLabel || 'Client type',
       clientTypeConfidential:
         tt.clientTypeConfidential || 'Confidential (client_secret)',
@@ -145,7 +198,15 @@ export function DeveloperAppsPageComponent({
       errors.client_name = formLabels.appNameRequired;
     }
     if (parseRedirectUris(values.redirect_uris).length === 0) {
-      errors.redirect_uris = formLabels.appNameRequired;
+      errors.redirect_uris = formLabels.redirectUrisRequired;
+    }
+    const logoUri = values.logo_uri.trim();
+    if (logoUri) {
+      try {
+        new URL(logoUri);
+      } catch {
+        errors.logo_uri = formLabels.logoUriInvalid;
+      }
     }
     return Object.keys(errors).length > 0 ? errors : null;
   };
@@ -213,21 +274,25 @@ export function DeveloperAppsPageComponent({
 
   const handleCreateApp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (createSubmitting) return;
     const validationErrors = validateFormValues(createValues);
     if (validationErrors) {
       setCreateFieldErrors(validationErrors);
       return;
     }
     setCreateFieldErrors({});
+    setCreateSubmitting(true);
 
     try {
       const redirectUris = parseRedirectUris(createValues.redirect_uris);
-      const payload: OAuthClientCreate = {
+      const logoUri = createValues.logo_uri.trim();
+      const payload = {
         client_name: createValues.client_name.trim(),
         client_uri: createValues.client_uri.trim() || undefined,
+        logo_uri: logoUri || undefined,
         redirect_uris: redirectUris,
         confidential: createValues.confidential
-      };
+      } satisfies OAuthClientCreate & { logo_uri?: string };
 
       const response = await fetch(API_CLIENTS, {
         method: 'POST',
@@ -246,6 +311,7 @@ export function DeveloperAppsPageComponent({
         client_id: data.client_id,
         client_name: data.client_name,
         client_uri: data.client_uri,
+        logo_uri: logoUri || null,
         redirect_uris: data.redirect_uris,
         confidential: data.confidential,
         created_at: data.created_at,
@@ -266,12 +332,14 @@ export function DeveloperAppsPageComponent({
       dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
+    } finally {
+      setCreateSubmitting(false);
     }
   };
 
   const handleEditApp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!editingApp) return;
+    if (!editingApp || editSubmitting || editDetailLoading) return;
 
     const validationErrors = validateFormValues(editValues);
     if (validationErrors) {
@@ -279,14 +347,17 @@ export function DeveloperAppsPageComponent({
       return;
     }
     setEditFieldErrors({});
+    setEditSubmitting(true);
 
     try {
       const redirectUris = parseRedirectUris(editValues.redirect_uris);
-      const payload: OAuthClientUpdate = {
+      const logoUri = editValues.logo_uri.trim();
+      const payload = {
         client_name: editValues.client_name.trim(),
         client_uri: editValues.client_uri.trim() || undefined,
+        logo_uri: logoUri || '',
         redirect_uris: redirectUris
-      };
+      } satisfies OAuthClientUpdate & { logo_uri?: string };
 
       const response = await fetch(apiClientDetail(editingApp.client_id), {
         method: 'PUT',
@@ -308,6 +379,7 @@ export function DeveloperAppsPageComponent({
                 ...app,
                 client_name: updatedApp.client_name,
                 client_uri: updatedApp.client_uri,
+                logo_uri: (updatedApp.logo_uri ?? logoUri) || null,
                 redirect_uris: updatedApp.redirect_uris,
                 updated_at: updatedApp.updated_at
               }
@@ -327,6 +399,8 @@ export function DeveloperAppsPageComponent({
       dialogHandler.error(
         tt.toastError || 'Operation failed, please try again later'
       );
+    } finally {
+      setEditSubmitting(false);
     }
   };
 
@@ -396,6 +470,13 @@ export function DeveloperAppsPageComponent({
           }
 
           setApps((prev) => prev.filter((app) => app.client_id !== clientId));
+          if (editingApp?.client_id === clientId) {
+            editLoadSeqRef.current += 1;
+            setEditModalVisible(false);
+            setEditingApp(null);
+            setEditDetailLoading(false);
+            resetEditForm();
+          }
           dialogHandler.success(tt.toastDeleteSuccess || 'Application deleted');
         } catch (error) {
           console.error('Delete app error:', error);
@@ -409,35 +490,69 @@ export function DeveloperAppsPageComponent({
   };
 
   const openEditModal = (app: OAuthClientListItem) => {
+    const loadSeq = ++editLoadSeqRef.current;
     setEditingApp(app);
+    setEditFieldErrors({});
+    setEditSubmitting(false);
+    setEditDetailLoading(true);
+    setEditValues({
+      client_name: app.client_name,
+      client_uri: app.client_uri || '',
+      logo_uri: app.logo_uri || '',
+      redirect_uris: app.redirect_uris.join('\n'),
+      confidential: app.confidential ?? true
+    });
+    setEditModalVisible(true);
+
     void (async () => {
       try {
-        const detail = await readAppApiJson<OAuthClientDetail>(
-          await fetch(apiClientDetail(app.client_id), {
-            credentials: 'include'
-          })
-        );
+        const detailResponse = await fetch(apiClientDetail(app.client_id), {
+          credentials: 'include'
+        });
+        if (!detailResponse.ok) {
+          throw new Error('Failed to load application detail');
+        }
+        const detail = await readAppApiJson<OAuthClientDetail>(detailResponse);
+        if (loadSeq !== editLoadSeqRef.current) return;
         setEditValues({
           client_name: detail.client_name,
           client_uri: detail.client_uri || '',
+          logo_uri: detail.logo_uri || '',
           redirect_uris: detail.redirect_uris.join('\n'),
           confidential: detail.confidential
         });
-      } catch {
-        setEditValues({
-          client_name: app.client_name,
-          client_uri: app.client_uri || '',
-          redirect_uris: app.redirect_uris.join('\n'),
-          confidential: app.confidential ?? true
-        });
+      } catch (error) {
+        if (loadSeq !== editLoadSeqRef.current) return;
+        console.error('Load edit detail error:', error);
+        dialogHandler.error(
+          tt.toastError || 'Operation failed, please try again later'
+        );
+      } finally {
+        if (loadSeq === editLoadSeqRef.current) {
+          setEditDetailLoading(false);
+        }
       }
     })();
-    setEditFieldErrors({});
-    setEditModalVisible(true);
+  };
+
+  const closeCreateModal = () => {
+    if (createSubmitting) return;
+    setCreateModalVisible(false);
+    resetCreateForm();
+  };
+
+  const closeEditModal = () => {
+    if (editSubmitting) return;
+    editLoadSeqRef.current += 1;
+    setEditModalVisible(false);
+    setEditingApp(null);
+    setEditDetailLoading(false);
+    resetEditForm();
   };
 
   const openCreateModal = () => {
     resetCreateForm();
+    setCreateSubmitting(false);
     setCreateModalVisible(true);
   };
 
@@ -508,6 +623,10 @@ export function DeveloperAppsPageComponent({
                       <div className="flex flex-wrap justify-between items-start gap-4">
                         <div className="flex-1 min-w-0 space-y-2">
                           <div className="flex items-center gap-2 flex-wrap">
+                            <AppListLogo
+                              name={app.client_name}
+                              logoUri={app.logo_uri}
+                            />
                             <h2 className="text-lg font-semibold text-primary-text">
                               {app.client_name}
                             </h2>
@@ -524,6 +643,18 @@ export function DeveloperAppsPageComponent({
                                 : tt.statusPublic || 'Public'}
                             </span>
                           </div>
+                          {app.client_uri ? (
+                            <p className="text-sm">
+                              <a
+                                href={app.client_uri}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-brand hover:underline break-all"
+                              >
+                                {app.client_uri}
+                              </a>
+                            </p>
+                          ) : null}
                           <div className="flex items-center gap-2 flex-wrap min-w-0">
                             <code className="text-sm bg-secondary text-primary-text px-2 py-1 rounded-lg font-mono border border-primary-border/40 break-all">
                               {tt.clientIdLabel || 'Client ID'}: {app.client_id}
@@ -623,24 +754,30 @@ export function DeveloperAppsPageComponent({
       <DeveloperOverlayModal
         open={createModalVisible}
         title={tt.createModalTitle || 'Create OAuth Application'}
-        onClose={() => {
-          setCreateModalVisible(false);
-          resetCreateForm();
-        }}
+        onClose={closeCreateModal}
+        closeOnBackdrop={!createSubmitting}
         maxWidthClass="max-w-xl"
         footer={
           <div className="flex justify-end gap-3">
             <Button
               variant="secondary"
-              onClick={() => {
-                setCreateModalVisible(false);
-                resetCreateForm();
-              }}
+              onClick={closeCreateModal}
+              disabled={createSubmitting}
             >
               {tt.cancelButton || 'Cancel'}
             </Button>
-            <Button type="submit" form="create-oauth-client" variant="primary">
-              {tt.createSubmitButton || 'Create Application'}
+            <Button
+              type="submit"
+              form="create-oauth-client"
+              variant="primary"
+              disabled={createSubmitting}
+            >
+              {createSubmitting ? (
+                <ArrowPathIcon className="h-4 w-4 animate-spin" />
+              ) : null}
+              {createSubmitting
+                ? tt.saving || 'Saving...'
+                : tt.createSubmitButton || 'Create Application'}
             </Button>
           </div>
         }
@@ -650,6 +787,7 @@ export function DeveloperAppsPageComponent({
           values={createValues}
           fieldErrors={createFieldErrors}
           labels={formLabels}
+          disabled={createSubmitting}
           onChange={(patch) => {
             setCreateValues((prev) => ({ ...prev, ...patch }));
             setCreateFieldErrors((prev) => {
@@ -670,85 +808,109 @@ export function DeveloperAppsPageComponent({
       <DeveloperOverlayModal
         open={editModalVisible}
         title={tt.editModalTitle || 'Edit Application'}
-        onClose={() => {
-          setEditModalVisible(false);
-          setEditingApp(null);
-          resetEditForm();
-        }}
+        onClose={closeEditModal}
+        closeOnBackdrop={!editSubmitting && !editDetailLoading}
         maxWidthClass="max-w-xl"
         footer={
-          <div className="flex flex-wrap gap-3 justify-between items-center">
-            <div className="flex flex-wrap gap-2">
-              {editingApp && (
-                <>
-                  <Button
-                    variant="warning"
-                    onClick={() =>
-                      void handleRotateSecret(
-                        editingApp.client_id,
-                        editValues.confidential
-                      )
-                    }
-                    disabled={!editValues.confidential}
-                  >
-                    <KeyIcon className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            {editingApp ? (
+              <div className="flex shrink-0 gap-1.5">
+                <Button
+                  variant="warning"
+                  className="h-9 px-2.5"
+                  onClick={() =>
+                    handleRotateSecret(
+                      editingApp.client_id,
+                      editValues.confidential
+                    )
+                  }
+                  disabled={
+                    !editValues.confidential ||
+                    editDetailLoading ||
+                    editSubmitting
+                  }
+                  title={tt.rotateSecretButton || 'Rotate Secret'}
+                  aria-label={tt.rotateSecretButton || 'Rotate Secret'}
+                >
+                  <KeyIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">
                     {tt.rotateSecretButton || 'Rotate Secret'}
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => {
-                      const clientId = editingApp.client_id;
-                      setEditModalVisible(false);
-                      setEditingApp(null);
-                      resetEditForm();
-                      handleDeleteApp(clientId);
-                    }}
-                  >
-                    <TrashIcon className="h-4 w-4" />
+                  </span>
+                </Button>
+                <Button
+                  variant="danger"
+                  className="h-9 px-2.5"
+                  onClick={() => handleDeleteApp(editingApp.client_id)}
+                  disabled={editDetailLoading || editSubmitting}
+                  title={tt.deleteButton || 'Delete'}
+                  aria-label={tt.deleteButton || 'Delete'}
+                >
+                  <TrashIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">
                     {tt.deleteButton || 'Delete'}
-                  </Button>
-                </>
-              )}
-            </div>
-            <div className="flex gap-3">
+                  </span>
+                </Button>
+              </div>
+            ) : null}
+            <div className="ml-auto flex items-center gap-3">
               <Button
                 variant="secondary"
-                onClick={() => {
-                  setEditModalVisible(false);
-                  setEditingApp(null);
-                  resetEditForm();
-                }}
+                onClick={closeEditModal}
+                disabled={editSubmitting}
               >
                 {tt.cancelButton || 'Cancel'}
               </Button>
-              <Button type="submit" form="edit-oauth-client" variant="primary">
-                {tt.saveSubmitButton || 'Save Changes'}
+              <Button
+                type="submit"
+                form="edit-oauth-client"
+                variant="primary"
+                disabled={editDetailLoading || editSubmitting}
+              >
+                {editSubmitting || editDetailLoading ? (
+                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                ) : null}
+                {editSubmitting
+                  ? tt.saving || 'Saving...'
+                  : editDetailLoading
+                    ? tt.loading || 'Loading...'
+                    : tt.saveSubmitButton || 'Save Changes'}
               </Button>
             </div>
           </div>
         }
       >
-        <OAuthClientAppForm
-          formId="edit-oauth-client"
-          values={editValues}
-          fieldErrors={editFieldErrors}
-          labels={formLabels}
-          lockClientType
-          onChange={(patch) => {
-            setEditValues((prev) => ({ ...prev, ...patch }));
-            setEditFieldErrors((prev) => {
-              const next = { ...prev };
-              for (const key of Object.keys(
-                patch
-              ) as (keyof OAuthClientFormValues)[]) {
-                delete next[key];
-              }
-              return next;
-            });
-          }}
-          onSubmit={handleEditApp}
-          footer={null}
-        />
+        {editDetailLoading ? (
+          <div
+            data-testid="DeveloperAppsEditLoading"
+            className="flex flex-col items-center justify-center gap-3 py-10 text-secondary-text"
+          >
+            <ArrowPathIcon className="h-8 w-8 animate-spin text-brand" />
+            <span className="text-sm">{tt.loading || 'Loading...'}</span>
+          </div>
+        ) : (
+          <OAuthClientAppForm
+            formId="edit-oauth-client"
+            values={editValues}
+            fieldErrors={editFieldErrors}
+            labels={formLabels}
+            lockClientType
+            disabled={editSubmitting}
+            onChange={(patch) => {
+              setEditValues((prev) => ({ ...prev, ...patch }));
+              setEditFieldErrors((prev) => {
+                const next = { ...prev };
+                for (const key of Object.keys(
+                  patch
+                ) as (keyof OAuthClientFormValues)[]) {
+                  delete next[key];
+                }
+                return next;
+              });
+            }}
+            onSubmit={handleEditApp}
+            footer={null}
+          />
+        )}
       </DeveloperOverlayModal>
     </>
   );
