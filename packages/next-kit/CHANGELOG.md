@@ -1,5 +1,13 @@
 # @qlover/next-kit
 
+## 1.1.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **Dropdown:** 修复首次弹出位置偏移，新增 menuMinWidth 属性 ([52bc87d](https://github.com/qlover/fe-base/commit/52bc87dd1ec79f87004744862a7145170b9319a7)) ([#688](https://github.com/qlover/fe-base/pull/688))
+
 ## 1.0.1
 
 ### Patch Changes
