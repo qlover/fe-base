@@ -1,5 +1,27 @@
 # examples/next-oauth
 
+## 1.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 引入 KvCache 并优化 session 接口性能 ([61c2498](https://github.com/qlover/fe-base/commit/61c249884fbfa07b2eacf5d8ad2685d53020b961)) ([#688](https://github.com/qlover/fe-base/pull/688))
+
+- **oauth-wrapper:** Create/Update schema 支持 logo_uri ([9e3deed](https://github.com/qlover/fe-base/commit/9e3deed0cdfa50eba3ed76004b47178872c46f2a)) ([#687](https://github.com/qlover/fe-base/pull/687))
+
+- **examples:** 同步 developer-apps UI 优化（logo、加载态、弹窗） ([80df729](https://github.com/qlover/fe-base/commit/80df729f4466067eac4f51ac14e661fddef8324b)) ([#687](https://github.com/qlover/fe-base/pull/687))
+
+#### 🐞 Bug Fixes
+
+- **Dropdown:** 修复首次弹出位置偏移，新增 menuMinWidth 属性 ([52bc87d](https://github.com/qlover/fe-base/commit/52bc87dd1ec79f87004744862a7145170b9319a7)) ([#688](https://github.com/qlover/fe-base/pull/688))
+
+- **next-oauth:** 修复 rotate-secret URL 拼错导致 405 ([2243ee5](https://github.com/qlover/fe-base/commit/2243ee55333b2f6dfdc21c9deafe3bc1180b0219)) ([#687](https://github.com/qlover/fe-base/pull/687))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.0.1` to `1.1.0`
+
 ## 1.1.0
 
 ### Minor Changes
