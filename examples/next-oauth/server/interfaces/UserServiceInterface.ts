@@ -32,6 +32,21 @@ export interface UserServiceInterface {
 
   refresh(): Promise<UserSchema>;
 
+  /**
+   * Read user identity from the embedded cookie/JWT payload without an
+   * extra round-trip to the auth server. Intended for lightweight session
+   * endpoints where latency matters.
+   *
+   * Returns null when the session is absent or invalid.
+   */
+  getSessionUser(): Promise<UserSchema | null>;
+
+  /**
+   * Fetch the current user, hitting the auth server if necessary.
+   * Returns null when not authenticated (pass throwError=true to throw instead).
+   */
+  getUser(throwError?: boolean): Promise<UserSchema | null>;
+
   signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult>;
   loginWithProvider(params: {
     provider: LoginProviderType;

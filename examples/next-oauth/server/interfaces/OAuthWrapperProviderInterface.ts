@@ -34,4 +34,13 @@ export interface OAuthWrapperProviderInterface
    * Providers that do not support this flow should throw.
    */
   loginWithSession?(session: SupabaseSession): Promise<void>;
+
+  /**
+   * Read user identity directly from the cookie/JWT payload without hitting
+   * the auth server. Returns null when no valid session exists.
+   *
+   * Use this for lightweight session endpoints that must not incur an
+   * extra network round-trip to Supabase.
+   */
+  getEmbeddedUser(): Promise<UserSchema | null>;
 }

@@ -108,10 +108,24 @@ export function Tooltip({
       return;
     }
     updatePosition();
+
+    const tipEl = tipRef.current;
+    let ro: ResizeObserver | undefined;
+    if (tipEl && tipEl.getBoundingClientRect().width === 0) {
+      ro = new ResizeObserver((entries) => {
+        if ((entries[0]?.contentRect.width ?? 0) > 0) {
+          updatePosition();
+          ro?.disconnect();
+        }
+      });
+      ro.observe(tipEl);
+    }
+
     const onScroll = () => updatePosition();
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onScroll);
     return () => {
+      ro?.disconnect();
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onScroll);
     };

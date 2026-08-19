@@ -8,6 +8,7 @@ import {
 } from '@qlover/next-kit/server';
 import { RequestLogsRepository } from '@qlover/next-kit/server';
 import { type NextRequest, NextResponse } from 'next/server';
+import { API_USER_SESSION } from '@config/apiRoutes';
 import { I } from '@config/ioc-identifiter';
 import { oauthI18nIdToRfc } from '@config/oauthErrors';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
@@ -91,16 +92,24 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
 
   /**
    * @override
+   *
+   * Skip DB log writes for high-frequency, read-only endpoints so their JSON
+   * response is not held up by a synchronous Supabase INSERT.
+   * `/api/user/session` is called on every page load to restore auth state.
    */
   protected override afterApiResult<Result>(
     envelope: NextKitApiResult<Result>,
     request?: NextRequest
   ): void {
-    if (request) {
-      this.IOC(RequestLogsRepository).insertWithApiResult(envelope, {
-        request
-      });
+    if (!request) {
+      return;
     }
+
+    if (request.nextUrl.pathname === API_USER_SESSION) {
+      return;
+    }
+
+    this.IOC(RequestLogsRepository).insertWithApiResult(envelope, { request });
   }
 
   /**

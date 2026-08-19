@@ -3,8 +3,7 @@
 import { useMountedClient } from '@brain-toolkit/react-kit';
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import { LocaleRouter } from '@qlover/corekit-bridge/url-helper';
-import { Button } from '@qlover/next-kit/client';
-import { Dropdown } from '@qlover/next-kit/client';
+import { Button, Dropdown } from '@qlover/next-kit/client';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';

@@ -43,6 +43,8 @@ export interface DropdownProps {
    * - `menu`: same floating menu as desktop
    */
   mobileMode?: 'sheet' | 'menu';
+  /** 菜单最小宽度（px），默认与触发元素等宽 */
+  menuMinWidth?: number;
   className?: string;
   menuClassName?: string;
   'data-testid'?: string;
@@ -53,44 +55,14 @@ const MOBILE_MQ = '(max-width: 767px)';
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
-
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MQ);
+    setIsMobile(mq.matches);
     const update = () => setIsMobile(mq.matches);
-    update();
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
   }, []);
-
   return isMobile;
-}
-
-function computeMenuStyle(
-  trigger: DOMRect,
-  menu: DOMRect,
-  placement: DropdownPlacement
-): CSSProperties {
-  const gap = 8;
-  let top = 0;
-  let left = 0;
-
-  const preferBottom = placement.startsWith('bottom');
-  const preferEnd = placement.endsWith('end');
-
-  top = preferBottom ? trigger.bottom + gap : trigger.top - menu.height - gap;
-  left = preferEnd ? trigger.right - menu.width : trigger.left;
-
-  const pad = 8;
-  left = Math.min(Math.max(pad, left), window.innerWidth - menu.width - pad);
-  top = Math.min(Math.max(pad, top), window.innerHeight - menu.height - pad);
-
-  return {
-    position: 'fixed',
-    top,
-    left,
-    zIndex: 1100,
-    minWidth: Math.max(trigger.width, 10 * 16)
-  };
 }
 
 /**
@@ -105,6 +77,7 @@ export function Dropdown({
   onSelect,
   placement = 'bottom-end',
   mobileMode = 'sheet',
+  menuMinWidth,
   className,
   menuClassName,
   'data-testid': dataTestId = 'Dropdown',
@@ -115,13 +88,9 @@ export function Dropdown({
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [menuStyle, setMenuStyle] = useState<CSSProperties>({
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    zIndex: 1100,
-    visibility: 'hidden'
-  });
+  // Trigger rect captured at click time — always available, no timing issues.
+  const triggerRectRef = useRef<DOMRect | null>(null);
+  const [menuStyle, setMenuStyle] = useState<CSSProperties>({});
   const isMobile = useIsMobile();
   const useSheet = isMobile && mobileMode === 'sheet';
 
@@ -129,34 +98,65 @@ export function Dropdown({
     setMounted(true);
   }, []);
 
-  const close = useCallback(() => setOpen(false), []);
-  const toggle = useCallback(() => setOpen((v) => !v), []);
+  const computeStyle = useCallback(
+    (triggerRect: DOMRect, menuWidth: number, menuHeight: number): CSSProperties => {
+      const gap = 8;
+      const pad = 8;
+      const preferBottom = placement.startsWith('bottom');
+      const preferEnd = placement.endsWith('end');
 
-  const updatePosition = useCallback(() => {
-    if (useSheet) return;
-    const trigger = triggerWrapRef.current?.getBoundingClientRect();
-    const menu = menuRef.current?.getBoundingClientRect();
-    if (!trigger || !menu || menu.width === 0) return;
-    setMenuStyle({
-      ...computeMenuStyle(trigger, menu, placement),
-      visibility: 'visible'
-    });
-  }, [placement, useSheet]);
+      let top = preferBottom
+        ? triggerRect.bottom + gap
+        : triggerRect.top - menuHeight - gap;
+      let left = preferEnd
+        ? triggerRect.right - menuWidth
+        : triggerRect.left;
 
+      left = Math.min(Math.max(pad, left), window.innerWidth - menuWidth - pad);
+      top = Math.min(Math.max(pad, top), window.innerHeight - menuHeight - pad);
+
+      const minWidth = menuMinWidth ?? triggerRect.width;
+
+      return {
+        position: 'fixed',
+        top,
+        left,
+        zIndex: 1100,
+        minWidth
+      };
+    },
+    [placement, menuMinWidth]
+  );
+
+  // After portal mounts, read menu dimensions and finalize position.
   useLayoutEffect(() => {
-    if (!open) {
-      setMenuStyle((prev) => ({ ...prev, visibility: 'hidden' }));
-      return;
+    if (!open || useSheet) return;
+    const triggerRect = triggerRectRef.current;
+    const menuEl = menuRef.current;
+    if (!triggerRect || !menuEl) return;
+    const { width, height } = menuEl.getBoundingClientRect();
+    setMenuStyle(computeStyle(triggerRect, width, height));
+  }, [open, useSheet, computeStyle]);
+
+  const close = useCallback(() => setOpen(false), []);
+
+  const openDropdown = useCallback(() => {
+    const rect = triggerWrapRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    triggerRectRef.current = rect;
+    // Show immediately at approximate position using trigger rect only.
+    // useLayoutEffect will refine with real menu dimensions after mount.
+    setMenuStyle(computeStyle(rect, 160, 0));
+    setOpen(true);
+  }, [computeStyle]);
+
+  const toggle = useCallback(() => {
+    if (open) {
+      close();
+    } else {
+      openDropdown();
     }
-    updatePosition();
-    const onReposition = () => updatePosition();
-    window.addEventListener('resize', onReposition);
-    window.addEventListener('scroll', onReposition, true);
-    return () => {
-      window.removeEventListener('resize', onReposition);
-      window.removeEventListener('scroll', onReposition, true);
-    };
-  }, [open, updatePosition]);
+  }, [open, close, openDropdown]);
 
   useEffect(() => {
     if (!open) return;
@@ -186,6 +186,24 @@ export function Dropdown({
     };
   }, [open, useSheet]);
 
+  // Reposition on scroll/resize.
+  useEffect(() => {
+    if (!open || useSheet) return;
+    const reposition = () => {
+      const triggerRect = triggerWrapRef.current?.getBoundingClientRect();
+      const menuEl = menuRef.current;
+      if (!triggerRect || !menuEl) return;
+      const { width, height } = menuEl.getBoundingClientRect();
+      setMenuStyle(computeStyle(triggerRect, width, height));
+    };
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+    return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
+    };
+  }, [open, useSheet, computeStyle]);
+
   const handleSelect = useCallback(
     (key: string, disabled?: boolean) => {
       if (disabled) return;
@@ -196,37 +214,38 @@ export function Dropdown({
   );
 
   const child = Children.only(children);
-  if (!isValidElement(child)) {
-    return null;
-  }
+  if (!isValidElement(child)) return null;
 
-  const trigger = cloneElement(child as ReactElement<Record<string, unknown>>, {
-    'aria-haspopup': 'menu',
-    'aria-expanded': open,
-    'aria-controls': open ? listId : undefined,
-    onClick: (e: MouseEvent) => {
-      const props = child.props as {
-        onClick?: (ev: MouseEvent) => void;
-        disabled?: boolean;
-      };
-      props.onClick?.(e);
-      if (e.defaultPrevented || props.disabled) return;
-      e.preventDefault();
-      toggle();
-    },
-    onKeyDown: (e: KeyboardEvent) => {
-      const props = child.props as {
-        onKeyDown?: (ev: KeyboardEvent) => void;
-        disabled?: boolean;
-      };
-      props.onKeyDown?.(e);
-      if (e.defaultPrevented || props.disabled) return;
-      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+  const triggerEl = cloneElement(
+    child as ReactElement<Record<string, unknown>>,
+    {
+      'aria-haspopup': 'menu',
+      'aria-expanded': open,
+      'aria-controls': open ? listId : undefined,
+      onClick: (e: MouseEvent) => {
+        const props = child.props as {
+          onClick?: (ev: MouseEvent) => void;
+          disabled?: boolean;
+        };
+        props.onClick?.(e);
+        if (e.defaultPrevented || props.disabled) return;
         e.preventDefault();
-        setOpen(true);
+        toggle();
+      },
+      onKeyDown: (e: KeyboardEvent) => {
+        const props = child.props as {
+          onKeyDown?: (ev: KeyboardEvent) => void;
+          disabled?: boolean;
+        };
+        props.onKeyDown?.(e);
+        if (e.defaultPrevented || props.disabled) return;
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openDropdown();
+        }
       }
     }
-  });
+  );
 
   const selectedSet = new Set(selectedKeys);
 
@@ -321,7 +340,7 @@ export function Dropdown({
       data-testid={dataTestId}
       className={clsx('relative inline-flex max-w-full', className)}
     >
-      {trigger}
+      {triggerEl}
       {floatingMenu}
     </span>
   );
