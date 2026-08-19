@@ -105,12 +105,13 @@ export class UserController {
     return await this.userService.logout(serverContext);
   }
 
-  public async refresh(): Promise<UserSchema> {
-    return await this.userService.refresh();
+  public async refresh(): Promise<UserSchema | null> {
+    const user = await this.userService.getSessionUser();
+    return user ? { ...user, credential_token: '' } : null;
   }
 
   public async getUser(): Promise<UserSchema | null> {
-    return await this.userService.refresh();
+    return await this.userService.getUser();
   }
 
   /**

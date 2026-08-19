@@ -161,6 +161,16 @@ export class OAuthUserService
 
   /**
    * @override
+   *
+   * Reads the embedded session cookie/JWT without an extra auth-server
+   * round-trip. Use this for high-frequency endpoints (e.g. GET /api/user/session).
+   */
+  public async getSessionUser(): Promise<UserSchema | null> {
+    return this.oauthProvider.getEmbeddedUser();
+  }
+
+  /**
+   * @override
    */
   public setAuth(_credential_token: string): Promise<void> {
     throw new Error('Method not implemented.');

@@ -280,4 +280,23 @@ export class BrainUserOAuthProvider
   public clearSession(): Promise<void> {
     return super.clearSession();
   }
+
+  /**
+   * @override
+   *
+   * BrainUserOAuthProvider stores the user inside the session payload under
+   * the `user` field (via WithUserSession). Read it directly without a network
+   * round-trip.
+   */
+  public async getEmbeddedUser(): Promise<UserSchema | null> {
+    const payload = await this.oauthSession.getSession();
+    if (!payload) {
+      return null;
+    }
+    const withUser = payload as WithUserSession<BrainUserSession, UserSchema>;
+    if (withUser.user?.id) {
+      return withUser.user as UserSchema;
+    }
+    return null;
+  }
 }

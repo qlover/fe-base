@@ -278,6 +278,21 @@ export class SupabaseOAuthProvider
 
   /**
    * @override
+   *
+   * Reads the user directly from the cookie/JWT payload without hitting the
+   * Supabase auth server. Returns null when no valid session exists.
+   */
+  public async getEmbeddedUser(): Promise<UserSchema | null> {
+    const payload = await this.oauthSession.getSession();
+    if (!payload?.user) {
+      return null;
+    }
+    const user = payload.user as UserSchema;
+    return user.id ? user : null;
+  }
+
+  /**
+   * @override
    */
   public async getUserSchema(
     session?: SupabaseSession
