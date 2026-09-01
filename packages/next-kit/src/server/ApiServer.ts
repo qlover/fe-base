@@ -47,6 +47,17 @@ type RunWithInit = {
   httpStatus?: number;
 };
 
+export type BinaryApiPayload = {
+  bytes: Uint8Array;
+  contentType: string;
+};
+
+type RunWithBinaryInit = RunWithInit & {
+  notFoundHeaders?: HeadersInit;
+  notFoundCacheControl?: string;
+  successCacheControl?: string;
+};
+
 type RunWithTask<
   Result,
   IOCIdentifierMap extends Record<PropertyKey, unknown>
@@ -177,6 +188,42 @@ export class ApiServer<
     }
 
     return this.returnJson(result, init);
+  }
+
+  /**
+   * Binary/image endpoints: success returns raw bytes; errors use the JSON envelope.
+   */
+  public async runWithBinary(
+    task?: RunWithTask<BinaryApiPayload | null, IOCIdentifierMap>,
+    init?: RunWithBinaryInit
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+
+    if (!result.success) {
+      return this.returnJson(result, init);
+    }
+
+    const payload = result.data ?? null;
+    if (!payload) {
+      return new NextResponse(null, {
+        status: 404,
+        headers: {
+          ...init?.notFoundHeaders,
+          'Cache-Control': init?.notFoundCacheControl ?? 'public, max-age=300'
+        }
+      });
+    }
+
+    return new NextResponse(Buffer.from(payload.bytes), {
+      status: init?.httpStatus ?? 200,
+      headers: {
+        'Content-Type': payload.contentType,
+        'Cache-Control':
+          init?.successCacheControl ??
+          'public, max-age=86400, stale-while-revalidate=604800',
+        ...init?.successHeaders
+      }
+    });
   }
 
   protected getSafeApiResult<T>(

@@ -45,7 +45,8 @@ export {
   ApiServer,
   isApiServerContext,
   type ApiServerContext,
-  type ApiServerDeps
+  type ApiServerDeps,
+  type BinaryApiPayload
 } from './ApiServer';
 
 export { BaseRepository } from './repositorys/BaseRepository';
@@ -87,3 +88,13 @@ export {
   type PostgrestErrorShape
 } from './utils/postgrestError';
 export { getClientIpFromRequest } from './utils/getClientIpFromRequest';
+export {
+  MemoryKvCacheService,
+  type KvCacheInterface,
+  type KvCacheSetOptions
+} from './services/MemoryKvCacheService';
+export {
+  OtpSendRateLimitService,
+  OTP_SEND_COOLDOWN_MS,
+  type OtpSendRateLimitServiceOptions
+} from './services/OtpSendRateLimitService';
