@@ -1,7 +1,7 @@
 {
   "name": "@qlover/next-kit",
   "description": "Shared Next.js app shell: isomorphic common layer, server runtime, and client runtime",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "private": false,
   "sideEffects": false,
