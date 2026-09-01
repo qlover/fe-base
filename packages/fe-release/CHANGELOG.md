@@ -1,5 +1,17 @@
 # @qlover/fe-release
 
+## 5.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **fe-release:** CI 发布改用 npm Trusted Publishing ([85f94a9](https://github.com/qlover/fe-base/commit/85f94a9a06cbc4ddf9b7d16690b7cd4f90ad0389)) ([#691](https://github.com/qlover/fe-base/pull/691))
+
+#### 🐞 Bug Fixes
+
+- **fe-release:** 注册 use-trusted-publishing CLI 选项 ([15e861b](https://github.com/qlover/fe-base/commit/15e861b771d3c516b8537e1151d682c1fa80a431)) ([#693](https://github.com/qlover/fe-base/pull/693))
+
 ## 5.2.0
 
 ### Minor Changes

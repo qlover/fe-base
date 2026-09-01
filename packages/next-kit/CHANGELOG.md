@@ -1,5 +1,23 @@
 # @qlover/next-kit
 
+## 1.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-kit:** 新增 API 错误归一化与 PostgREST 工具 ([826281f](https://github.com/qlover/fe-base/commit/826281f6b27432cfd5078fcfe5b08919aa3df1ce)) ([#690](https://github.com/qlover/fe-base/pull/690))
+
+- **next-kit:** 新增 MemoryKvCache 与 OTP 限流服务 ([a2d568e](https://github.com/qlover/fe-base/commit/a2d568e1fab1042db2b8d46bd279e8eada429d32)) ([#690](https://github.com/qlover/fe-base/pull/690))
+
+- **next-kit:** ApiServer 支持二进制响应 ([a6d23b3](https://github.com/qlover/fe-base/commit/a6d23b32e9b47fa7dceebf24fd47071c4a3ca6c2)) ([#690](https://github.com/qlover/fe-base/pull/690))
+
+- **next-kit:** 新增移动端 UI 组件与 header 样式 ([e8b5c53](https://github.com/qlover/fe-base/commit/e8b5c5316eb6dc4c138570a44c7519c19066b94d)) ([#690](https://github.com/qlover/fe-base/pull/690))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.8.1` to `0.9.0`
+
 ## 1.2.0
 
 ### Minor Changes
