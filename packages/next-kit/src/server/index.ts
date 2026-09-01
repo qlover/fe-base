@@ -76,3 +76,14 @@ export {
   type ResultHandlerContext,
   type ResultHandlerInterface
 } from './utils/NextApiHandler';
+export {
+  isStableApiErrorId,
+  toStableApiExecutorError
+} from './utils/normalizeApiExecutorError';
+export {
+  extractPostgrestError,
+  isPostgrestRangeNotSatisfiable,
+  parsePostgrestRowCount,
+  type PostgrestErrorShape
+} from './utils/postgrestError';
+export { getClientIpFromRequest } from './utils/getClientIpFromRequest';
