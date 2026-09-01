@@ -1,22 +1,10 @@
-import type { AsyncStorageInterface } from '@qlover/fe-corekit/storage';
+import type {
+  KvCacheInterface as KitKvCacheInterface,
+  KvCacheSetOptions as KitKvCacheSetOptions
+} from '@qlover/next-kit/server';
 
-/**
- * Options for KV cache write operations.
- */
-export interface KvCacheSetOptionsInterface {
-  /** Time-to-live in milliseconds. Omit for a non-expiring entry. */
-  readonly ttlMs?: number;
-}
+/** @deprecated Use {@link KitKvCacheSetOptions} from `@qlover/next-kit/server`. */
+export type KvCacheSetOptionsInterface = KitKvCacheSetOptions;
 
-/**
- * Async KV cache contract built on top of fe-corekit's AsyncStorageInterface.
- *
- * Use `setItem / getItem / removeItem / clear` from AsyncStorageInterface
- * directly — no extra aliases needed. Switching to a Redis backend later
- * only requires a new implementation class.
- */
-export type KvCacheInterface = AsyncStorageInterface<
-  string,
-  unknown,
-  KvCacheSetOptionsInterface
->;
+/** Re-export kit KV cache contract (includes `removeByPrefix`). */
+export type KvCacheInterface = KitKvCacheInterface;
