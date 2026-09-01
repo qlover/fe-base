@@ -156,6 +156,13 @@ export const COMMON_AUTH_NAV_SIGN_UP = 'common:authNav_signUp';
 export const COMMON_AUTH_NAV_REQUEST_LOGS = 'common:authNav_requestLogs';
 
 /**
+ * @description Signed-in user email label (header / a11y)
+ * @localZh 当前登录
+ * @localEn Signed in as
+ */
+export const COMMON_SIGNED_IN_AS = 'common:signed_in_as';
+
+/**
  * @description App header nav - Docs
  * @localZh 文档
  * @localEn Docs

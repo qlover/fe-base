@@ -1,82 +1,135 @@
 'use client';
 
-import { buttonClassName } from '@qlover/next-kit/client';
-import { Link } from '@/i18n/routing';
+import { buttonClassName, Dropdown } from '@qlover/next-kit/client';
+import { useCallback, useMemo } from 'react';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import {
-  COMMON_AUTH_NAV_SIGN_UP,
+  COMMON_LOGOUT_DIALOG_CONTENT,
+  COMMON_LOGOUT_DIALOG_TITLE,
+  COMMON_SIGNED_IN_AS,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
 } from '@config/i18n-identifier/common/common';
-import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
-import { LogoutButton } from './LogoutButton';
+import { I } from '@config/ioc-identifiter';
+import { ROUTE_LOGIN } from '@config/route';
+import { useI18nMapping } from '../hook/useI18nMapping';
+import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 /**
- * Client-only auth UI: shows either LogoutButton or Sign in/Sign up links.
- *
- * Why this component exists:
- *
- * - AuthButton is a Server Component that computes `hasAuth` (via ServerAuth/cookies).
- *   If it directly returned <LogoutButton /> when hasAuth is true, LogoutButton (a Client
- *   Component that uses useIOC()) could be rendered in a different React subtree than the
- *   layout's IOCProvider (e.g. when RSC streams the page segment separately). That leads
- *   to "IOC is not found" because useContext(IOCContext) is null.
- *
- * - By having the Server Component only pass `hasAuth` and letting this Client Component
- *   render LogoutButton, we ensure LogoutButton is always rendered inside the same client
- *   tree as the root layout (IOCProvider → … → AppRoutePage → AuthButtonUI → LogoutButton).
- *   So useIOC() always has access to the IOC context.
+ * Client-only auth UI: Sign in link, or avatar menu (email + logout).
  */
-const linkSecondary = buttonClassName({
-  variant: 'header',
-  className:
-    'focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
-});
 const linkPrimary = buttonClassName({
   variant: 'header',
   className:
-    'bg-brand text-on-brand border-transparent hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
+    'h-9 rounded-full bg-brand px-3.5 text-sm font-medium text-on-brand border-transparent hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-0'
 });
+
+function emailInitial(email: string): string {
+  const local = email.split('@')[0]?.trim();
+  return (local?.[0] ?? '?').toUpperCase();
+}
 
 export function AuthButtonUI(props: {
   hasAuth: boolean;
+  userEmail?: string;
+  /** @deprecated Sign-up is no longer offered; prop kept for call-site compatibility. */
   loginOnly?: boolean;
+  /** @deprecated Logout lives in the user menu; prop kept for call-site compatibility. */
   showLogoutLabel?: boolean;
 }) {
-  const { hasAuth, loginOnly = false, showLogoutLabel = false } = props;
+  const { hasAuth, userEmail } = props;
   const t = useWarnTranslations();
+  const dialogHandler = useIOC(I.DialogHandler);
+  const userService = useIOC(I.UserServiceInterface);
+  const routerService = useIOC(I.RouterServiceInterface);
+
+  const logoutTt = useI18nMapping({
+    title: COMMON_LOGOUT_DIALOG_TITLE,
+    content: COMMON_LOGOUT_DIALOG_CONTENT
+  });
+
+  const emailLabel = userEmail?.trim() ?? '';
+  const signedInLabel = t(COMMON_SIGNED_IN_AS);
+
+  const menuItems = useMemo(() => {
+    const items: {
+      key: string;
+      label: string;
+      disabled?: boolean;
+    }[] = [];
+
+    if (emailLabel) {
+      items.push({
+        key: 'email',
+        label: emailLabel,
+        disabled: true
+      });
+    }
+
+    items.push({
+      key: 'logout',
+      label: logoutTt.title,
+      disabled: false
+    });
+
+    return items;
+  }, [emailLabel, logoutTt.title]);
+
+  const onLogout = useCallback(() => {
+    dialogHandler.confirm({
+      title: logoutTt.title,
+      content: logoutTt.content,
+      onOk: async () => {
+        await userService.logout();
+        routerService.gotoLogin();
+      }
+    });
+  }, [dialogHandler, logoutTt, userService, routerService]);
+
+  const onMenuSelect = useCallback(
+    (key: string) => {
+      if (key === 'logout') {
+        onLogout();
+      }
+    },
+    [onLogout]
+  );
 
   if (hasAuth) {
+    const triggerLabel = emailLabel || signedInLabel;
+
     return (
-      <div
-        data-testid="AuthButton"
-        className="flex items-center gap-2"
-        data-auth={hasAuth}
-      >
-        <LogoutButton data-testid="logout-button" showLabel={showLogoutLabel} />
+      <div data-testid="AuthButton" data-auth={hasAuth}>
+        <Dropdown
+          data-testid="UserMenuDropdown"
+          items={menuItems}
+          placement="bottom-end"
+          mobileMode="menu"
+          onSelect={onMenuSelect}
+        >
+          <button
+            type="button"
+            data-testid="UserMenu"
+            aria-label={`${signedInLabel}${emailLabel ? ` ${emailLabel}` : ''}`}
+            title={emailLabel || signedInLabel}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand transition hover:bg-brand/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-0"
+          >
+            {emailInitial(triggerLabel)}
+          </button>
+        </Dropdown>
       </div>
     );
   }
 
   return (
-    <div
-      data-testid="AuthButton"
-      className="flex items-center gap-1.5"
-      data-auth={hasAuth}
-    >
-      <Link
+    <div data-testid="AuthButton" data-auth={hasAuth}>
+      <LocaleLink
         href={ROUTE_LOGIN}
-        className={`${linkPrimary} max-w-22 sm:max-w-none`}
+        className={linkPrimary}
         title={t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN)}
       >
-        <span className="truncate sm:whitespace-normal">
-          {t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN)}
-        </span>
-      </Link>
-      {!loginOnly && (
-        <Link href={ROUTE_REGISTER} className={linkSecondary}>
-          {t(COMMON_AUTH_NAV_SIGN_UP)}
-        </Link>
-      )}
+        {t(COMMON_USER_AUTH_FAILED_GO_TO_LOGIN)}
+      </LocaleLink>
     </div>
   );
 }
