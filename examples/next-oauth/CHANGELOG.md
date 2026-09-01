@@ -1,5 +1,12 @@
 # examples/next-oauth
 
+## 1.4.1
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.3.0` to `1.3.1`
+- Update dependency **@qlover/oauth-wrapper** from `0.9.0` to `0.9.1`
+
 ## 1.4.0
 
 ### Minor Changes

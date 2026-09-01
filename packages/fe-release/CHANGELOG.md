@@ -1,5 +1,11 @@
 # @qlover/fe-release
 
+## 5.3.1
+
+### Patch Changes
+
+- **ci:** 修复 root `devEngines` 旧格式阻塞 npm publish
+
 ## 5.3.0
 
 ### Minor Changes
