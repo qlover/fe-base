@@ -1,6 +1,6 @@
 # @qlover/next-kit
 
-## 1.2.0
+## 1.3.0
 
 ### Minor Changes
 
@@ -16,7 +16,7 @@
 
 ### Patch Changes
 
-- Update dependency **@qlover/oauth-wrapper** from `0.7.1` to `0.8.0`
+- Update dependency **@qlover/oauth-wrapper** from `0.8.1` to `0.9.0`
 
 ## 1.1.0
 

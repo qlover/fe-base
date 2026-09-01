@@ -1,6 +1,6 @@
 # examples/next-seed
 
-## 2.1.0
+## 2.2.0
 
 ### Minor Changes
 
@@ -14,7 +14,7 @@
 
 ### Patch Changes
 
-- Update dependency **@qlover/next-kit** from `1.1.1` to `1.2.0`
+- Update dependency **@qlover/next-kit** from `1.2.1` to `1.3.0`
 
 ## 2.0.0
 
