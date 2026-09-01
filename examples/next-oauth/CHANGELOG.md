@@ -15,21 +15,6 @@
 - Update dependency **@qlover/next-kit** from `1.2.1` to `1.3.0`
 - Update dependency **@qlover/oauth-wrapper** from `0.8.1` to `0.9.0`
 
-## 1.3.0
-
-### Minor Changes
-
-#### ✨ Features
-
-- **next-oauth:** 接入 OTP 限流与 KvCache 迁移 ([e3c8ae2](https://github.com/qlover/fe-base/commit/e3c8ae228757a6291131298dc5e6ed2206e43bb0)) ([#690](https://github.com/qlover/fe-base/pull/690))
-
-- **next-oauth:** AuthButton 用户菜单下拉 ([037673b](https://github.com/qlover/fe-base/commit/037673bc9018636ee05f5eb0a7f7356d9c23a04a)) ([#690](https://github.com/qlover/fe-base/pull/690))
-
-### Patch Changes
-
-- Update dependency **@qlover/next-kit** from `1.1.1` to `1.2.0`
-- Update dependency **@qlover/oauth-wrapper** from `0.7.1` to `0.8.0`
-
 ## 1.2.0
 
 ### Minor Changes

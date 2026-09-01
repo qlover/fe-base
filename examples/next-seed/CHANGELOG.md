@@ -16,22 +16,6 @@
 
 - Update dependency **@qlover/next-kit** from `1.2.1` to `1.3.0`
 
-## 2.1.0
-
-### Minor Changes
-
-#### ✨ Features
-
-- **next-seed:** 登录页 return_to 重定向 ([cf9d8cf](https://github.com/qlover/fe-base/commit/cf9d8cf658fe4cfcd039e4a55e318ac5d0d09595)) ([#690](https://github.com/qlover/fe-base/pull/690))
-
-#### 🐞 Bug Fixes
-
-- **examples:** LocaleLink uses current locale ([8219c5a](https://github.com/qlover/fe-base/commit/8219c5a2a29e4c183b846b5202c8c468ee3a87ec)) ([#684](https://github.com/qlover/fe-base/pull/684))
-
-### Patch Changes
-
-- Update dependency **@qlover/next-kit** from `1.1.1` to `1.2.0`
-
 ## 2.0.0
 
 ### Major Changes

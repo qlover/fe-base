@@ -10,16 +10,6 @@
 
 - **oauth-wrapper:** Create/Update schema 支持 logo_uri ([9e3deed](https://github.com/qlover/fe-base/commit/9e3deed0cdfa50eba3ed76004b47178872c46f2a)) ([#687](https://github.com/qlover/fe-base/pull/687))
 
-## 0.8.0
-
-### Minor Changes
-
-#### ✨ Features
-
-- **oauth-wrapper:** 新增 NoOpOAuthWrapperRepository ([e21c0f1](https://github.com/qlover/fe-base/commit/e21c0f161e3a02d548405d47bc0e80cb980b9117)) ([#690](https://github.com/qlover/fe-base/pull/690))
-
-- **oauth-wrapper:** Create/Update schema 支持 logo_uri ([9e3deed](https://github.com/qlover/fe-base/commit/9e3deed0cdfa50eba3ed76004b47178872c46f2a)) ([#687](https://github.com/qlover/fe-base/pull/687))
-
 ## 0.7.0
 
 ### Minor Changes
