@@ -1,6 +1,7 @@
 export * from './services/OAuthClientsService';
 export * from './services/OAuthTokenService';
 export * from './services/OAuthWrapperService';
+export * from './repositorys/NoOpOAuthWrapperRepository';
 export * from './utils/OAuthWrapperError';
 export * from './utils/authorizeUtil';
 export * from './utils/clientSecretHash';
