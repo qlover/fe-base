@@ -35,6 +35,14 @@ export default async function proxy(request: NextRequest) {
   // ---------- 第三步：已登录用户不应再访问 login / register ----------
   const pathname = request.nextUrl.pathname;
   if (isAuthGuestOnlyPath(pathname) && session.hasSessionFromRequest(request)) {
+    const returnTo =
+      request.nextUrl.searchParams.get('redirect') ||
+      request.nextUrl.searchParams.get('return_to') ||
+      request.nextUrl.searchParams.get('returnUrl');
+    if (returnTo?.startsWith('/') && !returnTo.startsWith('//')) {
+      return NextResponse.redirect(new URL(returnTo, request.nextUrl.origin));
+    }
+
     const url = request.nextUrl.clone();
     // Keep locale prefix, e.g. /en/auth/login → /en
     const localeMatch = pathname.match(/^\/([^/]+)\/auth\//);
