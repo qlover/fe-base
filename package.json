@@ -48,7 +48,11 @@
   "author": "qlover",
   "license": "ISC",
   "devEngines": {
-    "node": ">=18.19.0"
+    "runtime": {
+      "name": "node",
+      "version": ">=18.19.0",
+      "onFail": "error"
+    }
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",

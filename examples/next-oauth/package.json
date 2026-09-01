@@ -1,6 +1,6 @@
 {
   "name": "examples/next-oauth",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "description": "Next.js OAuth 2.0 authorization server example",
   "scripts": {

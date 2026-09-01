@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1
+
+### Patch Changes
+
+- **ci:** 修复 root `devEngines` 旧格式阻塞 npm publish
+
 ## 0.9.0
 
 ### Minor Changes
