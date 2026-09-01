@@ -4,6 +4,7 @@
   "description": "A base frontwork",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.25.0",
   "repository": {
     "type": "github",
     "url": "https://github.com/qlover/fe-base"
