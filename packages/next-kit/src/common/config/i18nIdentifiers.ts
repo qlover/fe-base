@@ -40,3 +40,6 @@ export const COMMON_I18N_KEY_INVALID = 'next_kit:i18n_key_invalid';
 
 /** Unhandled server / API error. */
 export const API_SERVER_ERROR = 'next_kit:api_server_error';
+
+/** OTP send rate limited — data includes `retryAfterSec`. */
+export const API_OTP_SEND_RATE_LIMITED = 'next_kit:api_otp_send_rate_limited';
