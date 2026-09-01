@@ -14,6 +14,7 @@ import {
 } from '../../common/interfaces/NextKitApi';
 import type { ServerContextInterface } from '../interfaces/ServerContextInterface';
 import type { LoggerInterface } from '@qlover/logger';
+import { toStableApiExecutorError } from './normalizeApiExecutorError';
 
 export class ResultContext {
   public httpStatus?: number;
@@ -80,12 +81,16 @@ export class NextApiHandler implements ResultHandlerInterface {
     }
 
     if (value instanceof ExecutorError) {
-      if (this.handlerResultContext(value.cause)) {
-        this.logger.debug('NextApiHandler handler', value);
+      const stableError = toStableApiExecutorError(value);
+      if (this.handlerResultContext(stableError.cause)) {
+        this.logger.debug('NextApiHandler handler', stableError);
         return NextApiHandler.createServerError(this.serverContext);
       }
 
-      return NextApiHandler.createWithExecutorError(value, this.serverContext);
+      return NextApiHandler.createWithExecutorError(
+        stableError,
+        this.serverContext
+      );
     }
 
     if (value instanceof Error) {

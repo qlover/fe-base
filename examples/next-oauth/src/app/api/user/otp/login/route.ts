@@ -8,6 +8,6 @@ export async function POST(req: NextRequest) {
 
   return await new NextApiServer(API_USER_OTP_LOGIN, req).runWithJson(
     async ({ parameters: { IOC } }) =>
-      IOC(UserController).signWithOtp(requestBody)
+      IOC(UserController).signWithOtp(requestBody, req)
   );
 }

@@ -9,6 +9,7 @@ import {
   type LoginSchema
 } from '@qlover/next-kit/common';
 import { RequestLogsRepository } from '@qlover/next-kit/server';
+import { getClientIpFromRequest } from '@qlover/next-kit/server';
 import {
   SignOtpResult,
   signWithPhoneOtpSchema,
@@ -19,6 +20,7 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -31,6 +33,7 @@ import type {
 import type { RequestLogRow } from '@qlover/next-kit/common';
 import type { ValidatorInterface } from '@qlover/next-kit/common';
 import type { UserSchema } from '@qlover/next-kit/common';
+import type { NextRequest } from 'next/server';
 
 @injectable()
 export class UserController {
@@ -44,7 +47,9 @@ export class UserController {
     @inject(RequestLogsRepository)
     protected requestLogsRepository: RequestLogsRepository,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
-    @inject(Base64Serializer) base64Serializer: Base64Serializer
+    @inject(Base64Serializer) base64Serializer: Base64Serializer,
+    @inject(OtpSendRateLimitService)
+    protected otpSendRateLimit: OtpSendRateLimitService
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
@@ -132,14 +137,23 @@ export class UserController {
     return { deleted };
   }
 
-  public signWithOtp(body: unknown): Promise<SignOtpResult> {
+  public async signWithOtp(
+    body: unknown,
+    request?: NextRequest
+  ): Promise<SignOtpResult> {
     const phoneResult = signWithPhoneOtpSchema.safeParse(body);
     if (phoneResult.success) {
+      await this.otpSendRateLimit.assertCanSend(
+        request ? getClientIpFromRequest(request) : 'unknown'
+      );
       return this.userService.signWithOtp(phoneResult.data);
     }
 
     const emailResult = signWithEmailOtpSchema.safeParse(body);
     if (emailResult.success) {
+      await this.otpSendRateLimit.assertCanSend(
+        request ? getClientIpFromRequest(request) : 'unknown'
+      );
       return this.userService.signWithOtp(emailResult.data);
     }
 

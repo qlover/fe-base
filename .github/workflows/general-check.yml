@@ -26,21 +26,19 @@ jobs:
         with:
           main-branch-name: master
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.25.0
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.19.0'
-      - run: npm install -g pnpm
+          cache: 'pnpm'
+
       - run: pnpm install --frozen-lockfile
 
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-      
       - name: Cache NX cache
         uses: actions/cache@v4
         with:

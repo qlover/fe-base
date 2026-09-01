@@ -27,6 +27,9 @@ export {
 
 export {
   Loading,
+  LoadingSkeleton,
+  PullDownRefresh,
+  LoadMoreSentinel,
   With,
   Button,
   buttonClassName,
@@ -39,6 +42,9 @@ export {
   Tooltip,
   PageI18nProvider,
   ClientSeo,
+  headerIconButtonClass,
+  headerNavLinkClass,
+  headerNavLinkActiveClass,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -77,6 +83,8 @@ export {
   createIOCReact,
   type CreateIOCReactResult
 } from './ioc';
+
+export { formatClientExecutorError } from './utils/formatClientExecutorError';
 
 /** @deprecated Import from `@qlover/next-kit/common` — pure helper, not client-only. */
 export {

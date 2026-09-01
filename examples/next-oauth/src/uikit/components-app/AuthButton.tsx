@@ -15,7 +15,7 @@ export function AuthButton(props: {
   showLogoutLabel?: boolean;
 }) {
   const { loginOnly = false, showLogoutLabel = false } = props;
-  const { success, loading } = useUserAuth();
+  const { success, loading, user } = useUserAuth();
 
   if (loading) {
     return (
@@ -30,6 +30,7 @@ export function AuthButton(props: {
   return (
     <AuthButtonUI
       hasAuth={success}
+      userEmail={user?.email}
       loginOnly={loginOnly}
       showLogoutLabel={showLogoutLabel}
     />
