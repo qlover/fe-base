@@ -47,6 +47,7 @@
  *   --changesetVersion.only-version                          Bump versions only, skip CHANGELOG.md
  *   --changesetVersion.ignore-non-updated-packages           Restore dependency-release workspaces after version
  *   --changelog.ignore-non-updated-packages                  Alias of the above
+ *   --changesetVersion.use-trusted-publishing                Use npm Trusted Publishing (OIDC) instead of NPM_TOKEN
  *
  * Workspaces:
  *   --workspaces.packages-directories <paths>                Comma-separated package paths
@@ -219,6 +220,10 @@ function programArgs() {
     .option(
       '--changelog.ignore-non-updated-packages',
       'Alias of --changesetVersion.ignore-non-updated-packages'
+    )
+    .option(
+      '--changesetVersion.use-trusted-publishing',
+      'Use npm Trusted Publishing (OIDC) instead of NPM_TOKEN (fe-config: release.changesetVersion.useTrustedPublishing)'
     )
     .option(
       '--changesetVersion.mode <mode>',
