@@ -476,4 +476,59 @@ describe('ChangesetVersion Plugin', () => {
       );
     });
   });
+
+  describe('validateNpmToken', () => {
+    beforeEach(() => {
+      plugin.setConfig({ mode: 'publish' });
+    });
+
+    it('should throw when NPM_TOKEN is missing and OIDC is unavailable', async () => {
+      delete process.env.NPM_TOKEN;
+      delete process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+      delete process.env.FE_RELEASE_TRUSTED_PUBLISHING;
+
+      // @ts-expect-error call protected method for testing
+      await expect(plugin.validateNpmToken()).rejects.toThrow(
+        'NPM_TOKEN is not set'
+      );
+    });
+
+    it('should configure npm auth token when NPM_TOKEN is set', async () => {
+      delete process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+      process.env.NPM_TOKEN = 'npm_test_token';
+
+      // @ts-expect-error call protected method for testing
+      await plugin.validateNpmToken();
+
+      expect(plugin.shell.exec).toHaveBeenCalledWith(
+        'npm config set //registry.npmjs.org/:_authToken=npm_test_token'
+      );
+
+      delete process.env.NPM_TOKEN;
+    });
+
+    it('should skip token setup when useTrustedPublishing is enabled', async () => {
+      delete process.env.NPM_TOKEN;
+      delete process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+      plugin.setConfig({ mode: 'publish', useTrustedPublishing: true });
+
+      // @ts-expect-error call protected method for testing
+      await plugin.validateNpmToken();
+
+      expect(plugin.shell.exec).not.toHaveBeenCalled();
+    });
+
+    it('should skip token setup when GitHub Actions OIDC env is present', async () => {
+      delete process.env.NPM_TOKEN;
+      process.env.ACTIONS_ID_TOKEN_REQUEST_URL =
+        'https://token.actions.githubusercontent.com';
+
+      // @ts-expect-error call protected method for testing
+      await plugin.validateNpmToken();
+
+      expect(plugin.shell.exec).not.toHaveBeenCalled();
+
+      delete process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+    });
+  });
 });
