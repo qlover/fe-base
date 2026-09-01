@@ -7,7 +7,8 @@
  * Changesets CLI for monorepo version bumps.
  *
  * Pipeline phases:
- * - **onBefore**: validate `.changeset` directory; validate `NPM_TOKEN` when mode includes publish
+ * - **onBefore**: validate `.changeset` directory; configure npm auth when mode includes publish
+ *   (`NPM_TOKEN` for token auth, or skip when Trusted Publishing / OIDC is detected)
  * - **onExec**: generate per-workspace git changelogs (skips `dependencyRelease`
  *   when `ignoreNonUpdatedPackages` is enabled)
  * - **onSuccess**: run version and/or publish flow based on `mode`
@@ -149,6 +150,18 @@ export interface ChangesetVersionProps
    * @default false
    */
   ignoreNonUpdatedPackages?: boolean;
+
+  /**
+   * Use npm Trusted Publishing (OIDC) instead of `NPM_TOKEN`.
+   *
+   * When enabled (or when GitHub Actions OIDC env is detected), publish skips
+   * writing `_authToken` to npm config so the CLI can exchange OIDC credentials.
+   *
+   * CLI: `--changesetVersion.use-trusted-publishing`
+   *
+   * @default false
+   */
+  useTrustedPublishing?: boolean;
 }
 
 const CHANGESET_FILE_TEMPLATE =
@@ -194,6 +207,29 @@ export default class ChangesetVersion extends ScriptPlugin<
     return !!this.config.ignoreNonUpdatedPackages;
   }
 
+  protected get useTrustedPublishing(): boolean {
+    return !!(
+      this.config.useTrustedPublishing ||
+      this.context.parameters.changesetVersion?.useTrustedPublishing
+    );
+  }
+
+  /**
+   * True when publish should use npm Trusted Publishing (OIDC) instead of NPM_TOKEN.
+   */
+  protected isTrustedPublishingEnv(): boolean {
+    if (this.useTrustedPublishing) {
+      return true;
+    }
+
+    const envFlag = this.context.getEnv('FE_RELEASE_TRUSTED_PUBLISHING');
+    if (envFlag === '1' || envFlag === 'true') {
+      return true;
+    }
+
+    return Boolean(this.context.getEnv('ACTIONS_ID_TOKEN_REQUEST_URL'));
+  }
+
   protected shouldProcessWorkspace(workspace: WorkspaceInterface): boolean {
     return shouldProcessWorkspace(workspace, this.ignoreNonUpdatedPackages);
   }
@@ -222,15 +258,29 @@ export default class ChangesetVersion extends ScriptPlugin<
   }
 
   /**
-   * Ensure NPM_TOKEN is available and configured before changeset publish.
+   * Configure npm auth before changeset publish.
    *
-   * Only required for `publish` / `both` modes. Version-only runs (release PR)
-   * do not need an npm auth token.
+   * Uses Trusted Publishing (OIDC) when detected; otherwise requires `NPM_TOKEN`.
+   * Version-only runs (release PR) do not need npm auth.
    */
   protected async validateNpmToken(): Promise<void> {
+    if (this.isTrustedPublishingEnv()) {
+      this.logger.info(
+        'Using npm Trusted Publishing (OIDC); skip NPM_TOKEN auth setup'
+      );
+
+      if (this.context.dryRun) {
+        this.logDryRun('Would publish via npm Trusted Publishing (OIDC)');
+      }
+
+      return;
+    }
+
     const npmToken = this.context.getEnv('NPM_TOKEN');
     if (!npmToken) {
-      throw new Error('NPM_TOKEN is not set');
+      throw new Error(
+        'NPM_TOKEN is not set. Enable Trusted Publishing (OIDC) or provide NPM_TOKEN.'
+      );
     }
 
     if (this.context.dryRun) {

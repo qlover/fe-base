@@ -113,6 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     env:
       # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NX_DAEMON: 'false'
@@ -139,8 +140,11 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.0'
+          node-version: '22'
           cache: 'pnpm'
+
+      - name: Upgrade npm for Trusted Publishing
+        run: npm install -g npm@11.15.0
 
       - run: pnpm install --frozen-lockfile
 
@@ -168,9 +172,9 @@ jobs:
             --workspaces.compare-ref "${{ github.event.pull_request.base.sha }}" \
             --changesetVersion.skip-changeset \
             --changesetVersion.mode publish \
+            --changesetVersion.use-trusted-publishing \
             --github.mode createRelease \
             --github.ignore-release-paths examples
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           FE_RELEASE_BRANCH: master
