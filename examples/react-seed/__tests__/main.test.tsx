@@ -57,6 +57,18 @@ describe('main.tsx', () => {
     (createRoot as ReturnType<typeof vi.fn>).mockReturnValue(mockRoot);
   });
 
+  afterEach(async () => {
+    // Drain `void import('./bootstrapApp').then(...)` while jsdom still exists.
+    await vi.waitFor(() => {
+      if (BootstrapClientInstances.length === 0) {
+        return;
+      }
+      expect(BootstrapClientInstances[0].startup).toHaveBeenCalled();
+    });
+    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
   it('should initialize BootstrapClient with IOC from globals', async () => {
     const { BootstrapClient } = await import('@/impls/BootstrapClient');
     const globals = await import('@/globals');

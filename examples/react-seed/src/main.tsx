@@ -13,4 +13,8 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 );
 
-void import('./bootstrapApp').then(({ bootstrapApp }) => bootstrapApp());
+void import('./bootstrapApp')
+  .then(({ bootstrapApp }) => void bootstrapApp())
+  .catch(() => {
+    // Ignore late bootstrap failures after the document/window is gone (tests).
+  });
