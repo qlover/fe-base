@@ -1,5 +1,17 @@
 # @qlover/next-kit
 
+## 1.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-kit:** UserSchema 支持空邮箱与可选 name/phone ([d238b9f](https://github.com/qlover/fe-base/commit/d238b9f0d19bdff624ad697b4b225e345edcf34c)) ([#696](https://github.com/qlover/fe-base/pull/696))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.9.1` to `0.10.0`
+
 ## 1.3.1
 
 ### Patch Changes

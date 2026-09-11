@@ -1,5 +1,18 @@
 # examples/next-oauth
 
+## 1.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 适配手机号账号展示与 userinfo ([92b0564](https://github.com/qlover/fe-base/commit/92b056418104763d31ee4065f2b5b8ba993a773d)) ([#696](https://github.com/qlover/fe-base/pull/696))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.3.1` to `1.4.0`
+- Update dependency **@qlover/oauth-wrapper** from `0.9.1` to `0.10.0`
+
 ## 1.4.1
 
 ### Patch Changes

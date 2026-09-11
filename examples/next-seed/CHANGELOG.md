@@ -1,5 +1,17 @@
 # examples/next-seed
 
+## 2.3.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **next-seed:** Supabase 用户映射允许空邮箱 ([3edf6f5](https://github.com/qlover/fe-base/commit/3edf6f537d7508b0a9beae00d906514df2164e05)) ([#696](https://github.com/qlover/fe-base/pull/696))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.3.1` to `1.4.0`
+
 ## 2.2.1
 
 ### Patch Changes
