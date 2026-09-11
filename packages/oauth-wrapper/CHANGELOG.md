@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **oauth-wrapper:** userinfo 支持空邮箱与 phone_number ([f67944e](https://github.com/qlover/fe-base/commit/f67944e97c9392e8ed5613643d52358bc2382fb1)) ([#696](https://github.com/qlover/fe-base/pull/696))
+
 ## 0.9.1
 
 ### Patch Changes
