@@ -185,8 +185,8 @@ export const PAGE_DOCS_OAUTH_ENDPOINT_VERIFY_DESC =
 
 /**
  * @description Userinfo endpoint description
- * @localZh 需要 Authorization: Bearer；返回 sub、email、name 等声明。
- * @localEn Requires Authorization: Bearer; returns sub, email, name, and related claims.
+ * @localZh 需要 Authorization: Bearer；返回 sub、name（优先展示名）、email（可为空）、可选 phone_number。
+ * @localEn Requires Authorization: Bearer; returns sub, name (prefers display name), email (may be empty), optional phone_number.
  */
 export const PAGE_DOCS_OAUTH_ENDPOINT_USERINFO_DESC =
   'page_docs_oauth:endpoint__userinfo__desc';
@@ -253,8 +253,8 @@ export const PAGE_DOCS_OAUTH_SECTION_USERINFO =
 
 /**
  * @description Userinfo body
- * @localZh 成功时返回 JSON：sub（用户 ID）、email、name，以及可选 roles。无效或过期令牌返回 401 与 error=invalid_token。
- * @localEn Success returns JSON with sub (user id), email, name, and optional roles. Invalid or expired tokens yield 401 with error=invalid_token.
+ * @localZh 成功时返回 JSON：sub（用户 ID）、name（优先 session name / 手机号）、email（无邮箱时为空）、email_verified，以及有手机号时的 phone_number。无效或过期令牌返回 401 与 error=invalid_token。
+ * @localEn Success returns JSON with sub (user id), name (prefers session name / phone), email (empty when absent), email_verified, and phone_number when present. Invalid or expired tokens yield 401 with error=invalid_token.
  */
 export const PAGE_DOCS_OAUTH_USERINFO_BODY = 'page_docs_oauth:userinfo__body';
 

@@ -5,6 +5,7 @@ import { TokenEncryption } from '@qlover/next-kit/server';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
+import { resolveUserDisplayLabel } from '@shared/utils/userIdentity';
 import type { LocaleType } from '@config/i18n';
 import { I } from '@config/ioc-identifiter';
 import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
@@ -41,17 +42,49 @@ function requireSupabaseRefreshToken(
   return token;
 }
 
+function readSupabaseUserName(user: User): string | null {
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  for (const key of ['name', 'full_name', 'display_name'] as const) {
+    const value = meta[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
+function readSupabaseUserPhone(user: User): string | null {
+  const phone = user.phone?.trim();
+  if (phone) {
+    return phone;
+  }
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const fromMeta = meta.phone_number ?? meta.phone;
+  if (typeof fromMeta === 'string' && fromMeta.trim()) {
+    return fromMeta.trim();
+  }
+  return null;
+}
+
 function supababseUserToUserSchema(
   user: User,
   credential_token = ''
 ): UserSchema {
+  const email = (user.email || user.new_email || '').trim();
+  const phone = readSupabaseUserPhone(user);
+  const nameFromMeta = readSupabaseUserName(user);
+  const name =
+    nameFromMeta ??
+    (phone ? resolveUserDisplayLabel({ phone, userId: user.id }) : undefined);
+
   return {
     id: user.id,
-    // FIXME: 邮箱类型
-    email: user.email || user.new_email!,
+    email,
     role: UserRole.USER,
     credential_token,
-    created_at: user.created_at
+    created_at: user.created_at,
+    ...(name ? { name } : {}),
+    ...(phone ? { phone } : {})
   };
 }
 function supabaseSessionToUserSchema(session: Session): UserSchema {

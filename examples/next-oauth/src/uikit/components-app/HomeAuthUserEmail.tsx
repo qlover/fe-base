@@ -1,5 +1,6 @@
 'use client';
 
+import { resolveUserDisplayLabel } from '@shared/utils/userIdentity';
 import { useUserAuth } from '../hook/useUserAuth';
 
 /**
@@ -8,11 +9,19 @@ import { useUserAuth } from '../hook/useUserAuth';
  */
 export function HomeAuthUserEmail() {
   const { user, loading } = useUserAuth();
+  const label = user
+    ? resolveUserDisplayLabel({
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
+        userId: user.id
+      })
+    : '';
 
-  if (loading || !user?.email) return null;
+  if (loading || !label) return null;
   return (
     <p data-testid="AuthUserEmail" className="text-lg text-primary-text">
-      {user.email}
+      {label}
     </p>
   );
 }

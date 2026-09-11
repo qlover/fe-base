@@ -37,6 +37,7 @@ import {
   randomStateValue,
   type OAuthCallbackParams
 } from '@/uikit/utils/oauthPlaygroundUtils';
+import { resolveUserDisplayLabel } from '@shared/utils/userIdentity';
 import type { OAuthPlaygroundI18nInterface } from '@config/i18n-mapping/oauthPlaygroundI18n';
 import {
   API_CLIENTS,
@@ -562,7 +563,14 @@ export function OAuthPlayground() {
                 <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0" />
                 <span>
                   {tt.signedInAs}{' '}
-                  <strong className="font-semibold">{user.email}</strong>
+                  <strong className="font-semibold">
+                    {resolveUserDisplayLabel({
+                      name: user.name,
+                      phone: user.phone,
+                      email: user.email,
+                      userId: user.id
+                    })}
+                  </strong>
                 </span>
               </p>
             ) : (

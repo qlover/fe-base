@@ -24,7 +24,7 @@ PDC ↔ PAM 完整联调踩坑见 PDC 仓库 `apps/web/docs/pam-oauth-login-trou
 本模板通过 `NextApiServer.runWithOAuthJson` 输出扁平响应，用于：
 
 - `POST /oauth/token`
-- `GET /oauth/userinfo`（claims：`sub` / `email` / `email_verified` / `name`）
+- `GET /oauth/userinfo`（claims：`sub` / `email` / `email_verified` / `name`，可选 `phone_number`；无邮箱时 `email` 可为空）
 - `POST /oauth/revoke`
 
 Playground 使用 `readOAuthMachineJson` 解析上述端点。
