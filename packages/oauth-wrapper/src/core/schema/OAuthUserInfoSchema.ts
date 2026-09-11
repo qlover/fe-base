@@ -5,8 +5,11 @@ import { z } from 'zod';
  */
 export const OAuthUserInfoResponseSchema = z.object({
   sub: z.string(),
-  email: z.email(),
+  /** Business email when present; empty string when the account has none. */
+  email: z.union([z.email(), z.literal('')]),
   name: z.string(),
+  phone_number: z.string().optional(),
+  email_verified: z.boolean().optional(),
   roles: z.array(z.string()).optional()
 });
 

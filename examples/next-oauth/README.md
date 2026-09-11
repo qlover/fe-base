@@ -657,7 +657,7 @@ export class AcmeUserAdapter implements OAuthUserAdapterInterface {
 
 - `login` 必须返回 **`{ token: string }`**（上游 session，用于授权页会话与换票前落库）
 - `exchangeAccessToken` 返回 **`access_token`**、**`expires_in`**；若有长期凭证可带 **`refresh_token`**
-- `getUserInfo` / `getUserInfoByAccessToken` 的 **`id`** 须能 `Number()` 成有限值，**`email`** 非空（userinfo 会用到）
+- `getUserInfo` / `getUserInfoByAccessToken` 的 **`id`** 须稳定；**`email`** 可为空（手机号账号），userinfo 会用 `name` / `phone` 回退
 
 #### 2）Provider（复制 Brain，只换 Adapter 类型）
 

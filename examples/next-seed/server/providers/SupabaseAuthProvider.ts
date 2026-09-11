@@ -39,8 +39,7 @@ function supababseUserToUserSchema(
 ): UserSchema {
   return {
     id: user.id,
-    // FIXME: 邮箱类型
-    email: user.email || user.new_email!,
+    email: (user.email || user.new_email || '').trim(),
     role: UserRole.USER,
     credential_token,
     created_at: user.created_at
