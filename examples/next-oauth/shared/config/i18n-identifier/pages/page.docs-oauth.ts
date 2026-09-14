@@ -201,8 +201,8 @@ export const PAGE_DOCS_OAUTH_SECTION_AUTHORIZE =
 
 /**
  * @description Authorize query params note
- * @localZh 必填：response_type=code、client_id、redirect_uri（须在应用白名单内）。可选：scope、state；公共客户端必填 code_challenge 与 code_challenge_method=S256。
- * @localEn Required: response_type=code, client_id, redirect_uri (must match a registered URI). Optional: scope, state; public clients require code_challenge and code_challenge_method=S256.
+ * @localZh 必填：response_type=code、client_id、redirect_uri（须在应用白名单内）。可选：scope、state、ui_locales（或 locale，授权页语言）；公共客户端必填 code_challenge 与 code_challenge_method=S256。
+ * @localEn Required: response_type=code, client_id, redirect_uri (must match a registered URI). Optional: scope, state, ui_locales (or locale, for consent UI language); public clients require code_challenge and code_challenge_method=S256.
  */
 export const PAGE_DOCS_OAUTH_AUTHORIZE_PARAMS =
   'page_docs_oauth:authorize__params';
