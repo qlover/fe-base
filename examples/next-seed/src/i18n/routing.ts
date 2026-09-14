@@ -20,6 +20,16 @@ export const routing = defineRouting({
 
   localePrefix: useLocaleRoutes ? 'always' : 'as-needed',
 
+  localeDetection: i18nConfig.localeDetection,
+
+  // Persist preference; without maxAge next-intl uses a session cookie.
+  localeCookie: {
+    name: i18nConfig.storageKey,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365
+  },
+
   pathnames: {
     '/': {
       en: '/',

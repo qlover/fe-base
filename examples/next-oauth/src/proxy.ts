@@ -1,6 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import {
+  getPathLocale,
+  localeCookieConfig,
+  parsePreferredLocaleParam,
+  withLocalePrefix
+} from '@shared/utils/localePreference';
+import {
   isAuthGuestOnlyPath,
   isOAuthLocaleAgnosticPath,
   ROUTE_HOME
@@ -14,9 +20,10 @@ import { routing } from './i18n/routing';
  *
  * Auth layering:
  * 1. Skip locale-agnostic OAuth machine endpoints (token/revoke/userinfo)
- * 2. next-intl locale prefix handling
- * 3. Page-entry gate for LOGINED_PAGES via OAuthSessionService
- * 4. Redirect signed-in users away from guest-only auth pages
+ * 2. Honor `ui_locales` / `locale` query from OAuth clients
+ * 3. next-intl locale prefix handling
+ * 4. Page-entry gate for LOGINED_PAGES via OAuthSessionService
+ * 5. Redirect signed-in users away from guest-only auth pages
  *
  * Client `useUserAuth` is not an entry gate — only local UI / user store.
  */
@@ -29,8 +36,31 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const preferredLocale = parsePreferredLocaleParam(
+    request.nextUrl.searchParams
+  );
+  if (preferredLocale && getPathLocale(pathname) !== preferredLocale) {
+    const url = request.nextUrl.clone();
+    url.pathname = withLocalePrefix(preferredLocale, pathname);
+    const response = NextResponse.redirect(url);
+    response.cookies.set(localeCookieConfig.name, preferredLocale, {
+      path: localeCookieConfig.path,
+      sameSite: localeCookieConfig.sameSite,
+      maxAge: localeCookieConfig.maxAge
+    });
+    return response;
+  }
+
   // ---------- 第一步：处理国际化 ----------
   const localPathResponse = createMiddleware(routing)(request);
+
+  if (preferredLocale) {
+    localPathResponse.cookies.set(localeCookieConfig.name, preferredLocale, {
+      path: localeCookieConfig.path,
+      sameSite: localeCookieConfig.sameSite,
+      maxAge: localeCookieConfig.maxAge
+    });
+  }
 
   // 如果国际化中间件已经返回了重定向（例如自动将根路径重定向到默认语言），
   // 则直接返回，不再进行登录检查（避免干扰）
@@ -61,8 +91,8 @@ export default async function proxy(request: NextRequest) {
 
     const url = request.nextUrl.clone();
     // Keep locale prefix, e.g. /en/auth/login → /en
-    const localeMatch = pathname.match(/^\/([^/]+)\/auth\//);
-    url.pathname = localeMatch ? `/${localeMatch[1]}` : ROUTE_HOME;
+    const pathLocale = getPathLocale(pathname);
+    url.pathname = pathLocale ? `/${pathLocale}` : ROUTE_HOME;
     url.search = '';
     return NextResponse.redirect(url);
   }
