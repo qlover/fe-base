@@ -65,7 +65,7 @@
 | `users.write` | | | ✓ |
 | `audit.read` | | ✓ | ✓ |
 
-PAM：`is_platform_admin` → 映射为 `system_role = admin`（双读迁移）。
+PAM：直接使用 `system_role`（迁移 SQL 从 `is_platform_admin` 写入后删掉旧列，**不做双读**）。
 
 ---
 
@@ -89,7 +89,7 @@ PAM：`is_platform_admin` → 映射为 `system_role = admin`（双读迁移）�
 ### PAM（先做完整）
 
 - **机构 = 现有项目协作模型**（不另叠平行 Organization 成员表）  
-- 系统角色：`is_platform_admin` → `system_role`（双读迁移）  
+- 系统角色：`system_role`（迁移后删除 `is_platform_admin`，不做双读）  
 - Session `capabilities`（系统 + 当前机构/项目角色）  
 - 页面 middleware + API Plugin 统一 `assertPermission` / 机构（项目）访问  
 - 产品文案可称「机构」；表结构优先兼容现有 `pam_projects` / collaborators  
@@ -134,7 +134,7 @@ PAM 可继续暴露现有 `my_role` / `can_edit` / `can_manage_collaborators`，
 
 ### 阶段 1 — PAM（brain-toolkit）
 
-1. **A** 系统角色字段 + 双读 `is_platform_admin`；RoleService；session capabilities  
+1. **A** `system_role` 字段（迁移并删除 `is_platform_admin`）；Role/权限映射；session capabilities  
 2. **B** 明确「项目 = 机构」：统一 assert / capabilities 与现有协作三角色  
 3. **C** 页面 + API 闸门（Admin 用系统角色；项目用机构角色）  
 4. **D** Admin / 协作 UI 与文案对齐（按需）  
