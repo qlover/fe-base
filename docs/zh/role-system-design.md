@@ -4,7 +4,8 @@
 > **产品核心：机构 = 协作容器（PAM 里就是「项目协作」这一层）**  
 > **机构角色：`owner` / `admin` / `member`（三种够用；枚举可扩展，首期只实现这三种）**  
 > **另有：系统角色（全站后台）—— 与机构协作分开**  
-> **分支：** `feat/role-system`（子 PR 合入此分支）
+> **分支：** `feat/role-system`（子 PR 合入此分支）  
+> **落地顺序（已改）：先 PAM 做完整 → 再抽通用能力移植到 next-oauth 模板**
 
 ---
 
@@ -16,18 +17,16 @@
 | 小机构 / 小团体各自有拥有者、管理员、成员 | **同意**。每个机构独立一席成员表 |
 | 三种角色即可，以后可扩展 | **同意**。首期只实现三档；角色字符串预留扩展 |
 
-**不做：** 在 PAM 项目协作之上再叠一套平行的「Organization 表」导致「项目成员」和「机构成员」两套人马。  
-**要做：** 概念与权限模型与现有协作对齐；模板（next-oauth）按同一套「机构 + 三角色」实现，再回灌 / 对齐 PAM。
+**不做：** 在 PAM 项目协作之上再叠一套平行的「Organization 表」导致两套人马。  
+**要做：** 先在 PAM 把完整 role 跑通；稳定后再抽通用能力移植到 next-oauth。
 
 ```
 平台
  └─ 系统角色：user | operator | admin     → 全站 Admin 等
 
-机构（协作容器）
- └─ PAM：现有「项目」即机构入口
- └─ 模板：organizations（同一语义）
-      └─ 成员角色：owner | admin | member
-           └─ 权限按角色等级包含：owner ⊃ admin ⊃ member
+机构（协作容器）= PAM「项目」协作
+ └─ 成员角色：owner | admin | member
+      └─ 权限按角色等级包含：owner ⊃ admin ⊃ member
 ```
 
 ---
@@ -85,19 +84,21 @@ PAM：`is_platform_admin` → 映射为 `system_role = admin`（双读迁移）�
 
 ---
 
-## 4. 模板 vs PAM 怎么落地
+## 4. PAM 先行 → 再移植模板
 
-### next-oauth（模板先做完整形态）
+### PAM（先做完整）
 
-- 表：`organizations` + `organization_members`（`owner` 可用字段或成员角色表达，与 PAM 语义一致即可）  
-- API / 页面：按机构鉴权；Admin 按系统角色鉴权  
-- 会话 JWT：`roles`（系统）+ `orgId` + `orgRole` + `rv`
+- **机构 = 现有项目协作模型**（不另叠平行 Organization 成员表）  
+- 系统角色：`is_platform_admin` → `system_role`（双读迁移）  
+- Session `capabilities`（系统 + 当前机构/项目角色）  
+- 页面 middleware + API Plugin 统一 `assertPermission` / 机构（项目）访问  
+- 产品文案可称「机构」；表结构优先兼容现有 `pam_projects` / collaborators  
 
-### PAM（对齐，不重复造轮）
+### next-oauth（PAM 稳定后再移植）
 
-- **机构 = 现有项目协作模型**（命名上产品可叫「机构/项目」，模型不分裂）  
-- 增强点在：系统角色规范化、session `capabilities`、页面/API 统一 `assert*`、文档与模板同构  
-- 若产品要统一叫「机构」，UI 文案可改；表可不强行改名（避免大迁移），或逐步别名
+- 将 PAM 验证过的：权限常量、RoleService 形态、JWT 声明、`Require*Plugin`、session capabilities  
+- 落成模板通用表 `organizations` + `organization_members`（与 PAM 语义同构）  
+- 避免模板先行导致与线上 PAM 二次对齐成本  
 
 ---
 
@@ -131,20 +132,28 @@ PAM 可继续暴露现有 `my_role` / `can_edit` / `can_manage_collaborators`，
 
 ## 7. 落地切片（合入 `feat/role-system`）
 
-1. **A** 模板：机构表 + 三角色 + Role/OrgService + JWT  
-2. **B** 模板：页面 / API 闸门  
-3. **C** 模板：机构成员 UI + 系统 Admin  
-4. **D** PAM：系统角色迁移；协作模型确认为机构；capabilities 对齐  
-5. **E** 回灌共享约定 → 合主线  
+### 阶段 1 — PAM（brain-toolkit）
+
+1. **A** 系统角色字段 + 双读 `is_platform_admin`；RoleService；session capabilities  
+2. **B** 明确「项目 = 机构」：统一 assert / capabilities 与现有协作三角色  
+3. **C** 页面 + API 闸门（Admin 用系统角色；项目用机构角色）  
+4. **D** Admin / 协作 UI 与文案对齐（按需）  
+
+### 阶段 2 — 移植 next-oauth（fe-base）
+
+5. **E** 抽通用权限常量 / Plugin / session 形状  
+6. **F** 模板机构表 + UI，语义与 PAM 对齐  
+7. **G** 集成分支收齐 → 合主线  
 
 ---
 
 ## 8. 明确不做
 
-- 机构上再套一层平行 Organization，与项目成员两套名单  
-- 机构下再嵌套「组/部门」（产品已认为与机构同一层）  
+- 机构上再叠一层平行 Organization，与项目成员两套名单  
+- 机构下再嵌套「组/部门」  
 - 平台 admin 默认拥有所有机构的 owner 权限  
 - 每页查库；Casbin；OAuth scope 当机构权限  
+- **先改模板再倒逼 PAM**（顺序已定为 PAM 先行）  
 
 ---
 
@@ -153,8 +162,8 @@ PAM 可继续暴露现有 `my_role` / `can_edit` / `can_manage_collaborators`，
 1. **机构** = 一个协作小团体（PAM 项目协作）  
 2. 成员三角色：**拥有者 / 管理员 / 成员**（可扩展，首期三种）  
 3. **系统角色**管平台后台，不管「进没进某个机构」  
-4. 页面与 API 同一套鉴权；热路径要快  
+4. **先 PAM，后 next-oauth**；页面与 API 同一套鉴权；热路径要快  
 
 ---
 
-*已拍板：你的协作即机构 + 三角色方案成立，并作为完整 role 的产品主线。*
+*已拍板：协作即机构 + 三角色；实现顺序 PAM → next-oauth。*
