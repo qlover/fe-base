@@ -188,8 +188,9 @@ cp .env.template .env   # Windows 下手动复制亦可
 
 在 Supabase SQL Editor（或等价环境）按顺序执行：
 
-1. `makes/sql/001-base-tables.sql` — 基础表（`request_logs` 等，可按需启用 RLS）
-2. `makes/sql/002-oauth-clients.sql` — OAuth 客户端、授权码、refresh token、用户凭证（表前缀 `n_oauth_wrapper__*`）
+1. `makes/sql/001-fe-schema.sql` — 全量 `fe_*` 表（roles / users / request_logs / oauth；会 drop 旧名）
+
+Bootstrap 首个平台管理员（脚本末尾有注释示例）：把邮箱改成你的账号后取消注释执行。
 
 **RLS 与密钥：**
 
@@ -728,6 +729,29 @@ ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(AcmeOAuthProvider));
 - `OAuthControllerService` — 已通过 `oauthProvider.getOAuthAdapter()` 调用你的 Adapter
 
 仅当登录流程与默认不同（例如无 session token、或不必 `upsertUserCredentials`）时，再改 `server/services/OAuthControllerService.ts`。
+
+---
+
+## 平台角色与权限（对齐 PAM #143）
+
+模板内置 **平台** RBAC（`user` / `operator` / `admin`），用不可变 `permission_key` 做 API / UI 门禁。
+
+| 项 | 说明 |
+| ---- | ---- |
+| 契约 | `shared/auth/`（`permissionKeys`、`roleKeys`、`permissionDefaults`、`permissionRegistry`、`systemRole`） |
+| 存储 | Supabase：`fe_users.role_id` → `fe_roles` / `fe_permissions` / `fe_role_assignments` |
+| API 门禁 | `.use(new RequirePermissionPlugin(PermissionKey.xxx))`，见 `server/plugins/RequirePermissionPlugin.ts` |
+| 管理页 | `/admin/roles` — 左角色、右勾选、Save；需 `admin_roles_read` / `admin_roles_write` |
+| Session | `GET /api/user/session` 附带 `system_role` + `permissions[]`；客户端 `useCan` / 侧栏过滤 |
+
+挂载示例：
+
+```ts
+.use(new ServerAuthPlugin())
+.use(new RequirePermissionPlugin(PermissionKey.admin_roles_read))
+```
+
+`UserRole.ADMIN` → 平台 `admin`，`UserRole.USER` → `user`。本版不做团队 / org 角色；`RequirePermissionPlugin` 暂不抽到 `@qlover/next-kit`（可作为后续回写点）。
 
 ---
 
