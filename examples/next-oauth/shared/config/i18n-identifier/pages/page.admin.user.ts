@@ -291,3 +291,75 @@ export const ADMIN_USERS_UPDATED_AT_LABEL = 'admin_users:updated_at__label';
  */
 export const ADMIN_USERS_UPDATED_AT_PLACEHOLDER =
   'admin_users:updated_at__placeholder';
+
+/**
+ * @description System role column label
+ * @localZh 系统角色
+ * @localEn System role
+ */
+export const ADMIN_USERS_SYSTEM_ROLE_LABEL = 'admin_users:system_role__label';
+
+/**
+ * @description System role: user
+ * @localZh 普通用户
+ * @localEn User
+ */
+export const ADMIN_USERS_SYSTEM_ROLE_USER = 'admin_users:system_role__user';
+
+/**
+ * @description System role: operator
+ * @localZh 运营
+ * @localEn Operator
+ */
+export const ADMIN_USERS_SYSTEM_ROLE_OPERATOR =
+  'admin_users:system_role__operator';
+
+/**
+ * @description System role: admin
+ * @localZh 管理员
+ * @localEn Admin
+ */
+export const ADMIN_USERS_SYSTEM_ROLE_ADMIN = 'admin_users:system_role__admin';
+
+/**
+ * @description User search placeholder
+ * @localZh 按邮箱/昵称/手机搜索
+ * @localEn Search by email, name, or phone
+ */
+export const ADMIN_USERS_SEARCH_PLACEHOLDER = 'admin_users:search__placeholder';
+
+/**
+ * @description Empty user list
+ * @localZh 暂无用户
+ * @localEn No users found
+ */
+export const ADMIN_USERS_EMPTY = 'admin_users:empty';
+
+/**
+ * @description Initial load state
+ * @localZh 加载中…
+ * @localEn Loading…
+ */
+export const ADMIN_USERS_LOADING = 'admin_users:loading';
+
+/**
+ * @description Current user row — system role is read-only
+ * @localZh 不能修改自己的系统角色
+ * @localEn You cannot change your own system role
+ */
+export const ADMIN_USERS_CANNOT_CHANGE_SELF = 'admin_users:cannot_change_self';
+
+/**
+ * @description Marker for the signed-in user in the admin users table
+ * @localZh 我
+ * @localEn You
+ */
+export const ADMIN_USERS_YOU = 'admin_users:you';
+
+/**
+ * @description System role select disabled — missing write permission
+ * @localZh 无权限修改系统角色
+ * @localEn You cannot change system roles
+ */
+export const ADMIN_USERS_ROLE_CHANGE_FORBIDDEN =
+  'admin_users:role_change_forbidden';

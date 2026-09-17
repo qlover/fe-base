@@ -41,6 +41,14 @@ export const API_RESPONSE_NOT_OK = 'api:RESPONSE_NOT_OK';
 export const API_NOT_AUTHORIZED = 'api:not_authorized';
 
 /**
+ * @description Cannot change own system role
+ * @localZh 不能修改自己的系统角色
+ * @localEn Cannot change your own system role
+ */
+export const API_ADMIN_USERS_CANNOT_CHANGE_SELF =
+  'api:admin_users_cannot_change_self';
+
+/**
  * @description 页码不正确
  * @localZh 页码不正确
  * @localEn Page number is incorrect

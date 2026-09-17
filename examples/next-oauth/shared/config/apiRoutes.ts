@@ -6,6 +6,34 @@
  */
 
 /**
+ * API path: `/api/admin/roles`
+ *
+ * @see [src/app/api/admin/roles/route.ts](../../src/app/api/admin/roles/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/roles/route.ts`
+ */
+export const API_ADMIN_ROLES = '/api/admin/roles' as const;
+
+/**
+ * API path: `/api/admin/users`
+ *
+ * @see [src/app/api/admin/users/route.ts](../../src/app/api/admin/users/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/users/route.ts`
+ */
+export const API_ADMIN_USERS = '/api/admin/users' as const;
+
+/**
+ * API path: `/api/admin/users/:userId/system-role`
+ *
+ * @see [src/app/api/admin/users/[userId]/system-role/route.ts](../../src/app/api/admin/users/[userId]/system-role/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/users/[userId]/system-role/route.ts`
+ */
+export const API_ADMIN_USERS_SYSTEM_ROLE =
+  '/api/admin/users/:userId/system-role' as const;
+
+/**
  * API path: `/api/callback/email-login`
  *
  * @see [src/app/api/callback/email-login/route.ts](../../src/app/api/callback/email-login/route.ts)
@@ -171,6 +199,9 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
+  | typeof API_ADMIN_ROLES
+  | typeof API_ADMIN_USERS
+  | typeof API_ADMIN_USERS_SYSTEM_ROLE
   | typeof API_CALLBACK_EMAIL_LOGIN
   | typeof API_CALLBACK_PROVIDER_LOGIN
   | typeof API_CLIENTS

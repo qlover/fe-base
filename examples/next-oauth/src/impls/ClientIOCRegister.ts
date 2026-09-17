@@ -8,6 +8,8 @@ import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
 import { ZustandCounterService } from '@/impls/ZustandCounterService';
 import { IOCIdentifier as I } from '@config/ioc-identifiter';
+import { AdminRolesApi } from './appApi/AdminRolesApi';
+import { AdminUsersApi } from './appApi/AdminUsersApi';
 import { AppApiRegister } from './appApi/AppApiRegister';
 import { OAuthClientsApi } from './appApi/OAuthClientsApi';
 import { dialogHandler, logger, JSON, appConfig } from './globals';
@@ -45,6 +47,8 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
     ioc.bind(I.ZustandCounterServiceInterface, new ZustandCounterService());
     ioc.bind(OAuthClientsApi, ioc.get(OAuthClientsApi));
+    ioc.bind(AdminRolesApi, ioc.get(AdminRolesApi));
+    ioc.bind(AdminUsersApi, ioc.get(AdminUsersApi));
 
     new AppApiRegister(JSON).register(ioc);
   }

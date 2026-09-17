@@ -2,6 +2,7 @@ import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
+import * as rolesKeys from '../i18n-identifier/pages/page.admin.roles';
 import * as userKeys from '../i18n-identifier/pages/page.admin.user';
 
 export const adminTableHeaderI18n = {
@@ -37,7 +38,33 @@ export const admin18n = Object.freeze({
 
 export type AdminUsersI18nInterface = typeof adminUsers18n;
 
+export type AdminRolesI18nInterface = typeof adminRoles18n;
+
 export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
+
+export const adminRoles18n = Object.freeze({
+  title: rolesKeys.ADMIN_ROLES_TITLE,
+  description: rolesKeys.ADMIN_ROLES_DESCRIPTION,
+  content: rolesKeys.ADMIN_ROLES_DESCRIPTION,
+  keywords: rolesKeys.ADMIN_ROLES_KEYWORDS,
+  sectionSystem: rolesKeys.ADMIN_ROLES_SECTION_SYSTEM,
+  permissionLabel: rolesKeys.ADMIN_ROLES_PERMISSION_LABEL,
+  selectedCount: rolesKeys.ADMIN_ROLES_SELECTED_COUNT,
+  sectionGranted: rolesKeys.ADMIN_ROLES_SECTION_GRANTED,
+  sectionAvailable: rolesKeys.ADMIN_ROLES_SECTION_AVAILABLE,
+  hintPlatform: rolesKeys.ADMIN_ROLES_HINT_PLATFORM,
+  save: rolesKeys.ADMIN_ROLES_SAVE,
+  saving: rolesKeys.ADMIN_ROLES_SAVING,
+  loading: rolesKeys.ADMIN_ROLES_LOADING,
+  loadFailed: rolesKeys.ADMIN_ROLES_LOAD_FAILED,
+  saveFailed: rolesKeys.ADMIN_ROLES_SAVE_FAILED,
+  saveSuccess: rolesKeys.ADMIN_ROLES_SAVE_SUCCESS,
+  empty: rolesKeys.ADMIN_ROLES_EMPTY,
+  systemUser: rolesKeys.ADMIN_ROLES_SYSTEM_USER,
+  systemOperator: rolesKeys.ADMIN_ROLES_SYSTEM_OPERATOR,
+  systemAdmin: rolesKeys.ADMIN_ROLES_SYSTEM_ADMIN,
+  saveButton: commonKeys.COMMON_SAVE
+});
 
 export const adminRequestLogs18n = Object.freeze({
   title: requestLogsKeys.ADMIN_REQUEST_LOGS_TITLE,
@@ -78,5 +105,17 @@ export const adminUsers18n = Object.freeze({
   saveButton: commonKeys.COMMON_SAVE,
   detailButton: commonKeys.COMMON_DETAIL,
   cancelButton: commonKeys.COMMON_CANCEL,
-  createButton: commonKeys.COMMON_CREATE
+  createButton: commonKeys.COMMON_CREATE,
+  systemRoleLabel: userKeys.ADMIN_USERS_SYSTEM_ROLE_LABEL,
+  systemRoleUser: userKeys.ADMIN_USERS_SYSTEM_ROLE_USER,
+  systemRoleOperator: userKeys.ADMIN_USERS_SYSTEM_ROLE_OPERATOR,
+  systemRoleAdmin: userKeys.ADMIN_USERS_SYSTEM_ROLE_ADMIN,
+  searchPlaceholder: userKeys.ADMIN_USERS_SEARCH_PLACEHOLDER,
+  empty: userKeys.ADMIN_USERS_EMPTY,
+  loading: userKeys.ADMIN_USERS_LOADING,
+  emailLabel: userKeys.ADMIN_USERS_EMAIL_LABEL,
+  searchButton: commonTablesKeys.COMMON_ADMIN_TABLE_SEARCH,
+  cannotChangeSelf: userKeys.ADMIN_USERS_CANNOT_CHANGE_SELF,
+  you: userKeys.ADMIN_USERS_YOU,
+  roleChangeForbidden: userKeys.ADMIN_USERS_ROLE_CHANGE_FORBIDDEN
 });
