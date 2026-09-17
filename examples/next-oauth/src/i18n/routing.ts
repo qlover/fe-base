@@ -4,6 +4,7 @@ import { localeCookieConfig } from '@shared/utils/localePreference';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
+  ROUTE_ADMIN_ROLES,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DEMO_UI,
   ROUTE_DEVELOPER_APPS,
@@ -50,6 +51,10 @@ export const routing = defineRouting({
     [ROUTE_REQUEST_LOGS]: {
       en: '/admin/request-logs',
       zh: '/admin/request-logs'
+    },
+    [ROUTE_ADMIN_ROLES]: {
+      en: '/admin/roles',
+      zh: '/admin/roles'
     },
     [ROUTE_DEVELOPER_APPS]: {
       en: '/developer/apps',

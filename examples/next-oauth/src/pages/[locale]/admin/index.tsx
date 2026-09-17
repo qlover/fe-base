@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
+import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
-import { defaultNavItems } from '@config/adminNavs';
 import { i18nConfig } from '@config/i18n';
 import { admin18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
@@ -27,9 +27,10 @@ const namespace = 'admin_home';
  */
 export default function AdminIndex({}: AdminIndexProps) {
   const seoMetadata = useI18nMapping(admin18n);
+  const navItems = useAdminNavItems();
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
+    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
       <div>{seoMetadata.description}</div>
     </AdminLayout>
   );

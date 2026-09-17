@@ -4,6 +4,7 @@ import {
   Bars3Icon,
   ClipboardDocumentListIcon,
   HomeIcon,
+  KeyIcon,
   UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -45,6 +46,7 @@ type NavIcon = ComponentType<{ className?: string }>;
 const NAV_ICONS: Record<string, NavIcon> = {
   dashboard: HomeIcon,
   users: UsersIcon,
+  roles: KeyIcon,
   'request-logs': ClipboardDocumentListIcon
 };
 
