@@ -66,9 +66,6 @@ export {
   useStrictEffect,
   useMountedClient,
   useReturnTo,
-  useStore,
-  useSliceStoreAdapter,
-  isSliceStoreAdapter,
   useWarnTranslations,
   useI18nMapping,
   usePageI18nMapping

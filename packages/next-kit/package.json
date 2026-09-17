@@ -75,7 +75,6 @@
   },
   "peerDependencies": {
     "@qlover/oauth-wrapper": ">=0.4.0",
-    "@qlover/slice-store-react": "^1.4.0",
     "@supabase/supabase-js": "^2.57.0",
     "inversify": "^7.0.0",
     "next": ">=14",
@@ -105,16 +104,12 @@
     "@qlover/oauth-wrapper": {
       "optional": true
     },
-    "@qlover/slice-store-react": {
-      "optional": true
-    },
     "@supabase/supabase-js": {
       "optional": true
     }
   },
   "devDependencies": {
     "@qlover/oauth-wrapper": "workspace:*",
-    "@qlover/slice-store-react": "^1.4.2",
     "@supabase/supabase-js": "^2.57.2",
     "@testing-library/react": "^16.3.0",
     "@types/lodash-es": "^4.17.12",

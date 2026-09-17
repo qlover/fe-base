@@ -1,3 +1,4 @@
+import { useStore } from '@brain-toolkit/react-kit';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import {
   ResourceSearch,
@@ -5,7 +6,6 @@ import {
 } from '@qlover/corekit-bridge';
 import { Button } from '@qlover/next-kit/client';
 import { PageI18nProvider } from '@qlover/next-kit/client';
-import { useStore } from '@qlover/next-kit/client';
 import { useStrictEffect } from '@qlover/next-kit/client';
 import dynamic from 'next/dynamic';
 import { useLocale } from 'next-intl';

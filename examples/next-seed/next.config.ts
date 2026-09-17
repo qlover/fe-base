@@ -31,7 +31,11 @@ const localIp = getLocalIpAddress();
 const nextConfig: NextConfig = {
   // reactStrictMode: false,
   // pages 路由需要
-  transpilePackages: ['@qlover/fe-corekit', '@qlover/corekit-bridge'],
+  transpilePackages: [
+    '@qlover/fe-corekit',
+    '@qlover/corekit-bridge',
+    '@brain-toolkit/react-kit'
+  ],
   env: {
     APP_ENV: process.env.APP_ENV
   },

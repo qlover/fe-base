@@ -1,5 +1,5 @@
+import { useStore } from '@brain-toolkit/react-kit';
 import { AsyncStoreStatus } from '@qlover/corekit-bridge';
-import { useStore } from '@qlover/next-kit/client';
 import { I } from '@config/ioc-identifiter';
 import { useIOC } from './useIOC';
 import type { UserStateInterface } from '@qlover/corekit-bridge';
