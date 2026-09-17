@@ -7,6 +7,7 @@ import {
 import { RequestLogsRepository, SupabaseRepo } from '@qlover/next-kit/server';
 import { createAdminClient, createServerClient } from '@shared/supabase/server';
 import { oauthUpstreamProviders } from '@config/common';
+import { FeTables } from '@config/feTables';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
@@ -64,7 +65,8 @@ const ServerIocRegister: IOCRegisterInterface<
       RequestLogsRepository,
       new RequestLogsRepository({
         ...supabaseDeps,
-        serverContext: ioc.get(I.ServerContextInterface)
+        serverContext: ioc.get(I.ServerContextInterface),
+        tableName: FeTables.requestLogs
       })
     );
 
