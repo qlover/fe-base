@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@qlover/next-kit/client';
+import { useStore } from '@brain-toolkit/react-kit';
 import { RegisterValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';

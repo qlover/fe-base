@@ -10,9 +10,11 @@ Status of extracting shared Next.js shell code from `examples/next-seed` / `exam
 | server | BootstrapServer, ApiServer, NextApiHandler, CORS/logger/crypto, BaseRepository, SupabaseRepo, RequestLogsRepository |
 | client services | LocalStorage, NavigateBridge, I18nService, RouterService, DialogHandler |
 | client UI | Loading, With, Button, Modal, DialogUIHost, LocaleLink, ClientRenderProvider, UserAuthFailed, Dropdown, Tooltip, PageI18nProvider, ClientSeo |
-| hooks/utils | useStrictEffect, useMountedClient, useReturnTo, useStore/useSliceStoreAdapter, useWarnTranslations, useI18nMapping |
+| hooks/utils | useStrictEffect, useMountedClient, useReturnTo, useWarnTranslations, useI18nMapping |
 | IOC | `createIOCReact()` factory |
 
+> **Note:** `useStore` / `useSliceStoreAdapter` / `isSliceStoreAdapter` moved to
+> `@brain-toolkit/react-kit` (require `>=0.5.0`). Apps should import from there.
 ## Examples rewired
 
 Both `examples/next-seed` and `examples/next-oauth` depend on `@qlover/next-kit` (`workspace:*`) and consume kit via:
