@@ -12,8 +12,10 @@ import { i18nConfig } from '@config/i18n';
 import { pageOAuthCallbackI18n } from '@config/i18n-mapping/page.oauth-callback';
 import { routerPrefix } from '@config/seed.config';
 
-/** Survives StrictMode remounts and router rebuilds for the same authorization code. */
+/** Survives StrictMode remounts for the same authorization code. */
 const completedOAuthCallbacks = new Set<string>();
+/** Claim exchange synchronously before any await (avoids double-exchange race). */
+const inflightOAuthCallbacks = new Map<string, Promise<void>>();
 
 function buildCallbackKey(search: URLSearchParams): string {
   const code = search.get('code');
@@ -54,28 +56,36 @@ export default function OAuthCallbackPage(_props: RouterRenderProps) {
       return;
     }
 
-    (async () => {
-      try {
-        const params = oauthClient.parseOAuthCallbackSearchParams(search);
-        const result = (await oauthClient.completeOAuthCallback(
-          params
-        )) as unknown as OAuthLoginResult;
+    let promise = inflightOAuthCallbacks.get(callbackKey);
+    if (!promise) {
+      promise = (async () => {
+        try {
+          oauthClient.patchConfig({ locale });
+          const params = oauthClient.parseOAuthCallbackSearchParams(search);
+          const result = (await oauthClient.completeOAuthCallback(
+            params
+          )) as unknown as OAuthLoginResult;
 
-        if (completedOAuthCallbacks.has(callbackKey)) {
+          completedOAuthCallbacks.add(callbackKey);
+          userService
+            .getStore()
+            .success(result.user as UserSchema, result.credential);
           globalThis.location.replace(homePath);
-          return;
+        } catch (err) {
+          if (!completedOAuthCallbacks.has(callbackKey)) {
+            setError(err instanceof Error ? err.message : text.errorGeneric);
+          }
+        } finally {
+          inflightOAuthCallbacks.delete(callbackKey);
         }
-        completedOAuthCallbacks.add(callbackKey);
+      })();
+      inflightOAuthCallbacks.set(callbackKey, promise);
+    }
 
-        userService
-          .getStore()
-          .success(result.user as UserSchema, result.credential);
-        globalThis.location.replace(homePath);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : text.errorGeneric);
-      }
-    })();
-  }, [callbackQuery, homePath, oauthClient, text.errorGeneric, userService]);
+    void promise;
+    // Omit i18n `text` from deps — remount/i18n must not start a second exchange
+    // after PKCE session was already cleared by the first success.
+  }, [callbackQuery, homePath, locale, oauthClient, userService]);
 
   if (error) {
     return (
@@ -87,7 +97,7 @@ export default function OAuthCallbackPage(_props: RouterRenderProps) {
           {error}
         </p>
         <LocaleLink
-          href="/"
+          href="/login"
           className="text-brand text-sm font-medium hover:underline"
         >
           {text.backHome}

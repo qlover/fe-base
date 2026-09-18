@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 60 80 80" width="100%" height="100%">
+  <rect x="65" y="65" width="70" height="70" rx="15" fill="var(--pam-primary, #4f46e5)" transform="rotate(45 100 100)" />
+  <circle cx="100" cy="100" r="9" fill="var(--pam-center, #ffffff)" />
+  <circle cx="72.5" cy="70" r="3.5" fill="var(--pam-dot1, #06b6d4)" />
+  <circle cx="127.5" cy="70" r="3.5" fill="var(--pam-dot2, #d946ef)" />
+  <circle cx="100" cy="140" r="3.5" fill="var(--pam-dot3, #f59e0b)" />
+</svg>

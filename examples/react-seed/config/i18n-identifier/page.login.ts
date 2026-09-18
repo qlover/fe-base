@@ -113,9 +113,9 @@ export const PAGE_LOGIN_GOOGLE = 'page_login:google';
 export const PAGE_LOGIN_GITHUB = 'page_login:github';
 
 /**
- * @description Login page - sign in via next-oauth-wrapper (PKCE)
- * @localZh 使用 next-oauth-wrapper 登录
- * @localEn Sign in with next-oauth-wrapper
+ * @description Login page - sign in via PAM (PKCE OAuth)
+ * @localZh 使用 PAM 登录
+ * @localEn Sign in with PAM
  */
 export const PAGE_LOGIN_OAUTH_WRAPPER = 'page_login:oauth_wrapper';
 
@@ -128,35 +128,35 @@ export const PAGE_LOGIN_OAUTH_LOADING = 'page_login:oauth_loading';
 
 /**
  * @description Login left panel - hero title
- * @localZh 欢迎回来
- * @localEn Welcome back
+ * @localZh 从种子长成产品
+ * @localEn Grow from seed to product
  */
 export const PAGE_LOGIN_HERO_TITLE = 'page_login:hero_title';
 
 /**
  * @description Login left panel - hero subtitle
- * @localZh 登录以继续使用您的账户
- * @localEn Sign in to continue to your account
+ * @localZh React Seed：路由、i18n、IOC 与 PKCE OAuth 开箱即用
+ * @localEn React Seed: routing, i18n, IOC, and PKCE OAuth ready out of the box
  */
 export const PAGE_LOGIN_HERO_SUBTITLE = 'page_login:hero_subtitle';
 
 /**
  * @description Login left panel - feature 1
- * @localZh 安全可靠，保护您的数据
- * @localEn Secure and reliable
+ * @localZh PAM / OAuth PKCE 一键接入
+ * @localEn PAM / OAuth PKCE in one click
  */
 export const PAGE_LOGIN_FEATURE_1 = 'page_login:feature_1';
 
 /**
  * @description Login left panel - feature 2
- * @localZh 多种登录方式，一键接入
- * @localEn Multiple sign-in options
+ * @localZh 主题与多语言已接好
+ * @localEn Theme and locales wired in
  */
 export const PAGE_LOGIN_FEATURE_2 = 'page_login:feature_2';
 
 /**
  * @description Login left panel - feature 3
- * @localZh 随时随地，多端同步
- * @localEn Sync across all devices
+ * @localZh Vite + React 19 模板可直接扩展
+ * @localEn Vite + React 19 template ready to extend
  */
 export const PAGE_LOGIN_FEATURE_3 = 'page_login:feature_3';

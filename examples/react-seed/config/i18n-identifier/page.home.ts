@@ -72,15 +72,15 @@ export const PAGE_ERROR_IDENTIFIER_DESCRIPTION =
 
 /**
  * @description Home page welcome title (hero)
- * @localZh 欢迎
- * @localEn Welcome
+ * @localZh React Seed
+ * @localEn React Seed
  */
 export const PAGE_HOME_WELCOME_TITLE = 'page_home:welcome_title';
 
 /**
  * @description Home page intro description
- * @localZh 这是首页。使用下方链接进行带语言前缀的导航。
- * @localEn This is the home page. Use the links below to navigate with locale-aware routing.
+ * @localZh Vite + React 种子工程：IOC、路由、i18n，以及 PAM PKCE 登录。
+ * @localEn Vite + React seed: IOC, routing, i18n, and PAM PKCE sign-in.
  */
 export const PAGE_HOME_INTRO_DESCRIPTION = 'page_home:intro_description';
 

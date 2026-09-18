@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { authHeroMeshStyle } from '@/components/authStyles';
+import { BrandLogo } from '@/components/BrandLogo';
 import { LocaleLink } from '@/components/LocaleLink';
 import { useI18nMapping } from '@/hooks/useI18nMapping';
 import { useIOC } from '@/hooks/useIOC';
@@ -45,57 +47,77 @@ export default function HomePage() {
   return (
     <div
       data-testid="HomePage"
-      className="min-h-[50vh] bg-primary py-8 px-4 sm:px-6"
+      className="relative min-h-screen overflow-hidden"
+      style={authHeroMeshStyle}
     >
-      <div className="mx-auto max-w-2xl space-y-4">
-        <h1 className="text-primary-text text-3xl font-bold tracking-tight">
-          {text.welcomeTitle}
-        </h1>
-        <p className="text-secondary-text text-base leading-relaxed">
-          {text.introDescription}
-        </p>
-        <nav className="mt-6 flex flex-wrap gap-3">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 1px 1px, rgb(var(--fe-color-primary-text)) 1px, transparent 0)',
+          backgroundSize: '28px 28px'
+        }}
+      />
+
+      <div className="relative mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+        <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
+          <BrandLogo sizeClassName="text-[2.5rem]" withWordmark />
+          <button
+            type="button"
+            data-testid="logout-button"
+            disabled={isLoggingOut}
+            onClick={() => setLogoutDialogOpen(true)}
+            className="rounded-lg border border-red-500/40 bg-secondary px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t(AUTH_LOGOUT_DIALOG_TITLE)}
+          </button>
+        </header>
+
+        <section className="max-w-xl space-y-4">
+          <p className="text-brand text-xs font-semibold tracking-[0.14em] uppercase">
+            {text.linkHome}
+          </p>
+          <h1 className="text-primary-text text-3xl font-semibold tracking-tight sm:text-4xl">
+            {text.welcomeTitle}
+          </h1>
+          <p className="text-secondary-text text-base leading-relaxed">
+            {text.introDescription}
+          </p>
+        </section>
+
+        <nav className="mt-10 flex flex-wrap gap-3">
           <LocaleLink
             href="/"
-            className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+            className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-hover"
           >
             {text.linkHome}
           </LocaleLink>
           <LocaleLink
             href="/404"
-            className="rounded-md border border-primary-border bg-elevated px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-secondary"
+            className="rounded-lg border border-primary-border bg-secondary px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-elevated"
           >
             {text.link404}
           </LocaleLink>
           <LocaleLink
             href="/500"
-            className="rounded-md border border-primary-border bg-elevated px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-secondary"
+            className="rounded-lg border border-primary-border bg-secondary px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-elevated"
           >
             {text.link500}
           </LocaleLink>
           <LocaleLink
             href="/"
             locale="en"
-            className="rounded-md border border-primary-border bg-elevated px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-secondary"
+            className="rounded-lg border border-primary-border bg-secondary px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-elevated"
           >
             {text.linkEn}
           </LocaleLink>
           <LocaleLink
             href="/"
             locale="zh"
-            className="rounded-md border border-primary-border bg-elevated px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-secondary"
+            className="rounded-lg border border-primary-border bg-secondary px-4 py-2 text-sm font-medium text-primary-text transition-colors hover:bg-elevated"
           >
             {text.linkZh}
           </LocaleLink>
-          <button
-            type="button"
-            data-testid="logout-button"
-            disabled={isLoggingOut}
-            onClick={() => setLogoutDialogOpen(true)}
-            className="rounded-md border border-red-500/40 bg-elevated px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {t(AUTH_LOGOUT_DIALOG_TITLE)}
-          </button>
         </nav>
       </div>
 

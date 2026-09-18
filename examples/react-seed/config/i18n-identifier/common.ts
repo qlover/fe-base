@@ -1,23 +1,44 @@
 /**
- * @description Theme switcher default theme label
- * @localZh 默认主题
- * @localEn Default Theme
+ * @description Theme switcher follow-system label
+ * @localZh 跟随系统
+ * @localEn System
  */
-export const HEADER_THEME_DEFAULT = 'common:theme.default';
+export const HEADER_THEME_DEFAULT = 'common:theme__default';
+
+/**
+ * @description Theme switcher light theme label
+ * @localZh 亮色
+ * @localEn Light
+ */
+export const HEADER_THEME_LIGHT = 'common:theme__light';
 
 /**
  * @description Theme switcher dark theme label
- * @localZh 暗色主题
- * @localEn Dark Theme
+ * @localZh 暗色
+ * @localEn Dark
  */
-export const HEADER_THEME_DARK = 'common:theme.dark';
+export const HEADER_THEME_DARK = 'common:theme__dark';
 
 /**
  * @description Theme switcher pink theme label
- * @localZh 粉色主题
- * @localEn Pink Theme
+ * @localZh 粉色
+ * @localEn Pink
  */
-export const HEADER_THEME_PINK = 'common:theme.pink';
+export const HEADER_THEME_PINK = 'common:theme__pink';
+
+/**
+ * @description Theme control label
+ * @localZh 主题
+ * @localEn Theme
+ */
+export const COMMON_THEME = 'common:theme_label';
+
+/**
+ * @description Language control label
+ * @localZh 语言
+ * @localEn Language
+ */
+export const COMMON_LANGUAGE = 'common:language_label';
 
 /**
  * @description Cancel

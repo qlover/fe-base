@@ -4,6 +4,7 @@ import type {
 } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import { OAuthGateway } from './OAuthGateway';
+import type { OAuthGatewayOptions } from './OAuthGateway';
 import {
   DEFAULT_OAUTH_AUTHORIZE_PATH,
   defaultOAuthClientConfig,
@@ -85,6 +86,8 @@ export class OAuthClient<
   protected readonly logger?: LoggerInterface;
   protected readonly pkceStore: PKCESessionStore;
   protected readonly gateway: OAuthGateway<T>;
+  /** Shared with {@link gateway}; kept mutable so {@link patchConfig} can sync locale. */
+  private readonly gatewayOptions: OAuthGatewayOptions;
 
   constructor(options: OAuthClientOptions<T>) {
     const {
@@ -106,29 +109,41 @@ export class OAuthClient<
     this.logger = logger;
     this.authorizePath = authorizePath;
 
-    this.gateway =
-      gateway ??
-      new OAuthGateway<T>({
-        store: this.pkceStore,
-        config: this.authorizationConfig,
-        mapUser:
-          mapUser ??
-          ((userinfo: OAuthUserInfo) => {
-            return userinfo;
-          }),
-        requester,
-        authorizePath,
-        origin: this.config.origin,
-        routerPrefix: this.config.routerPrefix,
-        locale: this.config.locale,
-        localeIn: this.config.localeIn,
-        localeQueryParam: this.config.localeQueryParam,
-        localeHeader: this.config.localeHeader
-      });
+    this.gatewayOptions = {
+      store: this.pkceStore,
+      config: this.authorizationConfig,
+      mapUser:
+        mapUser ??
+        ((userinfo: OAuthUserInfo) => {
+          return userinfo;
+        }),
+      requester,
+      authorizePath,
+      origin: this.config.origin,
+      routerPrefix: this.config.routerPrefix,
+      locale: this.config.locale,
+      localeIn: this.config.localeIn,
+      localeQueryParam: this.config.localeQueryParam,
+      localeHeader: this.config.localeHeader
+    };
+
+    this.gateway = gateway ?? new OAuthGateway<T>(this.gatewayOptions);
   }
 
   public patchConfig(config: Partial<OAuthClientConfig>): void {
     Object.assign(this.config, config);
+    this.syncGatewayOptions();
+  }
+
+  /** Keep gateway authorize/token locale + AS config aligned with {@link config}. */
+  private syncGatewayOptions(): void {
+    this.gatewayOptions.config = this.authorizationConfig;
+    this.gatewayOptions.origin = this.config.origin;
+    this.gatewayOptions.routerPrefix = this.config.routerPrefix;
+    this.gatewayOptions.locale = this.config.locale;
+    this.gatewayOptions.localeIn = this.config.localeIn;
+    this.gatewayOptions.localeQueryParam = this.config.localeQueryParam;
+    this.gatewayOptions.localeHeader = this.config.localeHeader;
   }
 
   protected get authorizationConfig(): OAuthAuthorizationConfig | null {
@@ -230,6 +245,12 @@ export class OAuthClient<
     params?: Parameters<OAuthGateway<T>['oAuthWrapperCallback']>[0]
   ): Promise<T> {
     const session = this.pkceStore.loadPkceSession();
+    // Remount after AS redirect often resets client locale to default `en`.
+    // Prefer the locale captured at authorize so redirect_uri + mismatch checks match.
+    if (session?.locale) {
+      this.patchConfig({ locale: session.locale });
+    }
+
     const callbackState =
       params instanceof URLSearchParams ? params.get('state') : params?.state;
 
