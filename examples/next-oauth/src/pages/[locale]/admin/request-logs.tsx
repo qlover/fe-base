@@ -12,9 +12,10 @@ import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { RequestLogsApi } from '@/impls/appApi/RequestLogsApi';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
+import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
+import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { defaultNavItems } from '@config/adminNavs';
 import { defaultSearchParams } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import { adminRequestLogs18n } from '@config/i18n-mapping/admin18n';
@@ -49,6 +50,8 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
   const requestLogsApi = useIOC(RequestLogsApi);
   const dialogHandler = useIOC(I.DialogHandler);
   const seoMetadata = useI18nMapping(pageI18n);
+  const navItems = useAdminNavItems();
+  const { allowed: canClear } = useCan(PermissionKey.admin_request_logs_write);
   const [clearing, setClearing] = useState(false);
 
   const searchResource = useMemo(
@@ -123,7 +126,7 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
 
   return (
     <PageI18nProvider value={seoMetadata}>
-      <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
+      <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
         <div>
           <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
@@ -134,14 +137,16 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
                 {seoMetadata.description}
               </p>
             </div>
-            <Button
-              variant="danger"
-              disabled={clearing || loading || total === 0}
-              onClick={handleClearLogs}
-            >
-              <TrashIcon className="h-4 w-4" />
-              {seoMetadata.clear}
-            </Button>
+            {canClear ? (
+              <Button
+                variant="danger"
+                disabled={clearing || loading || total === 0}
+                onClick={handleClearLogs}
+              >
+                <TrashIcon className="h-4 w-4" />
+                {seoMetadata.clear}
+              </Button>
+            ) : null}
           </div>
           <RequestLogsTable
             rows={rows}

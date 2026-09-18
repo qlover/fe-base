@@ -105,7 +105,7 @@ cp .env.template .env
 | `OAUTH_WRAPPER_API_BASE` | Upstream user API base (Brain User in the default adapter) |
 | `OAUTH_WRAPPER_API_TIMEOUT` | Upstream timeout ms (default `10000`) |
 
-**Database:** run `makes/sql/001-base-tables.sql` then `002-oauth-clients.sql` in Supabase. If OAuth tables have **no RLS**, `SUPABASE_ANON_KEY` is enough; `SUPABASE_SERVICE_ROLE_KEY` is only needed when RLS blocks anon writes (the bundled `002` script enables RLS by default—skip or adjust if that does not match your deployment). `createAdminClient()` prefers service role, then falls back to anon.
+**Database:** run `makes/sql/001-fe-schema.sql` once in Supabase (all `fe_*` tables: roles, users, request logs, oauth; drops legacy names). Bootstrap the first admin with the commented `INSERT` at the end of that script. If OAuth tables have **no RLS**, `SUPABASE_ANON_KEY` is enough; `SUPABASE_SERVICE_ROLE_KEY` is only needed when RLS blocks anon writes (the script enables RLS by default). `createAdminClient()` prefers service role, then falls back to anon.
 
 **Run:** `npm run dev` → `http://localhost:3102`.
 
@@ -223,6 +223,27 @@ export class AcmeUserAdapter implements OAuthUserAdapterInterface {
 ```
 
 Do **not** change `shared/oauth-wrapper`, repositories, controllers, or routes unless your login flow differs from the default `OAuthControllerService`.
+
+---
+
+## Platform roles & permissions (PAM #143-aligned)
+
+Template includes **platform** RBAC (`user` / `operator` / `admin`) with immutable `permission_key` gates.
+
+| Piece | Where |
+| ---- | ---- |
+| Contracts | `shared/auth/` |
+| Storage | Supabase: `fe_users.role_id` → `fe_roles` / permissions / assignments |
+| API gate | `RequirePermissionPlugin` on route chains |
+| Admin UI | `/admin/roles` |
+| Session | `system_role` + `permissions[]` on session; client `useCan` / nav filter |
+
+```ts
+.use(new ServerAuthPlugin())
+.use(new RequirePermissionPlugin(PermissionKey.admin_roles_read))
+```
+
+Team/org roles are out of scope. Plugin is not yet extracted to `@qlover/next-kit`.
 
 ---
 

@@ -7,6 +7,7 @@ import { localesSchema, type LocalesSchema } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { createAdminClient, createServerClient } from '@shared/supabase/server';
+import { FeTables } from '@config/feTables';
 import { I } from '@config/ioc-identifiter';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -28,14 +29,12 @@ export interface UpsertResult {
   allReturnedData: LocalesSchema[];
 }
 
-const TABLE = 'next_app_locales';
-
 @injectable()
 export class LocalesRepository extends SupabaseRepo<LocalesSchema> {
   protected safeFields = Object.keys(localesSchema.shape);
 
   constructor(@inject(I.Logger) logger: LoggerInterface) {
-    super(TABLE, {
+    super(FeTables.locales, {
       logger,
       getUserClient: createServerClient,
       getAdminClient: createAdminClient

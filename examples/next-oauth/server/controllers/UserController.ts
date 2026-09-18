@@ -15,12 +15,23 @@ import {
   signWithPhoneOtpSchema,
   signWithEmailOtpSchema
 } from '@qlover/oauth-wrapper';
+import {
+  expandSystemPermissions,
+  normalizeSystemRole,
+  platformRoleFromUserRole
+} from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
+import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
+import {
+  defaultPlatformRoleFromUserRole,
+  FeUsersRepository
+} from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
+import { RolePermissionService } from '@server/services/RolePermissionService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -34,6 +45,8 @@ import type { RequestLogRow } from '@qlover/next-kit/common';
 import type { ValidatorInterface } from '@qlover/next-kit/common';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { NextRequest } from 'next/server';
+
+export type SessionUserWithPermissions = UserSchema & SessionUserPermissions;
 
 @injectable()
 export class UserController {
@@ -49,12 +62,48 @@ export class UserController {
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer,
     @inject(OtpSendRateLimitService)
-    protected otpSendRateLimit: OtpSendRateLimitService
+    protected otpSendRateLimit: OtpSendRateLimitService,
+    @inject(RolePermissionService)
+    protected rolePermissionService: RolePermissionService,
+    @inject(FeUsersRepository)
+    protected feUsersRepository: FeUsersRepository
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
       base64Serializer
     );
+  }
+
+  /** Attach platform RBAC fields for client `useCan` / nav gates. */
+  protected async withPermissions(
+    user: UserSchema
+  ): Promise<SessionUserWithPermissions> {
+    await this.rolePermissionService.ensureLoaded();
+
+    try {
+      await this.feUsersRepository.ensureProfile({
+        id: user.id,
+        email: user.email || null,
+        displayName: user.name ?? null,
+        phone: user.phone ?? null,
+        defaultRoleKey: defaultPlatformRoleFromUserRole(user.role)
+      });
+    } catch {
+      // Table missing / RLS: fall back to UserRole mapping below.
+    }
+
+    const fromDb = await this.feUsersRepository
+      .getSystemRoleKey(user.id)
+      .catch(() => null);
+    const system_role = normalizeSystemRole(
+      fromDb ?? platformRoleFromUserRole(user.role)
+    );
+
+    return {
+      ...user,
+      system_role,
+      permissions: [...expandSystemPermissions(system_role)]
+    };
   }
 
   public async login(
@@ -110,17 +159,22 @@ export class UserController {
     return await this.userService.logout(serverContext);
   }
 
-  public async refresh(): Promise<UserSchema | null> {
+  public async refresh(): Promise<SessionUserWithPermissions | null> {
     const user = await this.userService.getSessionUser();
-    return user ? { ...user, credential_token: '' } : null;
+    if (!user) {
+      return null;
+    }
+    const withPerms = await this.withPermissions(user);
+    return { ...withPerms, credential_token: '' };
   }
 
-  public async getUser(): Promise<UserSchema | null> {
-    return await this.userService.getUser();
+  public async getUser(): Promise<SessionUserWithPermissions | null> {
+    const user = await this.userService.getUser();
+    return user ? this.withPermissions(user) : null;
   }
 
   /**
-   * Paged `request_logs` for the current  session user.
+   * Paged `fe_request_logs` for the current session user.
    * Response shape matches {@link ResourceSearchResult}.
    */
   public async searchRequestLogsForCurrentUser(

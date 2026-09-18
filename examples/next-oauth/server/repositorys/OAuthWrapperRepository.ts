@@ -6,6 +6,7 @@ import {
   generateOAuthClientSecret
 } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
+import { FeTables } from '@config/feTables';
 import type {
   OAuthClientRow,
   OAuthClientListItem,
@@ -32,7 +33,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   public async create(input: CreateAuthorizationCodeInput): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { error } = await supabase
-      .from('n_oauth_wrapper__authorization_codes')
+      .from(FeTables.oauthAuthorizationCodes)
       .insert({
         code: input.code,
         client_id: input.client_id,
@@ -60,7 +61,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthAuthorizationCodeRow | null> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__authorization_codes')
+      .from(FeTables.oauthAuthorizationCodes)
       .update({ used: true })
       .eq('code', code)
       .eq('used', false)
@@ -83,7 +84,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthUserCredentialsRow | null> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__user_credentials')
+      .from(FeTables.oauthUserCredentials)
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
@@ -105,16 +106,14 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     }
   ): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
-    const { error } = await supabase
-      .from('n_oauth_wrapper__user_credentials')
-      .upsert(
-        {
-          user_id: userId,
-          ...fields,
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: 'user_id' }
-      );
+    const { error } = await supabase.from(FeTables.oauthUserCredentials).upsert(
+      {
+        user_id: userId,
+        ...fields,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'user_id' }
+    );
 
     if (error) {
       throw new Error(error.message);
@@ -129,7 +128,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthRefreshTokenRow | null> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
+      .from(FeTables.oauthRefreshTokens)
       .select('*')
       .eq('refresh_token', tokenHash)
       .maybeSingle();
@@ -150,15 +149,13 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     expires_at: string;
   }): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
-    const { error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
-      .upsert(
-        {
-          ...input,
-          revoked: false
-        },
-        { onConflict: 'refresh_token' }
-      );
+    const { error } = await supabase.from(FeTables.oauthRefreshTokens).upsert(
+      {
+        ...input,
+        revoked: false
+      },
+      { onConflict: 'refresh_token' }
+    );
 
     if (error) {
       throw new Error(error.message);
@@ -171,7 +168,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   public async revokeRefreshToken(tokenHash: string): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
+      .from(FeTables.oauthRefreshTokens)
       .update({ revoked: true })
       .eq('refresh_token', tokenHash);
 
@@ -188,7 +185,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthRefreshTokenRow | null> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
+      .from(FeTables.oauthRefreshTokens)
       .select('*')
       .eq('refresh_token', tokenHash)
       .maybeSingle();
@@ -207,15 +204,13 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     input: CreateOAuthRefreshTokenInput
   ): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
-    const { error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
-      .insert({
-        refresh_token: input.refresh_token,
-        client_id: input.client_id,
-        user_id: input.user_id,
-        expires_at: input.expires_at,
-        revoked: false
-      });
+    const { error } = await supabase.from(FeTables.oauthRefreshTokens).insert({
+      refresh_token: input.refresh_token,
+      client_id: input.client_id,
+      user_id: input.user_id,
+      expires_at: input.expires_at,
+      revoked: false
+    });
 
     if (error) {
       throw new Error(error.message);
@@ -228,7 +223,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   public async revokeByTokenHash(tokenHash: string): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
+      .from(FeTables.oauthRefreshTokens)
       .update({ revoked: true })
       .eq('refresh_token', tokenHash);
 
@@ -243,7 +238,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   public async revokeRefreshTokensByUserId(userId: string): Promise<void> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { error } = await supabase
-      .from('n_oauth_wrapper__refresh_tokens')
+      .from(FeTables.oauthRefreshTokens)
       .update({ revoked: true })
       .eq('user_id', userId)
       .eq('revoked', false);
@@ -261,7 +256,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthClientRow | null> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .select('*')
       .eq('client_id', clientId)
       .maybeSingle();
@@ -281,7 +276,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
   ): Promise<OAuthClientListItem[]> {
     const supabase = await this.supabaseBridge.getAdminSupabase();
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .select(
         'client_id, client_name, client_uri, logo_uri, redirect_uris, confidential, created_at, updated_at'
       )
@@ -316,7 +311,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     }
 
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .insert({
         client_id: clientId,
         client_secret_hash: clientSecretHash,
@@ -353,7 +348,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     const supabase = await this.supabaseBridge.getAdminSupabase();
 
     const { data, error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .update({
         client_name: input.client_name,
         client_uri: input.client_uri || null,
@@ -396,7 +391,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     const clientSecretHash = await hashClientSecret(clientSecret);
 
     const { error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .update({
         client_secret_hash: clientSecretHash,
         updated_at: new Date().toISOString()
@@ -421,7 +416,7 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     const supabase = await this.supabaseBridge.getAdminSupabase();
 
     const { error } = await supabase
-      .from('n_oauth_wrapper__clients')
+      .from(FeTables.oauthClients)
       .delete()
       .eq('client_id', clientId)
       .eq('owner_user_id', ownerUserId);

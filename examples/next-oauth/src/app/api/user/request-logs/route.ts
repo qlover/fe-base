@@ -1,6 +1,8 @@
+import { PermissionKey } from '@shared/auth/permissionKeys';
 import { API_USER_REQUEST_LOGS } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
+import { RequirePermissionPlugin } from '@server/plugins/RequirePermissionPlugin';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';
 import type { NextRequest } from 'next/server';
 
@@ -78,6 +80,7 @@ import type { NextRequest } from 'next/server';
 export async function GET(req: NextRequest) {
   return await new NextApiServer(API_USER_REQUEST_LOGS, req)
     .use(new ServerAuthPlugin())
+    .use(new RequirePermissionPlugin(PermissionKey.admin_request_logs_read))
     .runWithJson(async ({ parameters: { IOC } }) =>
       IOC(UserController).searchRequestLogsForCurrentUser(
         req.nextUrl.searchParams
@@ -88,6 +91,7 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   return await new NextApiServer(API_USER_REQUEST_LOGS, req)
     .use(new ServerAuthPlugin())
+    .use(new RequirePermissionPlugin(PermissionKey.admin_request_logs_write))
     .runWithJson(async ({ parameters: { IOC } }) =>
       IOC(UserController).clearRequestLogs()
     );

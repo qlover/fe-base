@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
-import { AdminUsersPanel } from '@/uikit/components-pages/AdminUsersPanel';
+import { AdminRolesPanel } from '@/uikit/components-pages/AdminRolesPanel';
 import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
-import { adminUsers18n } from '@config/i18n-mapping/admin18n';
+import { adminRoles18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
@@ -16,18 +16,18 @@ const AdminLayout = dynamic(
   { ssr: false }
 );
 
-interface AdminUserPageProps {
+interface AdminRolesProps {
   messages: Record<string, string>;
 }
 
-const namespace = 'admin_users';
+const namespace = ['admin_roles', 'permission'];
 
 /**
- * Admin users (Pages Router / CSR).
+ * Admin platform roles (Pages Router / CSR).
  * Entry auth is middleware via LOGINED_PAGES.
  */
-export default function AdminUserPage({}: AdminUserPageProps) {
-  const seoMetadata = useI18nMapping(adminUsers18n);
+export default function AdminRolesPage({}: AdminRolesProps) {
+  const seoMetadata = useI18nMapping(adminRoles18n);
   const navItems = useAdminNavItems();
 
   return (
@@ -38,7 +38,7 @@ export default function AdminUserPage({}: AdminUserPageProps) {
         </h1>
         <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
       </div>
-      <AdminUsersPanel tt={seoMetadata} />
+      <AdminRolesPanel tt={seoMetadata} />
     </AdminLayout>
   );
 }

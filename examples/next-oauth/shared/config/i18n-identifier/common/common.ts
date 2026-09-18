@@ -91,6 +91,13 @@ export const COMMON_ADMIN_NAV_LOCALES = 'common:admin_nav__locales';
 export const COMMON_ADMIN_NAV_REQUEST_LOGS = 'common:admin_nav__request_logs';
 
 /**
+ * @description Admin sidebar nav - Roles
+ * @localZh 角色管理
+ * @localEn Roles
+ */
+export const COMMON_ADMIN_NAV_ROLES = 'common:admin_nav__roles';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout
