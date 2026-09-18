@@ -19,7 +19,8 @@ const ADMIN_WRITE = [
   PermissionKey.admin_users_system_role,
   PermissionKey.admin_roles_write,
   PermissionKey.admin_locales_write,
-  PermissionKey.admin_request_logs_write
+  PermissionKey.admin_request_logs_write,
+  PermissionKey.admin_site_settings_write
 ] as const;
 
 export const DEFAULT_SYSTEM_ROLE_PERMISSIONS: Record<
@@ -100,5 +101,12 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     method: null,
     path: '/admin',
     description: 'Access admin console'
+  },
+  {
+    permissionKey: PermissionKey.admin_site_settings_write,
+    type: 'api',
+    method: 'PATCH',
+    path: '/api/admin/site-settings',
+    description: 'Update site settings'
   }
 ];

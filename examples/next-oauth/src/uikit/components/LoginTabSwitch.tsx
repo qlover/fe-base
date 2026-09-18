@@ -5,6 +5,8 @@ import {
   useAsyncStore,
   type AsyncState
 } from '@brain-toolkit/react-kit';
+import { useStrictEffect } from '@qlover/next-kit/client';
+import { clsx } from 'clsx';
 import {
   useCallback,
   useState,
@@ -12,6 +14,7 @@ import {
   type SVGProps
 } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
+import { fetchPublicConfig } from '@/impls/fetchPublicConfig';
 import { EmailOTPForm } from '@/uikit/components/EmailOTPForm';
 import { GithubIcon, GoogleIcon } from '@/uikit/components/icons';
 import { LoginForm } from '@/uikit/components/LoginForm';
@@ -20,6 +23,7 @@ import type { LoginProviderType } from '@config/common';
 import { loginProviders, oauthUpstreamProviders } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
+import type { FePublicConfig } from '@schemas/FeSiteSettingsSchema';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { useIOC } from '../hook/useIOC';
 
@@ -36,7 +40,6 @@ type ProvidersItem = {
   key: LoginProviderType;
   provider: LoginProviderType;
   titleI18nMapKey: keyof LoginI18nInterface;
-  disabled: boolean;
   Icon: IconComponent;
 };
 
@@ -48,7 +51,6 @@ const providersIcons: Record<LoginProviderType, IconComponent> = {
 const providersItems: ProvidersItem[] = Object.values(loginProviders).map(
   (provider) => ({
     key: provider,
-    disabled: provider === loginProviders.Google,
     provider: provider,
     titleI18nMapKey: ('provider' + provider) as keyof LoginI18nInterface,
     Icon: providersIcons[provider]
@@ -61,11 +63,26 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [tab, setTab] = useState<LoginTab>('email');
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
   const [provider, providerStore] = useAsyncStore<ProviderLoginState>();
+  const [publicConfig, setPublicConfig] = useState<FePublicConfig | null>(null);
   const providerLogining = provider.loading;
   const error = providerStore.isFailed() ? String(provider.error) : null;
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
   const supabaseUpstream =
     appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
+
+  const phoneLoginEnabled = publicConfig?.auth.phoneLoginEnabled ?? true;
+  const githubOauthEnabled = publicConfig?.auth.githubOauthEnabled ?? true;
+  const googleOauthEnabled = publicConfig?.auth.googleOauthEnabled ?? false;
+
+  useStrictEffect(() => {
+    void fetchPublicConfig().then(setPublicConfig);
+  }, []);
+
+  useStrictEffect(() => {
+    if (!phoneLoginEnabled && tab === 'phone') {
+      setTab('email');
+    }
+  }, [phoneLoginEnabled, tab]);
 
   const tabBaseClass =
     'flex-1 py-2.5 text-sm font-medium text-center transition-colors cursor-pointer border-b-2 outline-none';
@@ -90,6 +107,19 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
     [providerStore, userGateway]
   );
 
+  const visibleProviders = providersItems.filter((item) => {
+    if (item.provider === loginProviders.GitHub) {
+      return githubOauthEnabled;
+    }
+    if (item.provider === loginProviders.Google) {
+      return googleOauthEnabled;
+    }
+    return true;
+  });
+
+  const showProviderBlock = supabaseUpstream && visibleProviders.length > 0;
+  const showPhoneTab = supabaseUpstream && phoneLoginEnabled;
+
   return (
     <div data-testid="LoginTabSwitch" className="w-full">
       {error ? (
@@ -101,30 +131,25 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </div>
       ) : null}
 
-      {supabaseUpstream &&
-        providersItems.map(
-          ({
-            key,
-            disabled,
-            provider: itemProvider,
-            titleI18nMapKey,
-            Icon
-          }) => (
-            <button
-              data-testid={'LoginWith' + key}
-              key={key}
-              disabled={disabled || providerLogining}
-              onClick={() => onLoginWithProvider(itemProvider)}
-              title={tt[titleI18nMapKey]}
-              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 mb-6"
-            >
-              <Icon className="h-5 w-5" />
-              <span>{tt[titleI18nMapKey]}</span>
-            </button>
+      {showProviderBlock
+        ? visibleProviders.map(
+            ({ key, provider: itemProvider, titleI18nMapKey, Icon }) => (
+              <button
+                data-testid={'LoginWith' + key}
+                key={key}
+                disabled={providerLogining}
+                onClick={() => onLoginWithProvider(itemProvider)}
+                title={tt[titleI18nMapKey]}
+                className="mb-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                <Icon className="h-5 w-5" />
+                <span>{tt[titleI18nMapKey]}</span>
+              </button>
+            )
           )
-        )}
+        : null}
 
-      {supabaseUpstream && (
+      {showProviderBlock ? (
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-primary-border"></div>
@@ -135,13 +160,16 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
             </span>
           </div>
         </div>
-      )}
+      ) : null}
 
-      {supabaseUpstream ? (
-        <div className="flex border-b border-primary-border mb-6">
+      {showPhoneTab ? (
+        <div className="mb-6 flex border-b border-primary-border">
           <button
             type="button"
-            className={`${tabBaseClass} ${tab === 'email' ? tabActiveClass : tabInactiveClass}`}
+            className={clsx(
+              tabBaseClass,
+              tab === 'email' ? tabActiveClass : tabInactiveClass
+            )}
             onClick={() => setTab('email')}
             aria-selected={tab === 'email'}
             role="tab"
@@ -150,7 +178,10 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
           </button>
           <button
             type="button"
-            className={`${tabBaseClass} ${tab === 'phone' ? tabActiveClass : tabInactiveClass}`}
+            className={clsx(
+              tabBaseClass,
+              tab === 'phone' ? tabActiveClass : tabInactiveClass
+            )}
             onClick={() => setTab('phone')}
             aria-selected={tab === 'phone'}
             role="tab"
@@ -166,11 +197,11 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
             <>
               <LoginForm tt={tt} />
               {supabaseUpstream && (
-                <p className="text-center mt-4">
+                <p className="mt-4 text-center">
                   <button
                     type="button"
                     onClick={() => setEmailMode('otp')}
-                    className="text-brand text-sm hover:underline"
+                    className="text-sm text-brand hover:underline"
                   >
                     {tt.switchToOtp}
                   </button>
@@ -180,11 +211,11 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
           ) : (
             <>
               <EmailOTPForm tt={tt} />
-              <p className="text-center mt-4">
+              <p className="mt-4 text-center">
                 <button
                   type="button"
                   onClick={() => setEmailMode('password')}
-                  className="text-brand text-sm hover:underline"
+                  className="text-sm text-brand hover:underline"
                 >
                   {tt.switchToPassword}
                 </button>
@@ -194,7 +225,7 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </>
       )}
 
-      {supabaseUpstream && tab === 'phone' && <PhoneLoginForm tt={tt} />}
+      {showPhoneTab && tab === 'phone' ? <PhoneLoginForm tt={tt} /> : null}
     </div>
   );
 }

@@ -45,6 +45,11 @@ export const ROUTE_ADMIN_ROLES = '/admin/roles' as const;
 export const ROUTE_ADMIN_LOCALES = '/admin/locales' as const;
 
 /**
+ * Admin site settings. Pages Router: `src/pages/[locale]/admin/settings.tsx`.
+ */
+export const ROUTE_ADMIN_SETTINGS = '/admin/settings' as const;
+
+/**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
  */
 export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
@@ -131,6 +136,7 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_USERS,
   ROUTE_ADMIN_ROLES,
   ROUTE_ADMIN_LOCALES,
+  ROUTE_ADMIN_SETTINGS,
   ROUTE_REQUEST_LOGS,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_PLAYGROUND,

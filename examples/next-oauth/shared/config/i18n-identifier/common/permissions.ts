@@ -68,3 +68,11 @@ export const PERMISSION_ADMIN_REQUEST_LOGS_WRITE =
  */
 export const PERMISSION_ADMIN_SITE_SETTINGS_READ =
   'permission:admin_site_settings_read';
+
+/**
+ * @description Update site settings
+ * @localZh 编辑站点设置
+ * @localEn Update site settings
+ */
+export const PERMISSION_ADMIN_SITE_SETTINGS_WRITE =
+  'permission:admin_site_settings_write';

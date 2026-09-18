@@ -4,6 +4,7 @@ import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
 import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
 import * as rolesKeys from '../i18n-identifier/pages/page.admin.roles';
+import * as settingsKeys from '../i18n-identifier/pages/page.admin.settings';
 import * as userKeys from '../i18n-identifier/pages/page.admin.user';
 
 export const adminTableHeaderI18n = {
@@ -44,6 +45,8 @@ export type AdminRolesI18nInterface = typeof adminRoles18n;
 export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
 export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
+
+export type AdminSettingsI18nInterface = typeof adminSettings18n;
 
 export const adminRoles18n = Object.freeze({
   title: rolesKeys.ADMIN_ROLES_TITLE,
@@ -121,6 +124,36 @@ export const adminUsers18n = Object.freeze({
   cannotChangeSelf: userKeys.ADMIN_USERS_CANNOT_CHANGE_SELF,
   you: userKeys.ADMIN_USERS_YOU,
   roleChangeForbidden: userKeys.ADMIN_USERS_ROLE_CHANGE_FORBIDDEN
+});
+
+export const adminSettings18n = Object.freeze({
+  title: settingsKeys.ADMIN_SETTINGS_TITLE,
+  description: settingsKeys.ADMIN_SETTINGS_DESCRIPTION,
+  content: settingsKeys.ADMIN_SETTINGS_DESCRIPTION,
+  keywords: settingsKeys.ADMIN_SETTINGS_KEYWORDS,
+  sectionAuth: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH,
+  sectionAuthDesc: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH_DESC,
+  sectionOpenai: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI,
+  sectionOpenaiDesc: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI_DESC,
+  sectionApi: settingsKeys.ADMIN_SETTINGS_SECTION_API,
+  sectionApiDesc: settingsKeys.ADMIN_SETTINGS_SECTION_API_DESC,
+  loading: settingsKeys.ADMIN_SETTINGS_LOADING,
+  save: settingsKeys.ADMIN_SETTINGS_SAVE,
+  saving: settingsKeys.ADMIN_SETTINGS_SAVING,
+  secretHint: settingsKeys.ADMIN_SETTINGS_SECRET_HINT,
+  loadFailed: settingsKeys.ADMIN_SETTINGS_LOAD_FAILED,
+  saveFailed: settingsKeys.ADMIN_SETTINGS_SAVE_FAILED,
+  saveSuccess: settingsKeys.ADMIN_SETTINGS_SAVE_SUCCESS,
+  sourceDb: settingsKeys.ADMIN_SETTINGS_SOURCE_DB,
+  sourceDefault: settingsKeys.ADMIN_SETTINGS_SOURCE_DEFAULT,
+  corsOrigin: settingsKeys.ADMIN_SETTINGS_CORS_ORIGIN,
+  corsPath: settingsKeys.ADMIN_SETTINGS_CORS_PATH,
+  corsMethods: settingsKeys.ADMIN_SETTINGS_CORS_METHODS,
+  corsAdd: settingsKeys.ADMIN_SETTINGS_CORS_ADD,
+  corsRemove: settingsKeys.ADMIN_SETTINGS_CORS_REMOVE,
+  corsEmpty: settingsKeys.ADMIN_SETTINGS_CORS_EMPTY,
+  corsOriginInvalid: settingsKeys.ADMIN_SETTINGS_CORS_ORIGIN_INVALID,
+  corsDuplicate: settingsKeys.ADMIN_SETTINGS_CORS_DUPLICATE
 });
 
 export const adminLocales18n = Object.freeze({
