@@ -15,6 +15,7 @@ import {
   NEXT_KIT_SERVER,
   PasswordEncrypt,
   isApiCorsEnabled,
+  findMatchingCorsRule,
   createLogger,
   ApiServer
 } from '../src/server';
@@ -156,6 +157,52 @@ describe('@qlover/next-kit/server', () => {
         apiCorsAllowedMethods: ['GET']
       })
     ).toBe(false);
+  });
+
+  it('matches CORS rules by origin × path × method', () => {
+    const config = {
+      apiCorsAllowedOrigins: [] as string[],
+      apiCorsAllowedMethods: ['GET', 'POST', 'OPTIONS'],
+      apiCorsRules: [
+        {
+          origin: 'http://localhost:3100',
+          path: '/oauth/token',
+          methods: ['POST', 'OPTIONS']
+        },
+        {
+          origin: '*',
+          path: '/oauth/*',
+          methods: ['*']
+        }
+      ]
+    };
+
+    expect(
+      findMatchingCorsRule(
+        'http://localhost:3100',
+        '/oauth/token',
+        config,
+        'POST'
+      )?.origin
+    ).toBe('http://localhost:3100');
+
+    expect(
+      findMatchingCorsRule(
+        'https://spa.example.com',
+        '/oauth/userinfo',
+        config,
+        'GET'
+      )?.path
+    ).toBe('/oauth/*');
+
+    expect(
+      findMatchingCorsRule(
+        'http://localhost:3100',
+        '/api/user/logout',
+        config,
+        'POST'
+      )
+    ).toBeUndefined();
   });
 
   it('requires serverContext on ApiServer by default', () => {

@@ -189,6 +189,13 @@ cp .env.template .env   # Windows 下手动复制亦可
 在 Supabase SQL Editor（或等价环境）按顺序执行：
 
 1. `makes/sql/001-fe-schema.sql` — 全量 `fe_*` 表（roles / users / request_logs / oauth；会 drop 旧名）
+2. `makes/sql/003-fe-locales.sql` — 国际化文案 CMS（`fe_locales`）
+3. `makes/sql/004-fe-site-settings.sql` — **站点设置**（`fe_site_settings`：登录开关、CORS 规则、OpenAI 演示密钥）
+4. `makes/sql/005-fe-cors-rules.sql` — 确保 `api.cors_rules`，并删除旧版 `api.cors_origins` / `api.cors_methods`
+
+（可选）`002-migrate-pam-users-to-fe-users.sql` — 从旧 PAM 用户表迁移时再执行。
+
+**Admin 站点设置（CORS / 登录开关）：** 执行 `004`+`005` 后，以 admin 角色登录进入 `/{locale}/admin/settings`。CORS 按 `origin path methods` 规则配置（三项均可 `*`）；默认含 `http://localhost:3100 * *`（react-seed）。保存后立即生效（优先于 `.env` 的 `API_CORS_ALLOWED_*`）。
 
 Bootstrap 首个平台管理员（脚本末尾有注释示例）：把邮箱改成你的账号后取消注释执行。
 

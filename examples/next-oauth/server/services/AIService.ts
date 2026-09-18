@@ -1,6 +1,8 @@
 import { inject, injectable } from '@shared/container';
+import { FE_SITE_SETTING_KEYS } from '@config/feSiteSettings';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { SiteSettingsService } from '@server/services/SiteSettingsService';
 import type OpenAI from 'openai';
 import type {
   ChatCompletionCreateParamsBase,
@@ -9,23 +11,38 @@ import type {
 
 @injectable()
 export class AIService {
-  protected apiKey: string;
-  protected baseUrl: string;
+  constructor(
+    @inject(I.AppConfig)
+    protected readonly appConfig: SeedServerConfigInterface,
+    @inject(SiteSettingsService)
+    protected readonly siteSettings: SiteSettingsService
+  ) {}
 
-  constructor(@inject(I.AppConfig) appConfig: SeedServerConfigInterface) {
-    if (!appConfig.openaiApiKey || !appConfig.openaiBaseUrl) {
-      throw new Error('OpenAI API key and base URL are required');
-    }
+  protected async resolveCredentials(): Promise<{
+    apiKey: string;
+    baseUrl: string;
+  }> {
+    const [siteKey, siteBaseUrl] = await Promise.all([
+      this.siteSettings.getSecretString(FE_SITE_SETTING_KEYS.OPENAI_API_KEY),
+      this.siteSettings.getString(FE_SITE_SETTING_KEYS.OPENAI_BASE_URL)
+    ]);
 
-    this.apiKey = appConfig.openaiApiKey;
-    this.baseUrl = appConfig.openaiBaseUrl;
+    return {
+      apiKey: siteKey.trim() || this.appConfig.openaiApiKey,
+      baseUrl: siteBaseUrl.trim() || this.appConfig.openaiBaseUrl
+    };
   }
 
   public async completions(
     messages: ChatCompletionMessageParam[],
     params?: Omit<ChatCompletionCreateParamsBase, 'messages'>
   ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
-    const url = `${this.baseUrl}/chat/completions`;
+    const { apiKey, baseUrl } = await this.resolveCredentials();
+    if (!apiKey || !baseUrl) {
+      throw new Error('OpenAI API key and base URL are required');
+    }
+
+    const url = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -35,7 +52,7 @@ export class AIService {
         messages
       }),
       headers: {
-        Authorization: `token ${this.apiKey}`,
+        Authorization: `token ${apiKey}`,
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },

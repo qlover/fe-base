@@ -66,9 +66,12 @@ export {
 export { TokenEncryption } from './utils/TokenEncryption';
 export {
   isApiCorsEnabled,
+  findMatchingCorsRule,
   buildApiCorsHeaders,
   apiCorsPreflightResponse,
-  type ApiCorsConfig
+  type ApiCorsConfig,
+  type ApiCorsRule,
+  type ApiCorsHeaderOptions
 } from './utils/apiCors';
 export { createLogger, type ServerLoggerConfig } from './utils/createLogger';
 export {

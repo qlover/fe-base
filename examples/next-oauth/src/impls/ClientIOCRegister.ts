@@ -13,6 +13,7 @@ import { AdminRolesApi } from './appApi/AdminRolesApi';
 import { AdminUsersApi } from './appApi/AdminUsersApi';
 import { AppApiRegister } from './appApi/AppApiRegister';
 import { OAuthClientsApi } from './appApi/OAuthClientsApi';
+import { SiteSettingsApi } from './appApi/SiteSettingsApi';
 import { dialogHandler, logger, JSON, appConfig } from './globals';
 import type {
   IOCContainerInterface,
@@ -51,6 +52,7 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(AdminRolesApi, ioc.get(AdminRolesApi));
     ioc.bind(AdminUsersApi, ioc.get(AdminUsersApi));
     ioc.bind(AdminLocalesApi, ioc.get(AdminLocalesApi));
+    ioc.bind(SiteSettingsApi, ioc.get(SiteSettingsApi));
 
     new AppApiRegister(JSON).register(ioc);
   }

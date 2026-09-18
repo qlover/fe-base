@@ -19,7 +19,8 @@ export const PermissionKey = {
   admin_locales_write: 'admin_locales_write',
   admin_request_logs_read: 'admin_request_logs_read',
   admin_request_logs_write: 'admin_request_logs_write',
-  admin_site_settings_read: 'admin_site_settings_read'
+  admin_site_settings_read: 'admin_site_settings_read',
+  admin_site_settings_write: 'admin_site_settings_write'
 } as const;
 
 export type AppPermissionKey =
