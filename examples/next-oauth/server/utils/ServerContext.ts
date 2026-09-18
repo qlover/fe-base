@@ -13,6 +13,8 @@ export class ServerContext implements ServerContextInterface {
   protected request?: NextRequest | Request;
   // TODO:
   protected state: ServerState;
+  /** Optional response headers (e.g. CORS) merged by NextApiServer helpers. */
+  protected responseHeaders?: HeadersInit;
 
   constructor() {
     this.state = {
@@ -52,8 +54,20 @@ export class ServerContext implements ServerContextInterface {
       uid: '',
       name: ''
     };
+    this.responseHeaders = undefined;
 
     return this.changeState(params);
+  }
+
+  /**
+   * Headers to merge into JSON/OAuth responses (set by ApiCorsPlugin).
+   */
+  public setResponseHeaders(headers: HeadersInit | undefined): void {
+    this.responseHeaders = headers;
+  }
+
+  public getResponseHeaders(): HeadersInit | undefined {
+    return this.responseHeaders;
   }
 
   /**

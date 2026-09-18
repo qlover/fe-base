@@ -1,17 +1,11 @@
-import {
-  apiCorsPreflightResponse,
-  buildApiCorsHeaders
-} from '@qlover/next-kit/server';
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { isEmpty } from 'lodash-es';
 import { resolveUserDisplayLabel } from '@shared/utils/userIdentity';
 import { ROUTE_OAUTH_USERINFO } from '@config/route';
 import { OAuthWrapperController } from '@server/controllers/OAuthWrapperController';
 import { NextApiServer } from '@server/NextApiServer';
-import { ServerConfig } from '@server/ServerConfig';
+import { ApiCorsPlugin } from '@server/plugins/ApiCorsPlugin';
 import type { NextRequest } from 'next/server';
-
-const corsConfig = new ServerConfig();
 
 export function parseBearerAuthorization(
   header: string | null
@@ -28,8 +22,8 @@ export function parseBearerAuthorization(
 /**
  * CORS preflight for cross-origin userinfo requests.
  */
-export function OPTIONS(req: NextRequest) {
-  return apiCorsPreflightResponse(req, corsConfig);
+export async function OPTIONS(req: NextRequest) {
+  return new ApiCorsPlugin({ path: ROUTE_OAUTH_USERINFO }).preflight(req);
 }
 
 /**
@@ -42,14 +36,13 @@ export function OPTIONS(req: NextRequest) {
  * then masked phone, then email / id. Optional `phone_number` when present.
  */
 export async function GET(req: NextRequest) {
-  const corsHeaders = buildApiCorsHeaders(req, corsConfig);
-
   return await new NextApiServer({
     name: ROUTE_OAUTH_USERINFO,
     nextRequest: req,
     event_type: 'oauth-wrapper'
-  }).runWithOAuthJson(
-    async ({ parameters: { IOC } }) => {
+  })
+    .use(new ApiCorsPlugin({ path: ROUTE_OAUTH_USERINFO, request: req }))
+    .runWithOAuthJson(async ({ parameters: { IOC } }) => {
       const accessToken = parseBearerAuthorization(
         req.headers.get('authorization')
       );
@@ -79,10 +72,5 @@ export async function GET(req: NextRequest) {
         name,
         ...(phone ? { phone_number: phone } : {})
       };
-    },
-    {
-      successHeaders: corsHeaders,
-      errorHeaders: corsHeaders
-    }
-  );
+    });
 }
