@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **oauth-wrapper:** 同步 patchConfig 到 Gateway ([edfde76](https://github.com/qlover/fe-base/commit/edfde76955d078a79e161e188bc581d1c56422a4)) ([#705](https://github.com/qlover/fe-base/pull/705))
+
 ## 0.10.0
 
 ### Minor Changes
