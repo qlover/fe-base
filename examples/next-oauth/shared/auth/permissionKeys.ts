@@ -15,6 +15,8 @@ export const PermissionKey = {
   admin_users_system_role: 'admin_users_system_role',
   admin_roles_read: 'admin_roles_read',
   admin_roles_write: 'admin_roles_write',
+  admin_locales_read: 'admin_locales_read',
+  admin_locales_write: 'admin_locales_write',
   admin_request_logs_read: 'admin_request_logs_read',
   admin_request_logs_write: 'admin_request_logs_write',
   admin_site_settings_read: 'admin_site_settings_read'

@@ -1,6 +1,7 @@
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
+import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
 import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
 import * as rolesKeys from '../i18n-identifier/pages/page.admin.roles';
 import * as userKeys from '../i18n-identifier/pages/page.admin.user';
@@ -39,6 +40,8 @@ export const admin18n = Object.freeze({
 export type AdminUsersI18nInterface = typeof adminUsers18n;
 
 export type AdminRolesI18nInterface = typeof adminRoles18n;
+
+export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
 export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
 
@@ -118,4 +121,40 @@ export const adminUsers18n = Object.freeze({
   cannotChangeSelf: userKeys.ADMIN_USERS_CANNOT_CHANGE_SELF,
   you: userKeys.ADMIN_USERS_YOU,
   roleChangeForbidden: userKeys.ADMIN_USERS_ROLE_CHANGE_FORBIDDEN
+});
+
+export const adminLocales18n = Object.freeze({
+  title: localesKeys.ADMIN_LOCALES_TITLE,
+  description: localesKeys.ADMIN_LOCALES_DESCRIPTION,
+  content: localesKeys.ADMIN_LOCALES_DESCRIPTION,
+  keywords: localesKeys.ADMIN_LOCALES_KEYWORDS,
+  searchPlaceholder: localesKeys.ADMIN_LOCALES_SEARCH_PLACEHOLDER,
+  namespaceFilter: localesKeys.ADMIN_LOCALES_NAMESPACE_FILTER,
+  namespaceAll: localesKeys.ADMIN_LOCALES_NAMESPACE_ALL,
+  localeLabel: localesKeys.ADMIN_LOCALES_LOCALE_LABEL,
+  refresh: localesKeys.ADMIN_LOCALES_REFRESH,
+  create: localesKeys.ADMIN_LOCALES_CREATE,
+  import: localesKeys.ADMIN_LOCALES_IMPORT,
+  importing: localesKeys.ADMIN_LOCALES_IMPORTING,
+  importSuccess: localesKeys.ADMIN_LOCALES_IMPORT_SUCCESS,
+  colValue: localesKeys.ADMIN_LOCALES_COL_VALUE,
+  colNamespace: localesKeys.ADMIN_LOCALES_COL_NAMESPACE,
+  colText: localesKeys.ADMIN_LOCALES_COL_TEXT,
+  colDescription: localesKeys.ADMIN_LOCALES_COL_DESCRIPTION,
+  colActions: localesKeys.ADMIN_LOCALES_COL_ACTIONS,
+  edit: localesKeys.ADMIN_LOCALES_EDIT,
+  save: localesKeys.ADMIN_LOCALES_SAVE,
+  saving: localesKeys.ADMIN_LOCALES_SAVING,
+  cancel: localesKeys.ADMIN_LOCALES_CANCEL,
+  empty: localesKeys.ADMIN_LOCALES_EMPTY,
+  loading: localesKeys.ADMIN_LOCALES_LOADING,
+  loadFailed: localesKeys.ADMIN_LOCALES_LOAD_FAILED,
+  saveFailed: localesKeys.ADMIN_LOCALES_SAVE_FAILED,
+  saveSuccess: localesKeys.ADMIN_LOCALES_SAVE_SUCCESS,
+  importFailed: localesKeys.ADMIN_LOCALES_IMPORT_FAILED,
+  forbidden: localesKeys.ADMIN_LOCALES_FORBIDDEN,
+  editorCreate: localesKeys.ADMIN_LOCALES_EDITOR_CREATE,
+  editorEdit: localesKeys.ADMIN_LOCALES_EDITOR_EDIT,
+  keyHint: localesKeys.ADMIN_LOCALES_KEY_HINT,
+  keyInvalid: localesKeys.ADMIN_LOCALES_KEY_INVALID
 });

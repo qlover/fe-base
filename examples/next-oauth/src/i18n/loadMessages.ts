@@ -54,14 +54,27 @@ export async function loadMessages(
   locale: string,
   namespace?: string | string[]
 ): Promise<Record<string, string>> {
-  let allMessages: Record<string, string>;
+  // Always start from this build's generated JSON so SSG cannot bake an empty
+  // page namespace when SITE_URL still points at an older deploy (chicken-egg).
+  const staticMessages = await loadLocaleFromFile(locale);
+  let allMessages: Record<string, string> = staticMessages;
 
-  // 如果配置了使用 API 加载本地化数据
+  // 如果配置了使用 API 加载本地化数据：静态为底 + API 覆盖（与 ApiLocaleService 一致）
   if (useApiLocales) {
     try {
       const SITE_URL = process.env.SITE_URL;
-      const localeUrl = `${SITE_URL}/api/locales/json?locale=${locale}`;
-      const response = await fetch(localeUrl);
+      if (!SITE_URL) {
+        throw new Error('SITE_URL is not set');
+      }
+
+      const localeUrl = new URL(`${SITE_URL}/api/locales/json`);
+      localeUrl.searchParams.set('locale', locale);
+      const namespacesParam = serializeNamespaces(namespace);
+      if (namespacesParam) {
+        localeUrl.searchParams.set('namespaces', namespacesParam);
+      }
+
+      const response = await fetch(localeUrl.toString());
 
       if (!response.ok) {
         throw new Error(
@@ -69,17 +82,30 @@ export async function loadMessages(
         );
       }
 
-      allMessages = await response.json();
+      const fromApi = (await response.json()) as Record<string, string>;
+      allMessages = { ...staticMessages, ...fromApi };
     } catch (error) {
       console.warn(`Failed to load locale from API for ${locale}`, error);
-      allMessages = await loadLocaleFromFile(locale);
+      allMessages = staticMessages;
     }
-  } else {
-    allMessages = await loadLocaleFromFile(locale);
   }
 
   // 如果指定了命名空间，进行过滤
   return filterMessagesByNamespace(allMessages, namespace);
+}
+
+function serializeNamespaces(
+  namespace?: string | string[]
+): string | undefined {
+  if (!namespace) {
+    return undefined;
+  }
+  const list = Array.isArray(namespace) ? namespace : [namespace];
+  const joined = list
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join(',');
+  return joined || undefined;
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   ClipboardDocumentListIcon,
   HomeIcon,
   KeyIcon,
+  LanguageIcon,
   UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -47,6 +48,7 @@ const NAV_ICONS: Record<string, NavIcon> = {
   dashboard: HomeIcon,
   users: UsersIcon,
   roles: KeyIcon,
+  locales: LanguageIcon,
   'request-logs': ClipboardDocumentListIcon
 };
 

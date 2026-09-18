@@ -14,7 +14,7 @@ export const FeTables = {
   roles: 'fe_roles',
   permissions: 'fe_permissions',
   roleAssignments: 'fe_role_assignments',
-  /** Optional DB-backed locale dictionary (Admin Locales); stub repo until enabled. */
+  /** DB-backed locale dictionary (Admin Locales CMS). */
   locales: 'fe_locales'
 } as const;
 

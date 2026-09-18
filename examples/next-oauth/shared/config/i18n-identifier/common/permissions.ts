@@ -32,6 +32,20 @@ export const PERMISSION_ADMIN_ROLES_READ = 'permission:admin_roles_read';
 export const PERMISSION_ADMIN_ROLES_WRITE = 'permission:admin_roles_write';
 
 /**
+ * @description List locale dictionary rows
+ * @localZh 查看国际化文案
+ * @localEn List locale dictionary rows
+ */
+export const PERMISSION_ADMIN_LOCALES_READ = 'permission:admin_locales_read';
+
+/**
+ * @description Create / update / import locales
+ * @localZh 编辑国际化文案
+ * @localEn Create / update / import locales
+ */
+export const PERMISSION_ADMIN_LOCALES_WRITE = 'permission:admin_locales_write';
+
+/**
  * @description Read request audit logs
  * @localZh 查看请求日志
  * @localEn Read request logs
