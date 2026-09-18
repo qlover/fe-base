@@ -18,7 +18,9 @@ export default defineConfig({
   server: {
     port: 3100
   },
-  base: routerPrefix,
+  // Empty routerPrefix means site root; Vite needs `/` (not `''`) or
+  // built assets become relative and break on deep links like /zh/login.
+  base: routerPrefix || '/',
   define: {
     'import.meta.env.VITE_APP_NAME': JSON.stringify(name),
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version)
