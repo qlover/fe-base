@@ -105,7 +105,10 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
           return label;
         }
         return (
-          <span className="inline-flex flex-wrap items-center gap-1.5">
+          <span
+            data-testid="AdminUsersSelfIdentity"
+            className="inline-flex flex-wrap items-center gap-1.5"
+          >
             <span>{label}</span>
             <span className="rounded bg-brand/10 px-1.5 py-0.5 text-xs font-medium text-brand">
               {tt.you}
@@ -123,6 +126,9 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
         if (!canChangeRole || isSelf) {
           return (
             <span
+              data-testid={
+                isSelf ? 'AdminUsersSelfRoleReadonly' : 'AdminUsersRoleReadonly'
+              }
               className="text-sm text-secondary-text"
               title={isSelf ? tt.cannotChangeSelf : tt.roleChangeForbidden}
             >
@@ -144,7 +150,11 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
             aria-label={tt.systemRoleLabel}
           >
             {SYSTEM_ROLES.map((role) => (
-              <option key={role} value={role}>
+              <option
+                data-testid="AdminUsersSystemRoleOption"
+                key={role}
+                value={role}
+              >
                 {roleLabel(role)}
               </option>
             ))}

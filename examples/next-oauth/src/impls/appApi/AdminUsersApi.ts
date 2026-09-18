@@ -1,5 +1,5 @@
-import { inject, injectable } from '@shared/container';
 import type { SystemRoleType } from '@shared/auth/systemRole';
+import { inject, injectable } from '@shared/container';
 import {
   API_ADMIN_USERS,
   API_ADMIN_USERS_SYSTEM_ROLE
