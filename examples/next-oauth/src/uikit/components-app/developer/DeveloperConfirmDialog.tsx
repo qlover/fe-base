@@ -1,11 +1,15 @@
 'use client';
 
 import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
+import {
   ArrowPathIcon,
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '@qlover/next-kit/client';
-import { useState } from 'react';
 import { DeveloperOverlayModal } from './DeveloperOverlayModal';
 
 export type DeveloperConfirmOptions = {
@@ -28,19 +32,20 @@ export function DeveloperConfirmDialog({
   options,
   onClose
 }: DeveloperConfirmDialogProps) {
-  const [pending, setPending] = useState(false);
+  const [confirm, confirmStore] = useAsyncStore<AsyncState<true>>();
+  const pending = confirm.loading;
 
   const handleConfirm = async () => {
     if (!options || pending) return;
-    setPending(true);
-    try {
-      await options.onConfirm();
-      onClose();
-    } catch {
+    const ok = await runAsyncStore(
+      confirmStore,
+      Promise.resolve(options.onConfirm()).then(() => true as const)
+    );
+    if (ok === undefined) {
       // Keep dialog open; caller shows toast via dialogHandler
-    } finally {
-      setPending(false);
+      return;
     }
+    onClose();
   };
 
   if (!options) return null;

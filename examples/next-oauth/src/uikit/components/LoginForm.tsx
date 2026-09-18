@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { useReturnTo } from '@qlover/next-kit/client';
 import { LoginValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
@@ -17,6 +22,10 @@ import type { LoginSchema } from '@qlover/next-kit/common';
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 
+type LoginSubmitState = AsyncState<
+  Awaited<ReturnType<AppUserGateway['verify']>>
+>;
+
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const t = useWarnTranslations();
@@ -27,14 +36,13 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
   const [email, setEmail] = useState(appConfig.testLoginEmail);
   const [password, setPassword] = useState(appConfig.testLoginPassword);
-  const [loading, setLoading] = useState(false);
-  const [success, _setSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<LoginSchema>>({});
+  const [submit, submitStore] = useAsyncStore<LoginSubmitState>();
+  const loading = submit.loading;
+  const submitError = submitStore.isFailed() ? String(submit.error) : null;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitError(null);
     setFieldErrors({});
 
     const emailResult = formValidator.validateEmail(email);
@@ -66,37 +74,32 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       return;
     }
 
-    setLoading(true);
-    try {
-      await userGateway.verify(payload);
-      returnTo(ROUTE_DEVELOPER_APPS);
-      // setSuccess(true);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setLoading(false);
+    const ok = await runAsyncStore(submitStore, userGateway.verify(payload));
+    if (ok === undefined) {
+      return;
     }
+    returnTo(ROUTE_DEVELOPER_APPS);
   };
 
   const isEmpty = !email.trim() && !password.trim();
-  const submitDisabled = loading || success || isEmpty;
+  const submitDisabled = loading || isEmpty;
 
   return (
     <form
       data-testid="LoginForm"
       name="login"
-      onSubmit={handleSubmit}
+      onSubmit={(e) => void handleSubmit(e)}
       noValidate
       className="space-y-4"
     >
-      {submitError && (
+      {submitError ? (
         <div
           role="alert"
           className="text-red-500 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm dark:border-red-800 dark:bg-red-950/30"
         >
           {submitError}
         </div>
-      )}
+      ) : null}
 
       <div>
         <label
@@ -118,11 +121,11 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, email: undefined }));
           }}
           className={inputClass}
-          disabled={loading || success}
+          disabled={loading}
           aria-invalid={!!fieldErrors.email}
           aria-describedby={fieldErrors.email ? 'login-email-error' : undefined}
         />
-        {fieldErrors.email && (
+        {fieldErrors.email ? (
           <p
             id="login-email-error"
             className="text-red-500 mt-1 text-sm"
@@ -130,7 +133,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           >
             {fieldErrors.email}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div>
@@ -162,13 +165,13 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
               setFieldErrors((prev) => ({ ...prev, password: undefined }));
           }}
           className={inputClass}
-          disabled={loading || success}
+          disabled={loading}
           aria-invalid={!!fieldErrors.password}
           aria-describedby={
             fieldErrors.password ? 'login-password-error' : undefined
           }
         />
-        {fieldErrors.password && (
+        {fieldErrors.password ? (
           <p
             id="login-password-error"
             className="text-red-500 mt-1 text-sm"
@@ -176,7 +179,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           >
             {fieldErrors.password}
           </p>
-        )}
+        ) : null}
       </div>
 
       <button

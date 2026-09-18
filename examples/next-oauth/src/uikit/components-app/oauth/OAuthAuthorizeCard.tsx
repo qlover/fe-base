@@ -1,6 +1,11 @@
 'use client';
 
 import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
+import {
   ArrowPathIcon,
   CheckCircleIcon,
   ChevronDownIcon,
@@ -31,8 +36,9 @@ export function OAuthAuthorizeCard({
   const userGateway = useIOC(AppUserGateway);
   const [extraOpen, setExtraOpen] = useState(false);
   const [trust, setTrust] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [consent, consentStore] = useAsyncStore<AsyncState<string>>();
+  const loading = consent.loading;
+  const errorMessage = consentStore.isFailed() ? String(consent.error) : null;
 
   const scopeLabels = useMemo(
     () =>
@@ -47,11 +53,9 @@ export function OAuthAuthorizeCard({
 
   const submitConsent = useCallback(
     async (action: 'allow' | 'deny') => {
-      setLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const redirectUrl = await userGateway.submitOAuthConsent({
+      const redirectUrl = await runAsyncStore(
+        consentStore,
+        userGateway.submitOAuthConsent({
           action,
           client_id: authorizeData.clientId,
           redirect_uri: authorizeData.redirectUri,
@@ -60,15 +64,14 @@ export function OAuthAuthorizeCard({
           trust: action === 'allow' ? trust : undefined,
           code_challenge: authorizeData.codeChallenge,
           code_challenge_method: authorizeData.codeChallengeMethod
-        });
-
-        window.location.assign(redirectUrl);
-      } catch (err) {
-        setErrorMessage(err instanceof Error ? err.message : tt.errorConsent);
-        setLoading(false);
+        })
+      );
+      if (redirectUrl === undefined) {
+        return;
       }
+      window.location.assign(redirectUrl);
     },
-    [authorizeData, userGateway, scopeParam, trust, tt.errorConsent]
+    [authorizeData, consentStore, userGateway, scopeParam, trust]
   );
 
   const handleAllow = () => {
@@ -87,7 +90,7 @@ export function OAuthAuthorizeCard({
       data-testid="OAuthAuthorizeCard"
       className="max-w-lg w-full bg-primary rounded-2xl shadow-xl border border-primary-border overflow-hidden"
     >
-      {errorMessage && (
+      {errorMessage ? (
         <div
           role="alert"
           className="mx-6 mt-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-3 rounded text-sm text-red-700 dark:text-red-300"
@@ -95,7 +98,7 @@ export function OAuthAuthorizeCard({
           <ExclamationCircleIcon className="inline h-4 w-4 mr-2" />
           {errorMessage}
         </div>
-      )}
+      ) : null}
 
       <div className="p-6 border-b border-primary-border">
         <div className="flex items-center gap-3">

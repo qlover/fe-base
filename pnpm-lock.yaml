@@ -307,8 +307,8 @@ importers:
         specifier: ^0.2.5
         version: 0.2.5(@types/node@20.11.5)(less@4.6.4)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0)(zustand@5.0.14(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
       '@brain-toolkit/react-kit':
-        specifier: ^0.5.0
-        version: 0.5.0(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+        specifier: ^0.6.1
+        version: 0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
@@ -1320,7 +1320,7 @@ importers:
         version: 17.24.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       eslint-plugin-prettier:
         specifier: ^5.2.1
-        version: 5.5.6(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.9.4)
+        version: 5.5.6(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.9.8)
       lodash:
         specifier: ^4.17.21
         version: 4.18.1
@@ -2192,6 +2192,14 @@ packages:
 
   '@brain-toolkit/react-kit@0.5.0':
     resolution: {integrity: sha512-IWtnaoftnPNCq4JrUpzhIFM78meAADwSPPM9M8tG1ad4rw1FgeZV09IVUvIl0U9AuvY03D2LQ6Wiy7nzrOfDqA==}
+    peerDependencies:
+      '@qlover/corekit-bridge': ^3.4.0
+      '@qlover/fe-corekit': ^3.4.0
+      '@qlover/slice-store-react': ^1.4.2
+      react: '>=18.0.0'
+
+  '@brain-toolkit/react-kit@0.6.1':
+    resolution: {integrity: sha512-KD1sZqka0DafeOoW71QNeYJOI984ii48YJMUYlGfilU1kn8d/YvXdpFLX5e/2DXDnOsqalVuXDIbzE8z4dN4lA==}
     peerDependencies:
       '@qlover/corekit-bridge': ^3.4.0
       '@qlover/fe-corekit': ^3.4.0
@@ -12072,6 +12080,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.9.8:
+    resolution: {integrity: sha512-WRFq3Wn3WId7LLROfMLdH7xaFr2jR62wU8nLO6rQUOLOxNZUviyJQs1M0iIhLexSFy+L+w0ch66wtoO2jRjG0A==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-bytes@5.6.0:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
     engines: {node: '>=6'}
@@ -12899,14 +12912,14 @@ packages:
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
 
-  seroval-plugins@1.5.4:
-    resolution: {integrity: sha512-S0xQPhUTefAhNvNWFg0c1J8qJArHt5KdtJ/cFAofo06KD1MVSeFWyl4iiu+ApDIuw0WhjpOfCdgConOfAnLgkw==}
+  seroval-plugins@1.5.6:
+    resolution: {integrity: sha512-HXuLAX2pu/UByPpaeo/TaMfvMIi+1QqIoPJYCcAtU8QkVNwgR6MPlGuCQTErV1JwraaMbYaWVIBX7mppzGLATQ==}
     engines: {node: '>=10'}
     peerDependencies:
       seroval: ^1.0
 
-  seroval@1.5.4:
-    resolution: {integrity: sha512-46uFvgrXTVxZcUorgSSRZ4y+ieqLLQRMlG4bnCZKW3qI6BZm7Rg4ntMW4p1mILEEBZWrFlcpp0AyIIlM6jD9iw==}
+  seroval@1.5.6:
+    resolution: {integrity: sha512-rVQVWjjSvlINzaQPZH5JFqsqEsIWdTxY3iJZCnTL/5gQbXIRooVZKI60tVCkOVfzcRPejboxO2t0P89dg5mQaA==}
     engines: {node: '>=10'}
 
   set-cookie-parser@2.7.2:
@@ -15343,6 +15356,13 @@ snapshots:
       - zustand
 
   '@brain-toolkit/react-kit@0.5.0(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@qlover/corekit-bridge': link:packages/corekit-bridge
+      '@qlover/fe-corekit': link:packages/fe-corekit
+      '@qlover/slice-store-react': 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+
+  '@brain-toolkit/react-kit@0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@qlover/corekit-bridge': link:packages/corekit-bridge
       '@qlover/fe-corekit': link:packages/fe-corekit
@@ -23479,10 +23499,10 @@ snapshots:
     optionalDependencies:
       eslint-config-prettier: 10.1.8(eslint@9.39.4(jiti@2.7.0))
 
-  eslint-plugin-prettier@5.5.6(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.9.4):
+  eslint-plugin-prettier@5.5.6(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.9.8):
     dependencies:
       eslint: 9.39.4(jiti@2.7.0)
-      prettier: 3.9.4
+      prettier: 3.9.8
       prettier-linter-helpers: 1.0.1
       synckit: 0.11.13
     optionalDependencies:
@@ -25853,7 +25873,7 @@ snapshots:
 
   mockjs@1.1.0:
     dependencies:
-      commander: 13.1.0
+      commander: 15.0.0
 
   mri@1.2.0: {}
 
@@ -27133,6 +27153,8 @@ snapshots:
 
   prettier@3.9.4: {}
 
+  prettier@3.9.8: {}
+
   pretty-bytes@5.6.0: {}
 
   pretty-format@27.5.1:
@@ -28099,11 +28121,11 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
-  seroval-plugins@1.5.4(seroval@1.5.4):
+  seroval-plugins@1.5.6(seroval@1.5.6):
     dependencies:
-      seroval: 1.5.4
+      seroval: 1.5.6
 
-  seroval@1.5.4: {}
+  seroval@1.5.6: {}
 
   set-cookie-parser@2.7.2: {}
 
@@ -28278,8 +28300,8 @@ snapshots:
   solid-js@1.9.13:
     dependencies:
       csstype: 3.2.3
-      seroval: 1.5.4
-      seroval-plugins: 1.5.4(seroval@1.5.4)
+      seroval: 1.5.6
+      seroval-plugins: 1.5.6(seroval@1.5.6)
 
   sonner@2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:

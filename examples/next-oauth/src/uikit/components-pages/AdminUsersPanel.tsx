@@ -1,5 +1,11 @@
 'use client';
 
+import {
+  runAsyncStore,
+  useAsyncStore,
+  usePendingAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { useStrictEffect } from '@qlover/next-kit/client';
 import { useCallback, useState } from 'react';
 import { AdminUsersApi } from '@/impls/appApi/AdminUsersApi';
@@ -16,6 +22,10 @@ const SYSTEM_ROLES: SystemRoleType[] = [
   SystemRole.Operator,
   SystemRole.Admin
 ];
+
+type RoleMutationState = AsyncState<true> & {
+  targetId: string | null;
+};
 
 function displayLabel(row: AdminUserListItem): string {
   const name = row.displayName?.trim();
@@ -35,34 +45,36 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
     PermissionKey.admin_users_system_role
   );
   const [query, setQuery] = useState('');
-  const [rows, setRows] = useState<AdminUserListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+
+  const [list, listStore] =
+    usePendingAsyncStore<AsyncState<AdminUserListItem[]>>();
+  const [role, roleStore] = useAsyncStore<RoleMutationState>({
+    targetId: null
+  });
+  const rows = list.result ?? [];
+  const loading = list.loading;
+  const pendingId = role.targetId;
+  const error =
+    listStore.isFailed() || roleStore.isFailed() ? tt.description : null;
 
   const roleLabel = useCallback(
-    (role: SystemRoleType) => {
-      if (role === SystemRole.Admin) return tt.systemRoleAdmin;
-      if (role === SystemRole.Operator) return tt.systemRoleOperator;
+    (systemRole: SystemRoleType) => {
+      if (systemRole === SystemRole.Admin) return tt.systemRoleAdmin;
+      if (systemRole === SystemRole.Operator) return tt.systemRoleOperator;
       return tt.systemRoleUser;
     },
     [tt.systemRoleAdmin, tt.systemRoleOperator, tt.systemRoleUser]
   );
 
   const load = useCallback(async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const next = await adminUsersApi.search({
+    await runAsyncStore(
+      listStore,
+      adminUsersApi.search({
         q: query.trim() || undefined
-      });
-      setRows(next);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : tt.description);
-    } finally {
-      setLoading(false);
-    }
-  }, [adminUsersApi, query, tt.description]);
+      }),
+      { keep: true }
+    );
+  }, [adminUsersApi, listStore, query]);
 
   useStrictEffect(() => {
     void load();
@@ -77,22 +89,25 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
       ) {
         return;
       }
-      setPendingId(row.id);
-      setError(null);
-      try {
-        await adminUsersApi.setSystemRole(row.id, systemRole);
-        setRows((prev) =>
-          prev.map((item) =>
-            item.id === row.id ? { ...item, systemRole } : item
-          )
-        );
-      } catch (err) {
-        setError(err instanceof Error ? err.message : tt.description);
-      } finally {
-        setPendingId(null);
+      roleStore.emit({ targetId: row.id });
+      const ok = await runAsyncStore(
+        roleStore,
+        adminUsersApi
+          .setSystemRole(row.id, systemRole)
+          .then(() => true as const)
+      );
+      roleStore.emit({ targetId: null });
+      if (ok === undefined) {
+        return;
       }
+      const current = listStore.getResult() ?? [];
+      listStore.success(
+        current.map((item) =>
+          item.id === row.id ? { ...item, systemRole } : item
+        )
+      );
     },
-    [adminUsersApi, canChangeRole, currentUserId, tt.description]
+    [adminUsersApi, canChangeRole, currentUserId, listStore, roleStore]
   );
 
   const columns: TableColumn<AdminUserListItem>[] = [
@@ -149,13 +164,13 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
             className="w-full rounded-lg border border-primary-border bg-surface px-2 py-1.5 text-sm text-primary-text disabled:opacity-50"
             aria-label={tt.systemRoleLabel}
           >
-            {SYSTEM_ROLES.map((role) => (
+            {SYSTEM_ROLES.map((systemRole) => (
               <option
                 data-testid="AdminUsersSystemRoleOption"
-                key={role}
-                value={role}
+                key={systemRole}
+                value={systemRole}
               >
-                {roleLabel(role)}
+                {roleLabel(systemRole)}
               </option>
             ))}
           </select>

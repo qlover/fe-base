@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { useReturnTo } from '@qlover/next-kit/client';
 import {
   type FormEvent,
@@ -25,6 +30,11 @@ interface PhoneLoginFormProps {
   tt: LoginI18nInterface;
 }
 
+type PhoneSubmitState = AsyncState<
+  | Awaited<ReturnType<AppUserGateway['sendOtp']>>
+  | Awaited<ReturnType<AppUserGateway['verifyOtp']>>
+>;
+
 export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
   const t = useWarnTranslations();
   const userGateway = useIOC(AppUserGateway);
@@ -33,16 +43,16 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
   const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [otpError, setOtpError] = useState<string | undefined>();
   const [countdown, setCountdown] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [submit, submitStore] = useAsyncStore<PhoneSubmitState>();
+  const loading = submit.loading;
+  const submitError = submitStore.isFailed() ? String(submit.error) : null;
 
   const isCountingDown = countdown > 0;
 
-  // Countdown timer for resend
   useEffect(() => {
     if (!isCountingDown) return;
 
@@ -89,52 +99,49 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
 
   const handleSendOtp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitError(null);
 
     if (!validatePhone(phone)) return;
 
-    setLoading(true);
-    try {
-      await userGateway.sendOtp({ phone: phone.trim() });
-      setStep('otp');
-      setCountdown(60);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Send OTP failed');
-    } finally {
-      setLoading(false);
+    const ok = await runAsyncStore(
+      submitStore,
+      userGateway.sendOtp({ phone: phone.trim() })
+    );
+    if (ok === undefined) {
+      return;
     }
+    setStep('otp');
+    setCountdown(60);
   };
 
   const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitError(null);
 
     if (!validateOtp(otp)) return;
 
-    setLoading(true);
-    try {
-      await userGateway.verifyOtp({ phone: phone.trim(), token: otp.trim() });
-      returnTo(ROUTE_DEVELOPER_APPS);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Phone login failed');
-    } finally {
-      setLoading(false);
+    const ok = await runAsyncStore(
+      submitStore,
+      userGateway.verifyOtp({
+        phone: phone.trim(),
+        token: otp.trim()
+      })
+    );
+    if (ok === undefined) {
+      return;
     }
+    returnTo(ROUTE_DEVELOPER_APPS);
   };
 
   const handleResend = async () => {
     if (countdown > 0 || loading) return;
-    setSubmitError(null);
-    setLoading(true);
-    try {
-      await userGateway.sendOtp({ phone: phone.trim() });
-      setOtp('');
-      setCountdown(60);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Resend OTP failed');
-    } finally {
-      setLoading(false);
+    const ok = await runAsyncStore(
+      submitStore,
+      userGateway.sendOtp({ phone: phone.trim() })
+    );
+    if (ok === undefined) {
+      return;
     }
+    setOtp('');
+    setCountdown(60);
   };
 
   const isEmpty = !phone.trim();
@@ -142,20 +149,20 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
 
   return (
     <div data-testid="PhoneLoginForm" className="w-full">
-      {submitError && (
+      {submitError ? (
         <div
           role="alert"
           className="text-red-500 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm mb-4 dark:border-red-800 dark:bg-red-950/30"
         >
           {submitError}
         </div>
-      )}
+      ) : null}
 
       {step === 'phone' && (
         <form
           data-testid="PhoneLoginForm-Phone"
           name="phone-login-phone"
-          onSubmit={handleSendOtp}
+          onSubmit={(e) => void handleSendOtp(e)}
           noValidate
           className="space-y-4"
         >
@@ -182,7 +189,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               aria-invalid={!!phoneError}
               aria-describedby={phoneError ? 'phone-error' : undefined}
             />
-            {phoneError && (
+            {phoneError ? (
               <p
                 id="phone-error"
                 className="text-red-500 mt-1 text-sm"
@@ -190,7 +197,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               >
                 {phoneError}
               </p>
-            )}
+            ) : null}
           </div>
 
           <button
@@ -213,7 +220,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
         <form
           data-testid="PhoneLoginForm-Otp"
           name="phone-login-otp"
-          onSubmit={handleVerifyOtp}
+          onSubmit={(e) => void handleVerifyOtp(e)}
           noValidate
           className="space-y-4"
         >
@@ -224,7 +231,6 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               onClick={() => {
                 setStep('phone');
                 setOtp('');
-                setSubmitError(null);
               }}
               className="ml-2 text-brand hover:underline text-xs"
             >
@@ -249,7 +255,6 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               placeholder={tt.phoneOtpPlaceholder}
               value={otp}
               onChange={(e) => {
-                // Only allow digits
                 const val = e.target.value.replace(/\D/g, '');
                 setOtp(val);
                 if (otpError) setOtpError(undefined);
@@ -260,7 +265,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               aria-describedby={otpError ? 'phone-otp-error' : undefined}
               autoFocus
             />
-            {otpError && (
+            {otpError ? (
               <p
                 id="phone-otp-error"
                 className="text-red-500 mt-1 text-sm"
@@ -268,7 +273,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
               >
                 {otpError}
               </p>
-            )}
+            ) : null}
           </div>
 
           <button
@@ -293,7 +298,7 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
             ) : (
               <button
                 type="button"
-                onClick={handleResend}
+                onClick={() => void handleResend()}
                 disabled={loading}
                 className="text-brand hover:underline disabled:opacity-50"
               >

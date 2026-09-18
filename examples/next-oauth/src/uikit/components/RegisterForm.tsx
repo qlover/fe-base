@@ -1,11 +1,17 @@
 'use client';
 
-import { useStore } from '@brain-toolkit/react-kit';
+import {
+  runAsyncStore,
+  useAsyncStore,
+  useStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { RegisterValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
+import type { UserServiceInterface } from '@shared/interfaces/UserServiceInterface';
 import type { RegisterI18nInterface } from '@config/i18n-mapping/register18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_LOGIN } from '@config/route';
@@ -13,6 +19,10 @@ import type { RegisterSchema } from '@qlover/next-kit/common';
 
 const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
+
+type RegisterSubmitState = AsyncState<
+  Awaited<ReturnType<UserServiceInterface['register']>>
+>;
 
 export function RegisterForm(props: { tt: RegisterI18nInterface }) {
   const { tt } = props;
@@ -26,8 +36,6 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     username?: string;
     email?: string;
@@ -35,10 +43,12 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
     confirmPassword?: string;
     agreeToTerms?: string;
   }>({});
+  const [submit, submitStore] = useAsyncStore<RegisterSubmitState>();
+  const loading = submit.loading;
+  const submitError = submitStore.isFailed() ? String(submit.error) : null;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitError(null);
     setFieldErrors({});
 
     const usernameResult = formValidator.validateUsername(username);
@@ -94,16 +104,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
       return;
     }
 
-    setLoading(true);
-    try {
-      await userService.register(payload);
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : 'Registration failed'
-      );
-    } finally {
-      setLoading(false);
-    }
+    await runAsyncStore(submitStore, userService.register(payload));
   };
 
   const isEmpty =
@@ -119,7 +120,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
     <form
       data-testid="RegisterForm"
       name="register"
-      onSubmit={handleSubmit}
+      onSubmit={(e) => void handleSubmit(e)}
       noValidate
       className="space-y-4"
     >
@@ -132,14 +133,14 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
         </div>
       ) : null}
 
-      {submitError && (
+      {submitError ? (
         <div
           role="alert"
           className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-500 dark:border-red-800 dark:bg-red-950/30"
         >
           {submitError}
         </div>
-      )}
+      ) : null}
 
       <div>
         <label
@@ -167,7 +168,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
             fieldErrors.username ? 'register-username-error' : undefined
           }
         />
-        {fieldErrors.username && (
+        {fieldErrors.username ? (
           <p
             id="register-username-error"
             className="text-red-500 mt-1 text-sm"
@@ -175,7 +176,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
           >
             {fieldErrors.username}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div>
@@ -204,7 +205,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
             fieldErrors.email ? 'register-email-error' : undefined
           }
         />
-        {fieldErrors.email && (
+        {fieldErrors.email ? (
           <p
             id="register-email-error"
             className="text-red-500 mt-1 text-sm"
@@ -212,7 +213,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
           >
             {fieldErrors.email}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div>
@@ -241,7 +242,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
             fieldErrors.password ? 'register-password-error' : undefined
           }
         />
-        {fieldErrors.password && (
+        {fieldErrors.password ? (
           <p
             id="register-password-error"
             className="text-red-500 mt-1 text-sm"
@@ -249,7 +250,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
           >
             {fieldErrors.password}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div>
@@ -283,7 +284,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
               : undefined
           }
         />
-        {fieldErrors.confirmPassword && (
+        {fieldErrors.confirmPassword ? (
           <p
             id="register-confirm-password-error"
             className="text-red-500 mt-1 text-sm"
@@ -291,7 +292,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
           >
             {fieldErrors.confirmPassword}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="flex items-start gap-2">
@@ -329,11 +330,11 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
           </a>
         </label>
       </div>
-      {fieldErrors.agreeToTerms && (
+      {fieldErrors.agreeToTerms ? (
         <p className="text-red-500 text-sm" role="alert">
           {fieldErrors.agreeToTerms}
         </p>
-      )}
+      ) : null}
 
       <button
         type="submit"
