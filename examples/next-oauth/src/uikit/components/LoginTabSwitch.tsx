@@ -1,6 +1,11 @@
 'use client';
 
 import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
+import {
   useCallback,
   useState,
   type ComponentType,
@@ -20,6 +25,10 @@ import { useIOC } from '../hook/useIOC';
 
 type LoginTab = 'email' | 'phone';
 type EmailMode = 'password' | 'otp';
+
+type ProviderLoginState = AsyncState<
+  Awaited<ReturnType<AppUserGateway['loginWithProvider']>>
+>;
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -51,8 +60,9 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const appConfig = useIOC(I.AppConfig) as SeedSrcConfigInterface;
   const [tab, setTab] = useState<LoginTab>('email');
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
-  const [providerLogining, setProviderLogining] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [provider, providerStore] = useAsyncStore<ProviderLoginState>();
+  const providerLogining = provider.loading;
+  const error = providerStore.isFailed() ? String(provider.error) : null;
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
   const supabaseUpstream =
     appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
@@ -64,45 +74,47 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
     'border-transparent text-secondary-text hover:text-primary-text hover:border-primary-border';
 
   const onLoginWithProvider = useCallback(
-    (provider: LoginProviderType) => {
-      setProviderLogining(true);
-      userGateway
-        .loginWithProvider({ provider })
-        .then((result) => {
-          if (result.providerUrl) {
-            console.log('providerUrl', result);
-            window.location.assign(result.providerUrl);
-          }
-        })
-        .catch((err) => {
-          setProviderLogining(false);
-          setError(
-            err instanceof Error ? err.message : 'Failed to login with provider'
-          );
-        });
+    (loginProvider: LoginProviderType) => {
+      void runAsyncStore(
+        providerStore,
+        userGateway
+          .loginWithProvider({ provider: loginProvider })
+          .then((result) => {
+            if (result.providerUrl) {
+              window.location.assign(result.providerUrl);
+            }
+            return result;
+          })
+      );
     },
-    [userGateway]
+    [providerStore, userGateway]
   );
 
   return (
     <div data-testid="LoginTabSwitch" className="w-full">
-      {error && (
+      {error ? (
         <div
           role="alert"
           className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-500 dark:border-red-800 dark:bg-red-950/30"
         >
           {error}
         </div>
-      )}
+      ) : null}
 
       {supabaseUpstream &&
         providersItems.map(
-          ({ key, disabled, provider, titleI18nMapKey, Icon }) => (
+          ({
+            key,
+            disabled,
+            provider: itemProvider,
+            titleI18nMapKey,
+            Icon
+          }) => (
             <button
               data-testid={'LoginWith' + key}
               key={key}
               disabled={disabled || providerLogining}
-              onClick={() => onLoginWithProvider(provider)}
+              onClick={() => onLoginWithProvider(itemProvider)}
               title={tt[titleI18nMapKey]}
               className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#24292e] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2c3137] focus:outline-none focus:ring-2 focus:ring-[#24292e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 mb-6"
             >

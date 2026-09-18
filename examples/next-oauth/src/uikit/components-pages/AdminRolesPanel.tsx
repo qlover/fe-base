@@ -1,5 +1,11 @@
 'use client';
 
+import {
+  runAsyncStore,
+  useAsyncStore,
+  usePendingAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { useStrictEffect } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
@@ -22,6 +28,10 @@ const PLATFORM_ORDER = [
   PlatformRoleKey.Admin
 ] as const;
 
+type RoleSaveState = AsyncState<AdminRolesResponse> & {
+  targetId: string | null;
+};
+
 function sortByKeyOrder(
   roles: AdminRoleItem[],
   order: readonly string[]
@@ -42,10 +52,18 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
   const [draft, setDraft] = useState<Record<string, string[]>>({});
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string>('');
-  const [data, setData] = useState<AdminRolesResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const [list, listStore] =
+    usePendingAsyncStore<AsyncState<AdminRolesResponse>>();
+  const [save, saveStore] = useAsyncStore<RoleSaveState>({ targetId: null });
+  const data = list.result;
+  const loading = list.loading;
+  const savingId = save.targetId;
+  const error = listStore.isFailed()
+    ? tt.loadFailed
+    : saveStore.isFailed()
+      ? tt.saveFailed
+      : null;
 
   const roleLabel = useCallback(
     (role: AdminRoleItem) => {
@@ -72,35 +90,35 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
     [t]
   );
 
-  const applyResponse = useCallback((next: AdminRolesResponse) => {
-    setData(next);
-    const nextDraft: Record<string, string[]> = {};
-    for (const role of next.roles ?? []) {
-      nextDraft[role.id] = [...role.permissionKeys];
-    }
-    setDraft(nextDraft);
-    setSelectedId((prev) => {
-      if (prev && next.roles?.some((r) => r.id === prev)) return prev;
-      const admin =
-        next.roles?.find((r) => r.key === PlatformRoleKey.Admin) ??
-        next.roles?.[0];
-      return admin?.id ?? '';
-    });
-  }, []);
+  const applyResponse = useCallback(
+    (next: AdminRolesResponse) => {
+      listStore.success(next);
+      const nextDraft: Record<string, string[]> = {};
+      for (const role of next.roles ?? []) {
+        nextDraft[role.id] = [...role.permissionKeys];
+      }
+      setDraft(nextDraft);
+      setSelectedId((prev) => {
+        if (prev && next.roles?.some((r) => r.id === prev)) return prev;
+        const admin =
+          next.roles?.find((r) => r.key === PlatformRoleKey.Admin) ??
+          next.roles?.[0];
+        return admin?.id ?? '';
+      });
+    },
+    [listStore]
+  );
 
   const load = useCallback(async () => {
     setSuccess(null);
-    setError(null);
-    setLoading(true);
-    try {
-      const next = await adminRolesApi.list();
-      applyResponse(next);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : tt.loadFailed);
-    } finally {
-      setLoading(false);
+    const next = await runAsyncStore(listStore, adminRolesApi.list(), {
+      keep: true
+    });
+    if (next === undefined) {
+      return;
     }
-  }, [adminRolesApi, applyResponse, tt.loadFailed]);
+    applyResponse(next);
+  }, [adminRolesApi, applyResponse, listStore]);
 
   useStrictEffect(() => {
     void load();
@@ -165,27 +183,28 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
 
   const handleSave = async (role: AdminRoleItem) => {
     if (!canWrite) return;
-    setSaving(true);
+    saveStore.emit({ targetId: role.id });
     setSuccess(null);
-    setError(null);
-    try {
-      const next = await adminRolesApi.replaceAssignments({
+    const next = await runAsyncStore(
+      saveStore,
+      adminRolesApi.replaceAssignments({
         roleId: role.id,
         permissionKeys: draft[role.id] ?? []
-      });
-      applyResponse(next);
-      setSuccess(tt.saveSuccess);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : tt.saveFailed);
-    } finally {
-      setSaving(false);
+      })
+    );
+    saveStore.emit({ targetId: null });
+    if (next === undefined) {
+      return;
     }
+    applyResponse(next);
+    setSuccess(tt.saveSuccess);
   };
 
   const renderRoleNavItem = (role: AdminRoleItem) => {
     const selected = draft[role.id]?.length ?? 0;
     const active = selectedId === role.id;
     const dirty = isDirty(role);
+    const saving = savingId === role.id;
 
     return (
       <button
@@ -209,6 +228,11 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
             {dirty ? (
               <span className="ml-1 text-xs font-normal text-secondary-text">
                 ·
+              </span>
+            ) : null}
+            {saving ? (
+              <span className="ml-1 text-xs font-normal text-secondary-text">
+                …
               </span>
             ) : null}
           </span>
@@ -261,6 +285,7 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
     ));
 
   const dirty = selectedRole ? isDirty(selectedRole) : false;
+  const saving = selectedRole ? savingId === selectedRole.id : false;
 
   return (
     <div data-testid="AdminRolesPanel" className="flex flex-col gap-4">

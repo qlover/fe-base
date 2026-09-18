@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  runAsyncStore,
+  useAsyncStore,
+  type AsyncState
+} from '@brain-toolkit/react-kit';
 import { LoginValidator } from '@qlover/next-kit/common';
 import { type FormEvent, useMemo, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
@@ -18,6 +23,10 @@ interface EmailOTPFormProps {
   tt: LoginI18nInterface;
 }
 
+type OtpSubmitState = AsyncState<
+  Awaited<ReturnType<AppUserGateway['sendOtp']>>
+>;
+
 /**
  * Email magic-link login form.
  *
@@ -31,10 +40,11 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
   const formValidator = useMemo(() => new LoginValidator(), []);
 
   const [email, setEmail] = useState(appConfig.testLoginEmail ?? '');
-  const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | undefined>();
+  const [submit, submitStore] = useAsyncStore<OtpSubmitState>();
+  const loading = submit.loading;
+  const submitError = submitStore.isFailed() ? String(submit.error) : null;
 
   const validateEmail = (value: string): boolean => {
     const result = formValidator.validateEmail(value.trim());
@@ -48,49 +58,38 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
 
   const handleSendMagicLink = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitError(null);
 
     if (!validateEmail(email)) return;
 
-    setLoading(true);
-    try {
-      await userGateway.sendOtp({ email: email.trim() });
-      setSent(true);
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : 'Failed to send magic link'
-      );
-    } finally {
-      setLoading(false);
+    const ok = await runAsyncStore(
+      submitStore,
+      userGateway.sendOtp({ email: email.trim() })
+    );
+    if (ok === undefined) {
+      return;
     }
+    setSent(true);
   };
 
   const handleResend = async () => {
-    setSubmitError(null);
-    setLoading(true);
-    try {
-      await userGateway.sendOtp({ email: email.trim() });
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : 'Failed to resend magic link'
-      );
-    } finally {
-      setLoading(false);
-    }
+    await runAsyncStore(
+      submitStore,
+      userGateway.sendOtp({ email: email.trim() })
+    );
   };
 
   const isEmpty = !email.trim();
 
   return (
     <div data-testid="EmailOTPForm" className="w-full">
-      {submitError && (
+      {submitError ? (
         <div
           role="alert"
           className="text-red-500 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm mb-4 dark:border-red-800 dark:bg-red-950/30"
         >
           {submitError}
         </div>
-      )}
+      ) : null}
 
       {sent ? (
         <div className="space-y-4">
@@ -104,7 +103,7 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
           <p className="text-center">
             <button
               type="button"
-              onClick={handleResend}
+              onClick={() => void handleResend()}
               disabled={loading}
               className="text-brand text-sm hover:underline disabled:opacity-50"
             >
@@ -116,7 +115,7 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
         <form
           data-testid="EmailOTPForm-Email"
           name="email-magic-link"
-          onSubmit={handleSendMagicLink}
+          onSubmit={(e) => void handleSendMagicLink(e)}
           noValidate
           className="space-y-4"
         >
@@ -145,7 +144,7 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
                 emailError ? 'magic-link-email-error' : undefined
               }
             />
-            {emailError && (
+            {emailError ? (
               <p
                 id="magic-link-email-error"
                 className="text-red-500 mt-1 text-sm"
@@ -153,7 +152,7 @@ export function EmailOTPForm({ tt }: EmailOTPFormProps) {
               >
                 {emailError}
               </p>
-            )}
+            ) : null}
           </div>
 
           <button

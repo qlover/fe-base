@@ -13,6 +13,7 @@ import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
 import { SupabaseOAuthProvider } from './providers/SupabaseOAuthProvider';
+import { FeSupabaseRepo } from './repositorys/FeSupabaseRepo';
 import { ServerContext } from './utils/ServerContext';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -60,7 +61,11 @@ const ServerIocRegister: IOCRegisterInterface<
       getAdminClient: createAdminClient
     };
 
-    ioc.bind(SupabaseRepo, new SupabaseRepo('', supabaseDeps));
+    // Same instance for both tokens so `@inject(SupabaseRepo)` also gets
+    // FeSupabaseRepo throwIfError remap (Auth / non-builder paths).
+    const feSupabaseRepo = new FeSupabaseRepo('', supabaseDeps);
+    ioc.bind(FeSupabaseRepo, feSupabaseRepo);
+    ioc.bind(SupabaseRepo, feSupabaseRepo);
     ioc.bind(
       RequestLogsRepository,
       new RequestLogsRepository({
