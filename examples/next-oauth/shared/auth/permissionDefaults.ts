@@ -10,6 +10,7 @@ export const SYSTEM_ADMIN_GATE_KEY = PermissionKey.admin_site_settings_read;
 const ADMIN_READ = [
   PermissionKey.admin_users_read,
   PermissionKey.admin_roles_read,
+  PermissionKey.admin_locales_read,
   PermissionKey.admin_request_logs_read,
   PermissionKey.admin_site_settings_read
 ] as const;
@@ -17,6 +18,7 @@ const ADMIN_READ = [
 const ADMIN_WRITE = [
   PermissionKey.admin_users_system_role,
   PermissionKey.admin_roles_write,
+  PermissionKey.admin_locales_write,
   PermissionKey.admin_request_logs_write
 ] as const;
 
@@ -63,6 +65,20 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     method: 'PATCH',
     path: '/api/admin/roles',
     description: 'Edit role assignments'
+  },
+  {
+    permissionKey: PermissionKey.admin_locales_read,
+    type: 'api',
+    method: 'GET',
+    path: '/api/admin/locales',
+    description: 'List locale dictionary rows'
+  },
+  {
+    permissionKey: PermissionKey.admin_locales_write,
+    type: 'api',
+    method: 'POST',
+    path: '/api/admin/locales',
+    description: 'Create / update / import locales'
   },
   {
     permissionKey: PermissionKey.admin_request_logs_read,
