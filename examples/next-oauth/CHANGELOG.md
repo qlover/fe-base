@@ -1,5 +1,44 @@
 # examples/next-oauth
 
+## 1.6.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 站点设置与 CORS 规则配置 ([518f6f7](https://github.com/qlover/fe-base/commit/518f6f774db8b9be76099411535cdd56871e74ed)) ([#704](https://github.com/qlover/fe-base/pull/704))
+
+- **next-oauth:** 接入 ApiCorsPlugin 跨域 ([75c0361](https://github.com/qlover/fe-base/commit/75c03617cad6ef5815ecb051d1fa1b53d60d148d)) ([#704](https://github.com/qlover/fe-base/pull/704))
+
+- **next-oauth:** 后台 Locales CMS ([c5552b9](https://github.com/qlover/fe-base/commit/c5552b97ad47aea7ed8d551f6d5fde5ef3b16043)) ([#703](https://github.com/qlover/fe-base/pull/703))
+
+- **next-oauth:** 统一 fe\_\* 表结构与仓储表名 ([2802f81](https://github.com/qlover/fe-base/commit/2802f81dbbb3e3b60836db8e2541fb4893f94cb6)) ([#701](https://github.com/qlover/fe-base/pull/701))
+
+- **next-oauth:** 接入平台 RBAC 与权限门禁 ([1ac536e](https://github.com/qlover/fe-base/commit/1ac536e65ad08aff5345aa2407a35174e99c4f1e)) ([#701](https://github.com/qlover/fe-base/pull/701))
+
+- **next-oauth:** 实现管理后台角色与用户管理 ([68db00d](https://github.com/qlover/fe-base/commit/68db00d8ff0086b4465065c759f01b5a8dd31032)) ([#701](https://github.com/qlover/fe-base/pull/701))
+
+- **examples:** 持久化语言偏好并支持 OAuth ui_locales ([20ef4a9](https://github.com/qlover/fe-base/commit/20ef4a93238c7a3a8236d367319c12d4df910939)) ([#699](https://github.com/qlover/fe-base/pull/699))
+
+#### 🐞 Bug Fixes
+
+- **next-oauth:** 修复 lint import 顺序与 testid ([7091c82](https://github.com/qlover/fe-base/commit/7091c82887f568e80af6e00841738459289b6237)) ([#701](https://github.com/qlover/fe-base/pull/701))
+
+#### 📝 Documentation
+
+- **next-oauth:** 补充 fe\_\* schema 与 RBAC 说明 ([76c9d9d](https://github.com/qlover/fe-base/commit/76c9d9d1de31b7fbd7c5d636d1191d41b22655b6)) ([#701](https://github.com/qlover/fe-base/pull/701))
+
+#### ♻️ Refactors
+
+- **next-oauth:** 异步请求统一 useAsyncStore ([0ba674e](https://github.com/qlover/fe-base/commit/0ba674ee2ab5f48abda52467ed594290fc99a655)) ([#702](https://github.com/qlover/fe-base/pull/702))
+
+- **next-kit:** 移除 useStore，改由 @brain-toolkit/react-kit 提供 ([0fc11d9](https://github.com/qlover/fe-base/commit/0fc11d96d115eba65bb52bc8d1b6360f4cf35b2f)) ([#700](https://github.com/qlover/fe-base/pull/700))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.4.2` to `1.5.0`
+- Update dependency **@qlover/oauth-wrapper** from `0.10.2` to `0.11.0`
+
 ## 1.5.0
 
 ### Minor Changes

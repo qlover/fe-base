@@ -1,5 +1,21 @@
 # @qlover/next-kit
 
+## 1.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-kit:** 支持 origin×path×method CORS ([ffbf34b](https://github.com/qlover/fe-base/commit/ffbf34baafdab0b9f8da9fdbe6ca9098b5f0952e)) ([#704](https://github.com/qlover/fe-base/pull/704))
+
+#### ♻️ Refactors
+
+- **next-kit:** 移除 useStore，改由 @brain-toolkit/react-kit 提供 ([0fc11d9](https://github.com/qlover/fe-base/commit/0fc11d96d115eba65bb52bc8d1b6360f4cf35b2f)) ([#700](https://github.com/qlover/fe-base/pull/700))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.10.2` to `0.11.0`
+
 ## 1.4.0
 
 ### Minor Changes

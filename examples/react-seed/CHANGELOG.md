@@ -1,5 +1,29 @@
 # examples/react-seed
 
+## 1.6.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-seed:** PAM PKCE 登录与品牌化登录页 ([d41d14c](https://github.com/qlover/fe-base/commit/d41d14c76fdf211cb00cce280154269b3cab38db)) ([#705](https://github.com/qlover/fe-base/pull/705))
+
+#### 🐞 Bug Fixes
+
+- **react-seed:** 站点品牌改回 SeedLogo ([78a8b60](https://github.com/qlover/fe-base/commit/78a8b6038530b023ff173a4b33f3a4dbb2c5ddca)) ([#706](https://github.com/qlover/fe-base/pull/706))
+
+- **react-seed:** Vercel SPA rewrite 修复直链 404 ([b982864](https://github.com/qlover/fe-base/commit/b9828640601362e4357e7bdd5cc629110f2a34e5)) ([#705](https://github.com/qlover/fe-base/pull/705))
+
+- **react-seed:** Vite base 用 / 修复深链 MIME 错误 ([d465d92](https://github.com/qlover/fe-base/commit/d465d924c1162c2ab7f73d962ee51b8e490b7b25)) ([#705](https://github.com/qlover/fe-base/pull/705))
+
+- **react-seed:** 修复 main 测试 teardown 后 window 未定义 ([0172e31](https://github.com/qlover/fe-base/commit/0172e3167ea945a104f11861cf93e0148a60cb2d)) ([#698](https://github.com/qlover/fe-base/pull/698))
+
+- **examples:** 避免裸 hidden 类被浏览器扩展覆盖显示 ([e456658](https://github.com/qlover/fe-base/commit/e456658f65b45d0785993cc1ddf6cebc929ea741)) ([#676](https://github.com/qlover/fe-base/pull/676))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.10.2` to `0.11.0`
+
 ## 1.5.0
 
 ### Minor Changes
