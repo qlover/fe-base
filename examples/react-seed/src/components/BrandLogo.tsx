@@ -1,8 +1,8 @@
-import { PAMLogo } from '@/components/PAMLogo';
+import { SeedLogo } from '@/components/SeedLogo';
 
 type BrandLogoProps = {
   className?: string;
-  /** CSS font-size driven size for PAMLogo (1em). */
+  /** CSS font-size driven size for SeedLogo (1em). */
   sizeClassName?: string;
   withWordmark?: boolean;
   wordmark?: string;
@@ -10,7 +10,8 @@ type BrandLogoProps = {
 };
 
 /**
- * App header brand: official PAM mark + optional product wordmark.
+ * App brand: React Seed mark + optional wordmark.
+ * PAM mark stays on the PAM login button only ({@link PAMLogo}).
  */
 export function BrandLogo({
   className = '',
@@ -24,7 +25,7 @@ export function BrandLogo({
       className={`text-brand inline-flex items-center gap-2.5 ${className}`.trim()}
       data-testid="brand-logo"
     >
-      <PAMLogo className={`shrink-0 ${sizeClassName}`.trim()} />
+      <SeedLogo className={`shrink-0 ${sizeClassName}`.trim()} />
       {withWordmark ? (
         <span className={wordmarkClassName}>{wordmark}</span>
       ) : null}

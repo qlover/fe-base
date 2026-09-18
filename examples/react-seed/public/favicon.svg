@@ -1,7 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 60 80 80" width="100%" height="100%">
-  <rect x="65" y="65" width="70" height="70" rx="15" fill="var(--pam-primary, #4f46e5)" transform="rotate(45 100 100)" />
-  <circle cx="100" cy="100" r="9" fill="var(--pam-center, #ffffff)" />
-  <circle cx="72.5" cy="70" r="3.5" fill="var(--pam-dot1, #06b6d4)" />
-  <circle cx="127.5" cy="70" r="3.5" fill="var(--pam-dot2, #d946ef)" />
-  <circle cx="100" cy="140" r="3.5" fill="var(--pam-dot3, #f59e0b)" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="#0d9488" opacity="0.18"/>
+  <path fill="#0d9488" d="M16 7c-3.8 3.2-5.8 6.6-5.8 10.1 0 3.4 2.5 5.9 5.8 5.9s5.8-2.5 5.8-5.9C21.8 13.6 19.8 10.2 16 7z"/>
+  <path fill="none" stroke="#0d9488" stroke-width="1.6" stroke-linecap="round" d="M16 23v2.5"/>
 </svg>
