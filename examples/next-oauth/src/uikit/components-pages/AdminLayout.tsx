@@ -3,6 +3,7 @@
 import {
   Bars3Icon,
   ClipboardDocumentListIcon,
+  Cog6ToothIcon,
   HomeIcon,
   KeyIcon,
   LanguageIcon,
@@ -49,6 +50,7 @@ const NAV_ICONS: Record<string, NavIcon> = {
   users: UsersIcon,
   roles: KeyIcon,
   locales: LanguageIcon,
+  settings: Cog6ToothIcon,
   'request-logs': ClipboardDocumentListIcon
 };
 

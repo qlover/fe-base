@@ -43,6 +43,15 @@ export const API_ADMIN_LOCALES_NAMESPACES =
 export const API_ADMIN_ROLES = '/api/admin/roles' as const;
 
 /**
+ * API path: `/api/admin/site-settings`
+ *
+ * @see [src/app/api/admin/site-settings/route.ts](../../src/app/api/admin/site-settings/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/site-settings/route.ts`
+ */
+export const API_ADMIN_SITE_SETTINGS = '/api/admin/site-settings' as const;
+
+/**
  * API path: `/api/admin/users`
  *
  * @see [src/app/api/admin/users/route.ts](../../src/app/api/admin/users/route.ts)
@@ -146,6 +155,15 @@ export const API_OAUTH_PLAYGROUND_VALIDATE =
 export const API_OAUTH_VERIFY = '/api/oauth/verify' as const;
 
 /**
+ * API path: `/api/public-config`
+ *
+ * @see [src/app/api/public-config/route.ts](../../src/app/api/public-config/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/public-config/route.ts`
+ */
+export const API_PUBLIC_CONFIG = '/api/public-config' as const;
+
+/**
  * API path: `/api/reference`
  *
  * @see [src/app/api/reference/route.ts](../../src/app/api/reference/route.ts)
@@ -231,6 +249,7 @@ export type ApiRoutePath =
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
   | typeof API_ADMIN_ROLES
+  | typeof API_ADMIN_SITE_SETTINGS
   | typeof API_ADMIN_USERS
   | typeof API_ADMIN_USERS_SYSTEM_ROLE
   | typeof API_CALLBACK_EMAIL_LOGIN
@@ -242,6 +261,7 @@ export type ApiRoutePath =
   | typeof API_OAUTH_CONSENT
   | typeof API_OAUTH_PLAYGROUND_VALIDATE
   | typeof API_OAUTH_VERIFY
+  | typeof API_PUBLIC_CONFIG
   | typeof API_REFERENCE
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGIN_PROVIDER

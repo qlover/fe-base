@@ -15,6 +15,7 @@ import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import { NextApiHandler } from './utils/NextApiHandler';
+import { ServerContext } from './utils/ServerContext';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
@@ -91,6 +92,34 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
   }
 
   /**
+   * Headers stashed by ApiCorsPlugin (and similar) during onBefore.
+   */
+  protected getPluginResponseHeaders(): HeadersInit | undefined {
+    if (this.serverContext instanceof ServerContext) {
+      return this.serverContext.getResponseHeaders();
+    }
+    return undefined;
+  }
+
+  protected mergeResponseInit(init?: RunWithInit): RunWithInit | undefined {
+    const pluginHeaders = this.getPluginResponseHeaders();
+    if (!pluginHeaders && !init) {
+      return undefined;
+    }
+    return {
+      ...init,
+      successHeaders: {
+        ...pluginHeaders,
+        ...init?.successHeaders
+      },
+      errorHeaders: {
+        ...pluginHeaders,
+        ...init?.errorHeaders
+      }
+    };
+  }
+
+  /**
    * @override
    *
    * Skip DB log writes for high-frequency, read-only endpoints so their JSON
@@ -113,6 +142,17 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
   }
 
   /**
+   * @override — merge ApiCorsPlugin headers after the pipeline runs.
+   */
+  public override async runWithJson<Result>(
+    task?: RunWithTask<Result>,
+    init?: RunWithInit
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+    return this.returnJson(result, this.mergeResponseInit(init));
+  }
+
+  /**
    * Machine OAuth endpoints (token / userinfo / revoke) for RFC clients
    * such as Supabase Custom OAuth providers.
    *
@@ -124,6 +164,7 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
     init?: RunWithInit
   ): Promise<NextResponse> {
     const result = await this.run(task);
+    const merged = this.mergeResponseInit(init);
     const contextHttpStatus = this.serverContext.getState('httpStatus');
     const noStoreHeaders = {
       'Cache-Control': 'no-store',
@@ -141,7 +182,7 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
           status: contextHttpStatus ?? 400,
           headers: {
             ...noStoreHeaders,
-            ...init?.errorHeaders
+            ...merged?.errorHeaders
           }
         }
       );
@@ -154,7 +195,7 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
       status: contextHttpStatus ?? 200,
       headers: {
         ...noStoreHeaders,
-        ...init?.successHeaders
+        ...merged?.successHeaders
       }
     });
   }

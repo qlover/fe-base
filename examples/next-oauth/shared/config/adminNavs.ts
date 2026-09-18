@@ -7,11 +7,13 @@ import {
   COMMON_ADMIN_NAV_LOCALES,
   COMMON_ADMIN_NAV_REQUEST_LOGS,
   COMMON_ADMIN_NAV_ROLES,
+  COMMON_ADMIN_NAV_SETTINGS,
   COMMON_ADMIN_NAV_USER_MANAGEMENT
 } from '@config/i18n-identifier/common/common';
 import {
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_ROLES,
+  ROUTE_ADMIN_SETTINGS,
   ROUTE_REQUEST_LOGS
 } from './route';
 
@@ -20,6 +22,7 @@ export type NavItemPaths =
   | 'admin/users'
   | 'admin/roles'
   | 'admin/locales'
+  | 'admin/settings'
   | 'admin/request-logs';
 
 export interface NavItemInterface {
@@ -54,6 +57,12 @@ export const defaultNavItems: NavItemInterface[] = [
     i18nKey: COMMON_ADMIN_NAV_LOCALES,
     pathname: ROUTE_ADMIN_LOCALES,
     permissionKey: PermissionKey.admin_locales_read
+  },
+  {
+    key: 'settings',
+    i18nKey: COMMON_ADMIN_NAV_SETTINGS,
+    pathname: ROUTE_ADMIN_SETTINGS,
+    permissionKey: PermissionKey.admin_site_settings_read
   },
   {
     key: 'request-logs',

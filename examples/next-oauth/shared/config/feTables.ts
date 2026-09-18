@@ -15,7 +15,9 @@ export const FeTables = {
   permissions: 'fe_permissions',
   roleAssignments: 'fe_role_assignments',
   /** DB-backed locale dictionary (Admin Locales CMS). */
-  locales: 'fe_locales'
+  locales: 'fe_locales',
+  /** Runtime site settings (Admin Settings). */
+  siteSettings: 'fe_site_settings'
 } as const;
 
 export type FeTableName = (typeof FeTables)[keyof typeof FeTables];

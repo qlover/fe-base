@@ -1,14 +1,8 @@
-import {
-  apiCorsPreflightResponse,
-  buildApiCorsHeaders
-} from '@qlover/next-kit/server';
 import { API_USER_LOGOUT } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
-import { ServerConfig } from '@server/ServerConfig';
+import { ApiCorsPlugin } from '@server/plugins/ApiCorsPlugin';
 import type { NextRequest } from 'next/server';
-
-const corsConfig = new ServerConfig();
 
 /**
  * @swagger
@@ -54,18 +48,22 @@ const corsConfig = new ServerConfig();
  *                   nullable: true
  */
 export async function OPTIONS(req: NextRequest) {
-  return apiCorsPreflightResponse(req, corsConfig, { credentials: true });
+  return new ApiCorsPlugin({
+    path: API_USER_LOGOUT,
+    credentials: true
+  }).preflight(req);
 }
 
 export async function POST(req: NextRequest) {
-  const corsHeaders = buildApiCorsHeaders(req, corsConfig, {
-    credentials: true
-  });
-
-  return await new NextApiServer(API_USER_LOGOUT, req).runWithJson(
-    async ({ parameters: { IOC, ctx } }) => IOC(UserController).logout(ctx),
-    corsHeaders
-      ? { successHeaders: corsHeaders, errorHeaders: corsHeaders }
-      : undefined
-  );
+  return await new NextApiServer(API_USER_LOGOUT, req)
+    .use(
+      new ApiCorsPlugin({
+        path: API_USER_LOGOUT,
+        credentials: true,
+        request: req
+      })
+    )
+    .runWithJson(async ({ parameters: { IOC, ctx } }) =>
+      IOC(UserController).logout(ctx)
+    );
 }
