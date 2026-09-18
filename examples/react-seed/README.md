@@ -43,7 +43,18 @@ npm run preview
 
 ## 环境变量
 
-本 seed 未强制要求 `.env` 即可运行。`vite.config.ts` 会将 `package.json` 的 `name`、`version` 注入为 `import.meta.env.VITE_APP_NAME` / `VITE_APP_VERSION`。若需扩展，可新增 `.env` / `.env.*` 并按 Vite 约定使用 `VITE_` 前缀。
+本 seed 未强制要求 `.env` 即可运行（本地 mock 登录）。`vite.config.ts` 会将 `package.json` 的 `name`、`version` 注入为 `import.meta.env.VITE_APP_NAME` / `VITE_APP_VERSION`。
+
+启用 **PAM / OAuth PKCE** 时，复制 `.env.template` 为 `.env.localhost` 并配置：
+
+| 变量 | 说明 |
+| --- | --- |
+| `VITE_OAUTH_URL` | 授权服务器 origin（PAM 或 next-oauth） |
+| `VITE_OAUTH_CLIENT_ID` | 公有客户端 ID（浏览器 PKCE，无 secret） |
+| `VITE_OAUTH_SCOPE` | 默认 `openid profile email` |
+| `VITE_OAUTH_REDIRECT_PATH` | 默认 `oauth/callback`（完整回调为 `/{locale}/oauth/callback`） |
+
+在授权服务器注册 redirect URI（含语言前缀），例如 `http://localhost:5173/en/oauth/callback`。
 
 ## 目录结构（摘要）
 

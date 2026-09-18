@@ -4,6 +4,16 @@ export const ThemeMap = {
   PINK: 'pink'
 } as const;
 
+export const ThemePreferenceMap = {
+  SYSTEM: 'system',
+  ...ThemeMap
+} as const;
+
+/**
+ * Preference storage (keeps `system`; ThemeService only stores resolved light/dark/pink).
+ */
+export const themePreferenceStorageKey = 'fe_theme_preference';
+
 /**
  * @type {import('@qlover/corekit-bridge').ThemeConfig}
  */
@@ -18,5 +28,6 @@ export const themeConfig = {
 } as const;
 
 export type ThemeId = (typeof ThemeMap)[keyof typeof ThemeMap];
-export type ThemeChoice = ThemeId | 'system';
+export type ThemeChoice =
+  (typeof ThemePreferenceMap)[keyof typeof ThemePreferenceMap];
 export type SupportedTheme = (typeof themeConfig.supportedThemes)[number];

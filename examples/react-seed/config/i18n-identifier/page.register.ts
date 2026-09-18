@@ -102,36 +102,36 @@ export const PAGE_REGISTER_HAVE_ACCOUNT = 'page_register:have_account';
 export const PAGE_REGISTER_SIGN_IN = 'page_register:sign_in';
 
 /**
- * @description Register left panel - hero title
- * @localZh 加入我们
- * @localEn Join us
+ * @description Login left panel - hero title
+ * @localZh 种下一颗 React 种子
+ * @localEn Plant a React seed
  */
 export const PAGE_REGISTER_HERO_TITLE = 'page_register:hero_title';
 
 /**
  * @description Register left panel - hero subtitle
- * @localZh 创建账户，开始使用全部功能
- * @localEn Create an account to get started
+ * @localZh 注册后即可体验模板里的路由、主题与鉴权能力
+ * @localEn Create an account to try routing, themes, and auth in this template
  */
 export const PAGE_REGISTER_HERO_SUBTITLE = 'page_register:hero_subtitle';
 
 /**
  * @description Register left panel - feature 1
- * @localZh 安全可靠，保护您的数据
- * @localEn Secure and reliable
+ * @localZh 本地 mock 账号可立即试用
+ * @localEn Local mock accounts ready to try
  */
 export const PAGE_REGISTER_FEATURE_1 = 'page_register:feature_1';
 
 /**
  * @description Register left panel - feature 2
- * @localZh 多种登录方式，一键接入
- * @localEn Multiple sign-in options
+ * @localZh 与 PAM PKCE 登录同一套用户模型
+ * @localEn Same user model as PAM PKCE sign-in
  */
 export const PAGE_REGISTER_FEATURE_2 = 'page_register:feature_2';
 
 /**
  * @description Register left panel - feature 3
- * @localZh 随时随地，多端同步
- * @localEn Sync across all devices
+ * @localZh 主题与多语言开箱即用
+ * @localEn Themes and locales out of the box
  */
 export const PAGE_REGISTER_FEATURE_3 = 'page_register:feature_3';

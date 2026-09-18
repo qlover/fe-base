@@ -59,11 +59,4 @@ export class SeedOAuthClient extends OAuthClient {
       mapUser: mapOAuthUserToSeed
     });
   }
-
-  /**
-   * @override
-   */
-  public isConfigured(): boolean {
-    return false;
-  }
 }

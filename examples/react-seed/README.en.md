@@ -43,7 +43,18 @@ Other useful scripts: `type-check`, `test`, `lint` / `lint:fix`, `build:analyze`
 
 ## Environment variables
 
-No `.env` is required for a basic run. `vite.config.ts` injects `name` and `version` from `package.json` as `import.meta.env.VITE_APP_NAME` and `VITE_APP_VERSION`. For more, add `.env` / `.env.*` and use the `VITE_` prefix per Vite rules.
+No `.env` is required for local mock login. `vite.config.ts` injects `name` and `version` from `package.json` as `import.meta.env.VITE_APP_NAME` and `VITE_APP_VERSION`.
+
+To enable **PAM / OAuth PKCE**, copy `.env.template` to `.env.localhost` and set:
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_OAUTH_URL` | Authorization server origin (PAM or next-oauth) |
+| `VITE_OAUTH_CLIENT_ID` | Public client ID (browser PKCE, no secret) |
+| `VITE_OAUTH_SCOPE` | Defaults to `openid profile email` |
+| `VITE_OAUTH_REDIRECT_PATH` | Defaults to `oauth/callback` (full URI is `/{locale}/oauth/callback`) |
+
+Register the redirect URI on the AS (with locale prefix), e.g. `http://localhost:5173/en/oauth/callback`.
 
 ## Directory layout (high level)
 
