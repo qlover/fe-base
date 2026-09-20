@@ -146,22 +146,37 @@ describe('OAuthTokenService', () => {
         provider_refresh_token: null,
         updated_at: '2026-01-01T00:00:00.000Z'
       }));
-      repo.upsertUserCredentials = vi.fn(async (_userId, fields) => {
-        if (typeof fields.provider_session_token === 'string') {
-          storedSession = fields.provider_session_token;
+      repo.upsertUserCredentials = vi.fn(
+        async (
+          _userId: string,
+          fields: {
+            provider_refresh_token?: string | null;
+            provider_session_token?: string | null;
+          }
+        ) => {
+          if (typeof fields.provider_session_token === 'string') {
+            storedSession = fields.provider_session_token;
+          }
         }
-      });
+      );
 
-      exchangeProviderAccessToken = vi.fn(async ({ providerRefreshToken }) => {
-        expect(providerRefreshToken).toBe(storedSession);
-        const next = `${providerRefreshToken}-rotated`;
-        return {
-          access_token: `access-for-${providerRefreshToken}`,
-          expires_in: 3600,
-          refresh_token: next,
-          token_type: 'Bearer'
-        };
-      });
+      exchangeProviderAccessToken = vi.fn(
+        async ({
+          providerRefreshToken
+        }: {
+          providerRefreshToken: string;
+          userId: string;
+        }) => {
+          expect(providerRefreshToken).toBe(storedSession);
+          const next = `${providerRefreshToken}-rotated`;
+          return {
+            access_token: `access-for-${providerRefreshToken}`,
+            expires_in: 3600,
+            refresh_token: next,
+            token_type: 'Bearer'
+          };
+        }
+      );
       service = new OAuthTokenService(
         new MockEncryptor(),
         exchangeProviderAccessToken,
