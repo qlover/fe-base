@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **oauth-wrapper:** 换票后写回 provider_session_token ([ed97c18](https://github.com/qlover/fe-base/commit/ed97c18be8801e009800d903814f58e1aa2ed4e3)) ([#708](https://github.com/qlover/fe-base/pull/708))
+
+- **oauth-wrapper:** 补齐换票测试参数类型 ([4a28274](https://github.com/qlover/fe-base/commit/4a2827429d073a9c2d86b689a54fcb027fb5ba3a)) ([#708](https://github.com/qlover/fe-base/pull/708))
+
 ## 0.11.0
 
 ### Minor Changes
