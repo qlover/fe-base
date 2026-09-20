@@ -251,15 +251,17 @@ export class OAuthTokenService implements OAuthTokenServiceInterface {
     try {
       const access = await this.exchangeProviderAccessToken({
         providerRefreshToken: sessionToken,
-        // TODO:
-        userId: ''
+        userId
       });
 
-      if (access.refresh_token) {
+      // 上游 refresh 常为一次性：必须写回 provider_session_token，
+      // 否则下次换票仍读旧值 → invalid_grant。
+      // provider_refresh_token 保留加密副本供审计/兼容。
+      const nextRefresh = access.refresh_token?.trim();
+      if (nextRefresh) {
         await this.oauthRepo.upsertUserCredentials(userId, {
-          provider_refresh_token: this.tokenEncryption.encrypt(
-            access.refresh_token
-          )
+          provider_session_token: nextRefresh,
+          provider_refresh_token: this.tokenEncryption.encrypt(nextRefresh)
         });
       }
 

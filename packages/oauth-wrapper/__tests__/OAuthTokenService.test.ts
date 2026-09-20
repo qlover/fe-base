@@ -116,6 +116,82 @@ describe('OAuthTokenService', () => {
       expect(response.token_type).toBe('Bearer');
       expect(response.refresh_token).toBeTruthy();
       expect(repo.consumeCode).toHaveBeenCalledWith('auth-code');
+      expect(exchangeProviderAccessToken).toHaveBeenCalledWith({
+        providerRefreshToken: 'provider-session',
+        userId: '42'
+      });
+      expect(repo.upsertUserCredentials).toHaveBeenCalledWith('42', {
+        provider_session_token: 'provider-refresh-token',
+        provider_refresh_token: 'enc:provider-refresh-token'
+      });
+    });
+
+    it('keeps provider_session_token usable across refresh_token grants', async () => {
+      const plainRefresh = 'middleware-refresh-plain';
+      const tokenHash = hashOpaqueToken(plainRefresh);
+      repo.refreshTokens.set(tokenHash, {
+        id: '1',
+        refresh_token: tokenHash,
+        client_id: 'test-client',
+        user_id: '42',
+        expires_at: new Date(Date.now() + 60_000).toISOString(),
+        revoked: false,
+        created_at: '2026-01-01T00:00:00.000Z'
+      });
+
+      let storedSession = 'provider-session-v1';
+      repo.getUserCredentials = vi.fn(async () => ({
+        user_id: '42',
+        provider_session_token: storedSession,
+        provider_refresh_token: null,
+        updated_at: '2026-01-01T00:00:00.000Z'
+      }));
+      repo.upsertUserCredentials = vi.fn(async (_userId, fields) => {
+        if (typeof fields.provider_session_token === 'string') {
+          storedSession = fields.provider_session_token;
+        }
+      });
+
+      exchangeProviderAccessToken = vi.fn(async ({ providerRefreshToken }) => {
+        expect(providerRefreshToken).toBe(storedSession);
+        const next = `${providerRefreshToken}-rotated`;
+        return {
+          access_token: `access-for-${providerRefreshToken}`,
+          expires_in: 3600,
+          refresh_token: next,
+          token_type: 'Bearer'
+        };
+      });
+      service = new OAuthTokenService(
+        new MockEncryptor(),
+        exchangeProviderAccessToken,
+        repo as unknown as OAuthWrapperRepositoryInterface
+      );
+
+      const first = await service.exchangeToken({
+        grant_type: 'refresh_token',
+        refresh_token: plainRefresh,
+        client_id: 'test-client',
+        client_secret: 'secret'
+      });
+      expect(first.access_token).toBe('access-for-provider-session-v1');
+      expect(storedSession).toBe('provider-session-v1-rotated');
+
+      const plainRefresh2 = first.refresh_token!;
+      const tokenHash2 = hashOpaqueToken(plainRefresh2);
+      // issueMiddlewareRefreshToken already stored the new hash via createRefreshToken
+      expect(repo.refreshTokens.has(tokenHash2)).toBe(true);
+
+      const second = await service.exchangeToken({
+        grant_type: 'refresh_token',
+        refresh_token: plainRefresh2,
+        client_id: 'test-client',
+        client_secret: 'secret'
+      });
+      expect(second.access_token).toBe(
+        'access-for-provider-session-v1-rotated'
+      );
+      expect(storedSession).toBe('provider-session-v1-rotated-rotated');
     });
 
     it('requires client_secret when PKCE is not used', async () => {
