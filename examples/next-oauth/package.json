@@ -38,7 +38,7 @@
     "@qlover/logger": "workspace:*",
     "@qlover/next-kit": "workspace:*",
     "@qlover/oauth-wrapper": "workspace:*",
-    "@qlover/slice-store-react": "^1.4.2",
+    "@qlover/slice-store-react": "^1.5.0",
     "@qlover/tailwind-theme": "workspace:*",
     "@scalar/nextjs-api-reference": "^0.9.24",
     "@supabase/postgrest-js": "^2.87.1",
