@@ -1,5 +1,13 @@
 # @qlover/corekit-bridge
 
+## 3.4.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **corekit-bridge:** SliceStoreAdapter.subscribe 正确传入 prevState ([16457dc](https://github.com/qlover/fe-base/commit/16457dc2f62b22abe6c90e9ee0329e001e1bc104)) ([#710](https://github.com/qlover/fe-base/pull/710))
+
 ## 3.4.0
 
 ### Minor Changes
