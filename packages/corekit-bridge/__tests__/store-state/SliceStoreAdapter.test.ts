@@ -98,5 +98,39 @@ describe('SliceStoreAdapter', () => {
     adapter.update({ count: 2 });
     expect(listener).toHaveBeenCalledTimes(1);
   });
+
+  it('should pass distinct next and prev state to subscribe listeners', () => {
+    const adapter = new SliceStoreAdapter<CounterState>(() => ({
+      count: 0,
+      nested: { v: 1 }
+    }));
+
+    const listener = vi.fn();
+    adapter.subscribe(listener);
+
+    const before = adapter.getState();
+    adapter.update({ count: 1 });
+    const after = adapter.getState();
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    const [nextState, prevState] = listener.mock.calls[0] as [
+      CounterState,
+      CounterState
+    ];
+    expect(nextState).toBe(after);
+    expect(prevState).toBe(before);
+    expect(nextState).not.toBe(prevState);
+    expect(prevState.count).toBe(0);
+    expect(nextState.count).toBe(1);
+
+    adapter.update({ count: 2 });
+    expect(listener).toHaveBeenCalledTimes(2);
+    const [, secondPrev] = listener.mock.calls[1] as [
+      CounterState,
+      CounterState
+    ];
+    expect(secondPrev).toBe(after);
+    expect(secondPrev.count).toBe(1);
+  });
 });
 

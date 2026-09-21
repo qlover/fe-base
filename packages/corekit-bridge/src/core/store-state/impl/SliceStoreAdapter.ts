@@ -219,11 +219,20 @@ export class SliceStoreAdapter<
   }
 
   /**
+   * Subscribe to state changes with `(next, prev)` semantics matching {@link StoreInterface}.
+   *
+   * `@qlover/slice-store` `observe` without a selector only receives the next value, and by the
+   * time the callback runs `sliceStore.state` is already the next state — so we must keep the
+   * previous snapshot ourselves. Do **not** pass `this.sliceStore.state` as `prevState`.
+   *
    * @override
    */
   public subscribe(listener: (state: T, prevState: T) => void): () => void {
-    return this.sliceStore.observe((state) =>
-      listener(state, this.sliceStore.state)
-    );
+    let prevState = this.sliceStore.state;
+    return this.sliceStore.observe((state: T) => {
+      const previous = prevState;
+      prevState = state;
+      listener(state, previous);
+    });
   }
 }
