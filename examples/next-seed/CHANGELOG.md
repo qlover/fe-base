@@ -1,5 +1,25 @@
 # examples/next-seed
 
+## 2.3.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **examples:** 持久化语言偏好并支持 OAuth ui_locales ([20ef4a9](https://github.com/qlover/fe-base/commit/20ef4a93238c7a3a8236d367319c12d4df910939)) ([#699](https://github.com/qlover/fe-base/pull/699))
+
+#### 🐞 Bug Fixes
+
+- **deps:** 统一 next 与 supabase 版本消除双副本 ([089ca68](https://github.com/qlover/fe-base/commit/089ca680eb7e1870eb175577ba58c73dd79cce09)) ([#712](https://github.com/qlover/fe-base/pull/712))
+
+#### ♻️ Refactors
+
+- **next-kit:** 移除 useStore，改由 @brain-toolkit/react-kit 提供 ([0fc11d9](https://github.com/qlover/fe-base/commit/0fc11d96d115eba65bb52bc8d1b6360f4cf35b2f)) ([#700](https://github.com/qlover/fe-base/pull/700))
+- Update dependency **@qlover/corekit-bridge** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+- Update dependency **@qlover/next-kit** from `1.5.0` to `1.5.1`
+- Update dependency **@qlover/tailwind-theme** from `0.3.0` to `0.3.1`
+
 ## 2.3.0
 
 ### Minor Changes

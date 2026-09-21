@@ -1,5 +1,18 @@
 # examples/next-oauth
 
+## 1.6.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **deps:** 统一 next 与 supabase 版本消除双副本 ([089ca68](https://github.com/qlover/fe-base/commit/089ca680eb7e1870eb175577ba58c73dd79cce09)) ([#712](https://github.com/qlover/fe-base/pull/712))
+- Update dependency **@qlover/corekit-bridge** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+- Update dependency **@qlover/next-kit** from `1.5.0` to `1.5.1`
+- Update dependency **@qlover/oauth-wrapper** from `0.11.1` to `0.11.2`
+- Update dependency **@qlover/tailwind-theme** from `0.3.0` to `0.3.1`
+
 ## 1.6.0
 
 ### Minor Changes

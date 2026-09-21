@@ -1,5 +1,11 @@
 # @qlover/create-app
 
+## 4.0.1
+
+### Patch Changes
+
+- Update dependency **@qlover/scripts-context** from `2.3.3` to `2.3.4`
+
 ## 4.0.0
 
 ### Major Changes

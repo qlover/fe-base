@@ -1,5 +1,9 @@
 # @qlover/fe-corekit
 
+## 3.4.7
+
+### Patch Changes
+
 ## 3.4.6
 
 ### Patch Changes

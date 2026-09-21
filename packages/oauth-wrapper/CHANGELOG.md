@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.2
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+
 ## 0.11.1
 
 ### Patch Changes
