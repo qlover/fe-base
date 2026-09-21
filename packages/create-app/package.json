@@ -37,14 +37,14 @@
   },
   "devDependencies": {
     "@qlover/logger": "workspace:*",
-    "ignore": "^7.0.3",
-    "ora": "^8.1.1"
+    "ignore": "^7.0.9",
+    "ora": "^8.2.0"
   },
   "dependencies": {
     "@qlover/scripts-context": "workspace:*",
     "commander": "^13.1.0",
-    "inquirer": "^12.3.2",
-    "tar": "^7.5.0",
-    "undici": "^7.0.0"
+    "inquirer": "^12.11.1",
+    "tar": "^7.5.22",
+    "undici": "^7.29.1"
   }
 }

@@ -61,10 +61,10 @@
   "dependencies": {
     "@qlover/env-loader": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
-    "commander": "^11.0.0",
-    "fs-extra": "^11.2.0",
-    "handlebars": "^4.7.8",
-    "lodash-es": "^4.17.22",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.4.0",
+    "handlebars": "^4.7.9",
+    "lodash-es": "^4.18.1",
     "typedoc": "~0.28.20",
     "typescript": "~6.0.3"
   }
