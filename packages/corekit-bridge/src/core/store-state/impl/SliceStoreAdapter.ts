@@ -162,7 +162,10 @@ export class SliceStoreAdapter<
   }
 
   /**
-   * Apply a patch and notify observers via {@link SliceStore.emit}
+   * Apply a patch and notify observers via {@link SliceStore.emit} with `{ flush: true }`.
+   *
+   * slice-store 1.5 defers observer notification to a microtask unless flushed.
+   * StoreInterface subscribers are synchronous, so this adapter always flushes.
    *
    * Behavior:
    * - If `Object.is(value, current)` — no-op (skips emit)
@@ -187,18 +190,18 @@ export class SliceStoreAdapter<
       current === undefined ||
       typeof current !== 'object'
     ) {
-      this.sliceStore.emit(value as T);
+      this.sliceStore.emit(value as T, { flush: true });
       return;
     }
 
     if (Array.isArray(current)) {
-      this.sliceStore.emit(clone(value as T));
+      this.sliceStore.emit(clone(value as T), { flush: true });
       return;
     }
 
     const cloned = clone(current);
     Object.assign(cloned as object, value as object);
-    this.sliceStore.emit(cloned);
+    this.sliceStore.emit(cloned, { flush: true });
   }
 
   /**
@@ -208,6 +211,8 @@ export class SliceStoreAdapter<
    */
   public reset(): void {
     this.sliceStore.reset();
+    // slice-store 1.5 notifies on a microtask unless flushed.
+    this.sliceStore.flush();
   }
 
   /**

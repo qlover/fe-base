@@ -60,7 +60,7 @@
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
     "@qlover/tailwind-theme": "workspace:*",
-    "@qlover/slice-store-react": "^1.4.2",
+    "@qlover/slice-store-react": "^1.5.0",
     "@tarojs/components": "4.1.11",
     "@tarojs/helper": "4.1.11",
     "@tarojs/plugin-framework-react": "4.1.11",

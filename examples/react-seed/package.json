@@ -24,7 +24,7 @@
     "@qlover/logger": "workspace:*",
     "@qlover/oauth-wrapper": "workspace:*",
     "@qlover/tailwind-theme": "workspace:*",
-    "@qlover/slice-store-react": "^1.4.2",
+    "@qlover/slice-store-react": "^1.5.0",
     "clsx": "^2.1.1",
     "i18next": "^25.8.1",
     "i18next-browser-languagedetector": "^8.2.0",

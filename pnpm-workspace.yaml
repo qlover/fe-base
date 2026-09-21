@@ -15,6 +15,10 @@ overrides:
   '@typescript-eslint/scope-manager': ^8.60.1
   '@typescript-eslint/typescript-estree': ^8.60.1
   '@typescript-eslint/parser': ^8.60.1
+  # Keep a single Next / Supabase graph so next-kit ↔ examples types align.
+  next: ^16.3.5
+  '@supabase/supabase-js': ^2.116.0
+  '@supabase/auth-js': ^2.116.0
 
 patchedDependencies:
   '@qlover/corekit-bridge': examples/browser-plugin-seed/patches/@qlover__corekit-bridge.patch
