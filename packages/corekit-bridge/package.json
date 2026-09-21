@@ -151,10 +151,10 @@
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
     "@qlover/tailwind-theme": "workspace:*",
-    "@qlover/slice-store": "^1.2.6",
-    "js-cookie": "^3.0.5",
-    "tailwindcss": "^3.4.16",
-    "vite": "^5.4.10"
+    "@qlover/slice-store": "^1.5.0",
+    "js-cookie": "^3.0.8",
+    "tailwindcss": "^3.4.19",
+    "vite": "^5.4.21"
   },
   "peerDependencies": {
     "reflect-metadata": ">=0.1.0",
@@ -172,6 +172,6 @@
     "@qlover/env-loader": "workspace:*",
     "@types/js-cookie": "^3.0.6",
     "reflect-metadata": "^0.2.2",
-    "zustand": "^5.0.12"
+    "zustand": "^5.0.15"
   }
 }
