@@ -1,5 +1,9 @@
 # @qlover/fe-standard
 
+## 0.0.10
+
+### Patch Changes
+
 ## 0.0.9
 
 ### Patch Changes

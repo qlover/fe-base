@@ -1,5 +1,14 @@
 # examples/react-seed
 
+## 1.6.1
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+- Update dependency **@qlover/oauth-wrapper** from `0.11.1` to `0.11.2`
+- Update dependency **@qlover/tailwind-theme** from `0.3.0` to `0.3.1`
+
 ## 1.6.0
 
 ### Minor Changes

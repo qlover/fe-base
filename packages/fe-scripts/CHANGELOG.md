@@ -1,5 +1,16 @@
 # @qlover/fe-scripts
 
+## 2.0.4
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **fe-release:** consolidate release pipeline and fix dependency-release changelog handling ([3e19ab6](https://github.com/qlover/fe-base/commit/3e19ab6f5e5af61609aa998757b54ce2701e8579)) ([#639](https://github.com/qlover/fe-base/pull/639))
+- Update dependency **@qlover/env-loader** from `1.1.0` to `1.1.1`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+- Update dependency **@qlover/scripts-context** from `2.3.3` to `2.3.4`
+
 ## 2.0.3
 
 ### Patch Changes

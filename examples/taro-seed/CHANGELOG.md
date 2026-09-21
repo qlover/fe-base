@@ -1,5 +1,13 @@
 # examples/taro-seed
 
+## 2.3.1
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.1` to `3.4.2`
+- Update dependency **@qlover/fe-corekit** from `3.4.6` to `3.4.7`
+- Update dependency **@qlover/tailwind-theme** from `0.3.0` to `0.3.1`
+
 ## 2.3.0
 
 ### Minor Changes
