@@ -1,12 +1,12 @@
 -- =============================================================================
--- next-oauth full schema (single script, safe to re-run in dev)
+-- next-oauth full schema (single bootstrap script for the template)
 -- Prefix: fe_
--- Order: roles → users → request logs → oauth
+-- Safe to re-run in dev (drops then recreates).
 -- Keep in sync with shared/config/feTables.ts + shared/auth/*
 -- =============================================================================
 
 -- ---------------------------------------------------------------------------
--- Drop (dependents first; includes legacy table names)
+-- Drop (dependents first; includes legacy / incremental table names)
 -- ---------------------------------------------------------------------------
 
 drop table if exists public.fe_role_assignments cascade;
@@ -22,6 +22,10 @@ drop table if exists public.fe_oauth_refresh_tokens cascade;
 drop table if exists public.fe_oauth_user_credentials cascade;
 drop table if exists public.fe_oauth_user_links cascade;
 drop table if exists public.fe_oauth_clients cascade;
+
+drop table if exists public.fe_phone_otps cascade;
+drop table if exists public.fe_locales cascade;
+drop table if exists public.fe_site_settings cascade;
 
 -- =============================================================================
 -- 1) Platform roles / permissions
@@ -70,9 +74,18 @@ insert into public.fe_permissions (permission_key, type, method, path, descripti
   ('admin_users_system_role', 'api', 'PATCH', '/api/admin/users', 'Change user system role'),
   ('admin_roles_read', 'page', null, '/admin/roles', 'View role assignments'),
   ('admin_roles_write', 'api', 'PATCH', '/api/admin/roles', 'Edit role assignments'),
+  ('admin_permissions_read', 'page', null, '/admin/permissions', 'View permission catalog'),
+  ('admin_permissions_write', 'api', 'POST', '/api/admin/permissions', 'Create or update permission catalog'),
+  ('admin_locales_read', 'api', 'GET', '/api/admin/locales', 'List locale dictionary rows'),
+  ('admin_locales_write', 'api', 'POST', '/api/admin/locales', 'Create / update / import locales'),
   ('admin_request_logs_read', 'page', null, '/admin/request-logs', 'View request logs'),
   ('admin_request_logs_write', 'api', 'DELETE', '/api/user/request-logs', 'Clear request logs'),
-  ('admin_site_settings_read', 'page', null, '/admin', 'Access admin console');
+  ('admin_otp_monitor_read', 'page', null, '/admin/otp-monitor', 'View phone OTP send records'),
+  ('admin_otp_monitor_write', 'api', 'POST', '/api/admin/otp-monitor', 'Manage phone OTP monitor'),
+  ('admin_memory_kv_read', 'page', null, '/admin/memory-kv', 'View process Memory KV cache'),
+  ('admin_memory_kv_write', 'api', 'POST', '/api/admin/memory-kv', 'Purge process Memory KV cache'),
+  ('admin_site_settings_read', 'page', null, '/admin', 'Access admin console / read site settings'),
+  ('admin_site_settings_write', 'api', 'PATCH', '/api/admin/site-settings', 'Update site settings');
 
 create table public.fe_role_assignments (
   role_id uuid not null references public.fe_roles (id) on delete cascade,
@@ -92,7 +105,11 @@ from public.fe_roles r
 join (values
   ('admin_users_read'),
   ('admin_roles_read'),
+  ('admin_permissions_read'),
+  ('admin_locales_read'),
   ('admin_request_logs_read'),
+  ('admin_otp_monitor_read'),
+  ('admin_memory_kv_read'),
   ('admin_site_settings_read')
 ) as v(permission_key) on true
 where r.key = 'operator';
@@ -105,9 +122,18 @@ join (values
   ('admin_users_system_role'),
   ('admin_roles_read'),
   ('admin_roles_write'),
+  ('admin_permissions_read'),
+  ('admin_permissions_write'),
+  ('admin_locales_read'),
+  ('admin_locales_write'),
   ('admin_request_logs_read'),
   ('admin_request_logs_write'),
-  ('admin_site_settings_read')
+  ('admin_otp_monitor_read'),
+  ('admin_otp_monitor_write'),
+  ('admin_memory_kv_read'),
+  ('admin_memory_kv_write'),
+  ('admin_site_settings_read'),
+  ('admin_site_settings_write')
 ) as v(permission_key) on true
 where r.key = 'admin';
 
@@ -116,7 +142,7 @@ alter table public.fe_permissions enable row level security;
 alter table public.fe_role_assignments enable row level security;
 
 -- =============================================================================
--- 2) App user profiles (1:1 auth.users) — aligned with PAM pam_users
+-- 2) App user profiles (1:1 auth.users)
 -- =============================================================================
 
 create table public.fe_users (
@@ -317,3 +343,128 @@ comment on table public.fe_oauth_user_links is
   'Maps upstream IdP user ids to local auth.users ids; optional extra profile JSON.';
 
 alter table public.fe_oauth_user_links enable row level security;
+
+-- =============================================================================
+-- 5) Phone OTP audit (memory / supabase / future SMS providers)
+-- =============================================================================
+
+create table public.fe_phone_otps (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null,
+  code_hash text not null,
+  code_plain text,
+  provider text not null check (provider in ('memory', 'supabase', 'aliyun')),
+  status text not null default 'pending'
+    check (status in ('pending', 'verified', 'expired', 'revoked')),
+  attempts integer not null default 0,
+  max_attempts integer not null default 5,
+  expires_at timestamptz not null,
+  verified_at timestamptz,
+  created_ip text,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.fe_phone_otps is
+  'Phone OTP send/verify audit. memory stores code_plain for Admin; SMS providers may omit plaintext.';
+
+comment on column public.fe_phone_otps.code_plain is
+  'Plain OTP for Admin monitoring (memory/test). Null for production SMS providers.';
+
+create index idx_fe_phone_otps_phone_created
+  on public.fe_phone_otps (phone, created_at desc);
+
+create index idx_fe_phone_otps_status_created
+  on public.fe_phone_otps (status, created_at desc);
+
+alter table public.fe_phone_otps enable row level security;
+
+-- =============================================================================
+-- 6) Locales CMS (Admin /admin/locales)
+-- =============================================================================
+
+create table public.fe_locales (
+  id bigserial primary key,
+  value text not null,
+  en text not null default '',
+  zh text not null default '',
+  description text not null default '',
+  namespace text not null default 'common',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint fe_locales_value_unique unique (value)
+);
+
+comment on table public.fe_locales is
+  'Runtime i18n dictionary rows. Edited via Admin /admin/locales when useApiLocales=true.';
+
+comment on column public.fe_locales.value is
+  'i18n key (namespace:key), unique.';
+
+create index idx_fe_locales_namespace on public.fe_locales (namespace);
+create index idx_fe_locales_updated_at on public.fe_locales (updated_at desc);
+
+alter table public.fe_locales enable row level security;
+
+-- =============================================================================
+-- 7) Site settings (Admin /admin/settings)
+-- =============================================================================
+
+create table public.fe_site_settings (
+  key text primary key,
+  value jsonb not null,
+  description text not null default '',
+  is_sensitive boolean not null default false,
+  updated_at timestamptz not null default now()
+);
+
+comment on table public.fe_site_settings is
+  'Runtime site settings. Seeded below; edit via Admin /admin/settings.';
+
+create index idx_fe_site_settings_updated_at
+  on public.fe_site_settings (updated_at desc);
+
+alter table public.fe_site_settings enable row level security;
+
+insert into public.fe_site_settings (key, value, description, is_sensitive) values
+  (
+    'auth.phone_login_enabled',
+    'true'::jsonb,
+    '是否在登录页展示「手机号」Tab。通道由 auth.phone_otp_provider 决定。',
+    false
+  ),
+  (
+    'auth.phone_otp_provider',
+    '"memory"'::jsonb,
+    '手机验证码通道：memory（Admin 看码）| supabase（Supabase SMS）。',
+    false
+  ),
+  (
+    'auth.github_oauth_enabled',
+    'true'::jsonb,
+    '是否在登录页展示 GitHub OAuth 按钮。需在 Supabase Auth 中启用 GitHub 提供商。',
+    false
+  ),
+  (
+    'auth.google_oauth_enabled',
+    'false'::jsonb,
+    '是否在登录页展示 Google OAuth 按钮。需在 Supabase Auth 中启用 Google 提供商。',
+    false
+  ),
+  (
+    'openai.api_key',
+    '""'::jsonb,
+    'OpenAI 或兼容网关（Cerebras、自建代理等）的 API 密钥。有 ENCRYPTION_KEY 时加密存储，界面不回显明文。',
+    true
+  ),
+  (
+    'openai.base_url',
+    '""'::jsonb,
+    'Chat Completions 兼容接口根地址。示例：https://api.openai.com/v1',
+    false
+  ),
+  (
+    'api.cors_rules',
+    '[{"origin":"http://localhost:3100","path":"*","methods":["*"]}]'::jsonb,
+    'CORS 规则：origin × path × methods。三项均可 *；默认放行 react-seed 本地来源。',
+    false
+  );

@@ -6,6 +6,7 @@ const CACHE_TTL_MS = 30_000;
 const defaultPublicConfig: FePublicConfig = {
   auth: {
     phoneLoginEnabled: true,
+    phoneOtpProvider: 'memory',
     githubOauthEnabled: true,
     googleOauthEnabled: false
   }

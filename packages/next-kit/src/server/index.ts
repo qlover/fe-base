@@ -94,7 +94,8 @@ export { getClientIpFromRequest } from './utils/getClientIpFromRequest';
 export {
   MemoryKvCacheService,
   type KvCacheInterface,
-  type KvCacheSetOptions
+  type KvCacheSetOptions,
+  type MemoryKvListEntry
 } from './services/MemoryKvCacheService';
 export {
   OtpSendRateLimitService,

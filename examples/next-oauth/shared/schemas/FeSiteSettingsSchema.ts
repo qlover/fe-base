@@ -36,6 +36,8 @@ export type FeSiteSettingRow = z.infer<typeof feSiteSettingRowSchema>;
 export const fePublicConfigSchema = z.object({
   auth: z.object({
     phoneLoginEnabled: z.boolean(),
+    /** `memory` | `supabase` (+ future SMS providers). */
+    phoneOtpProvider: z.string(),
     githubOauthEnabled: z.boolean(),
     googleOauthEnabled: z.boolean()
   })

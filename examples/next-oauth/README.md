@@ -21,7 +21,7 @@ NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
 
 绑定代码：`server/serverIoc.ts`；Provider：`server/providers/SupabaseOAuthProvider.ts`、`BrainUserOAuthProvider.ts`。
 
-**TL;DR**：`npm install` → 将 `.env.template` 复制为 `.env` 并按注释填写 → 在 Supabase 执行 `makes/sql/` 脚本 → `npm run dev`（默认端口 **3300**）→ 生产：`npm run build` 后 `npm start`。
+**TL;DR**：`npm install` → 将 `.env.template` 复制为 `.env` 并按注释填写 → 在 Supabase 执行 `makes/sql/001-fe-schema.sql` → `npm run dev`（默认端口 **3300**）→ 生产：`npm run build` 后 `npm start`。
 
 **文档**：站内 OAuth 集成说明见 [`/[locale]/docs/oauth`](./src/app/[locale]/docs/oauth/page.tsx)；国际化约定见 [docs/i18n.md](./docs/i18n.md)。
 
@@ -186,23 +186,18 @@ cp .env.template .env   # Windows 下手动复制亦可
 
 ### 2. 数据库
 
-在 Supabase SQL Editor（或等价环境）按顺序执行：
+在 Supabase SQL Editor（或等价环境）执行一次：
 
-1. `makes/sql/001-fe-schema.sql` — 全量 `fe_*` 表（roles / users / request_logs / oauth；会 drop 旧名）
-2. `makes/sql/003-fe-locales.sql` — 国际化文案 CMS（`fe_locales`）
-3. `makes/sql/004-fe-site-settings.sql` — **站点设置**（`fe_site_settings`：登录开关、CORS 规则、OpenAI 演示密钥）
-4. `makes/sql/005-fe-cors-rules.sql` — 确保 `api.cors_rules`，并删除旧版 `api.cors_origins` / `api.cors_methods`
+1. `makes/sql/001-fe-schema.sql` — 全量 `fe_*` 表与种子（roles / permissions / users / request_logs / oauth / phone_otps / locales / site_settings；开发可重复执行，会先 drop）
 
-（可选）`002-migrate-pam-users-to-fe-users.sql` — 从旧 PAM 用户表迁移时再执行。
+Bootstrap 首个平台管理员：`001` 中 `fe_users` 段有注释示例，把邮箱改成你的账号后取消注释执行。
 
-**Admin 站点设置（CORS / 登录开关）：** 执行 `004`+`005` 后，以 admin 角色登录进入 `/{locale}/admin/settings`。CORS 按 `origin path methods` 规则配置（三项均可 `*`）；默认含 `http://localhost:3100 * *`（react-seed）。保存后立即生效（优先于 `.env` 的 `API_CORS_ALLOWED_*`）。
-
-Bootstrap 首个平台管理员（脚本末尾有注释示例）：把邮箱改成你的账号后取消注释执行。
+**Admin 站点设置（CORS / 登录开关 / 手机验证码通道）：** 以 admin 角色登录进入 `/{locale}/admin/settings`。CORS 按 `origin path methods` 规则配置（三项均可 `*`）；默认含 `http://localhost:3100 * *`（react-seed）。手机验证码通道默认 `memory`（Admin「验证码监控」可见明文）。保存后立即生效（优先于 `.env`）。
 
 **RLS 与密钥：**
 
 - 若 OAuth 相关表 **未启用 RLS**（或已对 `anon` / 服务端角色开放读写策略），配置 **`SUPABASE_URL` + `SUPABASE_ANON_KEY`** 即可；**不必**配置 `SUPABASE_SERVICE_ROLE_KEY`。
-- 仓库自带 `002-oauth-clients.sql` 末尾包含 `enable row level security`（默认无公开 policy）。仅在这种 **已启用 RLS 且不允许 anon 直写** 的部署下，才需要 **service role**，或改为自行添加合适的 RLS policy 而继续用 anon。
+- `001-fe-schema.sql` 默认对 OAuth 等表 `enable row level security`（无公开 policy）。仅在这种 **已启用 RLS 且不允许 anon 直写** 的部署下，才需要 **service role**，或改为自行添加合适的 RLS policy 而继续用 anon。
 
 `OAuthWrapperRepository` 通过 `shared/supabase/admin.ts` 的 `createAdminClient()` 连接数据库：优先 `SUPABASE_SERVICE_ROLE_KEY`，未配置时回退 `SUPABASE_ANON_KEY`。
 

@@ -17,7 +17,9 @@ export const FeTables = {
   /** DB-backed locale dictionary (Admin Locales CMS). */
   locales: 'fe_locales',
   /** Runtime site settings (Admin Settings). */
-  siteSettings: 'fe_site_settings'
+  siteSettings: 'fe_site_settings',
+  /** Phone OTP send/verify audit (memory shows code_plain). */
+  phoneOtps: 'fe_phone_otps'
 } as const;
 
 export type FeTableName = (typeof FeTables)[keyof typeof FeTables];

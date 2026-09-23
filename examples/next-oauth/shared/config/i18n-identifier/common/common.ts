@@ -98,6 +98,27 @@ export const COMMON_ADMIN_NAV_REQUEST_LOGS = 'common:admin_nav__request_logs';
 export const COMMON_ADMIN_NAV_ROLES = 'common:admin_nav__roles';
 
 /**
+ * @description Admin sidebar nav - Permissions
+ * @localZh 权限管理
+ * @localEn Permissions
+ */
+export const COMMON_ADMIN_NAV_PERMISSIONS = 'common:admin_nav__permissions';
+
+/**
+ * @description Admin sidebar nav - OTP send rate-limit monitor
+ * @localZh 验证码监控
+ * @localEn OTP monitor
+ */
+export const COMMON_ADMIN_NAV_OTP_MONITOR = 'common:admin_nav__otp_monitor';
+
+/**
+ * @description Admin sidebar nav - Memory KV cache
+ * @localZh Memory KV
+ * @localEn Memory KV
+ */
+export const COMMON_ADMIN_NAV_MEMORY_KV = 'common:admin_nav__memory_kv';
+
+/**
  * @description Admin sidebar nav - Site settings
  * @localZh 站点设置
  * @localEn Site settings

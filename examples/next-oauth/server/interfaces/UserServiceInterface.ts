@@ -47,7 +47,10 @@ export interface UserServiceInterface {
    */
   getUser(throwError?: boolean): Promise<UserSchema | null>;
 
-  signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult>;
+  signWithOtp(
+    body: SignWithOtpSchema,
+    options?: { clientIp?: string }
+  ): Promise<SignOtpResult>;
   loginWithProvider(params: {
     provider: LoginProviderType;
   }): Promise<LoginProviderResult>;

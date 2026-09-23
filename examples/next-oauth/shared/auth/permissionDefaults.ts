@@ -10,16 +10,22 @@ export const SYSTEM_ADMIN_GATE_KEY = PermissionKey.admin_site_settings_read;
 const ADMIN_READ = [
   PermissionKey.admin_users_read,
   PermissionKey.admin_roles_read,
+  PermissionKey.admin_permissions_read,
   PermissionKey.admin_locales_read,
   PermissionKey.admin_request_logs_read,
+  PermissionKey.admin_otp_monitor_read,
+  PermissionKey.admin_memory_kv_read,
   PermissionKey.admin_site_settings_read
 ] as const;
 
 const ADMIN_WRITE = [
   PermissionKey.admin_users_system_role,
   PermissionKey.admin_roles_write,
+  PermissionKey.admin_permissions_write,
   PermissionKey.admin_locales_write,
   PermissionKey.admin_request_logs_write,
+  PermissionKey.admin_otp_monitor_write,
+  PermissionKey.admin_memory_kv_write,
   PermissionKey.admin_site_settings_write
 ] as const;
 
@@ -108,5 +114,47 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     method: 'PATCH',
     path: '/api/admin/site-settings',
     description: 'Update site settings'
+  },
+  {
+    permissionKey: PermissionKey.admin_permissions_read,
+    type: 'page',
+    method: null,
+    path: '/admin/permissions',
+    description: 'View permission catalog'
+  },
+  {
+    permissionKey: PermissionKey.admin_permissions_write,
+    type: 'api',
+    method: 'POST',
+    path: '/api/admin/permissions',
+    description: 'Create or update permission catalog'
+  },
+  {
+    permissionKey: PermissionKey.admin_otp_monitor_read,
+    type: 'page',
+    method: null,
+    path: '/admin/otp-monitor',
+    description: 'View OTP send rate-limit state'
+  },
+  {
+    permissionKey: PermissionKey.admin_otp_monitor_write,
+    type: 'api',
+    method: 'POST',
+    path: '/api/admin/otp-monitor',
+    description: 'Clear OTP send rate-limit entries'
+  },
+  {
+    permissionKey: PermissionKey.admin_memory_kv_read,
+    type: 'page',
+    method: null,
+    path: '/admin/memory-kv',
+    description: 'View process Memory KV cache'
+  },
+  {
+    permissionKey: PermissionKey.admin_memory_kv_write,
+    type: 'api',
+    method: 'POST',
+    path: '/api/admin/memory-kv',
+    description: 'Purge process Memory KV cache'
   }
 ];

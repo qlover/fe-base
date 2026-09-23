@@ -260,16 +260,22 @@ export class SiteSettingsService {
   }
 
   public async getPublicConfig(): Promise<FePublicConfig> {
-    const [phoneLoginEnabled, githubOauthEnabled, googleOauthEnabled] =
-      await Promise.all([
-        this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED),
-        this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED),
-        this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED)
-      ]);
+    const [
+      phoneLoginEnabled,
+      phoneOtpProvider,
+      githubOauthEnabled,
+      googleOauthEnabled
+    ] = await Promise.all([
+      this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED),
+      this.getString(FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER),
+      this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED),
+      this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED)
+    ]);
 
     return {
       auth: {
         phoneLoginEnabled,
+        phoneOtpProvider: phoneOtpProvider.trim().toLowerCase() || 'memory',
         githubOauthEnabled,
         googleOauthEnabled
       }

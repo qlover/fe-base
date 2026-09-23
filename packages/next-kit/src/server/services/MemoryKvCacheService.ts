@@ -4,12 +4,22 @@ export type KvCacheSetOptions = {
   readonly ttlMs?: number;
 };
 
+export type MemoryKvListEntry = {
+  readonly key: string;
+  readonly value: unknown;
+  readonly bytes: number;
+  readonly expiresAtMs: number | null;
+  readonly ttlMs: number | null;
+};
+
 export type KvCacheInterface = AsyncStorageInterface<
   string,
   unknown,
   KvCacheSetOptions
 > & {
-  removeByPrefix(prefix: string): Promise<void>;
+  removeByPrefix(prefix: string): Promise<number>;
+  listEntries(prefix?: string): Promise<MemoryKvListEntry[]>;
+  count(): Promise<number>;
 };
 
 type MemoryKvEntry = {
@@ -108,12 +118,62 @@ export class MemoryKvCacheService implements KvCacheInterface {
     this.store.clear();
   }
 
-  public async removeByPrefix(prefix: string): Promise<void> {
+  public async removeByPrefix(prefix: string): Promise<number> {
     if (!prefix.trim()) {
       throw new Error('KvCache: prefix must be a non-empty string');
     }
+    let removed = 0;
     for (const key of [...this.store.keys()]) {
       if (key.startsWith(prefix)) {
+        this.store.delete(key);
+        removed += 1;
+      }
+    }
+    return removed;
+  }
+
+  /**
+   * Inspect live entries (drops expired keys while iterating).
+   * Admin console only — values can be large.
+   */
+  public async listEntries(prefix?: string): Promise<MemoryKvListEntry[]> {
+    const now = this.nowMs();
+    this.purgeExpired(now);
+    const needle = prefix?.trim() ?? '';
+    const items: MemoryKvListEntry[] = [];
+    for (const [key, entry] of this.store) {
+      if (needle && !key.startsWith(needle)) {
+        continue;
+      }
+      let value: unknown;
+      try {
+        value = JSON.parse(entry.json) as unknown;
+      } catch {
+        value = entry.json;
+      }
+      items.push({
+        key,
+        value,
+        bytes: new TextEncoder().encode(entry.json).length,
+        expiresAtMs: entry.expiresAtMs,
+        ttlMs:
+          entry.expiresAtMs == null
+            ? null
+            : Math.max(0, entry.expiresAtMs - now)
+      });
+    }
+    items.sort((a, b) => a.key.localeCompare(b.key));
+    return items;
+  }
+
+  public async count(): Promise<number> {
+    this.purgeExpired();
+    return this.store.size;
+  }
+
+  private purgeExpired(now = this.nowMs()): void {
+    for (const [key, entry] of this.store) {
+      if (entry.expiresAtMs != null && now >= entry.expiresAtMs) {
         this.store.delete(key);
       }
     }

@@ -2,6 +2,9 @@ import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
+import * as memoryKvKeys from '../i18n-identifier/pages/page.admin.memory-kv';
+import * as otpMonitorKeys from '../i18n-identifier/pages/page.admin.otp-monitor';
+import * as permissionsKeys from '../i18n-identifier/pages/page.admin.permissions';
 import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
 import * as rolesKeys from '../i18n-identifier/pages/page.admin.roles';
 import * as settingsKeys from '../i18n-identifier/pages/page.admin.settings';
@@ -42,11 +45,100 @@ export type AdminUsersI18nInterface = typeof adminUsers18n;
 
 export type AdminRolesI18nInterface = typeof adminRoles18n;
 
+export type AdminPermissionsI18nInterface = typeof adminPermissions18n;
+
+export type AdminOtpMonitorI18nInterface = typeof adminOtpMonitor18n;
+
+export type AdminMemoryKvI18nInterface = typeof adminMemoryKv18n;
+
 export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
 export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
 
 export type AdminSettingsI18nInterface = typeof adminSettings18n;
+
+export const adminPermissions18n = Object.freeze({
+  title: permissionsKeys.ADMIN_PERMISSIONS_TITLE,
+  description: permissionsKeys.ADMIN_PERMISSIONS_DESCRIPTION,
+  content: permissionsKeys.ADMIN_PERMISSIONS_DESCRIPTION,
+  keywords: permissionsKeys.ADMIN_PERMISSIONS_KEYWORDS,
+  create: permissionsKeys.ADMIN_PERMISSIONS_CREATE,
+  save: permissionsKeys.ADMIN_PERMISSIONS_SAVE,
+  saving: permissionsKeys.ADMIN_PERMISSIONS_SAVING,
+  cancel: permissionsKeys.ADMIN_PERMISSIONS_CANCEL,
+  edit: permissionsKeys.ADMIN_PERMISSIONS_EDIT,
+  fieldKey: permissionsKeys.ADMIN_PERMISSIONS_FIELD_KEY,
+  fieldType: permissionsKeys.ADMIN_PERMISSIONS_FIELD_TYPE,
+  fieldMethod: permissionsKeys.ADMIN_PERMISSIONS_FIELD_METHOD,
+  fieldPath: permissionsKeys.ADMIN_PERMISSIONS_FIELD_PATH,
+  fieldDescription: permissionsKeys.ADMIN_PERMISSIONS_FIELD_DESCRIPTION,
+  keyHint: permissionsKeys.ADMIN_PERMISSIONS_KEY_HINT,
+  loadFailed: permissionsKeys.ADMIN_PERMISSIONS_LOAD_FAILED,
+  saveFailed: permissionsKeys.ADMIN_PERMISSIONS_SAVE_FAILED,
+  createSuccess: permissionsKeys.ADMIN_PERMISSIONS_CREATE_SUCCESS,
+  updateSuccess: permissionsKeys.ADMIN_PERMISSIONS_UPDATE_SUCCESS,
+  empty: permissionsKeys.ADMIN_PERMISSIONS_EMPTY,
+  forbidden: permissionsKeys.ADMIN_PERMISSIONS_FORBIDDEN,
+  search: permissionsKeys.ADMIN_PERMISSIONS_SEARCH,
+  loading: permissionsKeys.ADMIN_PERMISSIONS_LOADING
+});
+
+export const adminOtpMonitor18n = Object.freeze({
+  title: otpMonitorKeys.ADMIN_OTP_MONITOR_TITLE,
+  description: otpMonitorKeys.ADMIN_OTP_MONITOR_DESCRIPTION,
+  content: otpMonitorKeys.ADMIN_OTP_MONITOR_DESCRIPTION,
+  keywords: otpMonitorKeys.ADMIN_OTP_MONITOR_KEYWORDS,
+  hint: otpMonitorKeys.ADMIN_OTP_MONITOR_HINT,
+  searchPlaceholder: otpMonitorKeys.ADMIN_OTP_MONITOR_SEARCH_PLACEHOLDER,
+  refresh: otpMonitorKeys.ADMIN_OTP_MONITOR_REFRESH,
+  autoRefresh: otpMonitorKeys.ADMIN_OTP_MONITOR_AUTO_REFRESH,
+  count: otpMonitorKeys.ADMIN_OTP_MONITOR_COUNT,
+  colCreated: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_CREATED,
+  colPhone: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_PHONE,
+  colCode: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_CODE,
+  colProvider: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_PROVIDER,
+  colStatus: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_STATUS,
+  colAttempts: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_ATTEMPTS,
+  colExpires: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_EXPIRES,
+  colIp: otpMonitorKeys.ADMIN_OTP_MONITOR_COL_IP,
+  codeHidden: otpMonitorKeys.ADMIN_OTP_MONITOR_CODE_HIDDEN,
+  empty: otpMonitorKeys.ADMIN_OTP_MONITOR_EMPTY,
+  forbidden: otpMonitorKeys.ADMIN_OTP_MONITOR_FORBIDDEN,
+  loadFailed: otpMonitorKeys.ADMIN_OTP_MONITOR_LOAD_FAILED,
+  loading: otpMonitorKeys.ADMIN_OTP_MONITOR_LOADING,
+  ttlNone: otpMonitorKeys.ADMIN_OTP_MONITOR_TTL_NONE
+});
+
+export const adminMemoryKv18n = Object.freeze({
+  title: memoryKvKeys.ADMIN_MEMORY_KV_TITLE,
+  description: memoryKvKeys.ADMIN_MEMORY_KV_DESCRIPTION,
+  content: memoryKvKeys.ADMIN_MEMORY_KV_DESCRIPTION,
+  keywords: memoryKvKeys.ADMIN_MEMORY_KV_KEYWORDS,
+  hint: memoryKvKeys.ADMIN_MEMORY_KV_HINT,
+  prefixPlaceholder: memoryKvKeys.ADMIN_MEMORY_KV_PREFIX_PLACEHOLDER,
+  refresh: memoryKvKeys.ADMIN_MEMORY_KV_REFRESH,
+  deletePrefix: memoryKvKeys.ADMIN_MEMORY_KV_DELETE_PREFIX,
+  clearAll: memoryKvKeys.ADMIN_MEMORY_KV_CLEAR_ALL,
+  count: memoryKvKeys.ADMIN_MEMORY_KV_COUNT,
+  colKey: memoryKvKeys.ADMIN_MEMORY_KV_COL_KEY,
+  colTtl: memoryKvKeys.ADMIN_MEMORY_KV_COL_TTL,
+  colBytes: memoryKvKeys.ADMIN_MEMORY_KV_COL_BYTES,
+  colValue: memoryKvKeys.ADMIN_MEMORY_KV_COL_VALUE,
+  colActions: memoryKvKeys.ADMIN_MEMORY_KV_COL_ACTIONS,
+  ttlNever: memoryKvKeys.ADMIN_MEMORY_KV_TTL_NEVER,
+  delete: memoryKvKeys.ADMIN_MEMORY_KV_DELETE,
+  expand: memoryKvKeys.ADMIN_MEMORY_KV_EXPAND,
+  collapse: memoryKvKeys.ADMIN_MEMORY_KV_COLLAPSE,
+  empty: memoryKvKeys.ADMIN_MEMORY_KV_EMPTY,
+  forbidden: memoryKvKeys.ADMIN_MEMORY_KV_FORBIDDEN,
+  loadFailed: memoryKvKeys.ADMIN_MEMORY_KV_LOAD_FAILED,
+  deleteFailed: memoryKvKeys.ADMIN_MEMORY_KV_DELETE_FAILED,
+  confirmDelete: memoryKvKeys.ADMIN_MEMORY_KV_CONFIRM_DELETE,
+  confirmPrefix: memoryKvKeys.ADMIN_MEMORY_KV_CONFIRM_PREFIX,
+  confirmClear: memoryKvKeys.ADMIN_MEMORY_KV_CONFIRM_CLEAR,
+  prefixRequired: memoryKvKeys.ADMIN_MEMORY_KV_PREFIX_REQUIRED,
+  loading: memoryKvKeys.ADMIN_MEMORY_KV_LOADING
+});
 
 export const adminRoles18n = Object.freeze({
   title: rolesKeys.ADMIN_ROLES_TITLE,

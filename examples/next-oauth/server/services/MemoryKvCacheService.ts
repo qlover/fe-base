@@ -74,13 +74,13 @@ export class MemoryKvCacheService
   /**
    * @override
    */
-  public override async removeByPrefix(prefix: string): Promise<void> {
+  public override async removeByPrefix(prefix: string): Promise<number> {
     for (const key of [...sharedInflight.keys()]) {
       if (key.startsWith(prefix)) {
         sharedInflight.delete(key);
       }
     }
-    await super.removeByPrefix(prefix);
+    return super.removeByPrefix(prefix);
   }
 
   /**

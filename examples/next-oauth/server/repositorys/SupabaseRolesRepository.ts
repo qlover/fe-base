@@ -3,7 +3,9 @@ import { RoleKind } from '@shared/auth/roleKeys';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
 import type {
+  AdminPermissionCreate,
   AdminPermissionItem,
+  AdminPermissionUpdate,
   AdminRoleItem,
   AdminRolesResponse
 } from '@schemas/RoleSchema';
@@ -160,5 +162,78 @@ export class SupabaseRolesRepository {
     }
 
     return this.listView();
+  }
+
+  public async listPermissions(): Promise<AdminPermissionItem[]> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const catalogResult = await supabase
+      .from(FeTables.permissions)
+      .select('permission_key, type, method, path, description')
+      .order('permission_key', { ascending: true });
+    this.supabaseBridge.throwIfError(catalogResult);
+
+    return ((catalogResult.data ?? []) as FePermissionRow[]).map((row) => ({
+      permissionKey: row.permission_key,
+      type: row.type,
+      method: row.method,
+      path: row.path,
+      description: row.description
+    }));
+  }
+
+  public async findPermissionByKey(
+    permissionKey: string
+  ): Promise<AdminPermissionItem | null> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.permissions)
+      .select('permission_key, type, method, path, description')
+      .eq('permission_key', permissionKey)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(result);
+    if (!result.data) {
+      return null;
+    }
+    const row = result.data as FePermissionRow;
+    return {
+      permissionKey: row.permission_key,
+      type: row.type,
+      method: row.method,
+      path: row.path,
+      description: row.description
+    };
+  }
+
+  public async createPermission(
+    input: AdminPermissionCreate
+  ): Promise<AdminPermissionItem[]> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const insertResult = await supabase.from(FeTables.permissions).insert({
+      permission_key: input.permissionKey,
+      type: input.type,
+      method: input.method ?? null,
+      path: input.path ?? null,
+      description: input.description ?? null
+    });
+    this.supabaseBridge.throwIfError(insertResult);
+    return this.listPermissions();
+  }
+
+  public async updatePermission(
+    input: AdminPermissionUpdate
+  ): Promise<AdminPermissionItem[]> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const patch: Record<string, unknown> = {};
+    if (input.type !== undefined) patch.type = input.type;
+    if (input.method !== undefined) patch.method = input.method;
+    if (input.path !== undefined) patch.path = input.path;
+    if (input.description !== undefined) patch.description = input.description;
+
+    const updateResult = await supabase
+      .from(FeTables.permissions)
+      .update(patch)
+      .eq('permission_key', input.permissionKey);
+    this.supabaseBridge.throwIfError(updateResult);
+    return this.listPermissions();
   }
 }

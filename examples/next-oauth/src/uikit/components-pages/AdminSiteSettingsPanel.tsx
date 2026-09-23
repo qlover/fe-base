@@ -364,6 +364,8 @@ export function AdminSiteSettingsPanel({
     FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED
   ] as const;
 
+  const phoneOtpProviderKey = FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER;
+
   const openaiKeys = [
     FE_SITE_SETTING_KEYS.OPENAI_BASE_URL,
     FE_SITE_SETTING_KEYS.OPENAI_API_KEY
@@ -391,7 +393,9 @@ export function AdminSiteSettingsPanel({
         saveLabel={tt.save}
         savingLabel={tt.saving}
         saving={savingSection === 'auth'}
-        onSave={() => patchSection('auth', [...authToggleKeys])}
+        onSave={() =>
+          patchSection('auth', [...authToggleKeys, phoneOtpProviderKey])
+        }
       >
         {authToggleKeys.map((key) => (
           <SettingRow key={key} entry={byKey.get(key)} tt={tt} layout="inline">
@@ -403,6 +407,29 @@ export function AdminSiteSettingsPanel({
             />
           </SettingRow>
         ))}
+        <SettingRow entry={byKey.get(phoneOtpProviderKey)} tt={tt}>
+          <select
+            value={(() => {
+              const raw = String(
+                getDraftValue(
+                  draft,
+                  byKey.get(phoneOtpProviderKey),
+                  phoneOtpProviderKey
+                )
+              )
+                .trim()
+                .toLowerCase();
+              return raw === 'supabase' ? 'supabase' : 'memory';
+            })()}
+            onChange={(event) =>
+              setDraftValue(phoneOtpProviderKey, event.target.value)
+            }
+            className="w-full rounded-lg border border-primary-border bg-bg-container px-3 py-2 text-sm text-primary-text"
+          >
+            <option value="memory">memory（Admin 监控看码）</option>
+            <option value="supabase">supabase（Supabase SMS）</option>
+          </select>
+        </SettingRow>
       </SettingsSection>
 
       <SettingsSection

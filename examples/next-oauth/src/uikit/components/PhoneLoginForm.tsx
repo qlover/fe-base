@@ -28,6 +28,8 @@ type Step = 'phone' | 'otp';
 
 interface PhoneLoginFormProps {
   tt: LoginI18nInterface;
+  /** When true, show Admin OTP monitor hint (memory channel). */
+  memoryOtp?: boolean;
 }
 
 type PhoneSubmitState = AsyncState<
@@ -35,7 +37,7 @@ type PhoneSubmitState = AsyncState<
   | Awaited<ReturnType<AppUserGateway['verifyOtp']>>
 >;
 
-export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
+export function PhoneLoginForm({ tt, memoryOtp = false }: PhoneLoginFormProps) {
   const t = useWarnTranslations();
   const userGateway = useIOC(AppUserGateway);
   const { returnTo } = useReturnTo({ returnToKey: URLParamsKeys.returnTo });
@@ -156,6 +158,12 @@ export function PhoneLoginForm({ tt }: PhoneLoginFormProps) {
         >
           {submitError}
         </div>
+      ) : null}
+
+      {memoryOtp ? (
+        <p className="mb-4 rounded-xl border border-primary-border bg-elevated px-3 py-2 text-xs text-secondary-text">
+          {tt.phoneMemoryHint}
+        </p>
       ) : null}
 
       {step === 'phone' && (
