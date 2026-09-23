@@ -34,8 +34,23 @@ describe('MemoryKvCacheService', () => {
     const cache = new MemoryKvCacheService();
     await cache.setItem('app:records:u1:a', { n: 1 });
     await cache.setItem('app:records:u2:a', { n: 2 });
-    await cache.removeByPrefix('app:records:u1:');
+    expect(await cache.removeByPrefix('app:records:u1:')).toBe(1);
     expect(await cache.getItem('app:records:u1:a')).toBeNull();
     expect(await cache.getItem('app:records:u2:a')).toEqual({ n: 2 });
+  });
+
+  it('listEntries returns live keys, prefix filter, and drops expired', async () => {
+    let now = 1_000;
+    const cache = new MemoryKvCacheService({ nowMs: () => now });
+    await cache.setItem('app:keep:a', { n: 1 });
+    await cache.setItem('app:keep:b', { n: 2 }, { ttlMs: 50 });
+    await cache.setItem('app:other:c', { n: 3 });
+    now = 1_100;
+    const prefixed = await cache.listEntries('app:keep:');
+    expect(prefixed.map((e) => e.key)).toEqual(['app:keep:a']);
+    expect(prefixed[0]?.ttlMs).toBeNull();
+    const all = await cache.listEntries();
+    expect(all.map((e) => e.key)).toEqual(['app:keep:a', 'app:other:c']);
+    expect(await cache.count()).toBe(2);
   });
 });
