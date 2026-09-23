@@ -1,5 +1,17 @@
 # @qlover/next-kit
 
+## 1.5.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-kit:** MemoryKv 支持 listEntries ([6efdbef](https://github.com/qlover/fe-base/commit/6efdbef800101911ef3208ba4e07dce0cff58390)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+#### 🐞 Bug Fixes
+
+- **deps:** 统一 next 与 supabase 版本消除双副本 ([089ca68](https://github.com/qlover/fe-base/commit/089ca680eb7e1870eb175577ba58c73dd79cce09)) ([#712](https://github.com/qlover/fe-base/pull/712))
+
 ## 1.5.1
 
 ### Patch Changes
