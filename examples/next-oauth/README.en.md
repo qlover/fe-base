@@ -17,7 +17,7 @@ NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=supabase
 
 See `server/serverIoc.ts` and `server/providers/*`.
 
-**TL;DR**: `npm install` → copy `.env.template` to `.env` → run `makes/sql/` on Supabase → `npm run dev` (port **3300**) → production: `npm run build` then `npm start`.
+**TL;DR**: `npm install` → copy `.env.template` to `.env` → run `makes/sql/001-fe-schema.sql` on Supabase → `npm run dev` (port **3300**) → production: `npm run build` then `npm start`.
 
 **Docs**: In-app OAuth guide at `/[locale]/docs/oauth`; i18n conventions in [docs/i18n.en.md](./docs/i18n.en.md).
 
@@ -105,7 +105,7 @@ cp .env.template .env
 | `OAUTH_WRAPPER_API_BASE` | Upstream user API base (Brain User in the default adapter) |
 | `OAUTH_WRAPPER_API_TIMEOUT` | Upstream timeout ms (default `10000`) |
 
-**Database:** run `makes/sql/001-fe-schema.sql` once in Supabase (all `fe_*` tables: roles, users, request logs, oauth; drops legacy names). Bootstrap the first admin with the commented `INSERT` at the end of that script. If OAuth tables have **no RLS**, `SUPABASE_ANON_KEY` is enough; `SUPABASE_SERVICE_ROLE_KEY` is only needed when RLS blocks anon writes (the script enables RLS by default). `createAdminClient()` prefers service role, then falls back to anon.
+**Database:** run `makes/sql/001-fe-schema.sql` once in Supabase (all `fe_*` tables: roles, permissions, users, request logs, oauth, phone OTPs, locales, site settings; drops then recreates — fine for template/dev). Bootstrap the first admin with the commented `INSERT` near the users section. Phone OTP channel defaults to `memory` (codes visible in Admin → OTP monitor). If OAuth tables have **no RLS**, `SUPABASE_ANON_KEY` is enough; `SUPABASE_SERVICE_ROLE_KEY` is only needed when RLS blocks anon writes (the script enables RLS by default). `createAdminClient()` prefers service role, then falls back to anon.
 
 **Run:** `npm run dev` → `http://localhost:3102`.
 

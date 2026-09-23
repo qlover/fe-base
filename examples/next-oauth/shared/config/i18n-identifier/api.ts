@@ -158,6 +158,13 @@ export const API_OAUTH_WRAPPER_AUTH_FAILED = 'api:oauth_wrapper_auth_failed';
 export const API_REQUEST_BODY_EMPTY = 'api:request_body_empty';
 
 /**
+ * @description OTP code invalid or expired
+ * @localZh 验证码错误或已过期
+ * @localEn Invalid or expired verification code
+ */
+export const API_OTP_CODE_INVALID = 'api:otp_code_invalid';
+
+/**
  * @description 没有pam 项目
  * @localZh 项目未找到
  * @localEn Project Not Found

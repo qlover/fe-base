@@ -1,5 +1,12 @@
 export const FE_SITE_SETTING_KEYS = {
   AUTH_PHONE_LOGIN_ENABLED: 'auth.phone_login_enabled',
+  /**
+   * Phone OTP delivery channel.
+   * - `memory`: app-owned codes (Admin 验证码监控可见明文)
+   * - `supabase`: Supabase Auth SMS (需在 Supabase 启用 Phone)
+   * Add more providers (e.g. aliyun) via PhoneOtpProviderInterface.
+   */
+  AUTH_PHONE_OTP_PROVIDER: 'auth.phone_otp_provider',
   AUTH_GITHUB_OAUTH_ENABLED: 'auth.github_oauth_enabled',
   AUTH_GOOGLE_OAUTH_ENABLED: 'auth.google_oauth_enabled',
 
@@ -52,9 +59,17 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
       key: FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED,
       label: '手机验证码登录',
       description:
-        '是否在登录页展示「手机号」Tab。需在 Supabase Auth 中启用 Phone。',
+        '是否在登录页展示「手机号」Tab。通道由「手机验证码通道」决定。',
       isSensitive: false,
       defaultValue: true
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER,
+      label: '手机验证码通道',
+      description:
+        'memory：本地发码，Admin「验证码监控」可见明文；supabase：走 Supabase Auth SMS。新增短信商时实现 Provider 后在此切换。',
+      isSensitive: false,
+      defaultValue: 'memory'
     },
     {
       key: FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED,
@@ -128,6 +143,7 @@ export function isFeCorsRuleArray(value: unknown): value is FeCorsRule[] {
 
 export const FE_PUBLIC_SITE_SETTING_KEYS = [
   FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED,
+  FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER,
   FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED,
   FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED
 ] as const;

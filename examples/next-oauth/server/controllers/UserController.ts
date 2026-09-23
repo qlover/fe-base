@@ -195,19 +195,16 @@ export class UserController {
     body: unknown,
     request?: NextRequest
   ): Promise<SignOtpResult> {
+    const clientIp = request ? getClientIpFromRequest(request) : 'unknown';
     const phoneResult = signWithPhoneOtpSchema.safeParse(body);
     if (phoneResult.success) {
-      await this.otpSendRateLimit.assertCanSend(
-        request ? getClientIpFromRequest(request) : 'unknown'
-      );
-      return this.userService.signWithOtp(phoneResult.data);
+      await this.otpSendRateLimit.assertCanSend(clientIp);
+      return this.userService.signWithOtp(phoneResult.data, { clientIp });
     }
 
     const emailResult = signWithEmailOtpSchema.safeParse(body);
     if (emailResult.success) {
-      await this.otpSendRateLimit.assertCanSend(
-        request ? getClientIpFromRequest(request) : 'unknown'
-      );
+      await this.otpSendRateLimit.assertCanSend(clientIp);
       return this.userService.signWithOtp(emailResult.data);
     }
 

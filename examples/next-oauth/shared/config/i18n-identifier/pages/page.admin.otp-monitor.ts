@@ -7,29 +7,29 @@ export const ADMIN_OTP_MONITOR_TITLE = 'admin_otp_monitor:title';
 
 /**
  * @description Admin OTP monitor page description
- * @localZh 监控发码 IP 限流状态（非短信验证码明文）
- * @localEn Monitor OTP send IP rate limits (not plaintext codes)
+ * @localZh 查看手机验证码发送记录（memory 通道可直接看到验证码）
+ * @localEn Inspect phone OTP send records (plaintext code in memory mode)
  */
 export const ADMIN_OTP_MONITOR_DESCRIPTION = 'admin_otp_monitor:description';
 
 /**
  * @description Admin OTP monitor keywords
- * @localZh 验证码,限流,OTP,监控
- * @localEn otp,rate-limit,monitor
+ * @localZh 验证码,手机号,OTP,监控
+ * @localEn otp,phone,monitor
  */
 export const ADMIN_OTP_MONITOR_KEYWORDS = 'admin_otp_monitor:keywords';
 
 /**
- * @description Process-local hint
- * @localZh 数据来自进程内 Memory KV，前缀 next-oauth:otp:send:ip:
- * @localEn Data comes from process Memory KV under next-oauth:otp:send:ip:
+ * @description Hint about memory vs SMS
+ * @localZh memory 通道下明文可见；短信通道通常不存明文。发码 IP 限流见 Memory KV。
+ * @localEn Plaintext visible in memory mode; SMS providers usually omit it. IP rate limits live in Memory KV.
  */
 export const ADMIN_OTP_MONITOR_HINT = 'admin_otp_monitor:hint';
 
 /**
- * @description Search IP placeholder
- * @localZh 按 IP 筛选
- * @localEn Filter by IP
+ * @description Search phone placeholder
+ * @localZh 按手机号筛选
+ * @localEn Filter by phone
  */
 export const ADMIN_OTP_MONITOR_SEARCH_PLACEHOLDER =
   'admin_otp_monitor:search_placeholder';
@@ -49,18 +49,60 @@ export const ADMIN_OTP_MONITOR_REFRESH = 'admin_otp_monitor:refresh';
 export const ADMIN_OTP_MONITOR_AUTO_REFRESH = 'admin_otp_monitor:auto_refresh';
 
 /**
- * @description Clear all rate-limit entries
- * @localZh 清除全部限流
- * @localEn Clear all limits
- */
-export const ADMIN_OTP_MONITOR_CLEAR_ALL = 'admin_otp_monitor:clear_all';
-
-/**
  * @description Entry count
  * @localZh 共 __COUNT__ 条
  * @localEn __COUNT__ entries
  */
 export const ADMIN_OTP_MONITOR_COUNT = 'admin_otp_monitor:count';
+
+/**
+ * @description Column created
+ * @localZh 创建时间
+ * @localEn Created
+ */
+export const ADMIN_OTP_MONITOR_COL_CREATED = 'admin_otp_monitor:col_created';
+
+/**
+ * @description Column phone
+ * @localZh 手机号
+ * @localEn Phone
+ */
+export const ADMIN_OTP_MONITOR_COL_PHONE = 'admin_otp_monitor:col_phone';
+
+/**
+ * @description Column code
+ * @localZh 验证码
+ * @localEn Code
+ */
+export const ADMIN_OTP_MONITOR_COL_CODE = 'admin_otp_monitor:col_code';
+
+/**
+ * @description Column provider
+ * @localZh 通道
+ * @localEn Provider
+ */
+export const ADMIN_OTP_MONITOR_COL_PROVIDER = 'admin_otp_monitor:col_provider';
+
+/**
+ * @description Column status
+ * @localZh 状态
+ * @localEn Status
+ */
+export const ADMIN_OTP_MONITOR_COL_STATUS = 'admin_otp_monitor:col_status';
+
+/**
+ * @description Column attempts
+ * @localZh 尝试次数
+ * @localEn Attempts
+ */
+export const ADMIN_OTP_MONITOR_COL_ATTEMPTS = 'admin_otp_monitor:col_attempts';
+
+/**
+ * @description Column expires
+ * @localZh 过期时间
+ * @localEn Expires
+ */
+export const ADMIN_OTP_MONITOR_COL_EXPIRES = 'admin_otp_monitor:col_expires';
 
 /**
  * @description Column IP
@@ -70,45 +112,16 @@ export const ADMIN_OTP_MONITOR_COUNT = 'admin_otp_monitor:count';
 export const ADMIN_OTP_MONITOR_COL_IP = 'admin_otp_monitor:col_ip';
 
 /**
- * @description Column blocked until
- * @localZh 限流至
- * @localEn Blocked until
+ * @description Code hidden label
+ * @localZh （已隐藏）
+ * @localEn (hidden)
  */
-export const ADMIN_OTP_MONITOR_COL_BLOCKED_UNTIL =
-  'admin_otp_monitor:col_blocked_until';
-
-/**
- * @description Column TTL
- * @localZh 剩余 TTL
- * @localEn TTL left
- */
-export const ADMIN_OTP_MONITOR_COL_TTL = 'admin_otp_monitor:col_ttl';
-
-/**
- * @description Column key
- * @localZh Key
- * @localEn Key
- */
-export const ADMIN_OTP_MONITOR_COL_KEY = 'admin_otp_monitor:col_key';
-
-/**
- * @description Column actions
- * @localZh 操作
- * @localEn Actions
- */
-export const ADMIN_OTP_MONITOR_COL_ACTIONS = 'admin_otp_monitor:col_actions';
-
-/**
- * @description Delete one key
- * @localZh 清除
- * @localEn Clear
- */
-export const ADMIN_OTP_MONITOR_DELETE = 'admin_otp_monitor:delete';
+export const ADMIN_OTP_MONITOR_CODE_HIDDEN = 'admin_otp_monitor:code_hidden';
 
 /**
  * @description Empty state
- * @localZh 当前没有发码限流条目
- * @localEn No OTP send rate-limit entries
+ * @localZh 暂无验证码记录
+ * @localEn No OTP records yet
  */
 export const ADMIN_OTP_MONITOR_EMPTY = 'admin_otp_monitor:empty';
 
@@ -127,30 +140,6 @@ export const ADMIN_OTP_MONITOR_FORBIDDEN = 'admin_otp_monitor:forbidden';
 export const ADMIN_OTP_MONITOR_LOAD_FAILED = 'admin_otp_monitor:load_failed';
 
 /**
- * @description Delete failed
- * @localZh 清除失败
- * @localEn Failed to clear
- */
-export const ADMIN_OTP_MONITOR_DELETE_FAILED =
-  'admin_otp_monitor:delete_failed';
-
-/**
- * @description Confirm delete one key
- * @localZh 确定清除 IP「__IP__」的限流？
- * @localEn Clear rate limit for IP “__IP__”?
- */
-export const ADMIN_OTP_MONITOR_CONFIRM_DELETE =
-  'admin_otp_monitor:confirm_delete';
-
-/**
- * @description Confirm clear all
- * @localZh 确定清除全部发码限流？
- * @localEn Clear all OTP send rate limits?
- */
-export const ADMIN_OTP_MONITOR_CONFIRM_CLEAR =
-  'admin_otp_monitor:confirm_clear';
-
-/**
  * @description Loading label
  * @localZh 加载中…
  * @localEn Loading…
@@ -158,7 +147,7 @@ export const ADMIN_OTP_MONITOR_CONFIRM_CLEAR =
 export const ADMIN_OTP_MONITOR_LOADING = 'admin_otp_monitor:loading';
 
 /**
- * @description Never / no block label
+ * @description Empty time label
  * @localZh —
  * @localEn —
  */

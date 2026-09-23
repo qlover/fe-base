@@ -283,6 +283,13 @@ export const PAGE_LOGIN_PHONE_RESEND = 'page_login:phone_resend';
 export const PAGE_LOGIN_PHONE_SUCCESS = 'page_login:phone_success';
 
 /**
+ * @description Memory phone OTP hint
+ * @localZh 当前为 memory 通道：请到 Admin「验证码监控」查看验证码
+ * @localEn Memory channel: check Admin → OTP monitor for the code
+ */
+export const PAGE_LOGIN_PHONE_MEMORY_HINT = 'page_login:phone_memory_hint';
+
+/**
  * @description Email OTP subtitle
  * @localZh 使用邮箱验证码登录
  * @localEn Sign in with email verification code.

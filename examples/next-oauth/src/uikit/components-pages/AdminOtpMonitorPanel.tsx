@@ -2,7 +2,6 @@
 
 import {
   runAsyncStore,
-  useAsyncStore,
   usePendingAsyncStore,
   type AsyncState
 } from '@brain-toolkit/react-kit';
@@ -13,40 +12,22 @@ import { Table, type TableColumn } from '@/uikit/components/Table';
 import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { AdminOtpMonitorI18nInterface } from '@config/i18n-mapping/admin18n';
-import { I } from '@config/ioc-identifiter';
 import type {
   OtpMonitorAdminEntry,
-  OtpMonitorListResult,
-  OtpMonitorPurgeResult
+  OtpMonitorListResult
 } from '@schemas/OtpMonitorSchema';
 
 const AUTO_REFRESH_MS = 5_000;
 
-function formatTime(value: number | null, emptyLabel: string): string {
-  if (value == null) {
+function formatTime(value: string | null, emptyLabel: string): string {
+  if (!value) {
     return emptyLabel;
   }
   try {
     return new Date(value).toLocaleString();
   } catch {
-    return String(value);
+    return value;
   }
-}
-
-function formatTtl(ttlMs: number | null, noneLabel: string): string {
-  if (ttlMs == null) {
-    return noneLabel;
-  }
-  if (ttlMs < 1000) {
-    return `${ttlMs}ms`;
-  }
-  const seconds = Math.round(ttlMs / 1000);
-  if (seconds < 60) {
-    return `${seconds}s`;
-  }
-  const minutes = Math.floor(seconds / 60);
-  const rest = seconds % 60;
-  return rest === 0 ? `${minutes}m` : `${minutes}m ${rest}s`;
 }
 
 export function AdminOtpMonitorPanel({
@@ -55,17 +36,13 @@ export function AdminOtpMonitorPanel({
   tt: AdminOtpMonitorI18nInterface;
 }) {
   const api = useIOC(AdminOtpMonitorApi);
-  const dialogHandler = useIOC(I.DialogHandler);
   const { allowed: canRead, loading: authLoading } = useCan(
     PermissionKey.admin_otp_monitor_read
   );
-  const { allowed: canWrite } = useCan(PermissionKey.admin_otp_monitor_write);
 
-  const [ip, setIp] = useState('');
+  const [phone, setPhone] = useState('');
   const [list, listStore] =
     usePendingAsyncStore<AsyncState<OtpMonitorListResult>>();
-  const [purge, purgeStore] =
-    useAsyncStore<AsyncState<OtpMonitorPurgeResult>>();
 
   const entries = useMemo(
     () => list.result?.entries ?? [],
@@ -73,18 +50,15 @@ export function AdminOtpMonitorPanel({
   );
   const total = list.result?.total ?? 0;
   const loading = list.loading;
-  const error =
-    list.status === 'failed'
-      ? tt.loadFailed
-      : purge.status === 'failed'
-        ? tt.deleteFailed
-        : null;
+  const error = list.status === 'failed' ? tt.loadFailed : null;
 
   const load = useCallback(async () => {
-    await runAsyncStore(listStore, api.list({ ip: ip.trim() || undefined }), {
-      keep: true
-    });
-  }, [api, ip, listStore]);
+    await runAsyncStore(
+      listStore,
+      api.list({ phone: phone.trim() || undefined }),
+      { keep: true }
+    );
+  }, [api, listStore, phone]);
 
   useStrictEffect(() => {
     if (!canRead) {
@@ -103,79 +77,61 @@ export function AdminOtpMonitorPanel({
     return () => window.clearInterval(timer);
   }, [canRead, load]);
 
-  const runPurge = useCallback(
-    async (body: { key?: string; all?: boolean }) => {
-      await runAsyncStore(purgeStore, api.purge(body));
-      await load();
-    },
-    [api, load, purgeStore]
-  );
-
-  const onDeleteKey = useCallback(
-    (row: OtpMonitorAdminEntry) => {
-      dialogHandler.confirm({
-        okType: 'danger',
-        title: tt.delete,
-        content: tt.confirmDelete.replaceAll('__IP__', row.ip || row.key),
-        onOk: () => runPurge({ key: row.key })
-      });
-    },
-    [dialogHandler, runPurge, tt.confirmDelete, tt.delete]
-  );
-
-  const onClearAll = useCallback(() => {
-    dialogHandler.confirm({
-      okType: 'danger',
-      title: tt.clearAll,
-      content: tt.confirmClear,
-      onOk: () => runPurge({ all: true })
-    });
-  }, [dialogHandler, runPurge, tt.clearAll, tt.confirmClear]);
-
   const columns: TableColumn<OtpMonitorAdminEntry>[] = [
     {
-      title: tt.colIp,
-      dataIndex: 'ip',
-      key: 'ip',
-      width: 160
+      title: tt.colCreated,
+      key: 'createdAt',
+      width: 170,
+      render: (_, row) => formatTime(row.createdAt, tt.ttlNone)
     },
     {
-      title: tt.colBlockedUntil,
-      key: 'blockedUntilMs',
-      width: 180,
-      render: (_, row) => formatTime(row.blockedUntilMs, tt.ttlNone)
+      title: tt.colPhone,
+      dataIndex: 'phone',
+      key: 'phone',
+      width: 140
     },
     {
-      title: tt.colTtl,
-      key: 'ttlMs',
+      title: tt.colCode,
+      key: 'code',
       width: 110,
-      render: (_, row) => formatTtl(row.ttlMs, tt.ttlNone)
-    },
-    {
-      title: tt.colKey,
-      dataIndex: 'key',
-      key: 'key',
       render: (_, row) => (
-        <span data-testid="columns" className="break-all font-mono text-xs">
-          {row.key}
+        <span
+          data-testid="columns"
+          className="font-mono text-sm tracking-wider"
+        >
+          {row.code ?? tt.codeHidden}
         </span>
       )
     },
     {
-      title: tt.colActions,
-      key: 'actions',
+      title: tt.colProvider,
+      dataIndex: 'provider',
+      key: 'provider',
+      width: 100
+    },
+    {
+      title: tt.colStatus,
+      dataIndex: 'status',
+      key: 'status',
+      width: 100
+    },
+    {
+      title: tt.colAttempts,
+      key: 'attempts',
       width: 100,
-      render: (_, row) =>
-        canWrite ? (
-          <button
-            type="button"
-            className="text-xs text-red-600 hover:underline dark:text-red-300"
-            data-permission={PermissionKey.admin_otp_monitor_write}
-            onClick={() => onDeleteKey(row)}
-          >
-            {tt.delete}
-          </button>
-        ) : null
+      render: (_, row) => `${row.attempts}/${row.maxAttempts}`
+    },
+    {
+      title: tt.colExpires,
+      key: 'expiresAt',
+      width: 170,
+      render: (_, row) => formatTime(row.expiresAt, tt.ttlNone)
+    },
+    {
+      title: tt.colIp,
+      key: 'createdIp',
+      width: 130,
+      render: (_, row) => row.createdIp || '—'
     }
   ];
 
@@ -207,8 +163,8 @@ export function AdminOtpMonitorPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <input
           type="search"
-          value={ip}
-          onChange={(event) => setIp(event.target.value)}
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
           placeholder={tt.searchPlaceholder}
           className="w-full rounded-lg border border-primary-border bg-surface px-3 py-2 text-sm text-primary-text sm:max-w-md"
         />
@@ -219,16 +175,6 @@ export function AdminOtpMonitorPanel({
         >
           {tt.refresh}
         </button>
-        {canWrite ? (
-          <button
-            type="button"
-            data-permission={PermissionKey.admin_otp_monitor_write}
-            onClick={onClearAll}
-            className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-600 dark:border-red-900/50 dark:text-red-300"
-          >
-            {tt.clearAll}
-          </button>
-        ) : null}
         <p className="text-xs text-secondary-text sm:ml-auto">
           {tt.autoRefresh} · {tt.count.replaceAll('__COUNT__', String(total))}
         </p>
@@ -249,8 +195,8 @@ export function AdminOtpMonitorPanel({
         </p>
       ) : (
         <Table
-          rowKey="key"
-          loading={loading || purge.loading}
+          rowKey="id"
+          loading={loading}
           columns={columns}
           dataSource={entries}
           emptyText={tt.empty}

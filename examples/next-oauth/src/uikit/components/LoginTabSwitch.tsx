@@ -71,6 +71,8 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
     appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
 
   const phoneLoginEnabled = publicConfig?.auth.phoneLoginEnabled ?? true;
+  const phoneOtpProvider =
+    publicConfig?.auth.phoneOtpProvider?.trim().toLowerCase() || 'memory';
   const githubOauthEnabled = publicConfig?.auth.githubOauthEnabled ?? true;
   const googleOauthEnabled = publicConfig?.auth.googleOauthEnabled ?? false;
 
@@ -225,7 +227,9 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         </>
       )}
 
-      {showPhoneTab && tab === 'phone' ? <PhoneLoginForm tt={tt} /> : null}
+      {showPhoneTab && tab === 'phone' ? (
+        <PhoneLoginForm tt={tt} memoryOtp={phoneOtpProvider === 'memory'} />
+      ) : null}
     </div>
   );
 }

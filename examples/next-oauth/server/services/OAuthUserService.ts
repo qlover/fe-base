@@ -24,6 +24,7 @@ import { ROUTE_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import { PhoneOtpService } from '@server/services/PhoneOtpService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -55,7 +56,9 @@ export class OAuthUserService
     @inject(I.OAuthWrapperProviderInterface)
     protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(SupabaseRepo)
-    protected supabaseRepo: SupabaseRepo<unknown>
+    protected supabaseRepo: SupabaseRepo<unknown>,
+    @inject(PhoneOtpService)
+    protected phoneOtpService: PhoneOtpService
   ) {}
 
   /**
@@ -213,7 +216,26 @@ export class OAuthUserService
   /**
    * @override
    */
-  public async signWithOtp(body: SignWithOtpSchema): Promise<SignOtpResult> {
+  public async signWithOtp(
+    body: SignWithOtpSchema,
+    options?: { clientIp?: string }
+  ): Promise<SignOtpResult> {
+    if ('phone' in body && body.phone) {
+      const channel = await this.phoneOtpService.getProviderName();
+      if (channel !== 'supabase') {
+        if (body.token) {
+          return this.phoneOtpService.verifyAndLogin({
+            phone: body.phone,
+            token: body.token
+          });
+        }
+        return this.phoneOtpService.send({
+          phone: body.phone,
+          clientIp: options?.clientIp
+        });
+      }
+    }
+
     if (body.token) {
       return this.oauthProvider.verifyOtp(body as VerifyOtpParams);
     }

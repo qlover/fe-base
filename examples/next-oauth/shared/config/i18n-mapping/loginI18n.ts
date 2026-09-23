@@ -70,6 +70,7 @@ export const loginI18n = Object.freeze({
   phoneCountdownSuffix: i18nKeys.PAGE_LOGIN_PHONE_COUNTDOWN_SUFFIX,
   phoneResend: i18nKeys.PAGE_LOGIN_PHONE_RESEND,
   phoneSuccess: i18nKeys.PAGE_LOGIN_PHONE_SUCCESS,
+  phoneMemoryHint: i18nKeys.PAGE_LOGIN_PHONE_MEMORY_HINT,
 
   // email OTP login
   emailOtpSubtitle: i18nKeys.PAGE_LOGIN_EMAIL_OTP_SUBTITLE,

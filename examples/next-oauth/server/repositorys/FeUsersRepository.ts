@@ -49,6 +49,21 @@ export class FeUsersRepository {
     return (result.data as FeUserRow | null) ?? null;
   }
 
+  public async findByPhone(phone: string): Promise<FeUserRow | null> {
+    const normalized = phone.trim();
+    if (!normalized) {
+      return null;
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .select('*')
+      .eq('phone', normalized)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(result);
+    return (result.data as FeUserRow | null) ?? null;
+  }
+
   public async getSystemRoleKey(
     userId: string
   ): Promise<SystemRoleType | null> {
