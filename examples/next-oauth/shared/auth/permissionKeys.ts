@@ -15,10 +15,16 @@ export const PermissionKey = {
   admin_users_system_role: 'admin_users_system_role',
   admin_roles_read: 'admin_roles_read',
   admin_roles_write: 'admin_roles_write',
+  admin_permissions_read: 'admin_permissions_read',
+  admin_permissions_write: 'admin_permissions_write',
   admin_locales_read: 'admin_locales_read',
   admin_locales_write: 'admin_locales_write',
   admin_request_logs_read: 'admin_request_logs_read',
   admin_request_logs_write: 'admin_request_logs_write',
+  admin_otp_monitor_read: 'admin_otp_monitor_read',
+  admin_otp_monitor_write: 'admin_otp_monitor_write',
+  admin_memory_kv_read: 'admin_memory_kv_read',
+  admin_memory_kv_write: 'admin_memory_kv_write',
   admin_site_settings_read: 'admin_site_settings_read',
   admin_site_settings_write: 'admin_site_settings_write'
 } as const;

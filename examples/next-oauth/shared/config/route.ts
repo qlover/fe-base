@@ -40,6 +40,21 @@ export const ROUTE_ADMIN_USERS = '/admin/users' as const;
 export const ROUTE_ADMIN_ROLES = '/admin/roles' as const;
 
 /**
+ * Admin permission catalog. Pages Router: `src/pages/[locale]/admin/permissions.tsx`.
+ */
+export const ROUTE_ADMIN_PERMISSIONS = '/admin/permissions' as const;
+
+/**
+ * Admin OTP send rate-limit monitor. Pages Router: `src/pages/[locale]/admin/otp-monitor.tsx`.
+ */
+export const ROUTE_ADMIN_OTP_MONITOR = '/admin/otp-monitor' as const;
+
+/**
+ * Admin process Memory KV. Pages Router: `src/pages/[locale]/admin/memory-kv.tsx`.
+ */
+export const ROUTE_ADMIN_MEMORY_KV = '/admin/memory-kv' as const;
+
+/**
  * Admin locales CMS. Pages Router: `src/pages/[locale]/admin/locales.tsx`.
  */
 export const ROUTE_ADMIN_LOCALES = '/admin/locales' as const;
@@ -135,6 +150,9 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN,
   ROUTE_ADMIN_USERS,
   ROUTE_ADMIN_ROLES,
+  ROUTE_ADMIN_PERMISSIONS,
+  ROUTE_ADMIN_OTP_MONITOR,
+  ROUTE_ADMIN_MEMORY_KV,
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_SETTINGS,
   ROUTE_REQUEST_LOGS,

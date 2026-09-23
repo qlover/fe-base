@@ -32,6 +32,22 @@ export const PERMISSION_ADMIN_ROLES_READ = 'permission:admin_roles_read';
 export const PERMISSION_ADMIN_ROLES_WRITE = 'permission:admin_roles_write';
 
 /**
+ * @description List permission catalog
+ * @localZh 查看权限目录
+ * @localEn List permission catalog
+ */
+export const PERMISSION_ADMIN_PERMISSIONS_READ =
+  'permission:admin_permissions_read';
+
+/**
+ * @description Create or update permission catalog
+ * @localZh 创建或修改权限目录
+ * @localEn Create or update permission catalog
+ */
+export const PERMISSION_ADMIN_PERMISSIONS_WRITE =
+  'permission:admin_permissions_write';
+
+/**
  * @description List locale dictionary rows
  * @localZh 查看国际化文案
  * @localEn List locale dictionary rows
@@ -60,6 +76,38 @@ export const PERMISSION_ADMIN_REQUEST_LOGS_READ =
  */
 export const PERMISSION_ADMIN_REQUEST_LOGS_WRITE =
   'permission:admin_request_logs_write';
+
+/**
+ * @description View OTP send rate-limit monitor
+ * @localZh 查看验证码限流状态
+ * @localEn View OTP send rate-limit state
+ */
+export const PERMISSION_ADMIN_OTP_MONITOR_READ =
+  'permission:admin_otp_monitor_read';
+
+/**
+ * @description Clear OTP send rate-limit entries
+ * @localZh 清除验证码限流条目
+ * @localEn Clear OTP send rate-limit entries
+ */
+export const PERMISSION_ADMIN_OTP_MONITOR_WRITE =
+  'permission:admin_otp_monitor_write';
+
+/**
+ * @description List process Memory KV cache entries
+ * @localZh 查看进程内 Memory KV 缓存
+ * @localEn List process Memory KV cache entries
+ */
+export const PERMISSION_ADMIN_MEMORY_KV_READ =
+  'permission:admin_memory_kv_read';
+
+/**
+ * @description Delete process Memory KV cache entries
+ * @localZh 删除进程内 Memory KV 缓存
+ * @localEn Delete process Memory KV cache entries
+ */
+export const PERMISSION_ADMIN_MEMORY_KV_WRITE =
+  'permission:admin_memory_kv_write';
 
 /**
  * @description Access admin console

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PERMISSION_KEY_PATTERN } from '@shared/auth/permissionKeys';
 import { RoleKind } from '@shared/auth/roleKeys';
 
 export const roleKindSchema = z.enum([RoleKind.Platform]);
@@ -41,6 +42,39 @@ export const adminRoleAssignmentsPatchSchema = z.object({
 
 export type AdminRoleAssignmentsPatch = z.infer<
   typeof adminRoleAssignmentsPatchSchema
+>;
+
+const permissionKeyField = z
+  .string()
+  .min(1)
+  .regex(PERMISSION_KEY_PATTERN, 'Invalid permission_key format');
+
+export const adminPermissionCreateSchema = z.object({
+  permissionKey: permissionKeyField,
+  type: z.enum(['api', 'page', 'feature']).default('api'),
+  method: z.string().nullable().optional(),
+  path: z.string().nullable().optional(),
+  description: z.string().nullable().optional()
+});
+
+export type AdminPermissionCreate = z.infer<typeof adminPermissionCreateSchema>;
+
+export const adminPermissionUpdateSchema = z.object({
+  permissionKey: permissionKeyField,
+  type: z.enum(['api', 'page', 'feature']).optional(),
+  method: z.string().nullable().optional(),
+  path: z.string().nullable().optional(),
+  description: z.string().nullable().optional()
+});
+
+export type AdminPermissionUpdate = z.infer<typeof adminPermissionUpdateSchema>;
+
+export const adminPermissionsResponseSchema = z.object({
+  catalog: z.array(adminPermissionItemSchema)
+});
+
+export type AdminPermissionsResponse = z.infer<
+  typeof adminPermissionsResponseSchema
 >;
 
 /** Session user with platform RBAC fields (extends next-kit UserSchema). */

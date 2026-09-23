@@ -2,11 +2,14 @@
 
 import {
   Bars3Icon,
+  CircleStackIcon,
   ClipboardDocumentListIcon,
   Cog6ToothIcon,
+  DevicePhoneMobileIcon,
   HomeIcon,
   KeyIcon,
   LanguageIcon,
+  ShieldCheckIcon,
   UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -49,6 +52,9 @@ const NAV_ICONS: Record<string, NavIcon> = {
   dashboard: HomeIcon,
   users: UsersIcon,
   roles: KeyIcon,
+  permissions: ShieldCheckIcon,
+  'otp-monitor': DevicePhoneMobileIcon,
+  'memory-kv': CircleStackIcon,
   locales: LanguageIcon,
   settings: Cog6ToothIcon,
   'request-logs': ClipboardDocumentListIcon

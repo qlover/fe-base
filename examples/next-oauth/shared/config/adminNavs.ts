@@ -5,6 +5,9 @@ import {
 import {
   COMMON_ADMIN_NAV_DASHBOARD,
   COMMON_ADMIN_NAV_LOCALES,
+  COMMON_ADMIN_NAV_MEMORY_KV,
+  COMMON_ADMIN_NAV_OTP_MONITOR,
+  COMMON_ADMIN_NAV_PERMISSIONS,
   COMMON_ADMIN_NAV_REQUEST_LOGS,
   COMMON_ADMIN_NAV_ROLES,
   COMMON_ADMIN_NAV_SETTINGS,
@@ -12,6 +15,9 @@ import {
 } from '@config/i18n-identifier/common/common';
 import {
   ROUTE_ADMIN_LOCALES,
+  ROUTE_ADMIN_MEMORY_KV,
+  ROUTE_ADMIN_OTP_MONITOR,
+  ROUTE_ADMIN_PERMISSIONS,
   ROUTE_ADMIN_ROLES,
   ROUTE_ADMIN_SETTINGS,
   ROUTE_REQUEST_LOGS
@@ -21,6 +27,9 @@ export type NavItemPaths =
   | 'admin'
   | 'admin/users'
   | 'admin/roles'
+  | 'admin/permissions'
+  | 'admin/otp-monitor'
+  | 'admin/memory-kv'
   | 'admin/locales'
   | 'admin/settings'
   | 'admin/request-logs';
@@ -51,6 +60,24 @@ export const defaultNavItems: NavItemInterface[] = [
     i18nKey: COMMON_ADMIN_NAV_ROLES,
     pathname: ROUTE_ADMIN_ROLES,
     permissionKey: PermissionKey.admin_roles_read
+  },
+  {
+    key: 'permissions',
+    i18nKey: COMMON_ADMIN_NAV_PERMISSIONS,
+    pathname: ROUTE_ADMIN_PERMISSIONS,
+    permissionKey: PermissionKey.admin_permissions_read
+  },
+  {
+    key: 'otp-monitor',
+    i18nKey: COMMON_ADMIN_NAV_OTP_MONITOR,
+    pathname: ROUTE_ADMIN_OTP_MONITOR,
+    permissionKey: PermissionKey.admin_otp_monitor_read
+  },
+  {
+    key: 'memory-kv',
+    i18nKey: COMMON_ADMIN_NAV_MEMORY_KV,
+    pathname: ROUTE_ADMIN_MEMORY_KV,
+    permissionKey: PermissionKey.admin_memory_kv_read
   },
   {
     key: 'locales',

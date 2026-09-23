@@ -70,8 +70,14 @@ insert into public.fe_permissions (permission_key, type, method, path, descripti
   ('admin_users_system_role', 'api', 'PATCH', '/api/admin/users', 'Change user system role'),
   ('admin_roles_read', 'page', null, '/admin/roles', 'View role assignments'),
   ('admin_roles_write', 'api', 'PATCH', '/api/admin/roles', 'Edit role assignments'),
+  ('admin_permissions_read', 'page', null, '/admin/permissions', 'View permission catalog'),
+  ('admin_permissions_write', 'api', 'POST', '/api/admin/permissions', 'Create or update permission catalog'),
   ('admin_request_logs_read', 'page', null, '/admin/request-logs', 'View request logs'),
   ('admin_request_logs_write', 'api', 'DELETE', '/api/user/request-logs', 'Clear request logs'),
+  ('admin_otp_monitor_read', 'page', null, '/admin/otp-monitor', 'View OTP send rate-limit state'),
+  ('admin_otp_monitor_write', 'api', 'POST', '/api/admin/otp-monitor', 'Clear OTP send rate-limit entries'),
+  ('admin_memory_kv_read', 'page', null, '/admin/memory-kv', 'View process Memory KV cache'),
+  ('admin_memory_kv_write', 'api', 'POST', '/api/admin/memory-kv', 'Purge process Memory KV cache'),
   ('admin_site_settings_read', 'page', null, '/admin', 'Access admin console');
 
 create table public.fe_role_assignments (
@@ -92,7 +98,10 @@ from public.fe_roles r
 join (values
   ('admin_users_read'),
   ('admin_roles_read'),
+  ('admin_permissions_read'),
   ('admin_request_logs_read'),
+  ('admin_otp_monitor_read'),
+  ('admin_memory_kv_read'),
   ('admin_site_settings_read')
 ) as v(permission_key) on true
 where r.key = 'operator';
@@ -105,8 +114,14 @@ join (values
   ('admin_users_system_role'),
   ('admin_roles_read'),
   ('admin_roles_write'),
+  ('admin_permissions_read'),
+  ('admin_permissions_write'),
   ('admin_request_logs_read'),
   ('admin_request_logs_write'),
+  ('admin_otp_monitor_read'),
+  ('admin_otp_monitor_write'),
+  ('admin_memory_kv_read'),
+  ('admin_memory_kv_write'),
   ('admin_site_settings_read')
 ) as v(permission_key) on true
 where r.key = 'admin';

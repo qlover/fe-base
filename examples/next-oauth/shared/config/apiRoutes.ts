@@ -34,6 +34,33 @@ export const API_ADMIN_LOCALES_NAMESPACES =
   '/api/admin/locales/namespaces' as const;
 
 /**
+ * API path: `/api/admin/memory-kv`
+ *
+ * @see [src/app/api/admin/memory-kv/route.ts](../../src/app/api/admin/memory-kv/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/memory-kv/route.ts`
+ */
+export const API_ADMIN_MEMORY_KV = '/api/admin/memory-kv' as const;
+
+/**
+ * API path: `/api/admin/otp-monitor`
+ *
+ * @see [src/app/api/admin/otp-monitor/route.ts](../../src/app/api/admin/otp-monitor/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/otp-monitor/route.ts`
+ */
+export const API_ADMIN_OTP_MONITOR = '/api/admin/otp-monitor' as const;
+
+/**
+ * API path: `/api/admin/permissions`
+ *
+ * @see [src/app/api/admin/permissions/route.ts](../../src/app/api/admin/permissions/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/permissions/route.ts`
+ */
+export const API_ADMIN_PERMISSIONS = '/api/admin/permissions' as const;
+
+/**
  * API path: `/api/admin/roles`
  *
  * @see [src/app/api/admin/roles/route.ts](../../src/app/api/admin/roles/route.ts)
@@ -248,6 +275,9 @@ export type ApiRoutePath =
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
+  | typeof API_ADMIN_MEMORY_KV
+  | typeof API_ADMIN_OTP_MONITOR
+  | typeof API_ADMIN_PERMISSIONS
   | typeof API_ADMIN_ROLES
   | typeof API_ADMIN_SITE_SETTINGS
   | typeof API_ADMIN_USERS
