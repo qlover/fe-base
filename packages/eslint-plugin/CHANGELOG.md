@@ -1,5 +1,13 @@
 # @qlover/eslint-plugin
 
+## 2.1.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **eslint-plugin:** 补充 repository 字段以通过 npm provenance 校验 ([bce8ce3](https://github.com/qlover/fe-base/commit/bce8ce3fc3211c3dd404e3fcff73e936f9d35b7f)) ([#718](https://github.com/qlover/fe-base/pull/718))
+
 ## 2.1.2
 
 ### Patch Changes

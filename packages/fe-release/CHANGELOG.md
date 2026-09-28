@@ -1,5 +1,14 @@
 # @qlover/fe-release
 
+## 5.3.4
+
+### Patch Changes
+
+- Update dependency **@qlover/env-loader** from `1.1.2` to `1.1.3`
+- Update dependency **@qlover/fe-corekit** from `3.4.8` to `3.4.9`
+- Update dependency **@qlover/logger** from `1.2.2` to `1.2.3`
+- Update dependency **@qlover/scripts-context** from `2.3.5` to `2.3.6`
+
 ## 5.3.2
 
 ### Patch Changes
