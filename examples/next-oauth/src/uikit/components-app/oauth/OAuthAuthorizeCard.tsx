@@ -13,7 +13,8 @@ import {
   InformationCircleIcon,
   LockClosedIcon,
   QuestionMarkCircleIcon,
-  Squares2X2Icon
+  Squares2X2Icon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
@@ -24,21 +25,55 @@ import type { OAuthAuthorizeI18nInterface } from '@config/i18n-mapping/OAuthAuth
 import { resolveScopeLabel } from '@config/i18n-mapping/OAuthAuthorizeI18n';
 import type { OAuthAuthorizePageData } from '@qlover/oauth-wrapper';
 
+// Mobile stacks allow above deny. No flex-1 in the column layout: iOS Safari
+// collapses flex-basis 0% items there and the buttons overlap.
+const FOOTER_BUTTON_LAYOUT = 'w-full sm:w-auto sm:flex-1';
+
+export interface OAuthAuthorizeAccount {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+}
+
 export interface OAuthAuthorizeCardProps {
   tt: OAuthAuthorizeI18nInterface;
   authorizeData: OAuthAuthorizePageData;
+  account?: OAuthAuthorizeAccount | null;
+  /** Login URL that returns to this authorize request after sign-in. */
+  switchAccountHref?: string;
 }
 
 export function OAuthAuthorizeCard({
   tt,
-  authorizeData
+  authorizeData,
+  account,
+  switchAccountHref
 }: OAuthAuthorizeCardProps) {
   const userGateway = useIOC(AppUserGateway);
   const [extraOpen, setExtraOpen] = useState(false);
   const [trust, setTrust] = useState(false);
+  const [switching, setSwitching] = useState(false);
   const [consent, consentStore] = useAsyncStore<AsyncState<string>>();
-  const loading = consent.loading;
+  const loading = consent.loading || switching;
   const errorMessage = consentStore.isFailed() ? String(consent.error) : null;
+
+  const accountPrimary =
+    account?.name?.trim() || account?.email || account?.phone || '';
+  const accountSecondary = [account?.email, account?.phone]
+    .filter((value): value is string => !!value && value !== accountPrimary)
+    .join(' · ');
+
+  const handleSwitchAccount = async () => {
+    if (!switchAccountHref) {
+      return;
+    }
+    setSwitching(true);
+    try {
+      await userGateway.logout();
+    } finally {
+      window.location.assign(switchAccountHref);
+    }
+  };
 
   const scopeLabels = useMemo(
     () =>
@@ -124,6 +159,36 @@ export function OAuthAuthorizeCard({
       </div>
 
       <div className="p-6 space-y-5">
+        {accountPrimary ? (
+          <div
+            data-testid="OAuthAuthorizeAccount"
+            className="flex items-center gap-3 rounded-lg border border-brand/30 bg-brand/5 p-3"
+          >
+            <UserCircleIcon className="h-9 w-9 text-brand shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-secondary-text">{tt.accountLabel}</p>
+              <p className="font-semibold text-primary-text truncate">
+                {accountPrimary}
+              </p>
+              {accountSecondary ? (
+                <p className="text-xs text-secondary-text truncate">
+                  {accountSecondary}
+                </p>
+              ) : null}
+            </div>
+            {switchAccountHref ? (
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleSwitchAccount}
+                className="text-xs text-brand hover:underline shrink-0 disabled:opacity-60"
+              >
+                {tt.switchAccount}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="bg-elevated rounded-lg p-4">
           <div className="flex justify-between items-start gap-3">
             <div className="min-w-0">
@@ -211,11 +276,11 @@ export function OAuthAuthorizeCard({
         </div>
       </div>
 
-      <div className="p-6 border-t border-primary-border bg-elevated flex flex-col sm:flex-row gap-3">
+      <div className="p-6 border-t border-primary-border bg-elevated flex flex-col-reverse gap-3 sm:flex-row">
         <Button
           id="denyBtn"
           variant="secondary"
-          className="flex-1"
+          className={FOOTER_BUTTON_LAYOUT}
           disabled={loading}
           onClick={handleDeny}
         >
@@ -224,7 +289,7 @@ export function OAuthAuthorizeCard({
         <Button
           id="allowBtn"
           variant="primary"
-          className="flex-1"
+          className={FOOTER_BUTTON_LAYOUT}
           disabled={loading}
           onClick={handleAllow}
         >

@@ -18,7 +18,9 @@ import type {
   CreateOAuthRefreshTokenInput,
   OAuthWrapperRepositoryInterface,
   OAuthRefreshTokenRow,
-  OAuthUserCredentialsRow
+  OAuthUserCredentialsRow,
+  OAuthConsentGrantRow,
+  UpsertOAuthConsentGrantInput
 } from '@qlover/oauth-wrapper';
 
 @injectable()
@@ -242,6 +244,94 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
       .update({ revoked: true })
       .eq('user_id', userId)
       .eq('revoked', false);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * @override
+   */
+  public async findConsentGrant(
+    userId: string,
+    clientId: string,
+    deviceId: string
+  ): Promise<OAuthConsentGrantRow | null> {
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { data, error } = await supabase
+      .from(FeTables.oauthConsentGrants)
+      .select('*')
+      .eq('user_id', userId)
+      .eq('client_id', clientId)
+      .eq('device_id', deviceId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return (data as OAuthConsentGrantRow | null) ?? null;
+  }
+
+  /**
+   * @override
+   */
+  public async upsertConsentGrant(
+    input: UpsertOAuthConsentGrantInput
+  ): Promise<void> {
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { error } = await supabase.from(FeTables.oauthConsentGrants).upsert(
+      {
+        ...input,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'user_id,client_id,device_id' }
+    );
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * @override
+   */
+  public async touchConsentGrant(
+    userId: string,
+    clientId: string,
+    deviceId: string
+  ): Promise<void> {
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { error } = await supabase
+      .from(FeTables.oauthConsentGrants)
+      .update({ last_used_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('client_id', clientId)
+      .eq('device_id', deviceId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * @override
+   */
+  public async revokeConsentGrant(
+    userId: string,
+    clientId: string,
+    deviceId?: string
+  ): Promise<void> {
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    let query = supabase
+      .from(FeTables.oauthConsentGrants)
+      .delete()
+      .eq('user_id', userId)
+      .eq('client_id', clientId);
+    if (deviceId) {
+      query = query.eq('device_id', deviceId);
+    }
+    const { error } = await query;
 
     if (error) {
       throw new Error(error.message);

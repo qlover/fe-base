@@ -90,16 +90,16 @@ export const PAGE_OAUTH_AUTHORIZE_EXTRA_PERM_NOTE =
 
 /**
  * @description Trust app checkbox label
- * @localZh 信任此应用，以后不再询问
- * @localEn Trust this app and do not ask again
+ * @localZh 在此设备上信任此应用，90 天内不再询问
+ * @localEn Trust this app on this device for 90 days
  */
 export const PAGE_OAUTH_AUTHORIZE_TRUST_OPTION =
   'page_oauth_authorize:trust__option';
 
 /**
  * @description Trust option tooltip
- * @localZh 您将直接授权该应用，无需再次确认。可在开发者控制台撤销。
- * @localEn You will authorize this app without further prompts. Revoke anytime in settings.
+ * @localZh 仅对当前浏览器生效：90 天内在此设备上将直接授权该应用，换设备、换浏览器或清除 Cookie 后需重新确认。
+ * @localEn Applies to this browser only: for 90 days this app is authorized without prompts on this device. Other devices, browsers, or cleared cookies will ask again.
  */
 export const PAGE_OAUTH_AUTHORIZE_TRUST_TOOLTIP =
   'page_oauth_authorize:trust__tooltip';
@@ -189,3 +189,19 @@ export const PAGE_OAUTH_AUTHORIZE_ERROR_SCOPE =
  */
 export const PAGE_OAUTH_AUTHORIZE_ERROR_CONSENT =
   'page_oauth_authorize:error__consent';
+
+/**
+ * @description Label above the signed-in account that is granting access
+ * @localZh 当前授权账号
+ * @localEn Authorizing as
+ */
+export const PAGE_OAUTH_AUTHORIZE_ACCOUNT_LABEL =
+  'page_oauth_authorize:account__label';
+
+/**
+ * @description Switch account link (signs out, then returns to this page after login)
+ * @localZh 不是你？切换账号
+ * @localEn Not you? Switch account
+ */
+export const PAGE_OAUTH_AUTHORIZE_SWITCH_ACCOUNT =
+  'page_oauth_authorize:switch__account';
