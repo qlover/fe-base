@@ -33,6 +33,9 @@ export abstract class OAuthWrapperService<
 > implements Types.OAuthProviderInterface<User, SessionPayload> {
   protected authCodeTTLMs: number = 5 * 60 * 1000;
 
+  /** How long "trust this app" lasts on one device. */
+  protected consentGrantTTLMs: number = 90 * 24 * 60 * 60 * 1000;
+
   protected tokenService: Types.OAuthTokenServiceInterface;
 
   constructor(
@@ -391,7 +394,8 @@ export abstract class OAuthWrapperService<
    * @override
    */
   public async processConsent(
-    requestBody: unknown
+    requestBody: unknown,
+    device?: Types.OAuthConsentDeviceContext
   ): Promise<Types.OAuthConsentResult> {
     if (!this.isValidateConsent(requestBody)) {
       throw new ExecutorError(
@@ -437,23 +441,107 @@ export abstract class OAuthWrapperService<
       };
     }
 
+    const deviceId = device?.deviceId?.trim();
+    if (requestBody.trust && deviceId) {
+      await this.rememberConsent(session.userId, data, {
+        deviceId,
+        userAgent: device?.userAgent
+      });
+    }
+
+    return this.issueAuthorizationCode(session.userId, data);
+  }
+
+  /**
+   * @override
+   */
+  public async tryAutoConsent(
+    data: Types.OAuthAuthorizePageData,
+    device?: Types.OAuthConsentDeviceContext
+  ): Promise<Types.OAuthConsentResult | null> {
+    const oauthRepo = this.getOAuthRepo();
+    const deviceId = device?.deviceId?.trim();
+    if (!oauthRepo.findConsentGrant || !deviceId) {
+      return null;
+    }
+
+    const session = await this.getSession();
+    const userId = String(session?.userId ?? '').trim();
+    if (!userId) {
+      return null;
+    }
+
+    const grant = await oauthRepo.findConsentGrant(
+      userId,
+      data.clientId,
+      deviceId
+    );
+    if (!grant || !this.isConsentGrantActive(grant)) {
+      return null;
+    }
+
+    const covered = data.scopes.every((scope) => grant.scopes.includes(scope));
+    if (!covered) {
+      return null;
+    }
+
+    const result = await this.issueAuthorizationCode(userId, data);
+    try {
+      await oauthRepo.touchConsentGrant?.(userId, data.clientId, deviceId);
+    } catch {
+      // Bookkeeping only; the code is already issued.
+    }
+    return result;
+  }
+
+  protected isConsentGrantActive(grant: Types.OAuthConsentGrantRow): boolean {
+    return new Date(grant.expires_at).getTime() > Date.now();
+  }
+
+  protected async rememberConsent(
+    userId: string,
+    data: Types.OAuthAuthorizePageData,
+    device: { deviceId: string; userAgent?: string | null }
+  ): Promise<void> {
+    const oauthRepo = this.getOAuthRepo();
+    if (!oauthRepo.upsertConsentGrant) {
+      return;
+    }
+
+    const existing = oauthRepo.findConsentGrant
+      ? await oauthRepo.findConsentGrant(userId, data.clientId, device.deviceId)
+      : null;
+    const keptScopes =
+      existing && this.isConsentGrantActive(existing) ? existing.scopes : [];
+    const scopes = Array.from(new Set([...keptScopes, ...data.scopes]));
+
+    await oauthRepo.upsertConsentGrant({
+      user_id: userId,
+      client_id: data.clientId,
+      device_id: device.deviceId,
+      scopes,
+      expires_at: new Date(Date.now() + this.consentGrantTTLMs).toISOString(),
+      user_agent: device.userAgent ?? null
+    });
+  }
+
+  protected async issueAuthorizationCode(
+    userId: string,
+    data: Types.OAuthAuthorizePageData
+  ): Promise<Types.OAuthConsentResult> {
     const code = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + this.authCodeTTLMs).toISOString();
 
-    const oauthRepo = this.getOAuthRepo();
-    await oauthRepo.create({
+    await this.getOAuthRepo().create({
       code,
       client_id: data.clientId,
-      user_id: session.userId,
+      user_id: userId,
       redirect_uri: data.redirectUri,
       scope: data.scopes.join(' ') || null,
       code_challenge: data.codeChallenge ?? null,
       code_challenge_method: data.codeChallengeMethod ?? null,
       expires_at: expiresAt
     });
-
-    // trust flag reserved for future auto-consent storage
-    void requestBody.trust;
 
     return {
       redirectUrl: buildOAuthRedirectUrl(data.redirectUri, {

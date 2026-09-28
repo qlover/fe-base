@@ -8,6 +8,7 @@ import type {
   WithUserSession
 } from '../src/core/interfaces/OAuthSessionInterface';
 import type { OAuthWrapperRepositoryInterface } from '../src/core/interfaces/OAuthWrapperRepositoryInterface';
+import type { OAuthConsentGrantRow } from '../src/core/schema/OAuthAuthorizeSchema';
 import type {
   OAuthIdentityStore,
   OAuthLocalUserDraft
@@ -35,6 +36,21 @@ class MockOAuthRepo implements Partial<OAuthWrapperRepositoryInterface> {
   public create = vi.fn(async () => undefined);
 
   public upsertUserCredentials = vi.fn(async () => undefined);
+}
+
+const PAST = new Date(Date.now() - 60_000).toISOString();
+
+function grantRow(
+  overrides: Partial<OAuthConsentGrantRow> = {}
+): OAuthConsentGrantRow {
+  return {
+    user_id: '42',
+    client_id: 'test-client',
+    device_id: 'device-1',
+    scopes: [],
+    expires_at: new Date(Date.now() + 60_000).toISOString(),
+    ...overrides
+  };
 }
 
 type TestUser = Record<string, unknown>;
@@ -208,6 +224,150 @@ describe('OAuthWrapperService', () => {
       await expect(service.processConsent(consentBody)).rejects.toBeInstanceOf(
         ExecutorError
       );
+    });
+
+    it('remembers consent per device, merging active scopes', async () => {
+      const findConsentGrant = vi.fn(async () =>
+        grantRow({ scopes: ['offline'] })
+      );
+      const upsertConsentGrant = vi.fn(async () => undefined);
+      Object.assign(repo, { findConsentGrant, upsertConsentGrant });
+
+      await service.processConsent(
+        { ...consentBody, trust: true },
+        { deviceId: 'device-1', userAgent: 'UA' }
+      );
+
+      expect(findConsentGrant).toHaveBeenCalledWith(
+        '42',
+        'test-client',
+        'device-1'
+      );
+      expect(upsertConsentGrant).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: '42',
+          client_id: 'test-client',
+          device_id: 'device-1',
+          scopes: ['offline', 'openid', 'profile', 'email'],
+          user_agent: 'UA',
+          expires_at: expect.any(String)
+        })
+      );
+      expect(repo.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('drops scopes from an expired grant when re-trusting', async () => {
+      const upsertConsentGrant = vi.fn(async () => undefined);
+      Object.assign(repo, {
+        findConsentGrant: vi.fn(async () =>
+          grantRow({ scopes: ['offline'], expires_at: PAST })
+        ),
+        upsertConsentGrant
+      });
+
+      await service.processConsent(
+        { ...consentBody, trust: true },
+        { deviceId: 'device-1' }
+      );
+
+      expect(upsertConsentGrant).toHaveBeenCalledWith(
+        expect.objectContaining({ scopes: ['openid', 'profile', 'email'] })
+      );
+    });
+
+    it('does not remember consent without trust or without a device', async () => {
+      const upsertConsentGrant = vi.fn(async () => undefined);
+      Object.assign(repo, { upsertConsentGrant });
+
+      await service.processConsent(consentBody, { deviceId: 'device-1' });
+      await service.processConsent({ ...consentBody, trust: true });
+
+      expect(upsertConsentGrant).not.toHaveBeenCalled();
+      expect(repo.create).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('tryAutoConsent', () => {
+    const pageData = {
+      clientId: 'test-client',
+      clientName: 'Test',
+      clientUri: null,
+      logoUri: null,
+      redirectUri: 'https://app.example/callback',
+      scopes: ['openid', 'profile'],
+      state: 'state-1',
+      responseType: 'code' as const,
+      codeChallenge: TEST_CODE_CHALLENGE,
+      codeChallengeMethod: 'S256' as const,
+      confidential: false
+    };
+
+    const device = { deviceId: 'device-1' };
+
+    it('returns null when repository has no grant support', async () => {
+      await expect(service.tryAutoConsent(pageData, device)).resolves.toBeNull();
+      expect(repo.create).not.toHaveBeenCalled();
+    });
+
+    it('issues a code and touches the grant when trust covers the request', async () => {
+      const findConsentGrant = vi.fn(async () =>
+        grantRow({ scopes: ['openid', 'profile', 'email'] })
+      );
+      const touchConsentGrant = vi.fn(async () => undefined);
+      Object.assign(repo, { findConsentGrant, touchConsentGrant });
+
+      const result = await service.tryAutoConsent(pageData, device);
+
+      expect(findConsentGrant).toHaveBeenCalledWith(
+        '42',
+        'test-client',
+        'device-1'
+      );
+      expect(result?.redirectUrl).toContain('code=');
+      expect(result?.redirectUrl).toContain('state=state-1');
+      expect(repo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ user_id: '42', client_id: 'test-client' })
+      );
+      expect(touchConsentGrant).toHaveBeenCalledWith(
+        '42',
+        'test-client',
+        'device-1'
+      );
+    });
+
+    it('returns null without a device id', async () => {
+      const findConsentGrant = vi.fn();
+      Object.assign(repo, { findConsentGrant });
+
+      await expect(service.tryAutoConsent(pageData)).resolves.toBeNull();
+      expect(findConsentGrant).not.toHaveBeenCalled();
+    });
+
+    it('returns null when the grant has expired', async () => {
+      Object.assign(repo, {
+        findConsentGrant: vi.fn(async () =>
+          grantRow({ scopes: ['openid', 'profile'], expires_at: PAST })
+        )
+      });
+
+      await expect(service.tryAutoConsent(pageData, device)).resolves.toBeNull();
+      expect(repo.create).not.toHaveBeenCalled();
+    });
+
+    it('returns null when request asks for scopes not yet trusted', async () => {
+      Object.assign(repo, {
+        findConsentGrant: vi.fn(async () => grantRow({ scopes: ['openid'] }))
+      });
+
+      await expect(service.tryAutoConsent(pageData, device)).resolves.toBeNull();
+      expect(repo.create).not.toHaveBeenCalled();
+    });
+
+    it('returns null without a session', async () => {
+      session.session = null;
+      Object.assign(repo, { findConsentGrant: vi.fn() });
+
+      await expect(service.tryAutoConsent(pageData, device)).resolves.toBeNull();
     });
   });
 
