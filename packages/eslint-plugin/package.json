@@ -22,6 +22,12 @@
     "type-check": "tsc --noEmit",
     "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/eslint-plugin.json -t ./docs/.output/eslint-plugin.tpl.json --formatOutput prettier --exclude src/utils"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/eslint-plugin"
+  },
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/eslint-plugin#readme",
   "publishConfig": {
     "access": "public"
   },
