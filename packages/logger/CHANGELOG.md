@@ -1,5 +1,9 @@
 # @qlover/logger
 
+## 1.2.3
+
+### Patch Changes
+
 ## 1.2.1
 
 ### Patch Changes

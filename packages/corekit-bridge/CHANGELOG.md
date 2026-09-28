@@ -1,5 +1,16 @@
 # @qlover/corekit-bridge
 
+## 3.4.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **corekit-bridge:** 适配 slice-store 1.5 同步通知 ([1f2880a](https://github.com/qlover/fe-base/commit/1f2880a099c59d091ed7550f995e949a4465cc34)) ([#712](https://github.com/qlover/fe-base/pull/712))
+- Update dependency **@qlover/fe-corekit** from `3.4.8` to `3.4.9`
+- Update dependency **@qlover/logger** from `1.2.2` to `1.2.3`
+- Update dependency **@qlover/tailwind-theme** from `0.3.2` to `0.3.3`
+
 ## 3.4.2
 
 ### Patch Changes

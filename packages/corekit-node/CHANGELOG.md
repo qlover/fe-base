@@ -1,5 +1,11 @@
 # @qlover/corekit-node
 
+## 1.0.6
+
+### Patch Changes
+
+- Update dependency **@qlover/fe-corekit** from `3.4.8` to `3.4.9`
+
 ## 1.0.4
 
 ### Patch Changes
