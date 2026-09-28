@@ -3,6 +3,7 @@ import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
+import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
@@ -236,5 +237,25 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     });
 
     return response.data.data! as LoginProviderResult;
+  }
+
+  /**
+   * @override
+   */
+  public async changePassword(params: ChangePasswordInput): Promise<void> {
+    const response = await this.client.request<
+      NextKitApiResult<void>,
+      ChangePasswordInput
+    >({
+      url: apiRoutes.API_USER_PASSWORD,
+      method: HttpMethods.POST,
+      data: params,
+      encryptProps: ['current_password', 'new_password'],
+      disabledDialogError: true
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Change password failed');
+    }
   }
 }

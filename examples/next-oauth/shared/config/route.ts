@@ -71,6 +71,9 @@ export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
 
 export const ROUTE_HOME = '/' as const;
 
+/** Account center (profile + change password). Pages Router: `src/pages/[locale]/account.tsx`. */
+export const ROUTE_ACCOUNT = '/account' as const;
+
 /** Developer console app list (PRD default post-login redirect). */
 export const ROUTE_DEVELOPER_APPS = '/developer/apps' as const;
 
@@ -156,6 +159,7 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_SETTINGS,
   ROUTE_REQUEST_LOGS,
+  ROUTE_ACCOUNT,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_PLAYGROUND,
   // Consent requires an app session; gate here so unauthenticated users

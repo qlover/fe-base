@@ -1,16 +1,17 @@
 'use client';
 
 import { buttonClassName, Dropdown } from '@qlover/next-kit/client';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, type ReactNode } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import {
+  COMMON_ACCOUNT_CENTER,
   COMMON_LOGOUT_DIALOG_CONTENT,
   COMMON_LOGOUT_DIALOG_TITLE,
   COMMON_SIGNED_IN_AS,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { ROUTE_LOGIN } from '@config/route';
+import { ROUTE_ACCOUNT, ROUTE_LOGIN } from '@config/route';
 import { useI18nMapping } from '../hook/useI18nMapping';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
@@ -50,11 +51,12 @@ export function AuthButtonUI(props: {
 
   const emailLabel = userEmail?.trim() ?? '';
   const signedInLabel = t(COMMON_SIGNED_IN_AS);
+  const accountLabel = t(COMMON_ACCOUNT_CENTER);
 
   const menuItems = useMemo(() => {
     const items: {
       key: string;
-      label: string;
+      label: ReactNode;
       disabled?: boolean;
     }[] = [];
 
@@ -67,13 +69,26 @@ export function AuthButtonUI(props: {
     }
 
     items.push({
+      key: 'account',
+      label: (
+        <LocaleLink
+          href={ROUTE_ACCOUNT}
+          title={accountLabel}
+          className="block w-full text-inherit"
+        >
+          {accountLabel}
+        </LocaleLink>
+      )
+    });
+
+    items.push({
       key: 'logout',
       label: logoutTt.title,
       disabled: false
     });
 
     return items;
-  }, [emailLabel, logoutTt.title]);
+  }, [accountLabel, emailLabel, logoutTt.title]);
 
   const onLogout = useCallback(() => {
     dialogHandler.confirm({

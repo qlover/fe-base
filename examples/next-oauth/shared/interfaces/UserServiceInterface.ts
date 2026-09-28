@@ -1,4 +1,5 @@
 import type { LoginProviderType } from '@config/common';
+import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
 import type {
   UserService as CorekitBridgeUserServiceInterface,
   GatewayResult,
@@ -66,4 +67,6 @@ export interface UserServiceGatewayInterface extends UserServiceGateway<
   loginWithProvider(params: {
     provider: LoginProviderType;
   }): Promise<LoginProviderResult>;
+
+  changePassword(params: ChangePasswordInput): Promise<void>;
 }

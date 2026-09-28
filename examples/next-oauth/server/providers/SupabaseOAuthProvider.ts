@@ -13,6 +13,7 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
+import { resolveSupabaseLoginPassword } from '@server/utils/supabaseLoginPassword';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 import type { ServerContextInterface } from '@qlover/next-kit/server';
@@ -26,11 +27,6 @@ import type {
   WithUserSession
 } from '@qlover/oauth-wrapper';
 import type { Session, User } from '@supabase/supabase-js';
-
-function shouldMd5Password(): boolean {
-  const flag = process.env.SUPABASE_LOGIN_PASSWORD_MD5?.trim().toLowerCase();
-  return flag === '1' || flag === 'true' || flag === 'yes';
-}
 
 function requireSupabaseRefreshToken(
   session: Session | null | undefined
@@ -130,7 +126,7 @@ export class SupabaseOAuthProvider
   }
 
   protected resolvePassword(password: string): string {
-    return shouldMd5Password() ? this.encryptor.encrypt(password) : password;
+    return resolveSupabaseLoginPassword(this.encryptor, password);
   }
 
   protected getErrorCode(error: unknown): string | undefined {

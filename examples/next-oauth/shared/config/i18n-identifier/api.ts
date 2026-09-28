@@ -191,3 +191,41 @@ export const API_PAM_SLUG_EXISTS = 'api:pam_slug_exists';
  * @localEn Env name already exists
  */
 export const API_PAM_ENV_NAME_EXISTS = 'api:pam_env_name_exists';
+
+/**
+ * @description Change password requires a real email (password login is email based)
+ * @localZh 当前账号没有邮箱，无法修改密码
+ * @localEn This account has no email, so the password cannot be changed
+ */
+export const API_CHANGE_PASSWORD_EMAIL_REQUIRED =
+  'api:change_password_email_required';
+
+/**
+ * @description Current password is wrong (or the account never set a password)
+ * @localZh 当前密码不正确
+ * @localEn Current password is incorrect
+ */
+export const API_CHANGE_PASSWORD_CURRENT_INCORRECT =
+  'api:change_password_current_incorrect';
+
+/**
+ * @description New password does not meet the rules
+ * @localZh 新密码需为 6–50 位且不能包含空格
+ * @localEn New password must be 6–50 characters with no spaces
+ */
+export const API_CHANGE_PASSWORD_INVALID = 'api:change_password_invalid';
+
+/**
+ * @description New password equals the current one
+ * @localZh 新密码不能与当前密码相同
+ * @localEn New password must differ from the current password
+ */
+export const API_CHANGE_PASSWORD_SAME = 'api:change_password_same';
+
+/**
+ * @description Password change is unavailable for the configured upstream provider
+ * @localZh 当前登录方式不支持在此修改密码
+ * @localEn Changing the password is not supported for this sign-in provider
+ */
+export const API_CHANGE_PASSWORD_UNSUPPORTED =
+  'api:change_password_unsupported';
