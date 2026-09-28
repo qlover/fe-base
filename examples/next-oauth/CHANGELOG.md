@@ -1,5 +1,31 @@
 # examples/next-oauth
 
+## 1.7.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 模板接入设备级信任并优化授权页 ([3d2d4fe](https://github.com/qlover/fe-base/commit/3d2d4fe0d4fabcc445154c84b72eaf64e71ff353)) ([#716](https://github.com/qlover/fe-base/pull/716))
+
+- **next-oauth:** 扩展权限点与导航种子 ([f3ec32e](https://github.com/qlover/fe-base/commit/f3ec32e8d79027884a95cf0bfd6fe7fb858d1b5f)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** 权限目录管理页 ([aa69681](https://github.com/qlover/fe-base/commit/aa69681751c4822efc907525b8687e75a245bdaa)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** Memory KV 监控页 ([6973ac9](https://github.com/qlover/fe-base/commit/6973ac9a2480052e35439bc1885c085c7ea440ad)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** OTP 限流监控页 ([da1ce7b](https://github.com/qlover/fe-base/commit/da1ce7b29ec4a9d9bd0ccdac98c252b86ea242e5)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **auth:** 可插拔手机 OTP 并合并 SQL ([803d4a4](https://github.com/qlover/fe-base/commit/803d4a4f168702cb8d21152b839e46b9998a2f4f)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+#### 🐞 Bug Fixes
+
+- **deps:** 统一 next 与 supabase 版本消除双副本 ([089ca68](https://github.com/qlover/fe-base/commit/089ca680eb7e1870eb175577ba58c73dd79cce09)) ([#712](https://github.com/qlover/fe-base/pull/712))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.11.2` to `0.12.0`
+
 ## 1.6.2
 
 ### Patch Changes
