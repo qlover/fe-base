@@ -21,6 +21,7 @@ drop table if exists public.fe_oauth_authorization_codes cascade;
 drop table if exists public.fe_oauth_refresh_tokens cascade;
 drop table if exists public.fe_oauth_user_credentials cascade;
 drop table if exists public.fe_oauth_user_links cascade;
+drop table if exists public.fe_oauth_consent_grants cascade;
 drop table if exists public.fe_oauth_clients cascade;
 
 drop table if exists public.fe_phone_otps cascade;
@@ -325,6 +326,29 @@ comment on column public.fe_oauth_user_credentials.provider_refresh_token is
   'Encrypted upstream provider refresh_token for long-lived user credentials.';
 
 alter table public.fe_oauth_user_credentials enable row level security;
+
+create table public.fe_oauth_consent_grants (
+  user_id text not null,
+  client_id text not null references public.fe_oauth_clients (client_id) on delete cascade,
+  device_id text not null,
+  scopes text[] not null default '{}',
+  user_agent text,
+  expires_at timestamptz not null,
+  last_used_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, client_id, device_id)
+);
+
+create index idx_fe_oauth_consent_grants_user
+  on public.fe_oauth_consent_grants (user_id);
+
+comment on table public.fe_oauth_consent_grants is
+  'Remembered consent ("trust this app") per user + client + device; skip the authorize page for these scopes until expires_at.';
+comment on column public.fe_oauth_consent_grants.device_id is
+  'Random id from the httpOnly fe_oauth_device cookie.';
+
+alter table public.fe_oauth_consent_grants enable row level security;
 
 create table public.fe_oauth_user_links (
   auth_user_id uuid primary key references auth.users (id) on delete cascade,

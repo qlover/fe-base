@@ -1,5 +1,8 @@
 import type { OAuthClientsRepositoryInterface } from './OAuthClientsRepositoryInterface';
-import type { OAuthAuthorizationCodeRow } from '../schema/OAuthAuthorizeSchema';
+import type {
+  OAuthAuthorizationCodeRow,
+  OAuthConsentGrantRow
+} from '../schema/OAuthAuthorizeSchema';
 import type {
   OAuthUserCredentialsRow,
   OAuthRefreshTokenRow
@@ -14,6 +17,15 @@ export type CreateAuthorizationCodeInput = {
   code_challenge: string | null;
   code_challenge_method: string | null;
   expires_at: string;
+};
+
+export type UpsertOAuthConsentGrantInput = {
+  user_id: string;
+  client_id: string;
+  device_id: string;
+  scopes: string[];
+  expires_at: string;
+  user_agent?: string | null;
 };
 
 export type CreateOAuthRefreshTokenInput = {
@@ -54,4 +66,30 @@ export interface OAuthWrapperRepositoryInterface extends OAuthClientsRepositoryI
 
   /** Revoke all active refresh tokens issued for the given user. */
   revokeRefreshTokensByUserId(userId: string): Promise<void>;
+
+  /**
+   * Optional: remembered consent ("trust this app" on one device). Without
+   * these methods, the consent page is always shown.
+   */
+  findConsentGrant?(
+    userId: string,
+    clientId: string,
+    deviceId: string
+  ): Promise<OAuthConsentGrantRow | null>;
+
+  upsertConsentGrant?(input: UpsertOAuthConsentGrantInput): Promise<void>;
+
+  /** Record an auto-consent hit (e.g. update `last_used_at`). */
+  touchConsentGrant?(
+    userId: string,
+    clientId: string,
+    deviceId: string
+  ): Promise<void>;
+
+  /** Omit `deviceId` to revoke the client on every device. */
+  revokeConsentGrant?(
+    userId: string,
+    clientId: string,
+    deviceId?: string
+  ): Promise<void>;
 }

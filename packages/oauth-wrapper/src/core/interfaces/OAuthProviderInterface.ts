@@ -6,7 +6,10 @@ import type { OAuthTokenRequest } from '../schema/OAuthTokenSchema';
 import type { OAuthWrapperRepositoryInterface } from './OAuthWrapperRepositoryInterface';
 import type { OAuthTokenResponse } from '../schema/OAuthClientSchema';
 import type { LoginParams } from '@qlover/corekit-bridge/gateway-service';
-import type { SignWithOtpSchema } from '../schema/OAuthAuthorizeSchema';
+import type {
+  OAuthConsentDeviceContext,
+  SignWithOtpSchema
+} from '../schema/OAuthAuthorizeSchema';
 
 /**
  * OAuth authorize page data shared by server rendering and client UI.
@@ -94,7 +97,20 @@ export interface OAuthProviderInterface<
   /**
    * Process the consent
    */
-  processConsent(requestBody: unknown): Promise<OAuthConsentResult>;
+  processConsent(
+    requestBody: unknown,
+    device?: OAuthConsentDeviceContext
+  ): Promise<OAuthConsentResult>;
+
+  /**
+   * Skip the consent page when the signed-in user already trusted this client
+   * on this device for every requested scope and the trust has not expired.
+   * Returns `null` when consent must be shown.
+   */
+  tryAutoConsent?(
+    data: OAuthAuthorizePageData,
+    device?: OAuthConsentDeviceContext
+  ): Promise<OAuthConsentResult | null>;
 
   /**
    * 使用 access_token 获取用户信息

@@ -12,6 +12,11 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import {
+  ensureConsentDevice,
+  readConsentDevice
+} from '@server/utils/oauthConsentDevice';
+import type { LoggerInterface } from '@qlover/logger';
 import type { ValidatorInterface } from '@qlover/next-kit/common';
 import type {
   OAuthAuthorizePageData,
@@ -20,9 +25,18 @@ import type {
   OAuthTokenRequest
 } from '@qlover/oauth-wrapper';
 
+function isTrustedAllow(requestBody: unknown): boolean {
+  const body = requestBody as { action?: unknown; trust?: unknown } | null;
+  return body?.action === 'allow' && body.trust === true;
+}
+
 @injectable()
 export class OAuthWrapperController {
+  @inject(I.Logger)
+  protected logger!: LoggerInterface;
+
   protected stringEncryptor: StringEncryptor;
+  protected secureCookie: boolean;
 
   constructor(
     @inject(LoginValidator)
@@ -38,6 +52,7 @@ export class OAuthWrapperController {
       serverConfig.stringEncryptorKey,
       base64Serializer
     );
+    this.secureCookie = serverConfig.isProduction;
   }
 
   /**
@@ -84,7 +99,41 @@ export class OAuthWrapperController {
   public async submitConsent(
     requestBody: unknown
   ): Promise<OAuthConsentResult> {
-    return await this.oauthProvider.processConsent(requestBody);
+    // Only issue the device cookie when the user actually asks to trust.
+    const device = isTrustedAllow(requestBody)
+      ? await ensureConsentDevice(this.secureCookie)
+      : await readConsentDevice();
+    return await this.oauthProvider.processConsent(requestBody, device);
+  }
+
+  /**
+   * Redirect URL when the user already trusted this client, else `null`.
+   * Runs during Server Component render, so failures fall back to the
+   * consent page instead of breaking it.
+   */
+  public async tryAutoConsent(
+    data: OAuthAuthorizePageData
+  ): Promise<string | null> {
+    if (!this.oauthProvider.tryAutoConsent) {
+      return null;
+    }
+    try {
+      const result = await this.oauthProvider.tryAutoConsent(
+        data,
+        await readConsentDevice()
+      );
+      return result?.redirectUrl ?? null;
+    } catch (error) {
+      this.logger.warn('OAuth auto-consent skipped, showing consent page', {
+        clientId: data.clientId,
+        error
+      });
+      return null;
+    }
+  }
+
+  public getAuthorizingUser(): Promise<UserSchema | null> {
+    return this.oauthProvider.getEmbeddedUser();
   }
 
   public async exchangeToken(

@@ -11,6 +11,8 @@ export const FeTables = {
   oauthRefreshTokens: 'fe_oauth_refresh_tokens',
   oauthUserCredentials: 'fe_oauth_user_credentials',
   oauthUserLinks: 'fe_oauth_user_links',
+  /** Remembered "trust this app" consent per user + client. */
+  oauthConsentGrants: 'fe_oauth_consent_grants',
   roles: 'fe_roles',
   permissions: 'fe_permissions',
   roleAssignments: 'fe_role_assignments',

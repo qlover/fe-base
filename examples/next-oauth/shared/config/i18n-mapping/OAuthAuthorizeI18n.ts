@@ -41,6 +41,8 @@ export const oauthAuthorizeI18n = Object.freeze({
   errorRedirect: i18nKeys.PAGE_OAUTH_AUTHORIZE_ERROR_REDIRECT,
   errorScope: i18nKeys.PAGE_OAUTH_AUTHORIZE_ERROR_SCOPE,
   errorConsent: i18nKeys.PAGE_OAUTH_AUTHORIZE_ERROR_CONSENT,
+  accountLabel: i18nKeys.PAGE_OAUTH_AUTHORIZE_ACCOUNT_LABEL,
+  switchAccount: i18nKeys.PAGE_OAUTH_AUTHORIZE_SWITCH_ACCOUNT,
 
   adminTitle: COMMON_ADMIN_TITLE
 });

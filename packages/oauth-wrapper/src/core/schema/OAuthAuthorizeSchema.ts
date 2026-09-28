@@ -153,6 +153,33 @@ export type OAuthAuthorizationCodeRow = z.infer<
   typeof OAuthAuthorizationCodeRowSchema
 >;
 
+/**
+ * Remembered "trust this app" decision: user skips consent for `scopes`
+ * on one device until `expires_at`.
+ */
+export const OAuthConsentGrantRowSchema = z.object({
+  user_id: z.string(),
+  client_id: z.string(),
+  device_id: z.string(),
+  scopes: z.array(z.string()),
+  expires_at: z.string(),
+  user_agent: z.string().nullable().optional(),
+  last_used_at: z.string().nullable().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional()
+});
+
+export type OAuthConsentGrantRow = z.infer<typeof OAuthConsentGrantRowSchema>;
+
+/**
+ * Per-request device info supplied by the app (e.g. from an httpOnly cookie).
+ * Without `deviceId`, trust is neither stored nor applied.
+ */
+export type OAuthConsentDeviceContext = {
+  deviceId?: string | null;
+  userAgent?: string | null;
+};
+
 export const signWithPhoneOtpSchema = z.object({
   /** The user's phone number. */
   phone: z.string(),
