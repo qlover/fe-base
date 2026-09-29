@@ -21,6 +21,14 @@ import {
   platformRoleFromUserRole
 } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
+import {
+  API_CHANGE_PASSWORD_INVALID,
+  API_NOT_AUTHORIZED
+} from '@config/i18n-identifier/api';
+import {
+  changePasswordSchema,
+  type ChangePasswordInput
+} from '@schemas/ChangePasswordSchema';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
@@ -29,6 +37,7 @@ import {
   FeUsersRepository
 } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
+import { ChangePasswordService } from '@server/services/ChangePasswordService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
 import { RolePermissionService } from '@server/services/RolePermissionService';
@@ -66,7 +75,9 @@ export class UserController {
     @inject(RolePermissionService)
     protected rolePermissionService: RolePermissionService,
     @inject(FeUsersRepository)
-    protected feUsersRepository: FeUsersRepository
+    protected feUsersRepository: FeUsersRepository,
+    @inject(ChangePasswordService)
+    protected changePasswordService: ChangePasswordService
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
@@ -239,5 +250,36 @@ export class UserController {
     const params = loginWithProviderCallbackSchema.parse(_query);
 
     return this.userService.loginWithProviderCallback(params);
+  }
+
+  public async changePassword(body: unknown): Promise<void> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const raw = body as Partial<ChangePasswordInput> | null;
+    let decrypted: ChangePasswordInput;
+    try {
+      decrypted = {
+        current_password: this.stringEncryptor.decrypt(
+          raw?.current_password ?? ''
+        ),
+        new_password: this.stringEncryptor.decrypt(raw?.new_password ?? '')
+      };
+    } catch {
+      throw new ExecutorError(
+        'encrypt_password_failed',
+        'Encrypt password failed'
+      );
+    }
+    const parsed = changePasswordSchema.safeParse(decrypted);
+    if (!parsed.success) {
+      throw new ExecutorError(API_CHANGE_PASSWORD_INVALID);
+    }
+    await this.changePasswordService.changePassword({
+      userId: user.id,
+      currentPassword: parsed.data.current_password,
+      newPassword: parsed.data.new_password
+    });
   }
 }

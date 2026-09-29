@@ -245,6 +245,15 @@ export const API_USER_OTP_LOGIN = '/api/user/otp/login' as const;
 export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
 
 /**
+ * API path: `/api/user/password`
+ *
+ * @see [src/app/api/user/password/route.ts](../../src/app/api/user/password/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/password/route.ts`
+ */
+export const API_USER_PASSWORD = '/api/user/password' as const;
+
+/**
  * API path: `/api/user/register`
  *
  * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
@@ -298,6 +307,7 @@ export type ApiRoutePath =
   | typeof API_USER_LOGOUT
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY
+  | typeof API_USER_PASSWORD
   | typeof API_USER_REGISTER
   | typeof API_USER_REQUEST_LOGS
   | typeof API_USER_SESSION;

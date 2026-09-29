@@ -4,6 +4,7 @@ import { localeCookieConfig } from '@shared/utils/localePreference';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
+  ROUTE_ACCOUNT,
   ROUTE_ADMIN_ROLES,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DEMO_UI,
@@ -59,6 +60,10 @@ export const routing = defineRouting({
     [ROUTE_DEVELOPER_APPS]: {
       en: '/developer/apps',
       zh: '/developer/apps'
+    },
+    [ROUTE_ACCOUNT]: {
+      en: '/account',
+      zh: '/account'
     },
     [ROUTE_OAUTH_AUTHORIZE]: {
       en: '/oauth/authorize',

@@ -198,6 +198,13 @@ export const COMMON_AUTH_NAV_REQUEST_LOGS = 'common:authNav_requestLogs';
 export const COMMON_SIGNED_IN_AS = 'common:signed_in_as';
 
 /**
+ * @description Account center menu item
+ * @localZh 个人中心
+ * @localEn Account
+ */
+export const COMMON_ACCOUNT_CENTER = 'common:account_center';
+
+/**
  * @description App header nav - Docs
  * @localZh 文档
  * @localEn Docs
