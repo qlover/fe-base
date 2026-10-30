@@ -171,10 +171,8 @@ export default class TypeDocJson extends ScriptPlugin<
       includeVersion: true,
       excludePrivate: true,
       excludeProtected: false,
-      // 排除 node_modules / 外部包成员，避免 React HTML 属性把组件文档撑爆
-      excludeExternals: true,
-      // 跳过 @internal（如 FullProps = OwnProps & HTMLAttributes）
-      excludeInternal: true
+      excludeExternals: this.getFormatsOnlyPrimaryExport(),
+      excludeInternal: this.getFormatsOnlyPrimaryExport()
     });
 
     const outputPath = this.getConfig('outputJSONFilePath', '');
@@ -477,11 +475,11 @@ export default class TypeDocJson extends ScriptPlugin<
       );
     }
 
-    // 处理子元素（跳过继承成员，组件 OwnProps 才有可读 API）
+    // 处理子元素（组件页才跳过继承成员，默认保持 2.1.4 行为）
     let children: FormatProjectValue[] | undefined;
     if (reflection.children) {
       children = reflection.children
-        .filter((child: any) => !child.inheritedFrom)
+        .filter((child: any) => this.shouldIncludeChild(child))
         .map((child: any) => this.convertReflectionToFormatValue(child));
     }
 
@@ -491,7 +489,7 @@ export default class TypeDocJson extends ScriptPlugin<
       reflection.type.declaration?.children
     ) {
       const typeChildren = reflection.type.declaration.children
-        .filter((child: any) => !child.inheritedFrom)
+        .filter((child: any) => this.shouldIncludeChild(child))
         .map((child: any) => this.convertReflectionToFormatValue(child));
       children = children ? [...children, ...typeChildren] : typeChildren;
     }
@@ -549,11 +547,14 @@ export default class TypeDocJson extends ScriptPlugin<
   }
 
   /**
-   * 文档标题用名：`--removePrefix` 时去掉 `src/button/Button` 路径，只留 `Button`
+   * 文档标题用名：仅 `--onlyPrimaryExport` + `--removePrefix` 时去掉路径。
    */
   protected getDisplayName(reflection: any): string {
     let name = String(reflection.name || '');
-    if (!this.getFormatsRemovePrefix()) {
+    if (
+      !this.getFormatsOnlyPrimaryExport() ||
+      !this.getFormatsRemovePrefix()
+    ) {
       return name;
     }
     if (name.includes('/') || name.includes('\\')) {
@@ -566,7 +567,11 @@ export default class TypeDocJson extends ScriptPlugin<
    * typeString 里若仍带路径模块名，与 displayName 对齐
    */
   protected rewriteTypeStringName(typeString: string, reflection: any): string {
-    if (!typeString || !this.getFormatsRemovePrefix()) {
+    if (
+      !typeString ||
+      !this.getFormatsOnlyPrimaryExport() ||
+      !this.getFormatsRemovePrefix()
+    ) {
       return typeString;
     }
     const display = this.getDisplayName(reflection);
@@ -1206,6 +1211,23 @@ export default class TypeDocJson extends ScriptPlugin<
       formats?: { removePrefix?: boolean };
     };
     return opts.formats?.removePrefix === true;
+  }
+
+  private getFormatsOnlyPrimaryExport(): boolean {
+    const opts = this.context.options as {
+      formats?: { onlyPrimaryExport?: boolean };
+    };
+    return opts.formats?.onlyPrimaryExport === true;
+  }
+
+  /**
+   * 默认保留继承成员；组件页才丢掉 HTMLAttributes 等 inheritedFrom。
+   */
+  private shouldIncludeChild(child: { inheritedFrom?: unknown }): boolean {
+    if (!this.getFormatsOnlyPrimaryExport()) {
+      return true;
+    }
+    return !child.inheritedFrom;
   }
 
   private sourceTsPathToOutputMd(fileName: string): string {

@@ -425,11 +425,11 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     data: FormatProjectValue,
     level: number = 0
   ): string {
-    // removePrefix 模式下：文件 Module + 同名导出 → 组件文档页（用法 / API / 示例）
+    // 仅 `--onlyPrimaryExport`：文件 Module + 同名导出 → 组件文档页
     if (
       level === 0 &&
       data.kindName === 'Module' &&
-      this.getConfig('removePrefix') &&
+      this.getConfig('onlyPrimaryExport') &&
       this.findPrimaryExport(data)
     ) {
       return this.formatComponentModulePage(data);
@@ -443,8 +443,9 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     const decodedContent = this.decodeHtmlEntities(compiledContent);
     content.push(decodedContent);
 
-    // Interface 的 Property 子节点改用 API 表，避免 #### 刷屏
+    // 组件页才把 Interface 属性收成 API 表；默认仍按 HBS 逐条展开
     if (
+      this.getConfig('onlyPrimaryExport') &&
       data.kindName === 'Interface' &&
       data.children?.length &&
       data.children.every((child) => child.kindName === 'Property')

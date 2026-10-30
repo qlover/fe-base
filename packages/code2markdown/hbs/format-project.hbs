@@ -1,8 +1,4 @@
-{{!-- 文件级 Module：只显示组件名，不带路径、不带 (Module) --}}
-{{#if (eq kindName "Module")}}
-{{#repeat (add level 2)}}#{{/repeat}} {{name}}{{#if deprecated}} ⚠️{{/if}}
-{{else}}
-{{#repeat (add level 2)}}#{{/repeat}} `{{name}}`{{#if kindName}} ({{kindName}}){{/if}}{{#if deprecated}} ⚠️{{/if}}
+{{#repeat (add level 2)}}#{{/repeat}} `{{name}}` {{#if kindName}}({{kindName}}){{/if}}{{#if deprecated}}⚠️{{/if}}
 
 {{#if typeString}}
 **Type:** `{{typeString}}`
@@ -14,7 +10,6 @@
 
 {{#if defaultValue}}
 **Default:** `{{defaultValue}}`
-{{/if}}
 {{/if}}
 
 {{#each descriptions}}
