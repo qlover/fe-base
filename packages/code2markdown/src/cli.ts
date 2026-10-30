@@ -38,6 +38,10 @@
  * | \`--exclude\` | - | \`string[]\` | ❌ | - | Exclude files or directories (comma-separated paths/patterns) |
  * | \`--colocate\` | - | \`boolean\` | ❌ | \`false\` | Write markdown beside the source file |
  * | \`--onlyPrimaryExport\` | - | \`boolean\` | ❌ | \`false\` | Only write PascalCase \`.tsx\` with a same-name export |
+ * | \`--plugin\` | - | \`string\` | ❌ | - | Extra plugin module path (repeatable); export \`createCode2MDPlugin(context)\` |
+ * | \`--no-llm-translate\` | - | \`boolean\` | ❌ | \`false\` | Disable LlmTranslate even if \`fe-config code2md.llmTranslate\` is set |
+ * | \`--llm-translate-force\` | - | \`boolean\` | ❌ | \`false\` | Re-translate even when target localized md already exists |
+ * | \`--llm-translate-config\` | - | \`string\` | ❌ | - | JSON file merged into \`code2md.llmTranslate\` (same shape as fe-config) |
  *
  * @example Basic Usage
  * ```bash
@@ -76,10 +80,16 @@
  */
 
 import { Command } from 'commander';
+import { readFileSync } from 'node:fs';
 import { version, description } from '../package.json';
-import { type Code2MDContextOptions } from './implments/Code2MDContext';
+import Code2MDContext, {
+  type Code2MDContextOptions
+} from './implments/Code2MDContext';
 import { Code2MDTask } from './implments/Code2MDTask';
+import type { LlmTranslateConfigInputType } from './plugins/LlmTranslateConfigUtil';
 import { dirname, join, resolve } from 'path';
+import { pathToFileURL } from 'url';
+import type { LifecyclePluginInterface } from '@qlover/fe-corekit';
 
 /**
  * Get the current file path in a cross-platform and module-system compatible way
@@ -173,9 +183,79 @@ program
   .option(
     '--mdSuffix <suffix>',
     'Markdown file suffix (default .md; e.g. .doc.md for gitignore)'
+  )
+  .option(
+    '--plugin <path>',
+    'Load an extra ScriptPlugin after Formats (repeatable). Module must export createCode2MDPlugin(context)',
+    (value: string, previous: string[]) => {
+      previous.push(value);
+      return previous;
+    },
+    [] as string[]
+  )
+  .option(
+    '--no-llm-translate',
+    'Disable LlmTranslate even if fe-config code2md.llmTranslate is set'
+  )
+  .option(
+    '--llm-translate-force',
+    'Re-translate even when target *.en.doc.md already exists'
+  )
+  .option(
+    '--llm-translate-config <path>',
+    'JSON file merged into code2md.llmTranslate (same shape as fe-config)'
   );
 
 program.parse(process.argv);
+
+/**
+ * Load a user plugin module. Prefer `createCode2MDPlugin(context)`.
+ */
+export async function loadCode2MDPlugin(
+  pluginPath: string,
+  context: Code2MDContext
+): Promise<LifecyclePluginInterface<Code2MDContext>> {
+  const absolutePath = resolve(process.cwd(), pluginPath);
+  const mod = (await import(pathToFileURL(absolutePath).href)) as {
+    createCode2MDPlugin?: (
+      ctx: Code2MDContext
+    ) =>
+      | LifecyclePluginInterface<Code2MDContext>
+      | Promise<LifecyclePluginInterface<Code2MDContext>>;
+    default?: unknown;
+  };
+
+  if (typeof mod.createCode2MDPlugin === 'function') {
+    return await mod.createCode2MDPlugin(context);
+  }
+
+  const exported = mod.default;
+  if (typeof exported === 'function') {
+    const maybeClass = exported as {
+      prototype?: { constructor?: unknown };
+      (ctx: Code2MDContext): LifecyclePluginInterface<Code2MDContext>;
+    };
+    if (
+      maybeClass.prototype &&
+      maybeClass.prototype.constructor === exported
+    ) {
+      return new (exported as new (
+        ctx: Code2MDContext
+      ) => LifecyclePluginInterface<Code2MDContext>)(context);
+    }
+    return await (
+      exported as (
+        ctx: Code2MDContext
+      ) =>
+        | LifecyclePluginInterface<Code2MDContext>
+        | Promise<LifecyclePluginInterface<Code2MDContext>>
+    )(context);
+  }
+
+  throw new Error(
+    `Invalid code2md plugin "${pluginPath}": export createCode2MDPlugin(context) or default class/factory`
+  );
+}
 
 const options = program.opts();
 
@@ -263,6 +343,35 @@ const main = async () => {
 
   // Create and execute documentation generation task
   const task = new Code2MDTask(code2mdOptions);
+  const context = task.getContext();
+
+  if (
+    typeof opts.llmTranslateConfig === 'string' &&
+    opts.llmTranslateConfig.trim()
+  ) {
+    const absoluteConfigPath = resolve(process.cwd(), opts.llmTranslateConfig);
+    const fileJson = JSON.parse(
+      readFileSync(absoluteConfigPath, 'utf8')
+    ) as LlmTranslateConfigInputType;
+    context.setParameters({ llmTranslate: fileJson });
+  }
+
+  // Commander: `--no-llm-translate` may set `llmTranslate: false` or `noLlmTranslate: true`
+  const disableLlmTranslate =
+    opts.noLlmTranslate === true || opts.llmTranslate === false;
+  if (disableLlmTranslate) {
+    context.setParameters({ llmTranslate: { skip: true } });
+  }
+
+  if (opts.llmTranslateForce === true) {
+    context.setParameters({ llmTranslate: { force: true } });
+  }
+
+  const pluginPaths = (opts.plugin as string[] | undefined) ?? [];
+  for (const pluginPath of pluginPaths) {
+    const plugin = await loadCode2MDPlugin(pluginPath, context);
+    task.use(plugin);
+  }
 
   await task.run();
 };

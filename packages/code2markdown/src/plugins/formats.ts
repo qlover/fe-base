@@ -211,6 +211,8 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     });
 
     this.setConfig({ fileGroups, writtenMarkdownPaths });
+    // Expose for post-Formats plugins loaded via CLI `--plugin`
+    this.context.setParameters({ writtenMarkdownPaths });
   }
 
   /**
@@ -532,7 +534,6 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     );
 
     const parts: string[] = [];
-    parts.push('<!-- code2markdown 生成，勿手改 -->\n');
     parts.push(`# ${data.name}\n`);
 
     const descriptions = primary.descriptions || [];

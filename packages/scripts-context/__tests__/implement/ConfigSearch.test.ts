@@ -133,7 +133,8 @@ describe('ConfigSearch', () => {
         searchPlaces: expect.any(Array),
         loaders: {
           '.custom': customLoader
-        }
+        },
+        searchStrategy: 'global'
       });
     });
 

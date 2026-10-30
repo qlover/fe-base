@@ -232,4 +232,10 @@ export * from './implments/Code2MDTask';
 export * from './plugins/formats';
 export * from './plugins/reader';
 export * from './plugins/typeDocs';
+export * from './plugins/LlmTranslate';
+export * from './plugins/LlmTranslateConfigUtil';
 export * from './type';
+export {
+  ScriptPlugin,
+  type ScriptPluginProps
+} from '@qlover/scripts-context';

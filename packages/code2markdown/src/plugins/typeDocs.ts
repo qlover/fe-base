@@ -663,6 +663,12 @@ export default class TypeDocJson extends ScriptPlugin<
           : String(reflection.type.value);
       }
       if (reflection.type.type === 'reflection') {
+        // 属性类型为函数时 TypeDoc 常给 reflection + declaration.signatures，
+        // 不能一律打成 Object（如 onAction?: () => void）。
+        const declaration = reflection.type.declaration;
+        if (declaration?.signatures?.[0]) {
+          return this.getTypeString(declaration);
+        }
         return 'Object';
       }
       if (reflection.type.type === 'array') {

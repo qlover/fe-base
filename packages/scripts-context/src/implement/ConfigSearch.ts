@@ -595,9 +595,12 @@ export class ConfigSearch {
 
     if (file === false) return localConfig;
 
+    // cosmiconfig 9 默认 searchStrategy=project，会在最近 package.json 处停止；
+    // monorepo 子包 cwd 读不到仓库根 fe-config.json，故强制 global 向上搜索。
     const explorer = cosmiconfigSync(this.name, {
       searchPlaces: this.searchPlaces,
-      loaders: this.loaders
+      loaders: this.loaders,
+      searchStrategy: 'global'
     });
 
     const result = file ? explorer.load(file) : explorer.search(dir);
