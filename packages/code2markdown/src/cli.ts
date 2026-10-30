@@ -36,6 +36,8 @@
  * | \`--formatOutput\` | - | \`string\` | ❌ | - | Format output with \`'eslint'\` or \`'prettier'\` |
  * | \`--filterTags\` | - | \`string[]\` | ❌ | - | Comma-separated JSDoc tags to filter out |
  * | \`--exclude\` | - | \`string[]\` | ❌ | - | Exclude files or directories (comma-separated paths/patterns) |
+ * | \`--colocate\` | - | \`boolean\` | ❌ | \`false\` | Write markdown beside the source file |
+ * | \`--onlyPrimaryExport\` | - | \`boolean\` | ❌ | \`false\` | Only write PascalCase \`.tsx\` with a same-name export |
  *
  * @example Basic Usage
  * ```bash
@@ -159,6 +161,14 @@ program
     '--exclude <paths>',
     'Exclude files or directories from processing (comma-separated paths/patterns)',
     (value) => value.split(',').map((path) => path.trim())
+  )
+  .option(
+    '--colocate',
+    'Write markdown beside the source file (Button.tsx → Button.md)'
+  )
+  .option(
+    '--onlyPrimaryExport',
+    'Only write PascalCase .tsx files that export a same-name component'
   );
 
 program.parse(process.argv);
@@ -233,7 +243,9 @@ const main = async () => {
       skip: false,
       hbsRootDir: hbsRootDir,
       removePrefix: opts.removePrefix || false,
-      formatOutput: opts.formatOutput
+      formatOutput: opts.formatOutput,
+      colocate: opts.colocate || false,
+      onlyPrimaryExport: opts.onlyPrimaryExport || false
     }
   };
 

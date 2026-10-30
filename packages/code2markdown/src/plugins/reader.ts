@@ -135,7 +135,11 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       );
     }
 
-    const outputs = filteredFiles.map((entryFile) => {
+    const sourceFiles = filteredFiles.filter((file) =>
+      this.isTypeScriptSourceFile(file)
+    );
+
+    const outputs = sourceFiles.map((entryFile) => {
       const relativePath = relative(process.cwd(), entryFile);
       const ext = extname(entryFile);
       const name = basename(entryFile, ext);
@@ -266,6 +270,25 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     });
 
     return filePaths;
+  }
+
+  /**
+   * TypeDoc 入口只收 TS/JS 源文件，跳过 css / md / `.d.ts`。
+   */
+  private isTypeScriptSourceFile(filePath: string): boolean {
+    const normalized = filePath.replace(/\\/g, '/');
+    if (normalized.endsWith('.d.ts')) {
+      return false;
+    }
+    const ext = extname(normalized).toLowerCase();
+    return (
+      ext === '.ts' ||
+      ext === '.tsx' ||
+      ext === '.js' ||
+      ext === '.jsx' ||
+      ext === '.mts' ||
+      ext === '.cts'
+    );
   }
 
   /**

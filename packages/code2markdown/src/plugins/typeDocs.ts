@@ -171,7 +171,10 @@ export default class TypeDocJson extends ScriptPlugin<
       includeVersion: true,
       excludePrivate: true,
       excludeProtected: false,
-      excludeExternals: false
+      // 排除 node_modules / 外部包成员，避免 React HTML 属性把组件文档撑爆
+      excludeExternals: true,
+      // 跳过 @internal（如 FullProps = OwnProps & HTMLAttributes）
+      excludeInternal: true
     });
 
     const outputPath = this.getConfig('outputJSONFilePath', '');
@@ -445,9 +448,15 @@ export default class TypeDocJson extends ScriptPlugin<
 
     const ownerSourceFile = this.getSourceInfo(reflection)?.fileName;
 
+    // 函数声明的 JSDoc 常挂在 signature 上，而不是 reflection.comment
+    const commentForDocs =
+      reflection.comment ||
+      reflection.signatures?.[0]?.comment ||
+      undefined;
+
     // 格式化描述信息
     const descriptions = this.formatDescription(
-      reflection.comment,
+      commentForDocs,
       ownerSourceFile
     );
 
@@ -468,12 +477,12 @@ export default class TypeDocJson extends ScriptPlugin<
       );
     }
 
-    // 处理子元素
+    // 处理子元素（跳过继承成员，组件 OwnProps 才有可读 API）
     let children: FormatProjectValue[] | undefined;
     if (reflection.children) {
-      children = reflection.children.map((child: any) =>
-        this.convertReflectionToFormatValue(child)
-      );
+      children = reflection.children
+        .filter((child: any) => !child.inheritedFrom)
+        .map((child: any) => this.convertReflectionToFormatValue(child));
     }
 
     // 处理 type.declaration.children（用于 type 类型）
@@ -481,9 +490,9 @@ export default class TypeDocJson extends ScriptPlugin<
       reflection.type?.type === 'reflection' &&
       reflection.type.declaration?.children
     ) {
-      const typeChildren = reflection.type.declaration.children.map(
-        (child: any) => this.convertReflectionToFormatValue(child)
-      );
+      const typeChildren = reflection.type.declaration.children
+        .filter((child: any) => !child.inheritedFrom)
+        .map((child: any) => this.convertReflectionToFormatValue(child));
       children = children ? [...children, ...typeChildren] : typeChildren;
     }
 
@@ -519,13 +528,14 @@ export default class TypeDocJson extends ScriptPlugin<
     const since = this.getSinceVersion(reflection);
     const deprecated = this.isDeprecated(reflection);
     const optional = this.isOptional(reflection);
+    const internal = this.isInternal(reflection);
 
     return {
       id: reflection.id,
       kind: reflection.kind,
       kindName: kindName as any,
-      name: reflection.name,
-      typeString,
+      name: this.getDisplayName(reflection),
+      typeString: this.rewriteTypeStringName(typeString, reflection),
       descriptions,
       source,
       parametersList,
@@ -533,8 +543,38 @@ export default class TypeDocJson extends ScriptPlugin<
       defaultValue,
       since,
       deprecated,
-      optional
+      optional,
+      internal
     };
+  }
+
+  /**
+   * 文档标题用名：`--removePrefix` 时去掉 `src/button/Button` 路径，只留 `Button`
+   */
+  protected getDisplayName(reflection: any): string {
+    let name = String(reflection.name || '');
+    if (!this.getFormatsRemovePrefix()) {
+      return name;
+    }
+    if (name.includes('/') || name.includes('\\')) {
+      name = name.replace(/\\/g, '/').split('/').pop() || name;
+    }
+    return name.replace(/\.(tsx|ts|jsx|js)$/i, '');
+  }
+
+  /**
+   * typeString 里若仍带路径模块名，与 displayName 对齐
+   */
+  protected rewriteTypeStringName(typeString: string, reflection: any): string {
+    if (!typeString || !this.getFormatsRemovePrefix()) {
+      return typeString;
+    }
+    const display = this.getDisplayName(reflection);
+    const raw = String(reflection.name || '');
+    if (raw && raw !== display && typeString.includes(raw)) {
+      return typeString.split(raw).join(display);
+    }
+    return typeString;
   }
 
   /**
@@ -808,12 +848,30 @@ export default class TypeDocJson extends ScriptPlugin<
       const defaultTag = reflection.comment.blockTags.find(
         (tag: any) => tag.tag === '@default'
       );
-      if (defaultTag?.content?.[0]?.text) {
-        return defaultTag.content[0].text.replace(/`/g, '');
+      if (defaultTag?.content?.length) {
+        const raw = defaultTag.content
+          .map((part: { text?: string }) => part.text || '')
+          .join('');
+        const normalized = this.normalizeDefaultValueText(raw);
+        if (normalized) {
+          return normalized;
+        }
       }
     }
 
     return undefined;
+  }
+
+  /**
+   * TypeDoc 把 `@default false` 收成围栏代码块（` ```ts\\nfalse\\n``` `），表格单元格不能有换行。
+   */
+  private normalizeDefaultValueText(raw: string): string {
+    const trimmed = raw.trim();
+    const fenced = trimmed.match(
+      /^```(?:[\w.-]+)?\s*\r?\n?([\s\S]*?)\r?\n?```$/
+    );
+    const inner = (fenced ? fenced[1] : trimmed).replace(/`/g, '').trim();
+    return inner.replace(/\s+/g, ' ');
   }
 
   /**
@@ -896,6 +954,28 @@ export default class TypeDocJson extends ScriptPlugin<
     if (reflection.comment?.blockTags) {
       return reflection.comment.blockTags.some(
         (tag: any) => tag.tag === '@deprecated'
+      );
+    }
+    return false;
+  }
+
+  /**
+   * `@internal` modifier / flag：属性级隐藏（如 examples 专用 `demo`）。
+   */
+  private isInternal(reflection: any): boolean {
+    if (reflection.flags?.isInternal) {
+      return true;
+    }
+    const modifierTags = reflection.comment?.modifierTags;
+    if (modifierTags instanceof Set) {
+      return modifierTags.has('@internal');
+    }
+    if (Array.isArray(modifierTags)) {
+      return modifierTags.includes('@internal');
+    }
+    if (reflection.comment?.blockTags) {
+      return reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@internal'
       );
     }
     return false;

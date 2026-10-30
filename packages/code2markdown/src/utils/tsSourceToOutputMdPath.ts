@@ -47,7 +47,8 @@ export function tsSourcePathToOutputMdPath(
   if (options.removePrefix) {
     processed = removeEntryPrefixFromPath(processed, options.sourcePath);
   }
-  return processed.replace(/\.ts$/, '.md');
+  // .ts / .tsx / .js / .jsx → .md（此前只替换 .ts，导致 .tsx 输出错误扩展名）
+  return processed.replace(/\.(tsx|ts|jsx|js)$/i, '.md');
 }
 
 /**
