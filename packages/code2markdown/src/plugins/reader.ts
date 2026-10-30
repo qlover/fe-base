@@ -2,6 +2,7 @@ import { readdirSync, statSync } from 'fs';
 import type Code2MDContext from '../implments/Code2MDContext';
 import { ScriptPlugin } from '@qlover/scripts-context';
 import { basename, dirname, extname, join, relative, normalize } from 'path';
+import { normalizeMarkdownSuffix } from '../utils/tsSourceToOutputMdPath';
 
 /**
  * Entry file information for file reading operations
@@ -139,6 +140,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       this.isTypeScriptSourceFile(file)
     );
 
+    const mdSuffix = this.getMarkdownSuffix();
     const outputs = sourceFiles.map((entryFile) => {
       const relativePath = relative(process.cwd(), entryFile);
       const ext = extname(entryFile);
@@ -149,7 +151,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
         dir: dirname(entryFile),
         ext,
         relativePath,
-        outputPath: join(dirname(entryFile), `${name}.md`)
+        outputPath: join(dirname(entryFile), `${name}${mdSuffix}`)
       } as ReaderOutput;
     });
 
@@ -289,6 +291,13 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       ext === '.mts' ||
       ext === '.cts'
     );
+  }
+
+  private getMarkdownSuffix(): string {
+    const opts = this.context.options as {
+      formats?: { mdSuffix?: string };
+    };
+    return normalizeMarkdownSuffix(opts.formats?.mdSuffix);
   }
 
   /**

@@ -1220,6 +1220,13 @@ export default class TypeDocJson extends ScriptPlugin<
     return opts.formats?.onlyPrimaryExport === true;
   }
 
+  private getFormatsMdSuffix(): string | undefined {
+    const opts = this.context.options as {
+      formats?: { mdSuffix?: string };
+    };
+    return opts.formats?.mdSuffix;
+  }
+
   /**
    * 默认保留继承成员；组件页才丢掉 HTMLAttributes 等 inheritedFrom。
    */
@@ -1233,7 +1240,8 @@ export default class TypeDocJson extends ScriptPlugin<
   private sourceTsPathToOutputMd(fileName: string): string {
     return tsSourcePathToOutputMdPath(fileName, {
       sourcePath: this.context.options.sourcePath,
-      removePrefix: this.getFormatsRemovePrefix()
+      removePrefix: this.getFormatsRemovePrefix(),
+      mdSuffix: this.getFormatsMdSuffix()
     });
   }
 

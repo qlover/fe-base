@@ -10,7 +10,10 @@ import {
   getSourceFileBasename,
   isPascalCaseTsxSource
 } from '../utils/isPrimaryComponentSource';
-import { tsSourcePathToOutputMdPath } from '../utils/tsSourceToOutputMdPath';
+import {
+  normalizeMarkdownSuffix,
+  tsSourcePathToOutputMdPath
+} from '../utils/tsSourceToOutputMdPath';
 
 /**
  * Supported format output types for markdown files
@@ -68,6 +71,13 @@ export interface FormatsProps extends ScriptPluginProps {
    * @default `false`
    */
   onlyPrimaryExport?: boolean;
+
+  /**
+   * Markdown file suffix. Default `.md`; xoranj uses `.doc.md` so gitignore is easy.
+   *
+   * @default `.md`
+   */
+  mdSuffix?: string;
 
   /**
    * Paths of markdown files written in the current run (for colocated prettier).
@@ -764,7 +774,8 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     const removePrefix = Boolean(this.getConfig('removePrefix'));
     const out = tsSourcePathToOutputMdPath(filePath, {
       sourcePath,
-      removePrefix
+      removePrefix,
+      mdSuffix: this.getConfig('mdSuffix') as string | undefined
     });
     this.logger.debug(`Path processing: "${filePath}" -> "${out}"`);
     return out;
@@ -849,9 +860,12 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
       if (hit) {
         return hit.outputPath;
       }
+      const suffix = normalizeMarkdownSuffix(
+        this.getConfig('mdSuffix') as string | undefined
+      );
       return resolve(
         process.cwd(),
-        filePath.replace(/\.(tsx|ts|jsx|js)$/i, '.md')
+        filePath.replace(/\.(tsx|ts|jsx|js)$/i, suffix)
       );
     }
 

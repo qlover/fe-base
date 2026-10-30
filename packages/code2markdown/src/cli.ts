@@ -169,6 +169,10 @@ program
   .option(
     '--onlyPrimaryExport',
     'Only write PascalCase .tsx files that export a same-name component'
+  )
+  .option(
+    '--mdSuffix <suffix>',
+    'Markdown file suffix (default .md; e.g. .doc.md for gitignore)'
   );
 
 program.parse(process.argv);
@@ -245,7 +249,8 @@ const main = async () => {
       removePrefix: opts.removePrefix || false,
       formatOutput: opts.formatOutput,
       colocate: opts.colocate || false,
-      onlyPrimaryExport: opts.onlyPrimaryExport || false
+      onlyPrimaryExport: opts.onlyPrimaryExport || false,
+      mdSuffix: opts.mdSuffix
     }
   };
 
