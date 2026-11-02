@@ -82,9 +82,8 @@
 import { Command } from 'commander';
 import { readFileSync } from 'node:fs';
 import { version, description } from '../package.json';
-import Code2MDContext, {
-  type Code2MDContextOptions
-} from './implments/Code2MDContext';
+import type Code2MDContext from './implments/Code2MDContext';
+import type { Code2MDContextOptions } from './implments/Code2MDContext';
 import { Code2MDTask } from './implments/Code2MDTask';
 import type { LlmTranslateConfigInputType } from './plugins/LlmTranslateConfigUtil';
 import { dirname, join, resolve } from 'path';
