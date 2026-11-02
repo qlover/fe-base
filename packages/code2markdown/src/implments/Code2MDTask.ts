@@ -1,8 +1,12 @@
-import { LifecycleExecutor } from '@qlover/fe-corekit';
+import {
+  LifecycleExecutor,
+  type LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import Code2MDContext, { type Code2MDContextOptions } from './Code2MDContext';
 import TypeDocJson from '../plugins/typeDocs';
 import { Reader } from '../plugins/reader';
 import { Formats } from '../plugins/formats';
+import { LlmTranslate } from '../plugins/LlmTranslate';
 
 /**
  * Task name constant for code-to-markdown conversion
@@ -46,6 +50,7 @@ export const CODE2MD_NAME = 'code2md' as const;
  * 1. Reader plugin processes source files and extracts code information
  * 2. TypeDocJson plugin generates structured reflection data
  * 3. Formats plugin converts reflection data to markdown documentation
+ * 4. LlmTranslate（可选）按 `code2md.llmTranslate` 写出并列译档
  *
  * @example Basic Usage
  * ```typescript
@@ -123,13 +128,26 @@ export class Code2MDTask {
     this.context = new Code2MDContext(CODE2MD_NAME, options);
 
     // Register all required plugins in execution order
-    [
-      new Reader(this.context), // Step 1: Read and process source files
-      new TypeDocJson(this.context), // Step 2: Generate TypeDoc reflection data
-      new Formats(this.context) // Step 3: Convert to markdown format
-    ].forEach((plugin) => {
-      this.executor.use(plugin);
-    });
+    this.executor.use(new Reader(this.context));
+    this.executor.use(new TypeDocJson(this.context));
+    this.executor.use(new Formats(this.context));
+    this.executor.use(new LlmTranslate(this.context));
+  }
+
+  /**
+   * Shared context (for CLI external plugins that need the same instance).
+   */
+  public getContext(): Code2MDContext {
+    return this.context;
+  }
+
+  /**
+   * Append a plugin after built-ins (Reader → TypeDoc → Formats → …).
+   * Call before {@link run}.
+   */
+  public use(plugin: LifecyclePluginInterface<Code2MDContext>): this {
+    this.executor.use(plugin);
+    return this;
   }
 
   /**

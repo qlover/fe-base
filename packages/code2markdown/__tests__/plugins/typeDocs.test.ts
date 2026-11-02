@@ -84,6 +84,10 @@ interface TestType {
   types?: TestType[]; // Added for union types
   declaration?: {
     children?: TestReflection[];
+    signatures?: Array<{
+      parameters?: TestReflection[];
+      type?: TestType;
+    }>;
   };
 }
 
@@ -389,6 +393,37 @@ describe('TypeDocJson', () => {
       };
       expect(typeDocJson['getTypeString'](reflection)).toBe(
         '(name: string) => string'
+      );
+    });
+
+    it('should format property function types via declaration.signatures', () => {
+      const reflection: TestReflection = {
+        id: 1,
+        kind: 1024,
+        name: 'onAction',
+        type: {
+          type: 'reflection',
+          declaration: {
+            signatures: [
+              {
+                type: {
+                  type: 'union',
+                  types: [
+                    { type: 'intrinsic', name: 'void' },
+                    {
+                      type: 'reference',
+                      name: 'Promise',
+                      typeArguments: [{ type: 'intrinsic', name: 'void' }]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      };
+      expect(typeDocJson['getTypeString'](reflection)).toBe(
+        '() => void \\| Promise<void>'
       );
     });
   });

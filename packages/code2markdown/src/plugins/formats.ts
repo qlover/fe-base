@@ -6,6 +6,14 @@ import { join, dirname, resolve } from 'path';
 import { mkdirSync } from 'fs';
 import { hbsHelpers } from '../implments/hbsHelper';
 import { type FormatProjectValue } from '../type';
+import {
+  getSourceFileBasename,
+  isPascalCaseTsxSource
+} from '../utils/isPrimaryComponentSource';
+import {
+  normalizeMarkdownSuffix,
+  tsSourcePathToOutputMdPath
+} from '../utils/tsSourceToOutputMdPath';
 
 /**
  * Supported format output types for markdown files
@@ -46,6 +54,35 @@ export interface FormatsProps extends ScriptPluginProps {
    * Supports 'eslint' and 'prettier' for consistent code style.
    */
   formatOutput?: FormatOutputType;
+
+  /**
+   * Write markdown beside the source file (`Button.tsx` → `Button.md`).
+   *
+   * JSON / template output still uses `generatePath`.
+   *
+   * @default `false`
+   */
+  colocate?: boolean;
+
+  /**
+   * Only write markdown for PascalCase `.tsx` files that export a same-name
+   * component (`Button.tsx` → `Button`). Skips index, helpers, `.ts` engines.
+   *
+   * @default `false`
+   */
+  onlyPrimaryExport?: boolean;
+
+  /**
+   * Markdown file suffix. Default `.md`; xoranj uses `.doc.md` so gitignore is easy.
+   *
+   * @default `.md`
+   */
+  mdSuffix?: string;
+
+  /**
+   * Paths of markdown files written in the current run (for colocated prettier).
+   */
+  writtenMarkdownPaths?: string[];
 }
 
 /**
@@ -150,8 +187,15 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     const resolvedGeneratePath = resolve(this.context.options.generatePath);
     mkdirSync(resolvedGeneratePath, { recursive: true });
 
+    const writtenMarkdownPaths: string[] = [];
+
     // Generate independent markdown files for each file group
     fileGroups.forEach((items, filePath) => {
+      if (!this.shouldWriteMarkdown(filePath, items)) {
+        this.logger.info(`Skip markdown (not primary component): ${filePath}`);
+        return;
+      }
+
       const content: string[] = [];
       for (const item of items) {
         content.push(this.formatProjectValue(item));
@@ -160,11 +204,15 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
       const fileContent = content.join('\n');
       const markdownContent = this.generateMarkdownContent(fileContent);
 
-      // Generate filename and write to file
-      this.writeMarkdownFile(markdownContent, filePath);
+      const outputPath = this.writeMarkdownFile(markdownContent, filePath);
+      if (outputPath) {
+        writtenMarkdownPaths.push(outputPath);
+      }
     });
 
-    this.setConfig({ fileGroups });
+    this.setConfig({ fileGroups, writtenMarkdownPaths });
+    // Expose for post-Formats plugins loaded via CLI `--plugin`
+    this.context.setParameters({ writtenMarkdownPaths });
   }
 
   /**
@@ -209,10 +257,22 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     const { generatePath } = this.context.options;
     const formatOutput = this.getConfig('formatOutput');
 
-    // Return early if formatting is not enabled
-    if (formatOutput) {
-      await this.formatDocument(generatePath, formatOutput as FormatOutputType);
+    if (!formatOutput) {
+      return;
     }
+
+    const writtenMarkdownPaths = this.getConfig('writtenMarkdownPaths') as
+      | string[]
+      | undefined;
+    if (this.getConfig('colocate') && writtenMarkdownPaths?.length) {
+      await this.formatWrittenMarkdownFiles(
+        writtenMarkdownPaths,
+        formatOutput as FormatOutputType
+      );
+      return;
+    }
+
+    await this.formatDocument(generatePath, formatOutput as FormatOutputType);
   }
 
   /**
@@ -377,6 +437,16 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     data: FormatProjectValue,
     level: number = 0
   ): string {
+    // 仅 `--onlyPrimaryExport`：文件 Module + 同名导出 → 组件文档页
+    if (
+      level === 0 &&
+      data.kindName === 'Module' &&
+      this.getConfig('onlyPrimaryExport') &&
+      this.findPrimaryExport(data)
+    ) {
+      return this.formatComponentModulePage(data);
+    }
+
     const content: string[] = [];
 
     // Render current element, passing level parameter
@@ -384,6 +454,17 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     const compiledContent = this.hbsTemplate.compile(dataWithLevel);
     const decodedContent = this.decodeHtmlEntities(compiledContent);
     content.push(decodedContent);
+
+    // 组件页才把 Interface 属性收成 API 表；默认仍按 HBS 逐条展开
+    if (
+      this.getConfig('onlyPrimaryExport') &&
+      data.kindName === 'Interface' &&
+      data.children?.length &&
+      data.children.every((child) => child.kindName === 'Property')
+    ) {
+      content.push(this.formatPropsApiTable(data.children));
+      return content.join('\n');
+    }
 
     // Recursively render children if they exist
     if (data.children && data.children.length > 0) {
@@ -394,6 +475,159 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
     }
 
     return content.join('\n');
+  }
+
+  /**
+   * 同名主导出（Variable / Function），用于识别组件模块
+   */
+  protected findPrimaryExport(
+    moduleData: FormatProjectValue
+  ): FormatProjectValue | undefined {
+    const name = moduleData.name;
+    return (moduleData.children || []).find(
+      (child) =>
+        child.name === name &&
+        (child.kindName === 'Variable' ||
+          child.kindName === 'Function' ||
+          child.kindName === 'Class')
+    );
+  }
+
+  /**
+   * `--onlyPrimaryExport`：仅 PascalCase `.tsx` 且导出与文件名同名的组件。
+   */
+  protected shouldWriteMarkdown(
+    filePath: string,
+    items: FormatProjectValue[]
+  ): boolean {
+    if (!this.getConfig('onlyPrimaryExport')) {
+      return true;
+    }
+    if (!isPascalCaseTsxSource(filePath)) {
+      return false;
+    }
+    const expectedName = getSourceFileBasename(filePath);
+    const moduleData =
+      items.find((item) => item.kindName === 'Module') ?? items[0];
+    if (!moduleData) {
+      return false;
+    }
+    return Boolean(
+      this.findPrimaryExport({
+        ...moduleData,
+        name: expectedName
+      })
+    );
+  }
+
+  /**
+   * 组件文档页：`# Name` → 概述/用法/示例 → `## API` 表
+   */
+  protected formatComponentModulePage(data: FormatProjectValue): string {
+    const primary = this.findPrimaryExport(data)!;
+    const children = data.children || [];
+    const propsIface = children.find(
+      (child) =>
+        child.kindName === 'Interface' &&
+        /Props/i.test(child.name) &&
+        child.children?.every((c) => c.kindName === 'Property')
+    );
+
+    const parts: string[] = [];
+    parts.push(`# ${data.name}\n`);
+
+    const descriptions = primary.descriptions || [];
+    // 1) 概述 + 用法（summary / description / 非 example 标签）
+    for (const desc of descriptions) {
+      if (desc.tag === '@example') {
+        continue;
+      }
+      const body = (desc.contentMarkdown || '').trim();
+      if (!body) {
+        continue;
+      }
+      if (desc.tag === '@summary' || desc.tag === '@description') {
+        parts.push(body);
+        parts.push('');
+        continue;
+      }
+      const label = desc.tag.replace(/^@/, '');
+      parts.push(`**${label}:** ${desc.name || ''}\n`);
+      parts.push(body);
+      parts.push('');
+    }
+
+    // 2) API 表
+    if (propsIface?.children?.length) {
+      parts.push('## API\n');
+      const ifaceSummary = (propsIface.descriptions || [])
+        .map((d) => d.contentMarkdown || '')
+        .join('')
+        .trim();
+      if (ifaceSummary) {
+        parts.push(ifaceSummary);
+        parts.push('');
+      }
+      parts.push(this.formatPropsApiTable(propsIface.children));
+      parts.push('');
+    }
+
+    // 3) 示例（@example）
+    const examples = descriptions.filter((d) => d.tag === '@example');
+    if (examples.length > 0) {
+      parts.push('## 示例\n');
+      for (const desc of examples) {
+        const body = (desc.contentMarkdown || '').trim();
+        if (!body) {
+          continue;
+        }
+        const title = desc.name ? desc.name.trim() : '';
+        if (title) {
+          parts.push(`**${title}**\n`);
+        }
+        parts.push(body);
+        parts.push('');
+      }
+    }
+
+    return parts.join('\n');
+  }
+
+  /**
+   * Props Interface → Markdown API 表
+   */
+  protected formatPropsApiTable(properties: FormatProjectValue[]): string {
+    const lines: string[] = [
+      '| 名称 | 类型 | 可选 | 默认 | 说明 |',
+      '|------|------|------|------|------|'
+    ];
+    for (const prop of properties) {
+      if (prop.internal) {
+        continue;
+      }
+      const rawDesc = (prop.descriptions || [])
+        .map((d) => (d.contentMarkdown || '').replace(/\n+/g, ' ').trim())
+        .filter(Boolean)
+        .join(' ');
+      const descWithDeprecated = prop.deprecated
+        ? rawDesc
+          ? `**已废弃**：${rawDesc}`
+          : '**已废弃**'
+        : rawDesc;
+      const desc = (descWithDeprecated || '-').replace(/\|/g, ' / ');
+      const optional = prop.optional ? '是' : '否';
+      const def = prop.defaultValue
+        ? `\`${prop.defaultValue.replace(/\s+/g, ' ').replace(/\|/g, ' / ')}\``
+        : '-';
+      const type = (prop.typeString || 'unknown')
+        .replace(/\s+/g, ' ')
+        .replace(/\\\|/g, '|')
+        .replace(/\s*\|\s*/g, ' / ');
+      lines.push(
+        `| \`${prop.name}\` | \`${type}\` | ${optional} | ${def} | ${desc} |`
+      );
+    }
+    return lines.join('\n');
   }
 
   /**
@@ -537,123 +771,15 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * ```
    */
   private generateFileName(filePath: string): string {
-    let processedPath = filePath;
-
-    // Remove entry prefix if removePrefix is enabled
-    if (this.getConfig('removePrefix')) {
-      const originalPath = processedPath;
-      processedPath = this.removeEntryPrefix(filePath);
-      this.logger.debug(
-        `Path processing: "${originalPath}" -> "${processedPath}"`
-      );
-    }
-
-    // Preserve full directory structure, only change extension from .ts to .md
-    return processedPath.replace(/\.ts$/, '.md');
-  }
-
-  /**
-   * Remove entry point root path from file path
-   *
-   * Implementation Details:
-   * 1. Normalizes path separators for cross-platform compatibility
-   * 2. Determines entry directory from source path configuration
-   * 3. Handles both file and directory entry points
-   * 4. Finds longest matching prefix for accurate path stripping
-   * 5. Removes matching prefix and normalizes resulting path
-   *
-   * Business Rules:
-   * - Normalizes Windows backslashes to forward slashes
-   * - Handles relative path prefixes (./) automatically
-   * - Strips entry directory path when file path starts with it
-   * - Returns original path if no matching prefix found
-   * - Removes leading slash from result for clean relative paths
-   * - Handles empty entry directories gracefully
-   *
-   * Path Processing Logic:
-   * - File entries: extracts directory from file path
-   * - Directory entries: uses directory path directly
-   * - Relative paths: removes ./ prefix for matching
-   * - Cross-platform: normalizes separators for consistency
-   *
-   * @param filePath - Source file path to process
-   * @returns File path with entry prefix removed
-   *
-   * @example
-   * ```typescript
-   * // Entry: 'src/'
-   * formats.removeEntryPrefix('src/user/auth.ts'); // 'user/auth.ts'
-   *
-   * // Entry: 'src/index.ts'
-   * formats.removeEntryPrefix('src/user/auth.ts'); // 'user/auth.ts'
-   * ```
-   *
-   * @example Cross-platform Paths
-   * ```typescript
-   * // Windows paths are normalized
-   * formats.removeEntryPrefix('src\\user\\auth.ts'); // 'user/auth.ts'
-   * ```
-   */
-  private removeEntryPrefix(filePath: string): string {
-    const { sourcePath } = this.context.options;
-
-    this.logger.debug(`Processing file: "${filePath}"`);
-    this.logger.debug(`Entry points: ${JSON.stringify(sourcePath)}`);
-
-    // Normalize path separators
-    const normalizedFilePath = filePath.replace(/\\/g, '/');
-
-    // Find longest matching prefix
-    let longestPrefix = '';
-
-    // Normalize entry path
-    const normalizedEntry = sourcePath!.replace(/\\/g, '/');
-
-    // Handle case where entry is a file
-    let entryDir = normalizedEntry;
-    if (entryDir.endsWith('.ts') || entryDir.endsWith('.js')) {
-      const lastSlashIndex = entryDir.lastIndexOf('/');
-      if (lastSlashIndex !== -1) {
-        entryDir = entryDir.substring(0, lastSlashIndex);
-      } else {
-        // If no slash, it's a file in current directory
-        entryDir = '';
-      }
-    }
-
-    // Handle relative path prefix
-    if (entryDir.startsWith('./')) {
-      entryDir = entryDir.substring(2);
-    }
-
-    // Ensure entry directory ends with / (unless empty string)
-    if (entryDir && !entryDir.endsWith('/')) {
-      entryDir += '/';
-    }
-
-    this.logger.debug(`Entry: "${sourcePath}" -> EntryDir: "${entryDir}"`);
-
-    // Check if file path starts with entry directory
-    if (
-      normalizedFilePath.startsWith(entryDir) &&
-      entryDir.length > longestPrefix.length
-    ) {
-      longestPrefix = entryDir;
-      this.logger.debug(`Found match! Longest prefix: "${longestPrefix}"`);
-    }
-
-    // Remove matching prefix if found
-    if (longestPrefix) {
-      const result = filePath.substring(longestPrefix.length);
-      // Remove leading / if present
-      const finalResult = result.startsWith('/') ? result.substring(1) : result;
-      this.logger.debug(`Final result: "${filePath}" -> "${finalResult}"`);
-      return finalResult;
-    }
-
-    // Return original path if no matching prefix found
-    this.logger.debug(`No prefix found, returning original: "${filePath}"`);
-    return filePath;
+    const sourcePath = this.context.options.sourcePath as string | undefined;
+    const removePrefix = Boolean(this.getConfig('removePrefix'));
+    const out = tsSourcePathToOutputMdPath(filePath, {
+      sourcePath,
+      removePrefix,
+      mdSuffix: this.getConfig('mdSuffix') as string | undefined
+    });
+    this.logger.debug(`Path processing: "${filePath}" -> "${out}"`);
+    return out;
   }
 
   /**
@@ -702,27 +828,80 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * }
    * ```
    */
-  private async writeMarkdownFile(
+  private writeMarkdownFile(
     markdownContent: string,
     filePath: string
-  ): Promise<void> {
-    // Resolve path when used and join with filename
-    const fileName = this.generateFileName(filePath);
-    const resolvedGeneratePath = resolve(this.context.options.generatePath);
-    const outputPath = join(resolvedGeneratePath, fileName);
+  ): string {
+    const outputPath = this.resolveMarkdownOutputPath(filePath);
 
     try {
-      // Ensure output directory exists (including subdirectories)
       const outputDir = dirname(outputPath);
       mkdirSync(outputDir, { recursive: true });
-
-      // Write file
       fsExtra.writeFileSync(outputPath, markdownContent, 'utf-8');
-
       this.logger.info(`Markdown documentation written to: ${outputPath}`);
+      return outputPath;
     } catch (error) {
       this.logger.error(`Failed to write markdown file: ${error}`);
       throw error;
+    }
+  }
+
+  /**
+   * `--colocate` 时写到源文件同目录；否则写到 generatePath。
+   */
+  protected resolveMarkdownOutputPath(filePath: string): string {
+    if (this.getConfig('colocate')) {
+      const outputs = this.context.options.readerOutputs || [];
+      const normalized = filePath.replace(/\\/g, '/');
+      const hit = outputs.find((output) => {
+        const relativePath = output.relativePath.replace(/\\/g, '/');
+        const fullPath = output.fullPath.replace(/\\/g, '/');
+        return relativePath === normalized || fullPath.endsWith(normalized);
+      });
+      if (hit) {
+        return hit.outputPath;
+      }
+      const suffix = normalizeMarkdownSuffix(
+        this.getConfig('mdSuffix') as string | undefined
+      );
+      return resolve(
+        process.cwd(),
+        filePath.replace(/\.(tsx|ts|jsx|js)$/i, suffix)
+      );
+    }
+
+    const fileName = this.generateFileName(filePath);
+    const resolvedGeneratePath = resolve(this.context.options.generatePath);
+    return join(resolvedGeneratePath, fileName);
+  }
+
+  /**
+   * Prettier / ESLint 仅格式化本轮写出的 markdown。
+   */
+  private async formatWrittenMarkdownFiles(
+    filePaths: string[],
+    formatTool: FormatOutputType
+  ): Promise<void> {
+    if (formatTool !== 'eslint' && formatTool !== 'prettier') {
+      this.logger.warn(
+        `Unknown format tool: ${formatTool}. Supported: eslint, prettier`
+      );
+      return;
+    }
+    const quoted = filePaths.map((filePath) => `"${filePath}"`).join(' ');
+    const command =
+      formatTool === 'eslint'
+        ? `npx eslint ${quoted} --fix`
+        : `npx prettier ${quoted} --write`;
+    this.logger.info(`Executing ${formatTool} on colocated markdown...`);
+    try {
+      await this.shell.exec(command, {
+        silent: false,
+        dryRun: this.context.dryRun
+      });
+      this.logger.info(`${formatTool} formatting completed successfully`);
+    } catch (error) {
+      this.logger.error(`${formatTool} formatting failed: ${error}`);
     }
   }
 

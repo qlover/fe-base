@@ -4,6 +4,7 @@ import {
   type ScriptSharedInterface
 } from '@qlover/scripts-context';
 import { type ReaderOutput } from '../plugins/reader';
+import type { LlmTranslateConfigInputType } from '../plugins/LlmTranslateConfigUtil';
 import { type FormatProjectValue } from '../type';
 
 /**
@@ -158,6 +159,30 @@ export interface Code2MDContextConfig extends ScriptSharedInterface {
    * ```
    */
   readerOutputs?: ReaderOutput[];
+
+  /**
+   * Absolute paths of markdown files written by Formats in the current run.
+   * Populated for post-Formats plugins (e.g. translation).
+   */
+  writtenMarkdownPaths?: string[];
+
+  /**
+   * LLM 译档插件配置（`fe-config.json` → `code2md.llmTranslate`）。
+   * 配齐 baseUrl / apiKey / model / locales 后 Formats 成功后自动译出。
+   * `skip: true` 可强制关闭（CLI `--no-llm-translate`）。
+   */
+  llmTranslate?: LlmTranslateConfigInputType & {
+    readonly skip?: boolean | string;
+  };
+}
+
+declare module '@qlover/scripts-context' {
+  interface FeConfig {
+    /**
+     * code2markdown 脚本配置（键名 `code2md`）。
+     */
+    code2md?: Partial<Code2MDContextConfig>;
+  }
 }
 
 /**

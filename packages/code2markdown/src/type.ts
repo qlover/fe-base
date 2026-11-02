@@ -306,6 +306,13 @@ export interface FormatProjectValue {
    * @default `false`
    */
   optional?: boolean;
+
+  /**
+   * Whether the element is marked `@internal` and should not appear in docs.
+   *
+   * @default `false`
+   */
+  internal?: boolean;
 }
 
 /**

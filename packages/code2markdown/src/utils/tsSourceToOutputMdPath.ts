@@ -36,18 +36,36 @@ export function removeEntryPrefixFromPath(
   return filePath;
 }
 
+export const DEFAULT_MARKDOWN_SUFFIX = '.md';
+
+/**
+ * 规范化 markdown 后缀：缺省 `.md`；`doc.md` → `.doc.md`。
+ */
+export function normalizeMarkdownSuffix(suffix?: string): string {
+  if (!suffix || suffix.trim() === '') {
+    return DEFAULT_MARKDOWN_SUFFIX;
+  }
+  const trimmed = suffix.trim();
+  return trimmed.startsWith('.') ? trimmed : `.${trimmed}`;
+}
+
 /**
  * Map a TypeScript source path to the relative markdown output path (as used under generatePath).
  */
 export function tsSourcePathToOutputMdPath(
   filePath: string,
-  options: { sourcePath?: string; removePrefix?: boolean }
+  options: {
+    sourcePath?: string;
+    removePrefix?: boolean;
+    mdSuffix?: string;
+  }
 ): string {
   let processed = filePath.replace(/\\/g, '/');
   if (options.removePrefix) {
     processed = removeEntryPrefixFromPath(processed, options.sourcePath);
   }
-  return processed.replace(/\.ts$/, '.md');
+  const suffix = normalizeMarkdownSuffix(options.mdSuffix);
+  return processed.replace(/\.(tsx|ts|jsx|js)$/i, suffix);
 }
 
 /**

@@ -171,7 +171,8 @@ export default class TypeDocJson extends ScriptPlugin<
       includeVersion: true,
       excludePrivate: true,
       excludeProtected: false,
-      excludeExternals: false
+      excludeExternals: this.getFormatsOnlyPrimaryExport(),
+      excludeInternal: this.getFormatsOnlyPrimaryExport()
     });
 
     const outputPath = this.getConfig('outputJSONFilePath', '');
@@ -445,9 +446,15 @@ export default class TypeDocJson extends ScriptPlugin<
 
     const ownerSourceFile = this.getSourceInfo(reflection)?.fileName;
 
+    // 函数声明的 JSDoc 常挂在 signature 上，而不是 reflection.comment
+    const commentForDocs =
+      reflection.comment ||
+      reflection.signatures?.[0]?.comment ||
+      undefined;
+
     // 格式化描述信息
     const descriptions = this.formatDescription(
-      reflection.comment,
+      commentForDocs,
       ownerSourceFile
     );
 
@@ -468,12 +475,12 @@ export default class TypeDocJson extends ScriptPlugin<
       );
     }
 
-    // 处理子元素
+    // 处理子元素（组件页才跳过继承成员，默认保持 2.1.4 行为）
     let children: FormatProjectValue[] | undefined;
     if (reflection.children) {
-      children = reflection.children.map((child: any) =>
-        this.convertReflectionToFormatValue(child)
-      );
+      children = reflection.children
+        .filter((child: any) => this.shouldIncludeChild(child))
+        .map((child: any) => this.convertReflectionToFormatValue(child));
     }
 
     // 处理 type.declaration.children（用于 type 类型）
@@ -481,9 +488,9 @@ export default class TypeDocJson extends ScriptPlugin<
       reflection.type?.type === 'reflection' &&
       reflection.type.declaration?.children
     ) {
-      const typeChildren = reflection.type.declaration.children.map(
-        (child: any) => this.convertReflectionToFormatValue(child)
-      );
+      const typeChildren = reflection.type.declaration.children
+        .filter((child: any) => this.shouldIncludeChild(child))
+        .map((child: any) => this.convertReflectionToFormatValue(child));
       children = children ? [...children, ...typeChildren] : typeChildren;
     }
 
@@ -519,13 +526,14 @@ export default class TypeDocJson extends ScriptPlugin<
     const since = this.getSinceVersion(reflection);
     const deprecated = this.isDeprecated(reflection);
     const optional = this.isOptional(reflection);
+    const internal = this.isInternal(reflection);
 
     return {
       id: reflection.id,
       kind: reflection.kind,
       kindName: kindName as any,
-      name: reflection.name,
-      typeString,
+      name: this.getDisplayName(reflection),
+      typeString: this.rewriteTypeStringName(typeString, reflection),
       descriptions,
       source,
       parametersList,
@@ -533,8 +541,45 @@ export default class TypeDocJson extends ScriptPlugin<
       defaultValue,
       since,
       deprecated,
-      optional
+      optional,
+      internal
     };
+  }
+
+  /**
+   * 文档标题用名：仅 `--onlyPrimaryExport` + `--removePrefix` 时去掉路径。
+   */
+  protected getDisplayName(reflection: any): string {
+    let name = String(reflection.name || '');
+    if (
+      !this.getFormatsOnlyPrimaryExport() ||
+      !this.getFormatsRemovePrefix()
+    ) {
+      return name;
+    }
+    if (name.includes('/') || name.includes('\\')) {
+      name = name.replace(/\\/g, '/').split('/').pop() || name;
+    }
+    return name.replace(/\.(tsx|ts|jsx|js)$/i, '');
+  }
+
+  /**
+   * typeString 里若仍带路径模块名，与 displayName 对齐
+   */
+  protected rewriteTypeStringName(typeString: string, reflection: any): string {
+    if (
+      !typeString ||
+      !this.getFormatsOnlyPrimaryExport() ||
+      !this.getFormatsRemovePrefix()
+    ) {
+      return typeString;
+    }
+    const display = this.getDisplayName(reflection);
+    const raw = String(reflection.name || '');
+    if (raw && raw !== display && typeString.includes(raw)) {
+      return typeString.split(raw).join(display);
+    }
+    return typeString;
   }
 
   /**
@@ -618,6 +663,12 @@ export default class TypeDocJson extends ScriptPlugin<
           : String(reflection.type.value);
       }
       if (reflection.type.type === 'reflection') {
+        // 属性类型为函数时 TypeDoc 常给 reflection + declaration.signatures，
+        // 不能一律打成 Object（如 onAction?: () => void）。
+        const declaration = reflection.type.declaration;
+        if (declaration?.signatures?.[0]) {
+          return this.getTypeString(declaration);
+        }
         return 'Object';
       }
       if (reflection.type.type === 'array') {
@@ -808,12 +859,30 @@ export default class TypeDocJson extends ScriptPlugin<
       const defaultTag = reflection.comment.blockTags.find(
         (tag: any) => tag.tag === '@default'
       );
-      if (defaultTag?.content?.[0]?.text) {
-        return defaultTag.content[0].text.replace(/`/g, '');
+      if (defaultTag?.content?.length) {
+        const raw = defaultTag.content
+          .map((part: { text?: string }) => part.text || '')
+          .join('');
+        const normalized = this.normalizeDefaultValueText(raw);
+        if (normalized) {
+          return normalized;
+        }
       }
     }
 
     return undefined;
+  }
+
+  /**
+   * TypeDoc 把 `@default false` 收成围栏代码块（` ```ts\\nfalse\\n``` `），表格单元格不能有换行。
+   */
+  private normalizeDefaultValueText(raw: string): string {
+    const trimmed = raw.trim();
+    const fenced = trimmed.match(
+      /^```(?:[\w.-]+)?\s*\r?\n?([\s\S]*?)\r?\n?```$/
+    );
+    const inner = (fenced ? fenced[1] : trimmed).replace(/`/g, '').trim();
+    return inner.replace(/\s+/g, ' ');
   }
 
   /**
@@ -896,6 +965,28 @@ export default class TypeDocJson extends ScriptPlugin<
     if (reflection.comment?.blockTags) {
       return reflection.comment.blockTags.some(
         (tag: any) => tag.tag === '@deprecated'
+      );
+    }
+    return false;
+  }
+
+  /**
+   * `@internal` modifier / flag：属性级隐藏（如 examples 专用 `demo`）。
+   */
+  private isInternal(reflection: any): boolean {
+    if (reflection.flags?.isInternal) {
+      return true;
+    }
+    const modifierTags = reflection.comment?.modifierTags;
+    if (modifierTags instanceof Set) {
+      return modifierTags.has('@internal');
+    }
+    if (Array.isArray(modifierTags)) {
+      return modifierTags.includes('@internal');
+    }
+    if (reflection.comment?.blockTags) {
+      return reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@internal'
       );
     }
     return false;
@@ -1128,10 +1219,35 @@ export default class TypeDocJson extends ScriptPlugin<
     return opts.formats?.removePrefix === true;
   }
 
+  private getFormatsOnlyPrimaryExport(): boolean {
+    const opts = this.context.options as {
+      formats?: { onlyPrimaryExport?: boolean };
+    };
+    return opts.formats?.onlyPrimaryExport === true;
+  }
+
+  private getFormatsMdSuffix(): string | undefined {
+    const opts = this.context.options as {
+      formats?: { mdSuffix?: string };
+    };
+    return opts.formats?.mdSuffix;
+  }
+
+  /**
+   * 默认保留继承成员；组件页才丢掉 HTMLAttributes 等 inheritedFrom。
+   */
+  private shouldIncludeChild(child: { inheritedFrom?: unknown }): boolean {
+    if (!this.getFormatsOnlyPrimaryExport()) {
+      return true;
+    }
+    return !child.inheritedFrom;
+  }
+
   private sourceTsPathToOutputMd(fileName: string): string {
     return tsSourcePathToOutputMdPath(fileName, {
       sourcePath: this.context.options.sourcePath,
-      removePrefix: this.getFormatsRemovePrefix()
+      removePrefix: this.getFormatsRemovePrefix(),
+      mdSuffix: this.getFormatsMdSuffix()
     });
   }
 

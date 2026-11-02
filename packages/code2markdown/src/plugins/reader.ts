@@ -2,6 +2,7 @@ import { readdirSync, statSync } from 'fs';
 import type Code2MDContext from '../implments/Code2MDContext';
 import { ScriptPlugin } from '@qlover/scripts-context';
 import { basename, dirname, extname, join, relative, normalize } from 'path';
+import { normalizeMarkdownSuffix } from '../utils/tsSourceToOutputMdPath';
 
 /**
  * Entry file information for file reading operations
@@ -135,7 +136,12 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       );
     }
 
-    const outputs = filteredFiles.map((entryFile) => {
+    const sourceFiles = filteredFiles.filter((file) =>
+      this.isTypeScriptSourceFile(file)
+    );
+
+    const mdSuffix = this.getMarkdownSuffix();
+    const outputs = sourceFiles.map((entryFile) => {
       const relativePath = relative(process.cwd(), entryFile);
       const ext = extname(entryFile);
       const name = basename(entryFile, ext);
@@ -145,7 +151,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
         dir: dirname(entryFile),
         ext,
         relativePath,
-        outputPath: join(dirname(entryFile), `${name}.md`)
+        outputPath: join(dirname(entryFile), `${name}${mdSuffix}`)
       } as ReaderOutput;
     });
 
@@ -266,6 +272,32 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     });
 
     return filePaths;
+  }
+
+  /**
+   * TypeDoc 入口只收 TS/JS 源文件，跳过 css / md / `.d.ts`。
+   */
+  private isTypeScriptSourceFile(filePath: string): boolean {
+    const normalized = filePath.replace(/\\/g, '/');
+    if (normalized.endsWith('.d.ts')) {
+      return false;
+    }
+    const ext = extname(normalized).toLowerCase();
+    return (
+      ext === '.ts' ||
+      ext === '.tsx' ||
+      ext === '.js' ||
+      ext === '.jsx' ||
+      ext === '.mts' ||
+      ext === '.cts'
+    );
+  }
+
+  private getMarkdownSuffix(): string {
+    const opts = this.context.options as {
+      formats?: { mdSuffix?: string };
+    };
+    return normalizeMarkdownSuffix(opts.formats?.mdSuffix);
   }
 
   /**

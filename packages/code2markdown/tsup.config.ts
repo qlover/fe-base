@@ -6,6 +6,8 @@ import { copyAssets } from '../../tools/copyAssets';
 const external = [
   ...builtinModules,
   ...builtinModules.map((mod) => `node:${mod}`),
+  'undici',
+  'node:undici',
   ...Object.keys(pkg.dependencies || {})
 ];
 
