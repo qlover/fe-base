@@ -1,5 +1,29 @@
 # @qlover/code2markdown
 
+## 2.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **code2markdown:** 支持同目录生成主组件文档 ([a2f668e](https://github.com/qlover/fe-base/commit/a2f668ea494597be90994f2bd84cbe77903646a7)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
+- **code2markdown:** 支持自定义 markdown 后缀 ([c139d40](https://github.com/qlover/fe-base/commit/c139d40b3a31c8b2bece8698db18e3a1691bf4e4)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
+- **code2markdown:** 新增 LlmTranslate 并支持代理与限流间隔 ([bc675b1](https://github.com/qlover/fe-base/commit/bc675b1d3a3f2fdf3b0be1e700d634c271597d41)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
+#### 🐞 Bug Fixes
+
+- **code2markdown:** cli 使用 import type 满足 eslint ([52eaeb1](https://github.com/qlover/fe-base/commit/52eaeb104941c60a603adfeb4268b57a9e73c927)) ([#722](https://github.com/qlover/fe-base/pull/722))
+
+- **code2markdown:** 组件页行为仅在新开关下生效 ([909bfd4](https://github.com/qlover/fe-base/commit/909bfd48e78fd15c1202d6610182cdbd0669b749)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
+- **code2markdown:** TestType.declaration补全 signatures类型 ([e46914e](https://github.com/qlover/fe-base/commit/e46914e46c0af7a1149f4f5862b42cc426679577)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
+### Patch Changes
+
+- Update dependency **@qlover/scripts-context** from `2.3.7` to `2.4.0`
+
 ## 2.1.4
 
 ### Patch Changes

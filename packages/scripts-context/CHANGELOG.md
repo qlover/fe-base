@@ -1,5 +1,13 @@
 # @qlover/scripts-context
 
+## 2.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **code2markdown:** 新增 LlmTranslate 并支持代理与限流间隔 ([bc675b1](https://github.com/qlover/fe-base/commit/bc675b1d3a3f2fdf3b0be1e700d634c271597d41)) ([#721](https://github.com/qlover/fe-base/pull/721))
+
 ## 2.3.6
 
 ### Patch Changes
