@@ -84,6 +84,10 @@ interface TestType {
   types?: TestType[]; // Added for union types
   declaration?: {
     children?: TestReflection[];
+    signatures?: Array<{
+      parameters?: TestReflection[];
+      type?: TestType;
+    }>;
   };
 }
 
