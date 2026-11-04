@@ -198,3 +198,91 @@ export const PAGE_ACCOUNT_PASSWORD_MISMATCH = 'page_account:password_mismatch';
  * @localEn New password must differ from the current password
  */
 export const PAGE_ACCOUNT_PASSWORD_SAME = 'page_account:password_same';
+
+/**
+ * @description Hint when account has no business email
+ * @localZh 当前为手机号登录账号，绑定邮箱后可改密并接收安全通知
+ * @localEn This account signed in with a phone number. Bind an email to change password and receive security notices.
+ */
+export const PAGE_ACCOUNT_BIND_HINT = 'page_account:bind_hint';
+
+/**
+ * @description Bind email section title
+ * @localZh 绑定邮箱
+ * @localEn Bind email
+ */
+export const PAGE_ACCOUNT_BIND_SECTION_TITLE =
+  'page_account:bind_section_title';
+
+/**
+ * @description Bind email form description
+ * @localZh 验证后可将邮箱绑定到当前账号；若邮箱已存在将合并到该邮箱账号
+ * @localEn Verify to bind this email. If it already belongs to another account, accounts will be merged.
+ */
+export const PAGE_ACCOUNT_BIND_DESCRIPTION = 'page_account:bind_description';
+
+/**
+ * @description Bind email merge hint
+ * @localZh 合并后仅保留邮箱账号，手机号会挂到该账号
+ * @localEn After merge only the email account remains; your phone moves to it.
+ */
+export const PAGE_ACCOUNT_BIND_MERGE_HINT = 'page_account:bind_merge_hint';
+
+/**
+ * @description Bind email input placeholder
+ * @localZh 邮箱地址
+ * @localEn Email address
+ */
+export const PAGE_ACCOUNT_BIND_EMAIL_PLACEHOLDER =
+  'page_account:bind_email_placeholder';
+
+/**
+ * @description Bind email OTP placeholder
+ * @localZh 邮箱验证码
+ * @localEn Email verification code
+ */
+export const PAGE_ACCOUNT_BIND_OTP_PLACEHOLDER =
+  'page_account:bind_otp_placeholder';
+
+/**
+ * @description Bind email send code button
+ * @localZh 发送验证码
+ * @localEn Send code
+ */
+export const PAGE_ACCOUNT_BIND_SEND = 'page_account:bind_send';
+
+/**
+ * @description Bind email resend code button
+ * @localZh 重新发送
+ * @localEn Resend
+ */
+export const PAGE_ACCOUNT_BIND_RESEND = 'page_account:bind_resend';
+
+/**
+ * @description Bind email verify button
+ * @localZh 确认绑定
+ * @localEn Confirm
+ */
+export const PAGE_ACCOUNT_BIND_VERIFY = 'page_account:bind_verify';
+
+/**
+ * @description Bind email success (bound to current)
+ * @localZh 邮箱绑定成功
+ * @localEn Email bound successfully
+ */
+export const PAGE_ACCOUNT_BIND_SUCCESS = 'page_account:bind_success';
+
+/**
+ * @description Bind email success (merged)
+ * @localZh 账号已合并到邮箱账号
+ * @localEn Account merged into the email account
+ */
+export const PAGE_ACCOUNT_BIND_SUCCESS_MERGED =
+  'page_account:bind_success_merged';
+
+/**
+ * @description Bind email generic error
+ * @localZh 绑定失败，请重试
+ * @localEn Binding failed. Please try again.
+ */
+export const PAGE_ACCOUNT_BIND_ERROR = 'page_account:bind_error';

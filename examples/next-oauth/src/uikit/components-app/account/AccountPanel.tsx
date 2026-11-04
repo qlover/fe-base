@@ -10,8 +10,9 @@ import { UserService } from '@/impls/UserService';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
+import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
 import { ChangePasswordForm } from '@/uikit/components-app/account/ChangePasswordForm';
-import { isPhonePlaceholderEmail } from '@shared/utils/phoneUserIdentity';
+import { toBusinessEmail } from '@shared/utils/phoneUserIdentity';
 import {
   maskPhoneForDisplay,
   resolveUserDisplayLabel
@@ -97,9 +98,9 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
     return null;
   }
 
-  const rawEmail = user.email?.trim() ?? '';
-  const email = isPhonePlaceholderEmail(rawEmail) ? '' : rawEmail;
+  const email = toBusinessEmail(user.email) ?? '';
   const phone = user.phone?.trim() ?? '';
+  const needsBindEmail = !email;
   const displayName = resolveUserDisplayLabel({
     name: user.name,
     phone,
@@ -174,7 +175,11 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
   return (
     <div
       data-testid="AccountPanel"
-      className="flex w-full max-w-3xl flex-col gap-6"
+      className={clsx(
+        needsBindEmail
+          ? 'grid w-full gap-6 lg:grid-cols-2 lg:items-start'
+          : 'flex w-full max-w-3xl flex-col gap-6'
+      )}
     >
       <section className="rounded-2xl border border-primary-border bg-primary p-5 sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-primary-text">
@@ -250,9 +255,41 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
             <span className="break-all">{user.id || tt.valueEmpty}</span>
           </FieldRow>
         </dl>
+        {needsBindEmail ? (
+          <p className="mt-4 rounded-xl border border-brand/20 bg-brand/5 px-3 py-2 text-sm text-primary-text">
+            {tt.bindHint}
+          </p>
+        ) : null}
       </section>
 
-      <section className="rounded-2xl border border-primary-border bg-primary p-5 sm:p-6">
+      {needsBindEmail ? (
+        <section className="rounded-2xl border border-primary-border bg-primary p-5 sm:p-6">
+          <h2 className="mb-4 text-base font-semibold text-primary-text">
+            {tt.bindSectionTitle}
+          </h2>
+          <BindEmailForm
+            labels={{
+              description: tt.bindDescription,
+              mergeHint: tt.bindMergeHint,
+              emailPlaceholder: tt.bindEmailPlaceholder,
+              otpPlaceholder: tt.bindOtpPlaceholder,
+              sendCode: tt.bindSend,
+              resendCode: tt.bindResend,
+              verify: tt.bindVerify,
+              successBound: tt.bindSuccess,
+              successMerged: tt.bindSuccessMerged,
+              errorFallback: tt.bindError
+            }}
+          />
+        </section>
+      ) : null}
+
+      <section
+        className={clsx(
+          'rounded-2xl border border-primary-border bg-primary p-5 sm:p-6',
+          needsBindEmail && 'lg:col-span-2'
+        )}
+      >
         <h2 className="mb-4 text-base font-semibold text-primary-text">
           {tt.passwordSectionTitle}
         </h2>

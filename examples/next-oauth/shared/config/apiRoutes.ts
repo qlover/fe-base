@@ -272,6 +272,25 @@ export const API_USER_OTP_LOGIN = '/api/user/otp/login' as const;
 export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
 
 /**
+ * API path: `/api/user/bind-email/send`
+ *
+ * @see [src/app/api/user/bind-email/send/route.ts](../../src/app/api/user/bind-email/send/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/bind-email/send/route.ts`
+ */
+export const API_USER_BIND_EMAIL_SEND = '/api/user/bind-email/send' as const;
+
+/**
+ * API path: `/api/user/bind-email/verify`
+ *
+ * @see [src/app/api/user/bind-email/verify/route.ts](../../src/app/api/user/bind-email/verify/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/bind-email/verify/route.ts`
+ */
+export const API_USER_BIND_EMAIL_VERIFY =
+  '/api/user/bind-email/verify' as const;
+
+/**
  * API path: `/api/user/display-name`
  *
  * @see [src/app/api/user/display-name/route.ts](../../src/app/api/user/display-name/route.ts)
@@ -364,6 +383,8 @@ export type ApiRoutePath =
   | typeof API_USER_LOGOUT
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY
+  | typeof API_USER_BIND_EMAIL_SEND
+  | typeof API_USER_BIND_EMAIL_VERIFY
   | typeof API_USER_DISPLAY_NAME
   | typeof API_USER_PASSWORD
   | typeof API_USER_PASSWORD_FORGOT

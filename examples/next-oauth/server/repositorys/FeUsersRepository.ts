@@ -228,6 +228,49 @@ export class FeUsersRepository {
   }
 
   /**
+   * 窄更新邮箱 / 手机 / 显示名（绑邮箱与合并账户用）。
+   * 传入的字段才写入；`undefined` 表示不动。
+   */
+  public async updateEmailAndPhone(params: {
+    readonly userId: string;
+    readonly email?: string | null;
+    readonly phone?: string | null;
+    readonly displayName?: string | null;
+  }): Promise<FeUserRow> {
+    const patch: Record<string, string | null> = {
+      updated_at: new Date().toISOString()
+    };
+    if (params.email !== undefined) {
+      patch.email = normalizeEmail(params.email);
+    }
+    if (params.phone !== undefined) {
+      patch.phone = params.phone;
+    }
+    if (params.displayName !== undefined) {
+      patch.display_name = params.displayName;
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update(patch)
+      .eq('id', params.userId)
+      .select('*')
+      .single();
+    this.supabaseBridge.throwIfError(result);
+    return result.data as FeUserRow;
+  }
+
+  /** 删除 `fe_users` 行（合并后清理手机号侧资料）。 */
+  public async deleteById(userId: string): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .delete()
+      .eq('id', userId);
+    this.supabaseBridge.throwIfError(result);
+  }
+
+  /**
    * Admin user list from `fe_users` (+ role key). Optional text filter on
    * email / display_name / phone.
    */

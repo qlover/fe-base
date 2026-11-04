@@ -18,6 +18,9 @@ const AUDIT_RULES: readonly ApiAuditRule[] = [
   { method: 'POST', path: '/api/user/otp/verify' },
   { method: 'POST', path: '/api/user/login/provider' },
   { method: 'POST', path: '/api/user/password' },
+  { method: 'POST', path: '/api/user/bind-email/send' },
+  { method: 'POST', path: '/api/user/bind-email/verify' },
+  { method: 'POST', path: '/api/user/display-name' },
 
   // Developer OAuth client mutations + consent
   { method: 'POST', path: '/api/clients' },

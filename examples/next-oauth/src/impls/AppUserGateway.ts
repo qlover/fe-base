@@ -3,6 +3,7 @@ import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
+import type { BindEmailVerifyResultType } from '@schemas/BindEmailSchema';
 import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
 import type {
   UserApiLoginTransaction,
@@ -281,6 +282,55 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       throw new Error(
         (!response.data.success && response.data.message) ||
           'Update display name failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /** 向目标邮箱发送绑定 OTP。 */
+  public async sendBindEmail(params: {
+    email: string;
+  }): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      NextKitApiResult<SignOtpResult>,
+      { email: string }
+    >({
+      url: apiRoutes.API_USER_BIND_EMAIL_SEND,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Send bind-email OTP failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /** 校验绑定 OTP；返回是否合并及新会话用户。 */
+  public async verifyBindEmail(params: {
+    email: string;
+    token: string;
+  }): Promise<BindEmailVerifyResultType> {
+    const response = await this.client.request<
+      NextKitApiResult<BindEmailVerifyResultType>,
+      { email: string; token: string }
+    >({
+      url: apiRoutes.API_USER_BIND_EMAIL_VERIFY,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Verify bind-email failed'
       );
     }
 

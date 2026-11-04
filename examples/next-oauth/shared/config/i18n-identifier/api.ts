@@ -330,3 +330,24 @@ export const API_PASSWORD_RESET_RATE_LIMITED =
  * @localEn Display name must be 1–32 letters, numbers, or underscores
  */
 export const API_DISPLAY_NAME_INVALID = 'api:display_name_invalid';
+
+/**
+ * @description Current account already has a different verified email
+ * @localZh 当前账号已绑定其他邮箱
+ * @localEn This account already has a different email bound
+ */
+export const API_BIND_EMAIL_ALREADY_BOUND = 'api:bind_email_already_bound';
+
+/**
+ * @description Target email account already has a different phone
+ * @localZh 目标邮箱账号已绑定其他手机号，请先解绑后再合并
+ * @localEn Target email account already has a different phone; unbind it first
+ */
+export const API_BIND_EMAIL_PHONE_CONFLICT = 'api:bind_email_phone_conflict';
+
+/**
+ * @description Bind-email is unsupported for the current OAuth upstream
+ * @localZh 当前登录上游不支持绑定邮箱
+ * @localEn Binding email is not supported for this OAuth upstream
+ */
+export const API_BIND_EMAIL_UNSUPPORTED = 'api:bind_email_unsupported';

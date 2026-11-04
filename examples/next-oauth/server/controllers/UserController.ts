@@ -24,8 +24,15 @@ import { inject, injectable } from '@shared/container';
 import {
   API_CHANGE_PASSWORD_INVALID,
   API_DISPLAY_NAME_INVALID,
-  API_NOT_AUTHORIZED
+  API_MAIL_RECIPIENT_INVALID,
+  API_NOT_AUTHORIZED,
+  API_OTP_CODE_INVALID
 } from '@config/i18n-identifier/api';
+import {
+  bindEmailSendSchema,
+  bindEmailVerifySchema,
+  type BindEmailVerifyResultType
+} from '@schemas/BindEmailSchema';
 import {
   changePasswordSchema,
   type ChangePasswordInput
@@ -34,10 +41,12 @@ import { displayNameUpdateSchema } from '@schemas/DisplayNameSchema';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
+import type { BindEmailServiceInterface } from '@server/interfaces/BindEmailServiceInterface';
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import type { UserProfileServiceInterface } from '@server/interfaces/UserProfileServiceInterface';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
+import { BindEmailService } from '@server/services/BindEmailService';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
@@ -84,6 +93,8 @@ export class UserController {
     protected changePasswordService: ChangePasswordService,
     @inject(UserProfileService)
     protected userProfileService: UserProfileServiceInterface,
+    @inject(BindEmailService)
+    protected bindEmailService: BindEmailServiceInterface,
     @inject(SupabaseSessionGuardService)
     protected sessionGuard: SupabaseSessionGuardInterface,
     @inject(RequestLocaleResolver)
@@ -277,6 +288,55 @@ export class UserController {
     const params = loginWithProviderCallbackSchema.parse(_query);
 
     return this.userService.loginWithProviderCallback(params);
+  }
+
+  /**
+   * 向目标邮箱发送绑定用 OTP。
+   *
+   * @param body - `{ email }`
+   * @param request - 用于 IP 发码限流
+   */
+  public async bindEmailSend(
+    body: unknown,
+    request?: NextRequest
+  ): Promise<SignOtpResult> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = bindEmailSendSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_MAIL_RECIPIENT_INVALID);
+    }
+    const clientIp = request ? getClientIpFromRequest(request) : 'unknown';
+    await this.otpSendRateLimit.assertCanSend(clientIp);
+    return this.bindEmailService.send({
+      currentUserId: user.id,
+      email: parsed.data.email
+    });
+  }
+
+  /**
+   * 校验邮箱 OTP 并完成绑定或账户合并。
+   *
+   * @param body - `{ email, token }`
+   */
+  public async bindEmailVerify(
+    body: unknown
+  ): Promise<BindEmailVerifyResultType> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = bindEmailVerifySchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_OTP_CODE_INVALID);
+    }
+    return this.bindEmailService.verify({
+      currentUserId: user.id,
+      email: parsed.data.email,
+      token: parsed.data.token
+    });
   }
 
   /**
