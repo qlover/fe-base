@@ -6,6 +6,10 @@ import { Button, Dropdown, useMountedClient } from '@qlover/next-kit/client';
 import { useRouter } from 'next/router';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
+import {
+  LOCALE_PREFERENCE_QUERY_KEYS,
+  persistLocaleCookie
+} from '@shared/utils/localePreference';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
@@ -41,7 +45,7 @@ export function LanguageSwitcherPages() {
 
   const handleLanguageChange = useCallback(
     (value: string) => {
-      if (!mounted || isPending || value === currentLocale || !router.isReady) {
+      if (isPending || value === currentLocale || !router.isReady) {
         return;
       }
 
@@ -49,13 +53,26 @@ export function LanguageSwitcherPages() {
 
       try {
         const { asPath } = router;
-        const newPath = localeRouter.switchLocale(asPath, currentLocale, value);
+        const nextLocale = value as LocaleType;
+        persistLocaleCookie(nextLocale);
+
+        const url = new URL(asPath, window.location.origin);
+        for (const key of LOCALE_PREFERENCE_QUERY_KEYS) {
+          url.searchParams.delete(key);
+        }
+        const cleaned = url.pathname + url.search + url.hash;
+
+        const newPath = localeRouter.switchLocale(
+          cleaned,
+          currentLocale,
+          nextLocale
+        );
         router.replace(newPath).finally(() => setIsPending(false));
       } catch {
         setIsPending(false);
       }
     },
-    [mounted, isPending, currentLocale, router, localeRouter]
+    [isPending, currentLocale, router, localeRouter]
   );
 
   const currentLocaleLabel =
@@ -74,7 +91,9 @@ export function LanguageSwitcherPages() {
       <Button
         variant="header"
         data-testid="LanguageSwitcher"
-        disabled={!mounted || isPending}
+        // Gate on `mounted`, not `router.isReady`: isReady is often false on
+        // SSG HTML and true on the first client render → disabled mismatch.
+        disabled={isPending || !mounted}
         aria-label={currentLocaleLabel}
       >
         <LanguageIcon className="h-4 w-4 shrink-0" aria-hidden />

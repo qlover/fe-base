@@ -36,10 +36,14 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Third-party SSO may pass `ui_locales` / `locale`. Only honor when the
+  // path has no locale prefix — otherwise path (user switch) wins, and a
+  // stale `?locale=` must not bounce the user back.
+  const pathLocale = getPathLocale(pathname);
   const preferredLocale = parsePreferredLocaleParam(
     request.nextUrl.searchParams
   );
-  if (preferredLocale && getPathLocale(pathname) !== preferredLocale) {
+  if (preferredLocale && !pathLocale) {
     const url = request.nextUrl.clone();
     url.pathname = withLocalePrefix(preferredLocale, pathname);
     const response = NextResponse.redirect(url);
@@ -54,7 +58,7 @@ export default async function proxy(request: NextRequest) {
   // ---------- 第一步：处理国际化 ----------
   const localPathResponse = createMiddleware(routing)(request);
 
-  if (preferredLocale) {
+  if (preferredLocale && !pathLocale) {
     localPathResponse.cookies.set(localeCookieConfig.name, preferredLocale, {
       path: localeCookieConfig.path,
       sameSite: localeCookieConfig.sameSite,
@@ -91,7 +95,6 @@ export default async function proxy(request: NextRequest) {
 
     const url = request.nextUrl.clone();
     // Keep locale prefix, e.g. /en/auth/login → /en
-    const pathLocale = getPathLocale(pathname);
     url.pathname = pathLocale ? `/${pathLocale}` : ROUTE_HOME;
     url.search = '';
     return NextResponse.redirect(url);
