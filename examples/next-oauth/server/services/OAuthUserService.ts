@@ -24,6 +24,10 @@ import { ROUTE_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import {
+  OAuthSessionService,
+  type SessionCookieFieldsType
+} from '@server/services/OAuthSessionService';
 import { PhoneOtpService } from '@server/services/PhoneOtpService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
@@ -38,6 +42,11 @@ import type { UserSchema } from '@qlover/next-kit/common';
 import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type { Provider } from '@supabase/supabase-js';
 
+export type ProviderCallbackRedirectType = {
+  readonly redirectUrl: string;
+  readonly sessionCookie?: SessionCookieFieldsType;
+};
+
 @injectable()
 export class OAuthUserService
   implements UserServiceInterface, ServerAuthInterface
@@ -47,6 +56,9 @@ export class OAuthUserService
 
   @inject(I.AppConfig)
   protected config!: SeedServerConfigInterface;
+
+  /** Request-scoped memo for {@link getUser} (IOC is per-request). */
+  protected memoUserSchema: Promise<UserSchema | null> | null = null;
 
   constructor(
     @inject(PasswordEncrypt)
@@ -154,7 +166,10 @@ export class OAuthUserService
    * @override
    */
   public async getUser(throwError?: boolean): Promise<UserSchema | null> {
-    const user = await this.oauthProvider.getUserSchema();
+    if (!this.memoUserSchema) {
+      this.memoUserSchema = this.oauthProvider.getUserSchema();
+    }
+    const user = await this.memoUserSchema;
 
     if (throwError && !user) {
       throw new ExecutorError(API_USER_NOT_FOUND);
@@ -294,7 +309,7 @@ export class OAuthUserService
    */
   public async loginWithProviderCallback(
     query: LoginWithProviderCallbackSchema
-  ): Promise<ResultHandlerContext> {
+  ): Promise<ResultHandlerContext & ProviderCallbackRedirectType> {
     const siteUrl = query.origin ?? this.config.siteUrl;
     const siteBase = siteUrl.replace(/\/$/, '');
 
@@ -331,9 +346,15 @@ export class OAuthUserService
 
     await this.oauthProvider.loginWithSession?.(result.data.session!);
 
+    const sessionService = new OAuthSessionService(this.config);
+    const payload = await sessionService.getSession();
+    const sessionCookie =
+      payload != null ? sessionService.buildSessionCookie(payload) : undefined;
+
     const nextPathname = query.next ?? '/';
     return {
-      redirectUrl: new URL(nextPathname, `${siteBase}/`).toString()
+      redirectUrl: new URL(nextPathname, `${siteBase}/`).toString(),
+      ...(sessionCookie ? { sessionCookie } : {})
     };
   }
 }

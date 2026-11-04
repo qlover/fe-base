@@ -11,6 +11,17 @@ import type {
 } from '@qlover/oauth-wrapper';
 import type { NextRequest } from 'next/server';
 
+/** Cookie fields for attaching a session to a {@link NextResponse}. */
+export type SessionCookieFieldsType = {
+  readonly name: string;
+  readonly value: string;
+  readonly httpOnly: boolean;
+  readonly secure: boolean;
+  readonly sameSite: 'lax';
+  readonly path: string;
+  readonly maxAge: number;
+};
+
 /**
  * 该文件用于页面访问权限控制
  *
@@ -94,17 +105,36 @@ export class OAuthSessionService
   }
 
   /**
-   * @override
+   * Build session cookie fields for attaching to a {@link NextResponse}
+   * (e.g. OAuth redirects). Prefer this over `cookies().set` + redirect —
+   * Next may drop the cookie jar on a freshly constructed redirect response.
    */
-  public async setSession(payload: OAuthSessionPayload): Promise<void> {
-    const token = jwt.sign(payload, this.sessionSecret, { expiresIn: '7d' });
-    const cookieStore = await cookies();
-    cookieStore.set(this.sessionKey, token, {
+  public buildSessionCookie(
+    payload: OAuthSessionPayload
+  ): SessionCookieFieldsType {
+    return {
+      name: this.sessionKey,
+      value: this.generateJWT(payload),
       httpOnly: true,
       secure: this.secure,
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7
+    };
+  }
+
+  /**
+   * @override
+   */
+  public async setSession(payload: OAuthSessionPayload): Promise<void> {
+    const cookie = this.buildSessionCookie(payload);
+    const cookieStore = await cookies();
+    cookieStore.set(cookie.name, cookie.value, {
+      httpOnly: cookie.httpOnly,
+      secure: cookie.secure,
+      sameSite: cookie.sameSite,
+      path: cookie.path,
+      maxAge: cookie.maxAge
     });
   }
 
