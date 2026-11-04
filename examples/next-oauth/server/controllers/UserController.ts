@@ -32,10 +32,7 @@ import {
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
-import {
-  defaultPlatformRoleFromUserRole,
-  FeUsersRepository
-} from '@server/repositorys/FeUsersRepository';
+import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
@@ -89,27 +86,18 @@ export class UserController {
     );
   }
 
-  /** Attach platform RBAC fields for client `useCan` / nav gates. */
+  /**
+   * Attach platform RBAC fields for client `useCan` / nav gates.
+   * Profile row is ensured on login via {@link UserProfileSyncService}; here
+   * we only read. Missing row falls back to UserRole mapping.
+   */
   protected async withPermissions(
     user: UserSchema
   ): Promise<SessionUserWithPermissions> {
-    await this.rolePermissionService.ensureLoaded();
-
-    try {
-      await this.feUsersRepository.ensureProfile({
-        id: user.id,
-        email: user.email || null,
-        displayName: user.name ?? null,
-        phone: user.phone ?? null,
-        defaultRoleKey: defaultPlatformRoleFromUserRole(user.role)
-      });
-    } catch {
-      // Table missing / RLS: fall back to UserRole mapping below.
-    }
-
-    const fromDb = await this.feUsersRepository
-      .getSystemRoleKey(user.id)
-      .catch(() => null);
+    const [, fromDb] = await Promise.all([
+      this.rolePermissionService.ensureLoaded(),
+      this.feUsersRepository.getSystemRoleKey(user.id).catch(() => null)
+    ]);
     const system_role = normalizeSystemRole(
       fromDb ?? platformRoleFromUserRole(user.role)
     );

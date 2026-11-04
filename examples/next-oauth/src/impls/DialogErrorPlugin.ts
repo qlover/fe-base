@@ -1,3 +1,4 @@
+import { isAbortError } from '@qlover/fe-corekit/aborter';
 import {
   type ExecutorContextInterface,
   ExecutorError,
@@ -42,6 +43,15 @@ export class DialogErrorPlugin implements LifecyclePluginInterface<
 
     // Prefer runtime error — it may have been rewritten (e.g. RequestError → ExecutorError).
     const handleError = runtimesError || error;
+
+    if (
+      isAbortError(handleError) ||
+      isAbortError(error) ||
+      (handleError instanceof Error &&
+        /operation was aborted|AbortError/i.test(handleError.message))
+    ) {
+      return;
+    }
 
     if (handleError instanceof ExecutorError) {
       if (this.isI18nMessage(handleError.id)) {

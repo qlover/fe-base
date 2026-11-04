@@ -16,6 +16,7 @@ import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseS
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
+import { UserProfileSyncService } from '@server/services/UserProfileSyncService';
 import { resolveSupabaseLoginPassword } from '@server/utils/supabaseLoginPassword';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
@@ -142,7 +143,9 @@ export class SupabaseOAuthProvider
     protected encryptor: EncryptorInterface<string, string>,
     @inject(SupabaseRepo) protected supabaseRepo: SupabaseRepo<unknown>,
     @inject(SupabaseSessionGuardService)
-    protected sessionGuard: SupabaseSessionGuardInterface
+    protected sessionGuard: SupabaseSessionGuardInterface,
+    @inject(UserProfileSyncService)
+    protected profileSync: UserProfileSyncService
   ) {
     super(
       new OAuthSessionService(config),
@@ -150,6 +153,48 @@ export class SupabaseOAuthProvider
       oauthRepo
     );
     this.appHost = config.appHost;
+  }
+
+  /**
+   * Persist password-login session without rotating the refresh token.
+   *
+   * Base {@link OAuthWrapperService.login} calls `providerGetUserInfo(refresh_token)`,
+   * which for Supabase runs `refreshSession` and then overwrites the cookie with the
+   * *pre-rotation* token — causing `refresh_token_already_used` on the next
+   * `/api/user/session` call.
+   *
+   * @override
+   */
+  public async login(params: LoginParams): Promise<SupabaseSession> {
+    const session = await this.providerLogin(params);
+    const refreshToken = session.providerRefreshToken?.trim();
+    if (!refreshToken) {
+      throw new Error('User provider login did not return a session token');
+    }
+    if (!session.user) {
+      throw new Error('Supabase login did not return user info');
+    }
+
+    const { local, user } = await this.resolvePersistedUser(session.user);
+    const displayName = await this.profileSync.syncAfterAuth(user);
+    const sessionUser =
+      displayName != null && displayName.length > 0
+        ? { ...user, name: displayName }
+        : user;
+
+    const sessionPayload: SupabaseSession = {
+      ...session,
+      userId: local.authUserId,
+      user: sessionUser,
+      providerRefreshToken: refreshToken
+    };
+
+    await this.oauthSession.setSession(sessionPayload);
+    await this.getOAuthRepo().upsertUserCredentials(local.authUserId, {
+      provider_session_token: refreshToken
+    });
+
+    return sessionPayload;
   }
 
   protected resolvePassword(password: string): string {
@@ -424,7 +469,7 @@ export class SupabaseOAuthProvider
     await this.syncUserSession(refreshed);
   }
 
-  protected async syncUserSession(session: Session): Promise<void> {
+  protected async syncUserSession(session: Session): Promise<UserSchema> {
     const refreshToken = requireSupabaseRefreshToken(session);
 
     if (!session.user) {
@@ -432,19 +477,26 @@ export class SupabaseOAuthProvider
     }
 
     const profile = supabaseSessionToUserSchema(session);
+    const displayName = await this.profileSync.syncAfterAuth(profile);
+    const sessionUser =
+      displayName != null && displayName.length > 0
+        ? { ...profile, name: displayName }
+        : profile;
 
     await this.oauthSession.setSession({
-      userId: profile.id,
-      user: profile,
+      userId: sessionUser.id,
+      user: sessionUser,
       providerRefreshToken: refreshToken
     });
 
     const oauthRepo = this.getOAuthRepo();
     // oauth-wrapper reads provider_session_token as the upstream refresh token
     // when exchanging authorization codes (fetchProviderAccessToken).
-    await oauthRepo.upsertUserCredentials(profile.id, {
+    await oauthRepo.upsertUserCredentials(sessionUser.id, {
       provider_session_token: refreshToken
     });
+
+    return sessionUser;
   }
 
   /**
