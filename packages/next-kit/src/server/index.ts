@@ -81,7 +81,9 @@ export {
   type ResultHandlerInterface
 } from './utils/NextApiHandler';
 export {
+  isApiErrorDiagnosticsEnabled,
   isStableApiErrorId,
+  toClientFacingExecutorError,
   toStableApiExecutorError
 } from './utils/normalizeApiExecutorError';
 export {
