@@ -1,44 +1,34 @@
 'use client';
 
+import { useStore } from '@brain-toolkit/react-kit';
 import {
   PermissionKey,
   type AppPermissionKey
 } from '@shared/auth/permissionKeys';
-import {
-  expandSystemPermissions,
-  normalizeSystemRole,
-  platformRoleFromUserRole
-} from '@shared/auth/systemRole';
-import type { SessionUserPermissions } from '@schemas/RoleSchema';
+import { I } from '@config/ioc-identifiter';
+import type { SessionCapabilitiesStateInterface } from '@interfaces/SessionCapabilitiesInterface';
+import { useIOC } from './useIOC';
 import { useUserAuth } from './useUserAuth';
-import type { UserSchema } from '@qlover/next-kit/common';
 
-type SessionUser = UserSchema & Partial<SessionUserPermissions>;
+const permissionsSelector = (
+  state: SessionCapabilitiesStateInterface
+): string[] => state.permissions;
 
-function permissionsFromUser(user: SessionUser | undefined): string[] {
-  if (!user) {
-    return [];
-  }
-  if (Array.isArray(user.permissions) && user.permissions.length > 0) {
-    return user.permissions;
-  }
-  if (typeof user.system_role === 'string' && user.system_role.length > 0) {
-    return [...expandSystemPermissions(normalizeSystemRole(user.system_role))];
-  }
-  return [...expandSystemPermissions(platformRoleFromUserRole(user.role))];
-}
-
+/**
+ * 当前会话权限键列表（来自独立 capabilities AsyncStore）。
+ */
 export function useSessionPermissionKeys(): {
   permissions: string[];
   success: boolean;
   loading: boolean;
 } {
-  const { user, success, loading } = useUserAuth();
-  return {
-    permissions: permissionsFromUser(user as SessionUser | undefined),
-    success,
-    loading
-  };
+  const userService = useIOC(I.UserServiceInterface);
+  const { success, loading } = useUserAuth();
+  const permissions = useStore(
+    userService.getCapabilitiesStore(),
+    permissionsSelector
+  );
+  return { permissions, success, loading };
 }
 
 /**

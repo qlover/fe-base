@@ -9,6 +9,7 @@ import { useStrictEffect } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import {
   useCallback,
+  useEffect,
   useState,
   type ComponentType,
   type SVGProps
@@ -20,7 +21,12 @@ import { GithubIcon, GoogleIcon } from '@/uikit/components/icons';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
 import type { LoginProviderType } from '@config/common';
-import { loginProviders, oauthUpstreamProviders } from '@config/common';
+import {
+  LOGIN_REASON,
+  URLParamsKeys,
+  loginProviders,
+  oauthUpstreamProviders
+} from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import type { FePublicConfig } from '@schemas/FeSiteSettingsSchema';
@@ -64,6 +70,7 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
   const [provider, providerStore] = useAsyncStore<ProviderLoginState>();
   const [publicConfig, setPublicConfig] = useState<FePublicConfig | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const providerLogining = provider.loading;
   const error = providerStore.isFailed() ? String(provider.error) : null;
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
@@ -75,6 +82,13 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
     publicConfig?.auth.phoneOtpProvider?.trim().toLowerCase() || 'memory';
   const githubOauthEnabled = publicConfig?.auth.githubOauthEnabled ?? true;
   const googleOauthEnabled = publicConfig?.auth.googleOauthEnabled ?? false;
+
+  useEffect(() => {
+    const reason = new URLSearchParams(window.location.search).get(
+      URLParamsKeys.loginReason
+    );
+    setSessionExpired(reason === LOGIN_REASON.SESSION_EXPIRED);
+  }, []);
 
   useStrictEffect(() => {
     void fetchPublicConfig().then(setPublicConfig);
@@ -124,6 +138,15 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
 
   return (
     <div data-testid="LoginTabSwitch" className="w-full">
+      {sessionExpired && !error ? (
+        <div
+          role="status"
+          data-testid="LoginSessionExpired"
+          className="bg-brand/10 text-brand mb-4 rounded-xl px-4 py-3 text-sm"
+        >
+          {tt.sessionExpired}
+        </div>
+      ) : null}
       {error ? (
         <div
           role="alert"

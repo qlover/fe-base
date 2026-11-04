@@ -5,8 +5,10 @@ import { DialogErrorPlugin } from '@/impls/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/impls/RequestEncryptPlugin';
 import { I } from '@config/ioc-identifiter';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { UserServiceInterface } from '@interfaces/UserServiceInterface';
 import { AppApiPlugin } from './AppApiPlugin';
 import { AppApiRequester } from './AppApiRequester';
+import { AppApiSessionGatePlugin } from './AppApiSessionGatePlugin';
 import type { AppApiConfig } from './AppApiRequester';
 import type {
   IOCContainerInterface,
@@ -24,6 +26,11 @@ export class AppApiRegister implements IOCRegisterInterface<IOCContainerInterfac
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
     const appConfig = ioc.get<SeedSrcConfigInterface>(I.AppConfig);
 
+    appUserApi.use(
+      new AppApiSessionGatePlugin(() =>
+        ioc.get<UserServiceInterface>(I.UserServiceInterface)
+      )
+    );
     // 数据加密优先于 RequestPlugin(会序列化数据)
     appUserApi.use(
       new RequestEncryptPlugin(

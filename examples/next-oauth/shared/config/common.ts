@@ -88,8 +88,22 @@ export const URLParamsKeys = {
   /**
    * supabase 回调授权 id 的参数 key
    */
-  oAuthQueryAuthId: 'authorization_id'
+  oAuthQueryAuthId: 'authorization_id',
+
+  /**
+   * 跳转登录页原因（如会话过期）
+   */
+  loginReason: 'reason'
 } as const;
+
+/**
+ * 登录页 `reason` 查询参数取值。
+ */
+export const LOGIN_REASON = {
+  SESSION_EXPIRED: 'session_expired'
+} as const;
+
+export type LoginReasonType = (typeof LOGIN_REASON)[keyof typeof LOGIN_REASON];
 
 /**
  * 查询参数中的语言参数 key

@@ -364,3 +364,10 @@ export const PAGE_LOGIN_SWITCH_TO_PASSWORD = 'page_login:switch_to_password';
  * @localEn Sign in with GitHub
  */
 export const PAGE_LOGIN_WITH_GITHUB = 'page_login:with_github';
+
+/**
+ * @description Shown when redirected to login after session expiry
+ * @localZh 登录已过期，请重新登录
+ * @localEn Your session has expired. Please sign in again.
+ */
+export const PAGE_LOGIN_SESSION_EXPIRED = 'page_login:session_expired';

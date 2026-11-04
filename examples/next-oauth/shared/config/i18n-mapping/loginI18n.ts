@@ -89,5 +89,7 @@ export const loginI18n = Object.freeze({
 
   // 这里的i18nkey 名与 config/common 中的 loginProviders value一致
   providerGoogle: i18nKeys.PAGE_LOGIN_WITH_GOOGLE,
-  providerGitHub: i18nKeys.PAGE_LOGIN_WITH_GITHUB
+  providerGitHub: i18nKeys.PAGE_LOGIN_WITH_GITHUB,
+
+  sessionExpired: i18nKeys.PAGE_LOGIN_SESSION_EXPIRED
 });

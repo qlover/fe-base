@@ -8,7 +8,8 @@ export const restoreUserService: BootstrapExecutorPlugin = {
     const userService = ioc.get<UserService>(I.UserServiceInterface);
 
     userService.refreshUser({
-      disabledDialogError: true
+      disabledDialogError: true,
+      disabledLoggerError: true
     });
   }
 };
