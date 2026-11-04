@@ -3,6 +3,7 @@ import {
   createLogger,
   isApiServerContext,
   type ApiServerContext,
+  type BinaryApiPayload,
   type BootstrapServerContextOptions,
   type BootstrapServerPlugin
 } from '@qlover/next-kit/server';
@@ -28,6 +29,12 @@ type RunWithInit = {
   successHeaders?: HeadersInit;
   errorHeaders?: HeadersInit;
   httpStatus?: number;
+};
+
+type RunWithBinaryInit = RunWithInit & {
+  notFoundHeaders?: HeadersInit;
+  notFoundCacheControl?: string;
+  successCacheControl?: string;
 };
 
 type RunWithTask<Result> = ExecutorAsyncTask<
@@ -149,8 +156,35 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
     task?: RunWithTask<Result>,
     init?: RunWithInit
   ): Promise<NextResponse> {
+    const started = performance.now();
     const result = await this.run(task);
-    return this.returnJson(result, this.mergeResponseInit(init));
+    const response = this.returnJson(result, this.mergeResponseInit(init));
+    response.headers.set(
+      'Server-Timing',
+      `app;dur=${Math.round(performance.now() - started)}`
+    );
+    return response;
+  }
+
+  /**
+   * Binary/image endpoints with CORS header merge + Server-Timing.
+   *
+   * @override
+   */
+  public override async runWithBinary(
+    task?: RunWithTask<BinaryApiPayload | null>,
+    init?: RunWithBinaryInit
+  ): Promise<NextResponse> {
+    const started = performance.now();
+    const response = await super.runWithBinary(
+      task,
+      this.mergeResponseInit(init)
+    );
+    response.headers.set(
+      'Server-Timing',
+      `app;dur=${Math.round(performance.now() - started)}`
+    );
+    return response;
   }
 
   /**
