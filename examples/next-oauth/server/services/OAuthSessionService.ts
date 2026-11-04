@@ -174,6 +174,32 @@ export class OAuthSessionService
   }
 
   /**
+   * 局部更新会话 cookie 中缓存的用户字段（如改展示名后同步 `name`），并续期 cookie。
+   *
+   * @param patch - 合并进会话 `user` 的字段
+   * @returns 无会话或会话无 user 时返回 false
+   */
+  public async patchSessionUser(patch: Partial<UserSchema>): Promise<boolean> {
+    const payload = (await this.getSession()) as
+      | (OAuthSessionPayload & {
+          user?: UserSchema;
+          iat?: number;
+          exp?: number;
+        })
+      | null;
+    if (!payload?.user) {
+      return false;
+    }
+
+    const { iat: _iat, exp: _exp, ...rest } = payload;
+    await this.setSession({
+      ...rest,
+      user: { ...payload.user, ...patch }
+    } as OAuthSessionPayload);
+    return true;
+  }
+
+  /**
    * @override
    */
   public async clearSession(): Promise<void> {

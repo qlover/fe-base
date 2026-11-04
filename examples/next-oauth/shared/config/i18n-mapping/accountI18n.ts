@@ -1,3 +1,4 @@
+import { COMMON_CANCEL, COMMON_SAVE } from '../i18n-identifier/common/common';
 import * as accountKeys from '../i18n-identifier/pages/page.account';
 import { PAGE_HOME_TITLE } from '../i18n-identifier/pages/page.home';
 
@@ -10,6 +11,13 @@ export const accountI18n = Object.freeze({
 
   sectionTitle: accountKeys.PAGE_ACCOUNT_SECTION_TITLE,
   displayNameLabel: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_LABEL,
+  displayNamePlaceholder: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_PLACEHOLDER,
+  displayNameEdit: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_EDIT,
+  displayNameSuccess: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_SUCCESS,
+  displayNameError: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_ERROR,
+  displayNameInvalid: accountKeys.PAGE_ACCOUNT_DISPLAY_NAME_INVALID,
+  save: COMMON_SAVE,
+  cancel: COMMON_CANCEL,
   phoneLabel: accountKeys.PAGE_ACCOUNT_PHONE_LABEL,
   emailLabel: accountKeys.PAGE_ACCOUNT_EMAIL_LABEL,
   userIdLabel: accountKeys.PAGE_ACCOUNT_USER_ID_LABEL,

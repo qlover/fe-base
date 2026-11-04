@@ -23,16 +23,19 @@ import {
 import { inject, injectable } from '@shared/container';
 import {
   API_CHANGE_PASSWORD_INVALID,
+  API_DISPLAY_NAME_INVALID,
   API_NOT_AUTHORIZED
 } from '@config/i18n-identifier/api';
 import {
   changePasswordSchema,
   type ChangePasswordInput
 } from '@schemas/ChangePasswordSchema';
+import { displayNameUpdateSchema } from '@schemas/DisplayNameSchema';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
+import type { UserProfileServiceInterface } from '@server/interfaces/UserProfileServiceInterface';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
@@ -41,6 +44,7 @@ import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitServic
 import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import { RolePermissionService } from '@server/services/RolePermissionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
+import { UserProfileService } from '@server/services/UserProfileService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -78,6 +82,8 @@ export class UserController {
     protected feUsersRepository: FeUsersRepository,
     @inject(ChangePasswordService)
     protected changePasswordService: ChangePasswordService,
+    @inject(UserProfileService)
+    protected userProfileService: UserProfileServiceInterface,
     @inject(SupabaseSessionGuardService)
     protected sessionGuard: SupabaseSessionGuardInterface,
     @inject(RequestLocaleResolver)
@@ -271,6 +277,27 @@ export class UserController {
     const params = loginWithProviderCallbackSchema.parse(_query);
 
     return this.userService.loginWithProviderCallback(params);
+  }
+
+  /**
+   * 自助修改显示名：写库并同步会话 cookie 的 `name`。
+   *
+   * @param body - `{ display_name }`
+   * @returns 更新后的嵌入会话用户
+   */
+  public async updateDisplayName(body: unknown): Promise<UserSchema> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = displayNameUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_DISPLAY_NAME_INVALID);
+    }
+    return this.userProfileService.updateDisplayName(
+      user.id,
+      parsed.data.display_name
+    );
   }
 
   /**

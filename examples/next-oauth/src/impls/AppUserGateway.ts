@@ -258,4 +258,32 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       throw new Error(response.data.message || 'Change password failed');
     }
   }
+
+  /**
+   * 自助修改显示名；成功返回更新后的会话用户（含新 `name`）。
+   *
+   * @param params - `{ display_name }`
+   */
+  public async updateDisplayName(params: {
+    display_name: string;
+  }): Promise<UserSchema> {
+    const response = await this.client.request<
+      NextKitApiResult<UserSchema>,
+      { display_name: string }
+    >({
+      url: apiRoutes.API_USER_DISPLAY_NAME,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Update display name failed'
+      );
+    }
+
+    return response.data.data;
+  }
 }

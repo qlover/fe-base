@@ -80,6 +80,30 @@ export class FeUsersRepository {
     this.supabaseBridge.throwIfError(result);
   }
 
+  /**
+   * 自助修改显示名（窄更新，不改其它资料字段）。
+   *
+   * @param userId - 用户 id
+   * @param displayName - 已通过 DisplayNameSchema 校验的展示名
+   */
+  public async updateDisplayName(
+    userId: string,
+    displayName: string
+  ): Promise<FeUserRow> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update({
+        display_name: displayName,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
+      .select('*')
+      .single();
+    this.supabaseBridge.throwIfError(result);
+    return result.data as FeUserRow;
+  }
+
   public async findByPhone(phone: string): Promise<FeUserRow | null> {
     const normalized = phone.trim();
     if (!normalized) {

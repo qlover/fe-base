@@ -14,7 +14,7 @@ interface AccountPageProps {
   messages: Record<string, string>;
 }
 
-const pageNamespaces = ['page_account', 'page_home'] as const;
+const pageNamespaces = ['page_account', 'page_home', 'common'] as const;
 
 /**
  * Account center (Pages Router / CSR): profile + change password.

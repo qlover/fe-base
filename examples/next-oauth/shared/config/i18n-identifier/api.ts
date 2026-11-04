@@ -323,3 +323,10 @@ export const API_PASSWORD_RESET_TOKEN_INVALID =
  */
 export const API_PASSWORD_RESET_RATE_LIMITED =
   'api:password_reset_rate_limited';
+
+/**
+ * @description Display name format is invalid
+ * @localZh 显示名需为 1–32 位字母、数字或下划线
+ * @localEn Display name must be 1–32 letters, numbers, or underscores
+ */
+export const API_DISPLAY_NAME_INVALID = 'api:display_name_invalid';

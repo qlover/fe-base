@@ -122,6 +122,20 @@ export class UserService
       });
   }
 
+  /**
+   * 用服务端返回的会话用户覆盖本地 store（例如改显示名后）。
+   *
+   * @param user - 嵌入会话用户
+   */
+  public applySessionUser(user: UserSchema): void {
+    if (!this.isUser(user)) {
+      return;
+    }
+    this.getStore().success(user, {
+      credential_token: user.credential_token
+    });
+  }
+
   public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {
     return this.gateway.sendOtp(params);
   }
