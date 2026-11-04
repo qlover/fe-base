@@ -122,12 +122,55 @@ describe('Env', () => {
         envVar: 'APP_ENV'
       });
 
-      expect(config).toHaveBeenCalledWith(
+      // Stack: .env → .env.local (preferred is same as .env.local after dedupe)
+      expect(config).toHaveBeenCalledTimes(2);
+      expect(config).toHaveBeenNthCalledWith(
+        1,
         expect.objectContaining({
-          path: toLocalPath('/test/path/.env.local')
+          path: toLocalPath('/test/path/.env'),
+          override: false
         })
       );
-      expect(config).toHaveBeenCalledTimes(1);
+      expect(config).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.local'),
+          override: true
+        })
+      );
+
+      delete process.env.APP_ENV;
+    });
+
+    it('should stack all existing files with preferred last', () => {
+      process.env.APP_ENV = 'staging';
+      vi.mocked(config).mockClear();
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(true);
+      const env = new Env({ rootPath: '/test/path', logger });
+      env.load({
+        preloadList: ['.env.local', '.env'],
+        envVar: 'APP_ENV'
+      });
+
+      expect(config).toHaveBeenCalledTimes(3);
+      expect(config).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ path: toLocalPath('/test/path/.env') })
+      );
+      expect(config).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.local'),
+          override: true
+        })
+      );
+      expect(config).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.staging'),
+          override: true
+        })
+      );
 
       delete process.env.APP_ENV;
     });
@@ -201,6 +244,7 @@ describe('Env', () => {
 
     it('should forward processEnv and quiet to dotenv', () => {
       const processEnv = {};
+      vi.mocked(config).mockClear();
       (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(true);
       const env = new Env({ rootPath: '/test/path', logger });
       env.load({
@@ -209,11 +253,13 @@ describe('Env', () => {
         quiet: true
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env'),
-        processEnv,
-        quiet: true
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env'),
+          processEnv,
+          quiet: true
+        })
+      );
     });
 
     it('should not throw when logger is missing and no file found', () => {
@@ -340,9 +386,11 @@ describe('Env', () => {
         logger
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env')
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env')
+        })
+      );
       expect(env).toBeInstanceOf(Env);
     });
 
@@ -384,9 +432,11 @@ describe('Env', () => {
         logger
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env.staging')
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.staging')
+        })
+      );
 
       delete process.env.APP_ENV;
     });
@@ -402,11 +452,13 @@ describe('Env', () => {
         override: true
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env'),
-        encoding: 'latin1',
-        override: true
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env'),
+          encoding: 'latin1',
+          override: true
+        })
+      );
     });
 
     it('should search parent directories until a file is found', () => {
@@ -424,10 +476,49 @@ describe('Env', () => {
         maxDepth: 5
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/.env')
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/.env')
+        })
+      );
       expect(env.rootPath).toBe('/test/path/nested');
+    });
+
+    it('should load ancestor then nearer env with override', () => {
+      vi.mocked(config).mockClear();
+      (existsSync as ReturnType<typeof vi.fn>).mockImplementation(
+        (path: string) => {
+          const p = String(path);
+          return (
+            p === toLocalPath('/repo/.env') ||
+            p === toLocalPath('/repo/apps/web/.env.local') ||
+            p.endsWith(`${normalize('/repo/.env')}`) ||
+            p.endsWith(`${normalize('/repo/apps/web/.env.local')}`)
+          );
+        }
+      );
+
+      Env.searchEnv({
+        cwd: '/repo/apps/web',
+        preloadList: ['.env.local', '.env'],
+        logger,
+        maxDepth: 5
+      });
+
+      expect(config).toHaveBeenCalledTimes(2);
+      expect(config).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          path: toLocalPath('/repo/.env')
+        })
+      );
+      expect(config).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          path: toLocalPath('/repo/apps/web/.env.local'),
+          override: true
+        })
+      );
     });
 
     it('should use default preloadList when omitted', () => {
@@ -441,9 +532,11 @@ describe('Env', () => {
         logger
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env.local')
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.local')
+        })
+      );
     });
 
     it('should clamp maxDepth to 8', () => {
@@ -475,11 +568,13 @@ describe('Env', () => {
         override: true
       });
 
-      expect(config).toHaveBeenCalledWith({
-        path: toLocalPath('/test/path/.env.staging'),
-        encoding: 'utf8',
-        override: true
-      });
+      expect(config).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: toLocalPath('/test/path/.env.staging'),
+          encoding: 'utf8',
+          override: true
+        })
+      );
 
       delete process.env.APP_ENV;
     });

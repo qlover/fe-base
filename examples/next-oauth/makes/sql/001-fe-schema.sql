@@ -221,6 +221,13 @@ create table public.fe_request_logs (
   success boolean not null default true,
   request_id uuid,
   record_type text,
+  http_method text,
+  http_path text,
+  http_status integer,
+  duration_ms integer,
+  ip_address text,
+  error_code text,
+  reason_code text,
   payload jsonb
 );
 

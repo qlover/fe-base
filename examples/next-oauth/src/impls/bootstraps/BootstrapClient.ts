@@ -3,6 +3,7 @@ import { browserGlobalsName } from '@config/common';
 import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
 import { isAuthCallbackPath } from '@config/route';
 import * as globals from '../globals';
+import { exampleBackgroundTask } from './ExampleBackgroundTask';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import { restoreUserService } from './RestoreUserService';
@@ -70,6 +71,9 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
     if (!isAuthCallbackPath(pathname ?? '')) {
       bootstrapList.push(restoreUserService);
     }
+
+    // Memory background tasks (start/stop + enqueue); see docs/client-background-plugin.md
+    bootstrapList.push(exampleBackgroundTask);
 
     if (!appConfig.isProduction) {
       bootstrapList.push(printBootstrap);

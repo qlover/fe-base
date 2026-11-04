@@ -5,10 +5,12 @@ import { setRequestLocale } from 'next-intl/server';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
+import { SITE_SHARE } from '@config/siteShare';
 import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
 import { getI18nMessages, getLocale } from '@server/render/pageRouteParams';
+import { ServerConfig } from '@server/ServerConfig';
 import type { Metadata } from 'next';
 
 const inter = Inter({
@@ -17,14 +19,30 @@ const inter = Inter({
   variable: '--font-inter'
 });
 
-export const metadata: Metadata = {
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/logo.svg', type: 'image/svg+xml' }
-    ]
-  }
-};
+function buildRootMetadata(): Metadata {
+  const siteUrl = new ServerConfig().siteUrl.replace(/\/$/, '');
+  return {
+    metadataBase: new URL(siteUrl),
+    title: SITE_SHARE.siteName,
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/logo.svg', type: 'image/svg+xml' }
+      ]
+    },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_SHARE.siteName,
+      title: SITE_SHARE.siteName
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: SITE_SHARE.siteName
+    }
+  };
+}
+
+export const metadata: Metadata = buildRootMetadata();
 
 export function generateStaticParams() {
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));

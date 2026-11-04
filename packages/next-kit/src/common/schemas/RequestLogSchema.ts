@@ -14,6 +14,7 @@ export type RequestLogPayload = {
   device?: string | null;
   error_code?: string | null;
   error_message?: string | null;
+  reason_code?: string | null;
   [key: string]: unknown;
 };
 
@@ -27,6 +28,13 @@ export const requestLogSchema = z.object({
   success: z.boolean(),
   request_id: z.uuid().nullable(),
   record_type: z.string().nullable(),
+  http_method: z.string().nullable().optional(),
+  http_path: z.string().nullable().optional(),
+  http_status: z.number().nullable().optional(),
+  duration_ms: z.number().nullable().optional(),
+  ip_address: z.string().nullable().optional(),
+  error_code: z.string().nullable().optional(),
+  reason_code: z.string().nullable().optional(),
   payload: z.record(z.string(), z.unknown()).nullable()
 });
 
