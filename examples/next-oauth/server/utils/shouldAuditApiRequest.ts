@@ -4,11 +4,12 @@ import {
 } from '@qlover/next-kit/server';
 
 /**
- * Decide whether an HTTP API call should write a `fe_request_logs` row.
+ * Optional allowlist matcher (PAM-style). Kept for callers that still need
+ * path-scoped audit; {@link NextApiServer.afterApiResult} now logs **all
+ * API failures** and skips successes (xOranj policy).
  *
- * Default is **deny** (allowlist). High-frequency reads (session / locales /
- * request-logs paging) must not flood the table. Auth login/logout already use
- * `insertWithAuth` and are intentionally omitted here to avoid duplicate rows.
+ * Auth login/logout already use `insertWithAuth` and should stay off any
+ * success-path allowlist to avoid duplicate rows.
  */
 const AUDIT_RULES: readonly ApiAuditRule[] = [
   // Account mutations that lack insertWithAuth

@@ -16,7 +16,6 @@ import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import type { SessionCookieFieldsType } from './services/OAuthSessionService';
 import { NextApiHandler } from './utils/NextApiHandler';
-import { shouldAuditApiRequest } from './utils/shouldAuditApiRequest';
 import { ServerContext } from './utils/ServerContext';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
@@ -151,18 +150,15 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
   /**
    * @override
    *
-   * Allowlisted audit only — high-frequency reads must not flood
-   * `fe_request_logs` or hold up the JSON response on a Supabase INSERT.
+   * General API **success is not persisted** (noise / table growth).
+   * Only failures are written. Auth login/logout use `insertWithAuth`
+   * separately (not via this hook).
    */
   protected override afterApiResult<Result>(
     envelope: NextKitApiResult<Result>,
     request?: NextRequest
   ): void {
-    if (!request) {
-      return;
-    }
-
-    if (!shouldAuditApiRequest(request.method, request.nextUrl.pathname)) {
+    if (!request || envelope.success) {
       return;
     }
 
