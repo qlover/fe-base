@@ -5,6 +5,7 @@ import {
 import {
   COMMON_ADMIN_NAV_DASHBOARD,
   COMMON_ADMIN_NAV_LOCALES,
+  COMMON_ADMIN_NAV_MAIL_LOGS,
   COMMON_ADMIN_NAV_MEMORY_KV,
   COMMON_ADMIN_NAV_OTP_MONITOR,
   COMMON_ADMIN_NAV_PERMISSIONS,
@@ -15,6 +16,7 @@ import {
 } from '@config/i18n-identifier/common/common';
 import {
   ROUTE_ADMIN_LOCALES,
+  ROUTE_ADMIN_MAIL_LOGS,
   ROUTE_ADMIN_MEMORY_KV,
   ROUTE_ADMIN_OTP_MONITOR,
   ROUTE_ADMIN_PERMISSIONS,
@@ -32,6 +34,7 @@ export type NavItemPaths =
   | 'admin/memory-kv'
   | 'admin/locales'
   | 'admin/settings'
+  | 'admin/mail-logs'
   | 'admin/request-logs';
 
 export interface NavItemInterface {
@@ -90,6 +93,12 @@ export const defaultNavItems: NavItemInterface[] = [
     i18nKey: COMMON_ADMIN_NAV_SETTINGS,
     pathname: ROUTE_ADMIN_SETTINGS,
     permissionKey: PermissionKey.admin_site_settings_read
+  },
+  {
+    key: 'mail-logs',
+    i18nKey: COMMON_ADMIN_NAV_MAIL_LOGS,
+    pathname: ROUTE_ADMIN_MAIL_LOGS,
+    permissionKey: PermissionKey.admin_mail_logs_read
   },
   {
     key: 'request-logs',

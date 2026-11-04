@@ -15,7 +15,11 @@ import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { URLParamsKeys } from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
-import { ROUTE_DEVELOPER_APPS, ROUTE_REGISTER } from '@config/route';
+import {
+  ROUTE_AUTH_FORGOT_PASSWORD,
+  ROUTE_DEVELOPER_APPS,
+  ROUTE_REGISTER
+} from '@config/route';
 import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { LoginSchema } from '@qlover/next-kit/common';
 
@@ -26,8 +30,17 @@ type LoginSubmitState = AsyncState<
   Awaited<ReturnType<AppUserGateway['verify']>>
 >;
 
-export function LoginForm(props: { tt: LoginI18nInterface }) {
-  const { tt } = props;
+/**
+ * 邮箱密码登录表单。
+ *
+ * `showForgotPassword` 仅在站点开放邮件重置密码（`publicConfig.auth.passwordResetEnabled`）时为 true，
+ * 此时才展示「忘记密码」入口。
+ */
+export function LoginForm(props: {
+  tt: LoginI18nInterface;
+  showForgotPassword?: boolean;
+}) {
+  const { tt, showForgotPassword = false } = props;
   const t = useWarnTranslations();
   const userGateway = useIOC(AppUserGateway);
   const appConfig = useIOC(I.AppConfig) as SeedSrcConfigInterface;
@@ -144,13 +157,15 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           >
             {tt.password}
           </label>
-          <LocaleLink
-            href="#"
-            title={tt.forgotPasswordTitle}
-            className="text-secondary-text bg-bg-container text-sm hover:text-primary-text cursor-pointer"
-          >
-            {tt.forgotPassword}
-          </LocaleLink>
+          {showForgotPassword ? (
+            <LocaleLink
+              href={ROUTE_AUTH_FORGOT_PASSWORD}
+              title={tt.forgotPasswordTitle}
+              className="text-secondary-text bg-bg-container text-sm hover:text-primary-text cursor-pointer"
+            >
+              {tt.forgotPassword}
+            </LocaleLink>
+          ) : null}
         </div>
         <input
           id="login-password"

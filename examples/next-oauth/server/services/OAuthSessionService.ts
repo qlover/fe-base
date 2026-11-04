@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { hasSessionPath, redirectToPath } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthSessionServiceInterface } from '@server/interfaces/OAuthSessionServiceInterface';
+import { isSessionPayloadRevoked } from '@server/utils/sessionRevocation';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type {
   OAuthSessionInterface,
@@ -100,6 +101,13 @@ export class OAuthSessionService
       return NextResponse.redirect(redirectToPath(request));
     }
 
+    // 已被「撤销所有会话」（如重置密码）作废的 session：清 cookie 后去登录
+    if (await isSessionPayloadRevoked(payload)) {
+      const response = NextResponse.redirect(redirectToPath(request));
+      response.cookies.delete(this.sessionKey);
+      return response;
+    }
+
     // 4. 验证通过，返回正常响应
     return nextResponse ?? NextResponse.next({ request });
   }
@@ -156,7 +164,13 @@ export class OAuthSessionService
       return null;
     }
 
-    return this.parseJWT(raw, this.sessionSecret);
+    const payload = this.parseJWT(raw, this.sessionSecret);
+    if (!payload) {
+      return null;
+    }
+
+    // 签发时间早于 fe_users.sessions_revoked_at 的会话视为失效。
+    return (await isSessionPayloadRevoked(payload)) ? null : payload;
   }
 
   /**

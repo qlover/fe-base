@@ -17,7 +17,20 @@ export const FE_SITE_SETTING_KEYS = {
    * CORS rules: origin × path × methods.
    * Each rule: `{ origin, path, methods }`. Use `*` for any dimension.
    */
-  API_CORS_RULES: 'api.cors_rules'
+  API_CORS_RULES: 'api.cors_rules',
+
+  /** 事务邮件通道：`disabled` | `memory` | `resend`。 */
+  MAIL_PROVIDER: 'mail.provider',
+  /** Resend API Key（敏感，加密存储）。 */
+  MAIL_RESEND_API_KEY: 'mail.resend_api_key',
+  MAIL_FROM_ADDRESS: 'mail.from_address',
+  /** 发件人显示名，同时作为邮件模板里的站点名称。 */
+  MAIL_FROM_NAME: 'mail.from_name',
+  MAIL_REPLY_TO: 'mail.reply_to',
+  /** 是否开放「忘记密码」邮件重置。 */
+  MAIL_PASSWORD_RESET_ENABLED: 'mail.password_reset_enabled',
+  /** 密码被修改后是否发送安全通知邮件。 */
+  MAIL_PASSWORD_CHANGED_NOTIFY_ENABLED: 'mail.password_changed_notify_enabled'
 } as const;
 
 export type FeSiteSettingKey =
@@ -108,6 +121,60 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
         '每条规则选择或填写：来源 Origin、API 路径、HTTP 方法。均可选 *；路径支持 /oauth/*。',
       isSensitive: false,
       defaultValue: [...FE_DEFAULT_CORS_RULES]
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_PROVIDER,
+      label: '邮件通道',
+      description:
+        'disabled：关闭；memory：不真实发送，仅记录（Admin「邮件日志」可见正文，用于开发联调）；resend：通过 Resend 发送。与 Supabase Auth 自带邮件相互独立。',
+      isSensitive: false,
+      defaultValue: 'disabled'
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_RESEND_API_KEY,
+      label: 'Resend API Key',
+      description:
+        '邮件通道为 resend 时必填。有 ENCRYPTION_KEY 时加密存储，界面不回显明文。',
+      isSensitive: true
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_FROM_ADDRESS,
+      label: '发件邮箱',
+      description:
+        '发件人邮箱地址；resend 通道需使用已在 Resend 验证的发信域名。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_FROM_NAME,
+      label: '发件人名称',
+      description:
+        '发件人显示名，同时作为邮件模板中的站点名称；留空使用默认名称。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_REPLY_TO,
+      label: '回复邮箱',
+      description: '可选：用户回复邮件时的收件地址。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_PASSWORD_RESET_ENABLED,
+      label: '忘记密码（邮件重置）',
+      description:
+        '开启后登录页展示「忘记密码」入口。仅 Supabase upstream 可用，且须先启用邮件通道（不走 Supabase Recovery）。',
+      isSensitive: false,
+      defaultValue: false
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.MAIL_PASSWORD_CHANGED_NOTIFY_ENABLED,
+      label: '密码变更通知',
+      description:
+        '密码被修改（登录态修改或邮件重置）后，是否向用户邮箱发送安全通知。需先启用邮件通道。',
+      isSensitive: false,
+      defaultValue: false
     }
   ]);
 
@@ -145,7 +212,8 @@ export const FE_PUBLIC_SITE_SETTING_KEYS = [
   FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED,
   FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER,
   FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED,
-  FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED
+  FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED,
+  FE_SITE_SETTING_KEYS.MAIL_PASSWORD_RESET_ENABLED
 ] as const;
 
 export type FePublicSiteSettingKey =

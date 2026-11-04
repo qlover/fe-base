@@ -21,7 +21,11 @@ export const FeTables = {
   /** Runtime site settings (Admin Settings). */
   siteSettings: 'fe_site_settings',
   /** Phone OTP send/verify audit (memory shows code_plain). */
-  phoneOtps: 'fe_phone_otps'
+  phoneOtps: 'fe_phone_otps',
+  /** Transactional mail audit (memory | resend). */
+  mailLogs: 'fe_mail_logs',
+  /** Forgot-password reset links (hashed token, single use). */
+  passwordResetTokens: 'fe_password_reset_tokens'
 } as const;
 
 export type FeTableName = (typeof FeTables)[keyof typeof FeTables];

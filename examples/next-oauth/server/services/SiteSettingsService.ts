@@ -1,5 +1,6 @@
 import { TokenEncryption } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
+import { oauthUpstreamProviders } from '@config/common';
 import {
   FE_DEFAULT_CORS_RULES,
   FE_SITE_SETTING_DEFINITIONS,
@@ -264,20 +265,35 @@ export class SiteSettingsService {
       phoneLoginEnabled,
       phoneOtpProvider,
       githubOauthEnabled,
-      googleOauthEnabled
+      googleOauthEnabled,
+      passwordResetFlag,
+      mailProvider
     ] = await Promise.all([
       this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_PHONE_LOGIN_ENABLED),
       this.getString(FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER),
       this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED),
-      this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED)
+      this.getBoolean(FE_SITE_SETTING_KEYS.AUTH_GOOGLE_OAUTH_ENABLED),
+      this.getBoolean(FE_SITE_SETTING_KEYS.MAIL_PASSWORD_RESET_ENABLED),
+      this.getString(FE_SITE_SETTING_KEYS.MAIL_PROVIDER)
     ]);
+
+    const mailReady = ['memory', 'resend'].includes(
+      mailProvider.trim().toLowerCase()
+    );
+    // 邮件重置仅 Supabase upstream 支持；开关开启且邮件通道可用时才对外暴露。
+    const passwordResetEnabled =
+      passwordResetFlag &&
+      mailReady &&
+      this.serverConfig.oauthUpstreamProvider !==
+        oauthUpstreamProviders.brainUser;
 
     return {
       auth: {
         phoneLoginEnabled,
         phoneOtpProvider: phoneOtpProvider.trim().toLowerCase() || 'memory',
         githubOauthEnabled,
-        googleOauthEnabled
+        googleOauthEnabled,
+        passwordResetEnabled
       }
     };
   }

@@ -15,7 +15,8 @@ const ADMIN_READ = [
   PermissionKey.admin_request_logs_read,
   PermissionKey.admin_otp_monitor_read,
   PermissionKey.admin_memory_kv_read,
-  PermissionKey.admin_site_settings_read
+  PermissionKey.admin_site_settings_read,
+  PermissionKey.admin_mail_logs_read
 ] as const;
 
 const ADMIN_WRITE = [
@@ -26,7 +27,8 @@ const ADMIN_WRITE = [
   PermissionKey.admin_request_logs_write,
   PermissionKey.admin_otp_monitor_write,
   PermissionKey.admin_memory_kv_write,
-  PermissionKey.admin_site_settings_write
+  PermissionKey.admin_site_settings_write,
+  PermissionKey.admin_mail_test
 ] as const;
 
 export const DEFAULT_SYSTEM_ROLE_PERMISSIONS: Record<
@@ -156,5 +158,19 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     method: 'POST',
     path: '/api/admin/memory-kv',
     description: 'Purge process Memory KV cache'
+  },
+  {
+    permissionKey: PermissionKey.admin_mail_logs_read,
+    type: 'page',
+    method: null,
+    path: '/admin/mail-logs',
+    description: 'List mail send logs'
+  },
+  {
+    permissionKey: PermissionKey.admin_mail_test,
+    type: 'api',
+    method: 'POST',
+    path: '/api/admin/mail/test',
+    description: 'Send test email'
   }
 ];

@@ -34,6 +34,24 @@ export const API_ADMIN_LOCALES_NAMESPACES =
   '/api/admin/locales/namespaces' as const;
 
 /**
+ * API path: `/api/admin/mail-logs`
+ *
+ * @see [src/app/api/admin/mail-logs/route.ts](../../src/app/api/admin/mail-logs/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/mail-logs/route.ts`
+ */
+export const API_ADMIN_MAIL_LOGS = '/api/admin/mail-logs' as const;
+
+/**
+ * API path: `/api/admin/mail/test`
+ *
+ * @see [src/app/api/admin/mail/test/route.ts](../../src/app/api/admin/mail/test/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/mail/test/route.ts`
+ */
+export const API_ADMIN_MAIL_TEST = '/api/admin/mail/test' as const;
+
+/**
  * API path: `/api/admin/memory-kv`
  *
  * @see [src/app/api/admin/memory-kv/route.ts](../../src/app/api/admin/memory-kv/route.ts)
@@ -263,6 +281,24 @@ export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
 export const API_USER_PASSWORD = '/api/user/password' as const;
 
 /**
+ * API path: `/api/user/password/forgot`
+ *
+ * @see [src/app/api/user/password/forgot/route.ts](../../src/app/api/user/password/forgot/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/password/forgot/route.ts`
+ */
+export const API_USER_PASSWORD_FORGOT = '/api/user/password/forgot' as const;
+
+/**
+ * API path: `/api/user/password/reset`
+ *
+ * @see [src/app/api/user/password/reset/route.ts](../../src/app/api/user/password/reset/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/password/reset/route.ts`
+ */
+export const API_USER_PASSWORD_RESET = '/api/user/password/reset' as const;
+
+/**
  * API path: `/api/user/register`
  *
  * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
@@ -293,6 +329,8 @@ export type ApiRoutePath =
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
+  | typeof API_ADMIN_MAIL_LOGS
+  | typeof API_ADMIN_MAIL_TEST
   | typeof API_ADMIN_MEMORY_KV
   | typeof API_ADMIN_OTP_MONITOR
   | typeof API_ADMIN_PERMISSIONS
@@ -318,6 +356,8 @@ export type ApiRoutePath =
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY
   | typeof API_USER_PASSWORD
+  | typeof API_USER_PASSWORD_FORGOT
+  | typeof API_USER_PASSWORD_RESET
   | typeof API_USER_REGISTER
   | typeof API_USER_REQUEST_LOGS
   | typeof API_USER_SESSION;

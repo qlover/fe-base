@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
       auth: {
         phoneLoginEnabled: false,
         githubOauthEnabled: false,
-        googleOauthEnabled: false
+        googleOauthEnabled: false,
+        passwordResetEnabled: false
       }
     });
   }

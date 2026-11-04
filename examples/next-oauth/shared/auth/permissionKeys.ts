@@ -26,7 +26,9 @@ export const PermissionKey = {
   admin_memory_kv_read: 'admin_memory_kv_read',
   admin_memory_kv_write: 'admin_memory_kv_write',
   admin_site_settings_read: 'admin_site_settings_read',
-  admin_site_settings_write: 'admin_site_settings_write'
+  admin_site_settings_write: 'admin_site_settings_write',
+  admin_mail_logs_read: 'admin_mail_logs_read',
+  admin_mail_test: 'admin_mail_test'
 } as const;
 
 export type AppPermissionKey =

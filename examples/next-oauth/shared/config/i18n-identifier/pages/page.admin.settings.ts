@@ -183,3 +183,72 @@ export const ADMIN_SETTINGS_CORS_ORIGIN_INVALID =
  * @localEn Duplicate rule (same Origin + Path + Methods)
  */
 export const ADMIN_SETTINGS_CORS_DUPLICATE = 'admin_settings:cors__duplicate';
+
+/**
+ * @description Mail section title
+ * @localZh 事务邮件
+ * @localEn Transactional mail
+ */
+export const ADMIN_SETTINGS_SECTION_MAIL = 'admin_settings:section__mail';
+
+/**
+ * @description Mail section description
+ * @localZh 配置邮件通道与忘记密码；与 Supabase Auth 自带邮件相互独立。
+ * @localEn Configure the mail provider and forgot-password. Independent from Supabase Auth mail.
+ */
+export const ADMIN_SETTINGS_SECTION_MAIL_DESC =
+  'admin_settings:section__mail_desc';
+
+/**
+ * @description Mail test input placeholder
+ * @localZh 输入收件邮箱，发送测试邮件
+ * @localEn Recipient email for a test message
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_PLACEHOLDER =
+  'admin_settings:mail__test_placeholder';
+
+/**
+ * @description Mail test send button
+ * @localZh 发送测试邮件
+ * @localEn Send test mail
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_SEND = 'admin_settings:mail__test_send';
+
+/**
+ * @description Mail test sending state
+ * @localZh 发送中…
+ * @localEn Sending…
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_SENDING =
+  'admin_settings:mail__test_sending';
+
+/**
+ * @description Mail test success message
+ * @localZh 测试邮件已提交，可前往「邮件日志」查看结果
+ * @localEn Test mail submitted. Check "Mail logs" for the result
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_SUCCESS =
+  'admin_settings:mail__test_success';
+
+/**
+ * @description Mail test failed message
+ * @localZh 测试邮件发送失败
+ * @localEn Failed to send the test mail
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_FAILED =
+  'admin_settings:mail__test_failed';
+
+/**
+ * @description Mail test recipient invalid
+ * @localZh 请输入有效的邮箱地址
+ * @localEn Please enter a valid email address
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_INVALID =
+  'admin_settings:mail__test_invalid';
+
+/**
+ * @description Mail test hint
+ * @localZh 测试发信使用已保存的配置，请先保存再测试。
+ * @localEn Test sending uses the saved configuration. Save first, then test.
+ */
+export const ADMIN_SETTINGS_MAIL_TEST_HINT = 'admin_settings:mail__test_hint';

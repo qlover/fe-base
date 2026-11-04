@@ -124,3 +124,18 @@ export const PERMISSION_ADMIN_SITE_SETTINGS_READ =
  */
 export const PERMISSION_ADMIN_SITE_SETTINGS_WRITE =
   'permission:admin_site_settings_write';
+
+/**
+ * @description List mail send logs
+ * @localZh 查看邮件日志
+ * @localEn List mail send logs
+ */
+export const PERMISSION_ADMIN_MAIL_LOGS_READ =
+  'permission:admin_mail_logs_read';
+
+/**
+ * @description Send test email
+ * @localZh 发送测试邮件
+ * @localEn Send test email
+ */
+export const PERMISSION_ADMIN_MAIL_TEST = 'permission:admin_mail_test';

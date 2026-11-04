@@ -2,6 +2,7 @@ import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
+import * as mailLogsKeys from '../i18n-identifier/pages/page.admin.mail-logs';
 import * as memoryKvKeys from '../i18n-identifier/pages/page.admin.memory-kv';
 import * as otpMonitorKeys from '../i18n-identifier/pages/page.admin.otp-monitor';
 import * as permissionsKeys from '../i18n-identifier/pages/page.admin.permissions';
@@ -50,6 +51,8 @@ export type AdminPermissionsI18nInterface = typeof adminPermissions18n;
 export type AdminOtpMonitorI18nInterface = typeof adminOtpMonitor18n;
 
 export type AdminMemoryKvI18nInterface = typeof adminMemoryKv18n;
+
+export type AdminMailLogsI18nInterface = typeof adminMailLogs18n;
 
 export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
@@ -245,7 +248,47 @@ export const adminSettings18n = Object.freeze({
   corsRemove: settingsKeys.ADMIN_SETTINGS_CORS_REMOVE,
   corsEmpty: settingsKeys.ADMIN_SETTINGS_CORS_EMPTY,
   corsOriginInvalid: settingsKeys.ADMIN_SETTINGS_CORS_ORIGIN_INVALID,
-  corsDuplicate: settingsKeys.ADMIN_SETTINGS_CORS_DUPLICATE
+  corsDuplicate: settingsKeys.ADMIN_SETTINGS_CORS_DUPLICATE,
+  sectionMail: settingsKeys.ADMIN_SETTINGS_SECTION_MAIL,
+  sectionMailDesc: settingsKeys.ADMIN_SETTINGS_SECTION_MAIL_DESC,
+  mailTestPlaceholder: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_PLACEHOLDER,
+  mailTestSend: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SEND,
+  mailTestSending: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SENDING,
+  mailTestSuccess: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SUCCESS,
+  mailTestFailed: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_FAILED,
+  mailTestInvalid: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_INVALID,
+  mailTestHint: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_HINT
+});
+
+export const adminMailLogs18n = Object.freeze({
+  title: mailLogsKeys.ADMIN_MAIL_LOGS_TITLE,
+  description: mailLogsKeys.ADMIN_MAIL_LOGS_DESCRIPTION,
+  content: mailLogsKeys.ADMIN_MAIL_LOGS_DESCRIPTION,
+  keywords: mailLogsKeys.ADMIN_MAIL_LOGS_KEYWORDS,
+  hint: mailLogsKeys.ADMIN_MAIL_LOGS_HINT,
+  searchPlaceholder: mailLogsKeys.ADMIN_MAIL_LOGS_SEARCH_PLACEHOLDER,
+  templateAll: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_ALL,
+  templateTest: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_TEST,
+  templatePasswordReset: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_PASSWORD_RESET,
+  templatePasswordChanged:
+    mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_PASSWORD_CHANGED,
+  refresh: mailLogsKeys.ADMIN_MAIL_LOGS_REFRESH,
+  count: mailLogsKeys.ADMIN_MAIL_LOGS_COUNT,
+  colCreated: mailLogsKeys.ADMIN_MAIL_LOGS_COL_CREATED,
+  colTo: mailLogsKeys.ADMIN_MAIL_LOGS_COL_TO,
+  colSubject: mailLogsKeys.ADMIN_MAIL_LOGS_COL_SUBJECT,
+  colTemplate: mailLogsKeys.ADMIN_MAIL_LOGS_COL_TEMPLATE,
+  colProvider: mailLogsKeys.ADMIN_MAIL_LOGS_COL_PROVIDER,
+  colStatus: mailLogsKeys.ADMIN_MAIL_LOGS_COL_STATUS,
+  colDetail: mailLogsKeys.ADMIN_MAIL_LOGS_COL_DETAIL,
+  colIp: mailLogsKeys.ADMIN_MAIL_LOGS_COL_IP,
+  statusSent: mailLogsKeys.ADMIN_MAIL_LOGS_STATUS_SENT,
+  statusFailed: mailLogsKeys.ADMIN_MAIL_LOGS_STATUS_FAILED,
+  bodyHidden: mailLogsKeys.ADMIN_MAIL_LOGS_BODY_HIDDEN,
+  empty: mailLogsKeys.ADMIN_MAIL_LOGS_EMPTY,
+  forbidden: mailLogsKeys.ADMIN_MAIL_LOGS_FORBIDDEN,
+  loadFailed: mailLogsKeys.ADMIN_MAIL_LOGS_LOAD_FAILED,
+  loading: mailLogsKeys.ADMIN_MAIL_LOGS_LOADING
 });
 
 export const adminLocales18n = Object.freeze({

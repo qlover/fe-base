@@ -32,12 +32,13 @@ import {
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
+import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
-import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
+import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import { RolePermissionService } from '@server/services/RolePermissionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
@@ -78,7 +79,9 @@ export class UserController {
     @inject(ChangePasswordService)
     protected changePasswordService: ChangePasswordService,
     @inject(SupabaseSessionGuardService)
-    protected sessionGuard: SupabaseSessionGuardInterface
+    protected sessionGuard: SupabaseSessionGuardInterface,
+    @inject(RequestLocaleResolver)
+    protected localeResolver: RequestLocaleResolver
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
@@ -270,7 +273,16 @@ export class UserController {
     return this.userService.loginWithProviderCallback(params);
   }
 
-  public async changePassword(body: unknown): Promise<void> {
+  /**
+   * 登录态修改密码（不撤销会话）。
+   *
+   * @param body - 加密后的 `current_password` / `new_password`
+   * @param request - 可选；提供时用于「密码已修改」通知邮件的语言与来源
+   */
+  public async changePassword(
+    body: unknown,
+    request?: NextRequest
+  ): Promise<void> {
     const user = await this.userService.getSessionUser();
     if (!user) {
       throw new ExecutorError(API_NOT_AUTHORIZED);
@@ -297,7 +309,14 @@ export class UserController {
     await this.changePasswordService.changePassword({
       userId: user.id,
       currentPassword: parsed.data.current_password,
-      newPassword: parsed.data.new_password
+      newPassword: parsed.data.new_password,
+      notifyMeta: request
+        ? {
+            locale: this.localeResolver.resolve(request),
+            clientIp: getClientIpFromRequest(request),
+            userAgent: request.headers.get('user-agent')
+          }
+        : undefined
     });
   }
 }

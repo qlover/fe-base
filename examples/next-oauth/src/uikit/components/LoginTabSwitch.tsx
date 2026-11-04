@@ -197,7 +197,12 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         <>
           {emailMode === 'password' || !supabaseUpstream ? (
             <>
-              <LoginForm tt={tt} />
+              <LoginForm
+                tt={tt}
+                showForgotPassword={
+                  publicConfig?.auth.passwordResetEnabled ?? false
+                }
+              />
               {supabaseUpstream && (
                 <p className="mt-4 text-center">
                   <button

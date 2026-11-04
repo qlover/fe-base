@@ -126,6 +126,13 @@ export const COMMON_ADMIN_NAV_MEMORY_KV = 'common:admin_nav__memory_kv';
 export const COMMON_ADMIN_NAV_SETTINGS = 'common:admin_nav__settings';
 
 /**
+ * @description Admin nav mail logs
+ * @localZh 邮件日志
+ * @localEn Mail logs
+ */
+export const COMMON_ADMIN_NAV_MAIL_LOGS = 'common:admin_nav__mail_logs';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout

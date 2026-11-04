@@ -18,6 +18,8 @@ export type FeUserRow = {
   phone: string | null;
   role_id: string;
   status: 'active' | 'suspended';
+  /** 早于该时间签发的会话 JWT 视为失效（重置密码后写入）。 */
+  sessions_revoked_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -47,6 +49,35 @@ export class FeUsersRepository {
       .maybeSingle();
     this.supabaseBridge.throwIfError(result);
     return (result.data as FeUserRow | null) ?? null;
+  }
+
+  /** 按业务邮箱（小写归一）查询资料行。 */
+  public async findByEmail(email: string): Promise<FeUserRow | null> {
+    const normalized = normalizeEmail(email);
+    if (!normalized) {
+      return null;
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .select('*')
+      .eq('email', normalized)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(result);
+    return (result.data as FeUserRow | null) ?? null;
+  }
+
+  /** 写入「撤销所有会话」时间点（ISO）。 */
+  public async setSessionsRevokedAt(
+    userId: string,
+    revokedAtIso: string
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update({ sessions_revoked_at: revokedAtIso })
+      .eq('id', userId);
+    this.supabaseBridge.throwIfError(result);
   }
 
   public async findByPhone(phone: string): Promise<FeUserRow | null> {

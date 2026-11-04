@@ -8,7 +8,8 @@ const defaultPublicConfig: FePublicConfig = {
     phoneLoginEnabled: true,
     phoneOtpProvider: 'memory',
     githubOauthEnabled: true,
-    googleOauthEnabled: false
+    googleOauthEnabled: false,
+    passwordResetEnabled: false
   }
 };
 

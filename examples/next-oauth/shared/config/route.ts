@@ -18,6 +18,16 @@ export const ROUTE_LOGIN = '/auth/login' as const;
 export const ROUTE_REGISTER = '/auth/register' as const;
 
 /**
+ * 忘记密码页面（输入邮箱申请重置链接）。App Router: `src/app/[locale]/auth/forgot-password/page.tsx`。
+ */
+export const ROUTE_AUTH_FORGOT_PASSWORD = '/auth/forgot-password' as const;
+
+/**
+ * 重置密码页面（邮件链接落地页，携带 `?token=`）。App Router: `src/app/[locale]/auth/reset-password/page.tsx`。
+ */
+export const ROUTE_AUTH_RESET_PASSWORD = '/auth/reset-password' as const;
+
+/**
  * Email OTP / Magic Link callback page.
  * Shows loading UI, exchanges PKCE ?code=, then POSTs to /api/callback/email-login.
  */
@@ -63,6 +73,11 @@ export const ROUTE_ADMIN_LOCALES = '/admin/locales' as const;
  * Admin site settings. Pages Router: `src/pages/[locale]/admin/settings.tsx`.
  */
 export const ROUTE_ADMIN_SETTINGS = '/admin/settings' as const;
+
+/**
+ * Admin 邮件发送日志。Pages Router: `src/pages/[locale]/admin/mail-logs.tsx`。
+ */
+export const ROUTE_ADMIN_MAIL_LOGS = '/admin/mail-logs' as const;
 
 /**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
@@ -131,6 +146,8 @@ export const AUTH_ROUTES = [
   ROUTE_HOME,
   ROUTE_LOGIN,
   ROUTE_REGISTER,
+  ROUTE_AUTH_FORGOT_PASSWORD,
+  ROUTE_AUTH_RESET_PASSWORD,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DOCS_OAUTH,
   ROUTE_ABOUT,
@@ -158,6 +175,7 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_MEMORY_KV,
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_SETTINGS,
+  ROUTE_ADMIN_MAIL_LOGS,
   ROUTE_REQUEST_LOGS,
   ROUTE_ACCOUNT,
   ROUTE_DEVELOPER_APPS,
@@ -187,7 +205,12 @@ export function isOAuthLocaleAgnosticPath(pathname: string): boolean {
 }
 
 /** Auth pages for unauthenticated users only (signed-in users should redirect away). */
-export const GUEST_ONLY_AUTH_PAGES = [ROUTE_LOGIN, ROUTE_REGISTER] as const;
+export const GUEST_ONLY_AUTH_PAGES = [
+  ROUTE_LOGIN,
+  ROUTE_REGISTER,
+  ROUTE_AUTH_FORGOT_PASSWORD,
+  ROUTE_AUTH_RESET_PASSWORD
+] as const;
 
 /**
  * Returns true if pathname is a public route (no auth required).

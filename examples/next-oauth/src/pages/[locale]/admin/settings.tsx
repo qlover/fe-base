@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import { AdminMailSettingsPanel } from '@/uikit/components-pages/AdminMailSettingsPanel';
 import { AdminSiteSettingsPanel } from '@/uikit/components-pages/AdminSiteSettingsPanel';
 import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
@@ -38,7 +39,10 @@ export default function AdminSettingsPage({}: AdminSettingsProps) {
         </h1>
         <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
       </div>
-      <AdminSiteSettingsPanel tt={seoMetadata} />
+      <div className="flex w-full flex-col gap-4 sm:gap-5">
+        <AdminSiteSettingsPanel tt={seoMetadata} />
+        <AdminMailSettingsPanel tt={seoMetadata} />
+      </div>
     </AdminLayout>
   );
 }

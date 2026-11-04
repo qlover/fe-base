@@ -279,3 +279,47 @@ export const API_CHANGE_PASSWORD_SAME = 'api:change_password_same';
  */
 export const API_CHANGE_PASSWORD_UNSUPPORTED =
   'api:change_password_unsupported';
+
+/**
+ * @description Mail provider is disabled or missing required settings
+ * @localZh 邮件通道未启用或配置不完整
+ * @localEn Mail provider is disabled or not fully configured
+ */
+export const API_MAIL_PROVIDER_NOT_READY = 'api:mail_provider_not_ready';
+
+/**
+ * @description Mail provider rejected or failed to send the message
+ * @localZh 邮件发送失败，请稍后重试
+ * @localEn Failed to send email. Please try again later
+ */
+export const API_MAIL_SEND_FAILED = 'api:mail_send_failed';
+
+/**
+ * @description Recipient email is invalid
+ * @localZh 收件邮箱格式不正确
+ * @localEn Recipient email is invalid
+ */
+export const API_MAIL_RECIPIENT_INVALID = 'api:mail_recipient_invalid';
+
+/**
+ * @description Forgot password by email is turned off or unsupported
+ * @localZh 找回密码功能暂未开启
+ * @localEn Password reset is not available
+ */
+export const API_PASSWORD_RESET_DISABLED = 'api:password_reset_disabled';
+
+/**
+ * @description Reset link is invalid, expired or already used
+ * @localZh 重置链接无效或已过期，请重新申请
+ * @localEn The reset link is invalid or has expired. Please request a new one
+ */
+export const API_PASSWORD_RESET_TOKEN_INVALID =
+  'api:password_reset_token_invalid';
+
+/**
+ * @description Too many reset requests
+ * @localZh 请求过于频繁，请稍后再试
+ * @localEn Too many requests. Please try again later
+ */
+export const API_PASSWORD_RESET_RATE_LIMITED =
+  'api:password_reset_rate_limited';
