@@ -135,7 +135,8 @@ function parseSegment(
 function toConstNamePart(seg: string): string {
   const p = parseSegment(seg);
   if (p.kind === 'static') {
-    return p.value.replace(/-/g, '_').toUpperCase();
+    // Align with dynamic segments: dots etc. (e.g. v1.3) must become _
+    return p.value.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
   }
   return p.param.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
 }

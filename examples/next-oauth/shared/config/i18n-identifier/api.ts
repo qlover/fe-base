@@ -151,6 +151,56 @@ export const API_OAUTH_SERVER_ERROR = 'api:oauth_server_error';
 export const API_OAUTH_WRAPPER_AUTH_FAILED = 'api:oauth_wrapper_auth_failed';
 
 /**
+ * @description Supabase / Auth invalid email or password
+ * @localZh 邮箱或密码错误
+ * @localEn Invalid login credentials
+ */
+export const API_INVALID_CREDENTIALS = 'api:invalid_credentials';
+
+/**
+ * @description Supabase auth: email not confirmed
+ * @localZh 请先验证邮箱后再登录
+ * @localEn Please confirm your email before signing in
+ */
+export const API_EMAIL_NOT_CONFIRMED = 'api:email_not_confirmed';
+
+/**
+ * @description Generic Supabase auth failure
+ * @localZh 登录失败，请稍后重试
+ * @localEn Authentication failed, please try again
+ */
+export const API_SUPABASE_AUTH_ERROR = 'api:supabase_auth_error';
+
+/**
+ * @description Password rejected by auth server policy
+ * @localZh 密码强度不足，请换一个更复杂的密码
+ * @localEn Password is too weak, please choose a stronger one
+ */
+export const API_PASSWORD_WEAK = 'api:password_weak';
+
+/**
+ * @description New password equals the current one (auth server)
+ * @localZh 新密码不能与当前密码相同
+ * @localEn New password must differ from the current one
+ */
+export const API_PASSWORD_SAME = 'api:password_same';
+
+/**
+ * @description Password reset link invalid or expired
+ * @localZh 重置链接无效或已过期，请重新申请
+ * @localEn Reset link is invalid or expired. Please request a new one
+ */
+export const API_PASSWORD_RESET_LINK_INVALID =
+  'api:password_reset_link_invalid';
+
+/**
+ * @description Auth email send rate limited
+ * @localZh 邮件发送过于频繁，请稍后再试
+ * @localEn Too many emails sent, please try again later
+ */
+export const API_EMAIL_SEND_RATE_LIMITED = 'api:email_send_rate_limited';
+
+/**
  * @description 请求体为空
  * @localZh 请求参数为空空
  * @localEn Request Params is required

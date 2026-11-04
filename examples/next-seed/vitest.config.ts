@@ -9,7 +9,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./__tests__/setup.ts'],
     include: ['__tests__/**/*.test.{ts,tsx}'],
-    watch: false
+    watch: false,
+    // Their dist uses extensionless / directory imports that Node ESM rejects.
+    server: {
+      deps: { inline: ['@qlover/next-kit', '@qlover/corekit-bridge'] }
+    }
   },
   resolve: {
     alias: {
