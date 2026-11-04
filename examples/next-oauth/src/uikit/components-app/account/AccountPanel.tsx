@@ -12,6 +12,7 @@ import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
 import { ChangePasswordForm } from '@/uikit/components-app/account/ChangePasswordForm';
+import { LinkedLoginsSection } from '@/uikit/components-app/account/LinkedLoginsSection';
 import { toBusinessEmail } from '@shared/utils/phoneUserIdentity';
 import {
   maskPhoneForDisplay,
@@ -260,6 +261,15 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
             {tt.bindHint}
           </p>
         ) : null}
+        <LinkedLoginsSection
+          labels={{
+            title: tt.linkedSectionTitle,
+            empty: tt.linkedEmpty,
+            linked: tt.linked,
+            lastLogin: tt.linkedLastLogin,
+            error: tt.linkedError
+          }}
+        />
       </section>
 
       {needsBindEmail ? (

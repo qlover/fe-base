@@ -5,6 +5,7 @@ import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
 import type { BindEmailVerifyResultType } from '@schemas/BindEmailSchema';
 import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
+import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
@@ -286,6 +287,31 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     }
 
     return response.data.data;
+  }
+
+  /**
+   * 拉取当前用户已关联的第三方登录列表（只读）。
+   *
+   * @param config - 可选 AbortSignal
+   */
+  public async fetchLinkedLogins(config?: {
+    signal?: AbortSignal;
+  }): Promise<LinkedLoginType[]> {
+    const response = await this.client.request<
+      NextKitApiResult<LinkedLoginType[]>,
+      undefined
+    >({
+      url: apiRoutes.API_USER_LINKED_LOGINS,
+      method: HttpMethods.GET,
+      signal: config?.signal,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Load linked logins failed');
+    }
+
+    return response.data.data ?? [];
   }
 
   /** 向目标邮箱发送绑定 OTP。 */

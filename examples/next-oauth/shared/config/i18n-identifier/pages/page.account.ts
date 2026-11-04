@@ -286,3 +286,40 @@ export const PAGE_ACCOUNT_BIND_SUCCESS_MERGED =
  * @localEn Binding failed. Please try again.
  */
 export const PAGE_ACCOUNT_BIND_ERROR = 'page_account:bind_error';
+
+/**
+ * @description Linked third-party logins section title
+ * @localZh 已关联登录
+ * @localEn Linked logins
+ */
+export const PAGE_ACCOUNT_LINKED_SECTION_TITLE =
+  'page_account:linked_section_title';
+
+/**
+ * @description Empty linked logins list
+ * @localZh 暂无关联的第三方登录
+ * @localEn No linked third-party logins
+ */
+export const PAGE_ACCOUNT_LINKED_EMPTY = 'page_account:linked_empty';
+
+/**
+ * @description Linked status label
+ * @localZh 已关联
+ * @localEn Linked
+ */
+export const PAGE_ACCOUNT_LINKED = 'page_account:linked';
+
+/**
+ * @description Last login prefix
+ * @localZh 最近登录
+ * @localEn Last login
+ */
+export const PAGE_ACCOUNT_LINKED_LAST_LOGIN =
+  'page_account:linked_last_login';
+
+/**
+ * @description Failed to load linked logins
+ * @localZh 加载关联登录失败，请稍后重试
+ * @localEn Failed to load linked logins. Please try again.
+ */
+export const PAGE_ACCOUNT_LINKED_ERROR = 'page_account:linked_error';

@@ -42,18 +42,21 @@ import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { BindEmailServiceInterface } from '@server/interfaces/BindEmailServiceInterface';
+import type { LinkedLoginServiceInterface } from '@server/interfaces/LinkedLoginServiceInterface';
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import type { UserProfileServiceInterface } from '@server/interfaces/UserProfileServiceInterface';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
 import { BindEmailService } from '@server/services/BindEmailService';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
+import { LinkedLoginService } from '@server/services/LinkedLoginService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
 import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import { RolePermissionService } from '@server/services/RolePermissionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import { UserProfileService } from '@server/services/UserProfileService';
+import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -95,6 +98,8 @@ export class UserController {
     protected userProfileService: UserProfileServiceInterface,
     @inject(BindEmailService)
     protected bindEmailService: BindEmailServiceInterface,
+    @inject(LinkedLoginService)
+    protected linkedLoginService: LinkedLoginServiceInterface,
     @inject(SupabaseSessionGuardService)
     protected sessionGuard: SupabaseSessionGuardInterface,
     @inject(RequestLocaleResolver)
@@ -337,6 +342,17 @@ export class UserController {
       email: parsed.data.email,
       token: parsed.data.token
     });
+  }
+
+  /**
+   * 列出当前用户已关联的第三方登录（只读）。
+   */
+  public async listLinkedLogins(): Promise<LinkedLoginType[]> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    return this.linkedLoginService.listForUser(user.id);
   }
 
   /**

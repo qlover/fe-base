@@ -50,7 +50,13 @@ export const accountI18n = Object.freeze({
   bindVerify: accountKeys.PAGE_ACCOUNT_BIND_VERIFY,
   bindSuccess: accountKeys.PAGE_ACCOUNT_BIND_SUCCESS,
   bindSuccessMerged: accountKeys.PAGE_ACCOUNT_BIND_SUCCESS_MERGED,
-  bindError: accountKeys.PAGE_ACCOUNT_BIND_ERROR
+  bindError: accountKeys.PAGE_ACCOUNT_BIND_ERROR,
+
+  linkedSectionTitle: accountKeys.PAGE_ACCOUNT_LINKED_SECTION_TITLE,
+  linkedEmpty: accountKeys.PAGE_ACCOUNT_LINKED_EMPTY,
+  linked: accountKeys.PAGE_ACCOUNT_LINKED,
+  linkedLastLogin: accountKeys.PAGE_ACCOUNT_LINKED_LAST_LOGIN,
+  linkedError: accountKeys.PAGE_ACCOUNT_LINKED_ERROR
 });
 
 export type AccountI18nInterface = typeof accountI18n;
