@@ -37,10 +37,12 @@ import {
   FeUsersRepository
 } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
+import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
 import { RolePermissionService } from '@server/services/RolePermissionService';
+import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -77,7 +79,9 @@ export class UserController {
     @inject(FeUsersRepository)
     protected feUsersRepository: FeUsersRepository,
     @inject(ChangePasswordService)
-    protected changePasswordService: ChangePasswordService
+    protected changePasswordService: ChangePasswordService,
+    @inject(SupabaseSessionGuardService)
+    protected sessionGuard: SupabaseSessionGuardInterface
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
@@ -170,13 +174,27 @@ export class UserController {
     return await this.userService.logout(serverContext);
   }
 
+  /**
+   * Current session user. When Supabase recovery fails the app session is
+   * cleared and this returns null (same shape as unauthenticated).
+   */
   public async refresh(): Promise<SessionUserWithPermissions | null> {
     const user = await this.userService.getSessionUser();
     if (!user) {
       return null;
     }
-    const withPerms = await this.withPermissions(user);
-    return { ...withPerms, credential_token: '' };
+    try {
+      const [, withPerms] = await Promise.all([
+        this.sessionGuard.ensureForCurrentUser(),
+        this.withPermissions(user)
+      ]);
+      return { ...withPerms, credential_token: '' };
+    } catch (error) {
+      if (error instanceof ExecutorError && error.id === API_NOT_AUTHORIZED) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   public async getUser(): Promise<SessionUserWithPermissions | null> {

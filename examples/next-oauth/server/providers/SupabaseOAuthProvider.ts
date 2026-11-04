@@ -4,6 +4,7 @@ import { PasswordEncrypt } from '@qlover/next-kit/server';
 import { TokenEncryption } from '@qlover/next-kit/server';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
+import jwt from 'jsonwebtoken';
 import { inject, injectable } from '@shared/container';
 import { resolveUserDisplayLabel } from '@shared/utils/userIdentity';
 import type { LocaleType } from '@config/i18n';
@@ -11,8 +12,10 @@ import { I } from '@config/ioc-identifiter';
 import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
+import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import { resolveSupabaseLoginPassword } from '@server/utils/supabaseLoginPassword';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
@@ -27,6 +30,28 @@ import type {
   WithUserSession
 } from '@qlover/oauth-wrapper';
 import type { Session, User } from '@supabase/supabase-js';
+
+/** Skip refresh when access token still has this many seconds of life. */
+const ACCESS_TOKEN_FRESH_SKEW_SEC = 60;
+
+function isAccessTokenFresh(
+  accessToken: string | null | undefined,
+  skewSec: number = ACCESS_TOKEN_FRESH_SKEW_SEC
+): boolean {
+  const token = accessToken?.trim();
+  if (!token) {
+    return false;
+  }
+  try {
+    const decoded = jwt.decode(token) as { exp?: number } | null;
+    if (decoded?.exp == null || typeof decoded.exp !== 'number') {
+      return false;
+    }
+    return decoded.exp * 1000 > Date.now() + skewSec * 1000;
+  } catch {
+    return false;
+  }
+}
 
 function requireSupabaseRefreshToken(
   session: Session | null | undefined
@@ -115,7 +140,9 @@ export class SupabaseOAuthProvider
     oauthRepo: OAuthWrapperRepositoryInterface,
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
-    @inject(SupabaseRepo) protected supabaseRepo: SupabaseRepo<unknown>
+    @inject(SupabaseRepo) protected supabaseRepo: SupabaseRepo<unknown>,
+    @inject(SupabaseSessionGuardService)
+    protected sessionGuard: SupabaseSessionGuardInterface
   ) {
     super(
       new OAuthSessionService(config),
@@ -190,13 +217,33 @@ export class SupabaseOAuthProvider
       throw new Error('No refresh token in app session');
     }
 
-    const session = await this.retrieveNewSession(refreshToken);
+    const cookieUser = payload?.user as UserSchema | undefined;
+    if (
+      cookieUser != null &&
+      typeof cookieUser.id === 'string' &&
+      isAccessTokenFresh(cookieUser.credential_token)
+    ) {
+      return {
+        user: cookieUser,
+        userId: cookieUser.id,
+        providerRefreshToken: refreshToken
+      };
+    }
+
+    const liveRefreshToken =
+      cookieUser != null && typeof cookieUser.id === 'string'
+        ? await this.sessionGuard.resolveLiveRefreshToken(
+            cookieUser.id,
+            refreshToken
+          )
+        : refreshToken;
+    const session = await this.retrieveNewSession(liveRefreshToken);
     await this.syncUserSession(session);
 
     const user = supabaseSessionToUserSchema(session);
 
     return {
-      user: user,
+      user,
       userId: user.id,
       providerRefreshToken: session.refresh_token
     };

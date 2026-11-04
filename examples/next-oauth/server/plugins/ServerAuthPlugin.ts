@@ -1,11 +1,18 @@
 import type { NextOAuthServerIocMap } from '@server/BootstrapServer';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import type {
   BootstrapServerContext,
   BootstrapServerPlugin
 } from '@qlover/next-kit/server';
 
-export class ServerAuthPlugin implements BootstrapServerPlugin<NextOAuthServerIocMap> {
+/**
+ * API auth plugin: verify the app session, then ensure the Supabase cookie
+ * session is usable so RLS does not silently run as anonymous.
+ */
+export class ServerAuthPlugin
+  implements BootstrapServerPlugin<NextOAuthServerIocMap>
+{
   public readonly pluginName = 'ServerAuthPlugin';
 
   /**
@@ -15,5 +22,6 @@ export class ServerAuthPlugin implements BootstrapServerPlugin<NextOAuthServerIo
     parameters: { IOC }
   }: BootstrapServerContext<NextOAuthServerIocMap>): Promise<void> {
     await IOC(OAuthUserService).throwIfNotAuth();
+    await IOC(SupabaseSessionGuardService).ensureForCurrentUser();
   }
 }
