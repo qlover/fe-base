@@ -185,20 +185,32 @@ export class UserController {
   }
 
   /**
-   * Paged `fe_request_logs` for the current session user.
+   * Paged `fe_request_logs` for the current session user only.
    * Response shape matches {@link ResourceSearchResult}.
    */
   public async searchRequestLogsForCurrentUser(
     query: unknown
   ): Promise<ResourceSearchResult<RequestLogRow>> {
+    const user = await this.userService.getSessionUser();
+    if (!user?.id) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
     const criteria = await this.searchParamsValidator.getThrow(query);
-
-    return await this.requestLogsRepository.search(criteria);
+    return await this.requestLogsRepository.searchForUser(
+      String(user.id),
+      criteria
+    );
   }
 
-  /** Clears all request log rows (see repository note). */
-  public async clearRequestLogs(): Promise<{ deleted: number }> {
-    const deleted = await this.requestLogsRepository.clearAll();
+  /** Clears request log rows owned by the current session user. */
+  public async clearOwnRequestLogs(): Promise<{ deleted: number }> {
+    const user = await this.userService.getSessionUser();
+    if (!user?.id) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const deleted = await this.requestLogsRepository.clearForUser(
+      String(user.id)
+    );
     return { deleted };
   }
 

@@ -48,16 +48,36 @@ export class MemoryKvCacheService
       return existing;
     }
 
-    const pending = (async () => {
+    // A removeItem/setItem during the factory supersedes this load; writing
+    // its (older) result afterwards would resurrect stale data.
+    const self: { pending?: Promise<T> } = {};
+    const isCurrent = (): boolean => sharedInflight.get(key) === self.pending;
+    self.pending = (async () => {
       const value = await factory();
-      await this.setItem(key, value, options);
+      if (isCurrent()) {
+        await this.setItem(key, value, options);
+      }
       return value;
     })().finally(() => {
-      sharedInflight.delete(key);
+      if (isCurrent()) {
+        sharedInflight.delete(key);
+      }
     });
 
-    sharedInflight.set(key, pending);
-    return pending;
+    sharedInflight.set(key, self.pending);
+    return self.pending;
+  }
+
+  /**
+   * @override
+   */
+  public override async setItem<T>(
+    key: string,
+    value: T,
+    options?: KvCacheSetOptions
+  ): Promise<void> {
+    sharedInflight.delete(key);
+    await super.setItem(key, value, options);
   }
 
   /**

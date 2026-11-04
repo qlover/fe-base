@@ -1,8 +1,6 @@
-import { PermissionKey } from '@shared/auth/permissionKeys';
 import { API_USER_REQUEST_LOGS } from '@config/route';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
-import { RequirePermissionPlugin } from '@server/plugins/RequirePermissionPlugin';
 import { ServerAuthPlugin } from '@server/plugins/ServerAuthPlugin';
 import type { NextRequest } from 'next/server';
 
@@ -14,73 +12,27 @@ import type { NextRequest } from 'next/server';
  *       - User
  *     summary: List current user request logs
  *     description: |
- *       Paged `request_logs` for the signed-in user (RLS). Query mirrors {@link ResourceSearchParams}:
- *       `page`, `pageSize`, `offset`, `cursor`, `keyword`, `filters` (JSON string), `sort` (JSON array), or flat `orderBy`+`order` for the first sort clause.
- *       Parsed and validated by `RequestLogsSearchParamsValidator` in the controller; JSON body uses `NextKitApiSuccess`; `data` is `ResourceSearchResult` (`items`, `total`, `page`, `pageSize`, `hasMore`).
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *       - in: query
- *         name: pageSize
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *       - in: query
- *         name: orderBy
- *         description: Whitelisted column (e.g. created_at, event_type).
- *         schema:
- *           type: string
- *       - in: query
- *         name: order
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *       - in: query
- *         name: offset
- *         schema:
- *           type: integer
- *       - in: query
- *         name: cursor
- *         schema:
- *           type: string
- *       - in: query
- *         name: keyword
- *         schema:
- *           type: string
- *       - in: query
- *         name: filters
- *         description: JSON string (opaque until server implements filter semantics).
- *         schema:
- *           type: string
- *       - in: query
- *         name: sort
- *         description: JSON array of ResourceSortClause (overrides orderBy/order when valid).
- *         schema:
- *           type: string
+ *       Paged `fe_request_logs` owned by the signed-in user only.
+ *       Admin unscoped listing is `/api/admin/request-logs`.
  *     responses:
  *       200:
  *         description: Success envelope; `data` is ResourceSearchResult.
- *       400:
- *         description: Not authenticated or query failed.
+ *       401:
+ *         description: Not authenticated.
  *   delete:
  *     tags:
  *       - User
- *     summary: Clear all request logs
- *     description: Permanently deletes all rows in `request_logs` (admin). Requires auth.
+ *     summary: Clear current user request logs
+ *     description: Deletes only rows owned by the signed-in user.
  *     responses:
  *       200:
  *         description: Success envelope; `data` is `{ deleted: number }`.
- *       400:
- *         description: Not authenticated or delete failed.
+ *       401:
+ *         description: Not authenticated.
  */
 export async function GET(req: NextRequest) {
   return await new NextApiServer(API_USER_REQUEST_LOGS, req)
     .use(new ServerAuthPlugin())
-    .use(new RequirePermissionPlugin(PermissionKey.admin_request_logs_read))
     .runWithJson(async ({ parameters: { IOC } }) =>
       IOC(UserController).searchRequestLogsForCurrentUser(
         req.nextUrl.searchParams
@@ -91,8 +43,7 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   return await new NextApiServer(API_USER_REQUEST_LOGS, req)
     .use(new ServerAuthPlugin())
-    .use(new RequirePermissionPlugin(PermissionKey.admin_request_logs_write))
     .runWithJson(async ({ parameters: { IOC } }) =>
-      IOC(UserController).clearRequestLogs()
+      IOC(UserController).clearOwnRequestLogs()
     );
 }

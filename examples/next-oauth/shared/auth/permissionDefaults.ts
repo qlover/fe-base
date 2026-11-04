@@ -98,7 +98,7 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     permissionKey: PermissionKey.admin_request_logs_write,
     type: 'api',
     method: 'DELETE',
-    path: '/api/user/request-logs',
+    path: '/api/admin/request-logs',
     description: 'Clear request logs'
   },
   {

@@ -1,14 +1,10 @@
 import { randomBytes } from 'crypto';
-import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
-import {
-  createClient,
-  type Session,
-  type SupabaseClient
-} from '@supabase/supabase-js';
+import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { inject, injectable } from '@shared/container';
 import { PHONE_PLACEHOLDER_EMAIL_SUFFIX } from '@shared/utils/phoneUserIdentity';
 import { I } from '@config/ioc-identifiter';
+import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**
@@ -55,16 +51,7 @@ export class SupabaseSessionMintService {
   }
 
   protected createEphemeralAuthClient(): SupabaseClient {
-    if (!SUPABASE_URL || !SUPABASE_KEY) {
-      throw new Error('SUPABASE_URL and SUPABASE_KEY are required');
-    }
-    return createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-      }
-    });
+    return createSharedEphemeralAuthClient();
   }
 
   protected async mintViaMagicLink(

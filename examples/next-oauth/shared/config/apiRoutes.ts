@@ -61,6 +61,15 @@ export const API_ADMIN_OTP_MONITOR = '/api/admin/otp-monitor' as const;
 export const API_ADMIN_PERMISSIONS = '/api/admin/permissions' as const;
 
 /**
+ * API path: `/api/admin/request-logs`
+ *
+ * @see [src/app/api/admin/request-logs/route.ts](../../src/app/api/admin/request-logs/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/request-logs/route.ts`
+ */
+export const API_ADMIN_REQUEST_LOGS = '/api/admin/request-logs' as const;
+
+/**
  * API path: `/api/admin/roles`
  *
  * @see [src/app/api/admin/roles/route.ts](../../src/app/api/admin/roles/route.ts)
@@ -287,6 +296,7 @@ export type ApiRoutePath =
   | typeof API_ADMIN_MEMORY_KV
   | typeof API_ADMIN_OTP_MONITOR
   | typeof API_ADMIN_PERMISSIONS
+  | typeof API_ADMIN_REQUEST_LOGS
   | typeof API_ADMIN_ROLES
   | typeof API_ADMIN_SITE_SETTINGS
   | typeof API_ADMIN_USERS

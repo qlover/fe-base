@@ -81,14 +81,6 @@ export class OAuthUserService
 
     this.logger.info('OAuth wrapper login success', { email: params.email });
 
-    await this.requestLogsRepository.insertWithAuth({
-      event_type: 'login',
-      auth_provider: 'oauth-wrapper',
-      userAgent: params.loginContext?.userAgent ?? null,
-      ipAddress: params.loginContext?.ipAddress ?? null,
-      login_method: 'password'
-    });
-
     const user = await this.oauthProvider.getUserSchema();
     if (!user) {
       throw new ExecutorError(
@@ -96,6 +88,15 @@ export class OAuthUserService
         'OAuth app user missing after login'
       );
     }
+
+    await this.requestLogsRepository.insertWithAuth({
+      event_type: 'login',
+      auth_provider: 'oauth-wrapper',
+      userAgent: params.loginContext?.userAgent ?? null,
+      ipAddress: params.loginContext?.ipAddress ?? null,
+      login_method: 'password',
+      user_id: String(user.id)
+    });
 
     return user;
   }
@@ -224,10 +225,20 @@ export class OAuthUserService
       const channel = await this.phoneOtpService.getProviderName();
       if (channel !== 'supabase') {
         if (body.token) {
-          return this.phoneOtpService.verifyAndLogin({
+          const result = await this.phoneOtpService.verifyAndLogin({
             phone: body.phone,
             token: body.token
           });
+          const user = await this.oauthProvider.getUserSchema();
+          await this.requestLogsRepository.insertWithAuth({
+            event_type: 'login',
+            auth_provider: 'phone-otp',
+            userAgent: null,
+            ipAddress: options?.clientIp ?? null,
+            login_method: 'phone-otp',
+            user_id: user?.id ? String(user.id) : undefined
+          });
+          return result;
         }
         return this.phoneOtpService.send({
           phone: body.phone,

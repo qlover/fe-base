@@ -237,11 +237,11 @@ alter table public.fe_request_logs enable row level security;
 
 create policy "fe_request_logs_select_own" on public.fe_request_logs
   for select
-  using (user_id is not null and auth.uid() = user_id);
+  using (user_id is not null and (select auth.uid()) = user_id);
 
 create policy "fe_request_logs_insert_self_or_anon" on public.fe_request_logs
   for insert
-  with check (user_id is null or auth.uid() = user_id);
+  with check (user_id is null or (select auth.uid()) = user_id);
 
 -- =============================================================================
 -- 4) OAuth wrapper tables
