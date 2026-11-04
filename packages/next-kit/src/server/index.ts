@@ -87,6 +87,11 @@ export {
   toStableApiExecutorError
 } from './utils/normalizeApiExecutorError';
 export {
+  createApiAuditMatcher,
+  type ApiAuditMatcher,
+  type ApiAuditRule
+} from './utils/createApiAuditMatcher';
+export {
   extractPostgrestError,
   isPostgrestRangeNotSatisfiable,
   parsePostgrestRowCount,

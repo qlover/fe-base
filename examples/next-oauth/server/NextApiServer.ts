@@ -8,13 +8,13 @@ import {
 } from '@qlover/next-kit/server';
 import { RequestLogsRepository } from '@qlover/next-kit/server';
 import { type NextRequest, NextResponse } from 'next/server';
-import { API_USER_SESSION } from '@config/apiRoutes';
 import { I } from '@config/ioc-identifiter';
 import { oauthI18nIdToRfc } from '@config/oauthErrors';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import { NextApiHandler } from './utils/NextApiHandler';
+import { shouldAuditApiRequest } from './utils/shouldAuditApiRequest';
 import { ServerContext } from './utils/ServerContext';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
@@ -122,9 +122,8 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
   /**
    * @override
    *
-   * Skip DB log writes for high-frequency, read-only endpoints so their JSON
-   * response is not held up by a synchronous Supabase INSERT.
-   * `/api/user/session` is called on every page load to restore auth state.
+   * Allowlisted audit only — high-frequency reads must not flood
+   * `fe_request_logs` or hold up the JSON response on a Supabase INSERT.
    */
   protected override afterApiResult<Result>(
     envelope: NextKitApiResult<Result>,
@@ -134,11 +133,13 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
       return;
     }
 
-    if (request.nextUrl.pathname === API_USER_SESSION) {
+    if (!shouldAuditApiRequest(request.method, request.nextUrl.pathname)) {
       return;
     }
 
-    this.IOC(RequestLogsRepository).insertWithApiResult(envelope, { request });
+    void this.IOC(RequestLogsRepository).insertWithApiResult(envelope, {
+      request
+    });
   }
 
   /**
