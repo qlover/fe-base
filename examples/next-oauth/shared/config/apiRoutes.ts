@@ -15,6 +15,16 @@
 export const API_ADMIN_FEEDBACK = '/api/admin/feedback' as const;
 
 /**
+ * API path: `/api/admin/feedback/github-issue`
+ *
+ * @see [src/app/api/admin/feedback/github-issue/route.ts](../../src/app/api/admin/feedback/github-issue/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/github-issue/route.ts`
+ */
+export const API_ADMIN_FEEDBACK_GITHUB_ISSUE =
+  '/api/admin/feedback/github-issue' as const;
+
+/**
  * API path: `/api/admin/locales`
  *
  * @see [src/app/api/admin/locales/route.ts](../../src/app/api/admin/locales/route.ts)
@@ -282,6 +292,16 @@ export const API_USER_DISPLAY_NAME = '/api/user/display-name' as const;
 export const API_USER_FEEDBACK = '/api/user/feedback' as const;
 
 /**
+ * API path: `/api/user/feedback/:id/screenshots`
+ *
+ * @see [src/app/api/user/feedback/[id]/screenshots/route.ts](../../src/app/api/user/feedback/[id]/screenshots/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/feedback/[id]/screenshots/route.ts`
+ */
+export const API_USER_FEEDBACK_SCREENSHOTS =
+  '/api/user/feedback/:id/screenshots' as const;
+
+/**
  * API path: `/api/user/linked-logins`
  *
  * @see [src/app/api/user/linked-logins/route.ts](../../src/app/api/user/linked-logins/route.ts)
@@ -389,8 +409,18 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
  */
 export const API_USER_SESSION = '/api/user/session' as const;
 
+/**
+ * API path: `/api/webhooks/github`
+ *
+ * @see [src/app/api/webhooks/github/route.ts](../../src/app/api/webhooks/github/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/webhooks/github/route.ts`
+ */
+export const API_WEBHOOKS_GITHUB = '/api/webhooks/github' as const;
+
 export type ApiRoutePath =
   | typeof API_ADMIN_FEEDBACK
+  | typeof API_ADMIN_FEEDBACK_GITHUB_ISSUE
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
@@ -420,6 +450,7 @@ export type ApiRoutePath =
   | typeof API_USER_BIND_EMAIL_VERIFY
   | typeof API_USER_DISPLAY_NAME
   | typeof API_USER_FEEDBACK
+  | typeof API_USER_FEEDBACK_SCREENSHOTS
   | typeof API_USER_LINKED_LOGINS
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGIN_PROVIDER
@@ -431,4 +462,5 @@ export type ApiRoutePath =
   | typeof API_USER_PASSWORD_RESET
   | typeof API_USER_REGISTER
   | typeof API_USER_REQUEST_LOGS
-  | typeof API_USER_SESSION;
+  | typeof API_USER_SESSION
+  | typeof API_WEBHOOKS_GITHUB;

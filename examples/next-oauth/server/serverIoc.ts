@@ -11,6 +11,7 @@ import { FeTables } from '@config/feTables';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { GithubAppIssueGateway } from './adapters/GithubAppIssueGateway';
 import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
 import { SupabaseOAuthProvider } from './providers/SupabaseOAuthProvider';
 import { FeSupabaseRepo } from './repositorys/FeSupabaseRepo';
@@ -87,5 +88,7 @@ const ServerIocRegister: IOCRegisterInterface<
     } else {
       ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(SupabaseOAuthProvider));
     }
+
+    ioc.bind(I.GithubIssueGatewayInterface, ioc.get(GithubAppIssueGateway));
   }
 };

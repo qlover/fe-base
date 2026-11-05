@@ -3,6 +3,7 @@ import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { GithubIssueGatewayInterface } from '@server/interfaces/GithubIssueGatewayInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type { JSONSerializer } from '@qlover/fe-corekit/serializer';
@@ -39,7 +40,10 @@ export const IOCIdentifier = Object.freeze({
    *
    * 比如当次请求的 locale 等
    */
-  ServerContextInterface: 'ServerContextInterface'
+  ServerContextInterface: 'ServerContextInterface',
+
+  /** GitHub Issue 创建网关 */
+  GithubIssueGatewayInterface: 'GithubIssueGatewayInterface'
 });
 
 export const I = IOCIdentifier;
@@ -79,4 +83,5 @@ export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
   [IOCIdentifier.ServerContextInterface]: ServerContextInterface;
+  [IOCIdentifier.GithubIssueGatewayInterface]: GithubIssueGatewayInterface;
 }

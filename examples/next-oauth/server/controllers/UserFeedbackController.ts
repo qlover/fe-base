@@ -2,14 +2,20 @@ import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { inject, injectable } from '@shared/container';
 import { API_REQUEST_BODY_EMPTY } from '@config/i18n-identifier/api';
 import {
+  userFeedbackAdminGithubIssueBodySchema,
   userFeedbackAdminStatusPatchSchema,
   userFeedbackCreateBodySchema,
+  type UserFeedbackAdminGithubIssueOkType,
   type UserFeedbackAdminListType,
   type UserFeedbackAdminStatusOkType,
   type UserFeedbackCreateOkType,
-  type UserFeedbackListPublicType
+  type UserFeedbackListPublicType,
+  type UserFeedbackScreenshotsOkType
 } from '@schemas/UserFeedbackSchema';
-import { UserFeedbackService } from '@server/services/UserFeedbackService';
+import {
+  UserFeedbackService,
+  type FeedbackScreenshotUploadType
+} from '@server/services/UserFeedbackService';
 
 /**
  * 用户反馈：入参 Zod，委托 Service。
@@ -53,6 +59,29 @@ export class UserFeedbackController {
     return this.feedbackService.updateStatusForAdmin(
       parsed.data.id,
       parsed.data.status
+    );
+  }
+
+  public async createAdminGithubIssue(
+    body: unknown
+  ): Promise<UserFeedbackAdminGithubIssueOkType> {
+    const parsed = userFeedbackAdminGithubIssueBodySchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(
+        API_REQUEST_BODY_EMPTY,
+        'Invalid github issue body'
+      );
+    }
+    return this.feedbackService.createGithubIssueForAdmin(parsed.data.id);
+  }
+
+  public async attachScreenshots(
+    feedbackId: string,
+    files: readonly FeedbackScreenshotUploadType[]
+  ): Promise<UserFeedbackScreenshotsOkType> {
+    return this.feedbackService.attachScreenshotsForCurrentUser(
+      feedbackId,
+      files
     );
   }
 }

@@ -30,7 +30,15 @@ export const FE_SITE_SETTING_KEYS = {
   /** 是否开放「忘记密码」邮件重置。 */
   MAIL_PASSWORD_RESET_ENABLED: 'mail.password_reset_enabled',
   /** 密码被修改后是否发送安全通知邮件。 */
-  MAIL_PASSWORD_CHANGED_NOTIFY_ENABLED: 'mail.password_changed_notify_enabled'
+  MAIL_PASSWORD_CHANGED_NOTIFY_ENABLED: 'mail.password_changed_notify_enabled',
+
+  /** 预留：提交反馈后是否自动建 GitHub Issue（默认关；仅 Admin 手动 API）。 */
+  GITHUB_FEEDBACK_SYNC_ENABLED: 'github.feedback_sync_enabled',
+  GITHUB_APP_ID: 'github.app_id',
+  GITHUB_APP_INSTALLATION_ID: 'github.app_installation_id',
+  GITHUB_APP_PRIVATE_KEY: 'github.app_private_key',
+  GITHUB_FEEDBACK_REPO: 'github.feedback_repo',
+  GITHUB_WEBHOOK_SECRET: 'github.webhook_secret'
 } as const;
 
 export type FeSiteSettingKey =
@@ -181,6 +189,52 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
         '密码被修改（登录态修改或邮件重置）后，是否向用户邮箱发送安全通知。需先启用邮件通道。',
       isSensitive: false,
       defaultValue: false
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_FEEDBACK_SYNC_ENABLED,
+      label: '反馈自动建 Issue（预留）',
+      description:
+        '开启表示允许自动同步；模板默认不在用户提交时调用，仅 Admin「创建 Issue」可用。',
+      isSensitive: false,
+      defaultValue: false
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_APP_ID,
+      label: 'GitHub App ID',
+      description: 'GitHub App 设置页顶部的 App ID（数字）。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_APP_INSTALLATION_ID,
+      label: 'GitHub App Installation ID',
+      description: 'App 安装到仓库后地址栏 /installations/ 后面的数字。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_APP_PRIVATE_KEY,
+      label: 'GitHub App 私钥',
+      description:
+        'GitHub App 私钥（.pem 全文）。必须配置 ENCRYPTION_KEY 加密存储，界面不回显明文。',
+      isSensitive: true,
+      requiresEncryption: true,
+      multiline: true
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_FEEDBACK_REPO,
+      label: '反馈 Issue 仓库',
+      description: '目标仓库，格式 owner/repo。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.GITHUB_WEBHOOK_SECRET,
+      label: 'GitHub Webhook Secret',
+      description:
+        '用于校验 /api/webhooks/github 的 HMAC 签名。必须配置 ENCRYPTION_KEY。',
+      isSensitive: true,
+      requiresEncryption: true
     }
   ]);
 

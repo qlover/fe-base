@@ -10,6 +10,7 @@ import {
 } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
+import { buildIlikeOrString } from '@server/utils/PostgrestIlikeOrUtil';
 
 export type FeUserRow = {
   id: string;
@@ -301,9 +302,11 @@ export class FeUsersRepository {
       .range(offset, offset + limit - 1);
 
     if (q.length > 0) {
-      const pattern = `%${q.replace(/[%_,]/g, '')}%`;
       builder = builder.or(
-        `email.ilike."${pattern}",display_name.ilike."${pattern}",phone.ilike."${pattern}"`
+        buildIlikeOrString({
+          columns: ['email', 'display_name', 'phone'],
+          query: q
+        })
       );
     }
 

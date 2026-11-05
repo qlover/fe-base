@@ -1,11 +1,16 @@
 import { inject, injectable } from '@shared/container';
-import { API_USER_FEEDBACK } from '@config/apiRoutes';
+import {
+  API_USER_FEEDBACK,
+  API_USER_FEEDBACK_SCREENSHOTS
+} from '@config/apiRoutes';
 import {
   userFeedbackCreateOkSchema,
   userFeedbackListPublicSchema,
+  userFeedbackScreenshotsOkSchema,
   type UserFeedbackCreateBodyType,
   type UserFeedbackCreateOkType,
-  type UserFeedbackListPublicType
+  type UserFeedbackListPublicType,
+  type UserFeedbackScreenshotsOkType
 } from '@schemas/UserFeedbackSchema';
 import { AppApiRequester } from './AppApiRequester';
 import type { NextKitApiSuccess } from '@qlover/next-kit/common';
@@ -32,5 +37,19 @@ export class UserFeedbackApi {
     const response = await this.appApiRequester.post(API_USER_FEEDBACK, body);
     const envelope = response.data as NextKitApiSuccess<unknown>;
     return userFeedbackCreateOkSchema.parse(envelope.data ?? envelope);
+  }
+
+  public async uploadScreenshots(
+    feedbackId: string,
+    files: readonly File[]
+  ): Promise<UserFeedbackScreenshotsOkType> {
+    const form = new FormData();
+    for (const file of files) {
+      form.append('screenshots', file);
+    }
+    const path = API_USER_FEEDBACK_SCREENSHOTS.replace(':id', feedbackId);
+    const response = await this.appApiRequester.post(path, form);
+    const envelope = response.data as NextKitApiSuccess<unknown>;
+    return userFeedbackScreenshotsOkSchema.parse(envelope.data ?? envelope);
   }
 }

@@ -1,4 +1,5 @@
 import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
+import { AdminGithubSettingsPanel } from '@/uikit/components-pages/AdminGithubSettingsPanel';
 import { AdminMailSettingsPanel } from '@/uikit/components-pages/AdminMailSettingsPanel';
 import { AdminSiteSettingsPanel } from '@/uikit/components-pages/AdminSiteSettingsPanel';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
@@ -30,6 +31,7 @@ export default function AdminSettingsPage({}: AdminSettingsProps) {
       <div className="flex w-full flex-col gap-4 sm:gap-5">
         <AdminSiteSettingsPanel tt={seoMetadata} />
         <AdminMailSettingsPanel tt={seoMetadata} />
+        <AdminGithubSettingsPanel tt={seoMetadata} />
       </div>
     </AdminPageShell>
   );

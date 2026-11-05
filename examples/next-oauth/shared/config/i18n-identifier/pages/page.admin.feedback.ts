@@ -145,3 +145,52 @@ export const ADMIN_FEEDBACK_CATEGORY_OTHER = 'admin_feedback:category_other';
  * @localEn You do not have permission to view feedback
  */
 export const ADMIN_FEEDBACK_FORBIDDEN = 'admin_feedback:forbidden';
+
+/**
+ * @description Screenshots column
+ * @localZh 截图
+ * @localEn Screenshots
+ */
+export const ADMIN_FEEDBACK_COL_SCREENSHOTS = 'admin_feedback:col_screenshots';
+
+/**
+ * @description GitHub column
+ * @localZh GitHub
+ * @localEn GitHub
+ */
+export const ADMIN_FEEDBACK_COL_GITHUB = 'admin_feedback:col_github';
+
+/**
+ * @description Create GitHub issue
+ * @localZh 创建 Issue
+ * @localEn Create Issue
+ */
+export const ADMIN_FEEDBACK_GITHUB_CREATE = 'admin_feedback:github_create';
+
+/**
+ * @description Retry GitHub issue
+ * @localZh 重试
+ * @localEn Retry
+ */
+export const ADMIN_FEEDBACK_GITHUB_RETRY = 'admin_feedback:github_retry';
+
+/**
+ * @description GitHub sync skipped
+ * @localZh 未同步
+ * @localEn Skipped
+ */
+export const ADMIN_FEEDBACK_GITHUB_SKIPPED = 'admin_feedback:github_skipped';
+
+/**
+ * @description GitHub sync failed
+ * @localZh 同步失败
+ * @localEn Failed
+ */
+export const ADMIN_FEEDBACK_GITHUB_FAILED = 'admin_feedback:github_failed';
+
+/**
+ * @description GitHub sync pending
+ * @localZh 待同步
+ * @localEn Pending
+ */
+export const ADMIN_FEEDBACK_GITHUB_PENDING = 'admin_feedback:github_pending';

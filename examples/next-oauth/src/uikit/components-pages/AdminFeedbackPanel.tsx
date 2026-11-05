@@ -13,6 +13,7 @@ import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { AdminFeedbackI18nInterface } from '@config/i18n-mapping/admin18n';
 import {
+  UserFeedbackGithubSyncStatus,
   UserFeedbackStatus,
   type UserFeedbackAdminItemType,
   type UserFeedbackAdminListType,
@@ -29,7 +30,7 @@ function formatTime(value: string): string {
 }
 
 /**
- * Admin 反馈列表面板：列表 + 改状态。
+ * Admin 反馈列表面板：列表 + 改状态 + 截图预览 + 手动建 Issue。
  */
 export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
   const api = useIOC(AdminFeedbackApi);
@@ -87,6 +88,21 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
     }
   };
 
+  const onCreateIssue = async (
+    row: UserFeedbackAdminItemType
+  ): Promise<void> => {
+    if (!canWrite || pendingId !== null) {
+      return;
+    }
+    setPendingId(row.id);
+    try {
+      await api.createGithubIssue(row.id);
+      await load();
+    } finally {
+      setPendingId(null);
+    }
+  };
+
   const columns: TableColumn<UserFeedbackAdminItemType>[] = [
     {
       title: tt.colCreated,
@@ -110,6 +126,81 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
       title: tt.colBody,
       dataIndex: 'body',
       key: 'body'
+    },
+    {
+      title: tt.colScreenshots,
+      key: 'screenshots',
+      width: 120,
+      render: (_, row) =>
+        row.screenshotUrls.length === 0 ? (
+          '—'
+        ) : (
+          <div className="flex flex-wrap gap-1">
+            {row.screenshotUrls.map((url) => (
+              <a
+                key={url}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="block h-10 w-10 overflow-hidden rounded border border-primary-border"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </a>
+            ))}
+          </div>
+        )
+    },
+    {
+      title: tt.colGithub,
+      key: 'github',
+      width: 160,
+      render: (_, row) => {
+        if (row.githubIssueUrl && row.githubIssueNumber != null) {
+          return (
+            <a
+              href={row.githubIssueUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-brand text-xs underline"
+            >
+              #{String(row.githubIssueNumber)}
+            </a>
+          );
+        }
+        const label =
+          row.githubSyncStatus === UserFeedbackGithubSyncStatus.failed
+            ? tt.githubFailed
+            : row.githubSyncStatus === UserFeedbackGithubSyncStatus.pending
+              ? tt.githubPending
+              : tt.githubSkipped;
+        return (
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-secondary-text">{label}</span>
+            {canWrite ? (
+              <button
+                type="button"
+                disabled={pendingId === row.id}
+                className="cursor-pointer text-left text-xs text-brand underline disabled:opacity-50"
+                onClick={() => void onCreateIssue(row)}
+              >
+                {row.githubSyncStatus === UserFeedbackGithubSyncStatus.failed
+                  ? tt.githubRetry
+                  : tt.githubCreate}
+              </button>
+            ) : null}
+            {row.githubSyncError ? (
+              <span className="text-[10px] text-red-500 line-clamp-2">
+                {row.githubSyncError}
+              </span>
+            ) : null}
+          </div>
+        );
+      }
     },
     {
       title: tt.colStatus,

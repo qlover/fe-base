@@ -326,7 +326,7 @@ export const PAGE_ACCOUNT_LINKED_ERROR = 'page_account:linked_error';
 
 /**
  * @description Feedback section title
- * @localZh Òâ¼û·´À¡
+ * @localZh ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  * @localEn Feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE =
@@ -334,7 +334,7 @@ export const PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE =
 
 /**
  * @description Feedback section description
- * @localZh ¸æËßÎÒÃÇÄãÓöµ½µÄÎÊÌâ»ò¸Ä½ø½¨Òé
+ * @localZh ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ï¿½
  * @localEn Tell us about issues or ideas for improvement
  */
 export const PAGE_ACCOUNT_FEEDBACK_DESCRIPTION =
@@ -342,7 +342,7 @@ export const PAGE_ACCOUNT_FEEDBACK_DESCRIPTION =
 
 /**
  * @description Feedback category label
- * @localZh ·ÖÀà
+ * @localZh ï¿½ï¿½ï¿½ï¿½
  * @localEn Category
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL =
@@ -350,7 +350,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL =
 
 /**
  * @description Feedback body label
- * @localZh ÄÚÈİ
+ * @localZh ï¿½ï¿½ï¿½ï¿½
  * @localEn Details
  */
 export const PAGE_ACCOUNT_FEEDBACK_BODY_LABEL =
@@ -358,7 +358,7 @@ export const PAGE_ACCOUNT_FEEDBACK_BODY_LABEL =
 
 /**
  * @description Feedback body placeholder
- * @localZh Çë¾¡Á¿ÃèÊö¸´ÏÖ²½ÖèÓëÆÚÍû½á¹û
+ * @localZh ï¿½ë¾¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  * @localEn Include steps to reproduce and what you expected
  */
 export const PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER =
@@ -366,28 +366,28 @@ export const PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER =
 
 /**
  * @description Feedback submit
- * @localZh Ìá½»·´À¡
+ * @localZh ï¿½á½»ï¿½ï¿½ï¿½ï¿½
  * @localEn Submit feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SUBMIT = 'page_account:feedback_submit';
 
 /**
  * @description Feedback success
- * @localZh ¸ĞĞ»·´À¡£¬ÎÒÃÇÒÑÊÕµ½
- * @localEn Thanks ¡ª we received your feedback
+ * @localZh ï¿½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½
+ * @localEn Thanks ï¿½ï¿½ we received your feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SUCCESS = 'page_account:feedback_success';
 
 /**
  * @description Feedback error
- * @localZh Ìá½»Ê§°Ü£¬ÇëÉÔºóÖØÊÔ
+ * @localZh ï¿½á½»Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½ï¿½ï¿½
  * @localEn Failed to submit. Please try again.
  */
 export const PAGE_ACCOUNT_FEEDBACK_ERROR = 'page_account:feedback_error';
 
 /**
  * @description Feedback category bug
- * @localZh È±Ïİ
+ * @localZh È±ï¿½ï¿½
  * @localEn Bug
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG =
@@ -395,7 +395,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG =
 
 /**
  * @description Feedback category ux
- * @localZh ÌåÑé
+ * @localZh ï¿½ï¿½ï¿½ï¿½
  * @localEn UX
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX =
@@ -403,7 +403,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX =
 
 /**
  * @description Feedback category feature
- * @localZh ¹¦ÄÜ½¨Òé
+ * @localZh ï¿½ï¿½ï¿½Ü½ï¿½ï¿½ï¿½
  * @localEn Feature
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE =
@@ -411,7 +411,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE =
 
 /**
  * @description Feedback category performance
- * @localZh ĞÔÄÜ
+ * @localZh ï¿½ï¿½ï¿½ï¿½
  * @localEn Performance
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE =
@@ -419,7 +419,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE =
 
 /**
  * @description Feedback category content
- * @localZh ÄÚÈİ
+ * @localZh ï¿½ï¿½ï¿½ï¿½
  * @localEn Content
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT =
@@ -427,8 +427,24 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT =
 
 /**
  * @description Feedback category other
- * @localZh ÆäËû
+ * @localZh å…¶ä»–
  * @localEn Other
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_OTHER =
   'page_account:feedback_category_other';
+
+/**
+ * @description Feedback screenshots label
+ * @localZh æˆªå›¾ï¼ˆå¯é€‰ï¼Œæœ€å¤š 3 å¼ ï¼‰
+ * @localEn Screenshots (optional, up to 3)
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_LABEL =
+  'page_account:feedback_screenshots_label';
+
+/**
+ * @description Feedback screenshots hint
+ * @localZh JPEG / PNG / WebPï¼Œå•å¼ ä¸è¶…è¿‡ 1.5MB
+ * @localEn JPEG / PNG / WebP, max 1.5MB each
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_HINT =
+  'page_account:feedback_screenshots_hint';

@@ -1,8 +1,13 @@
 import { inject, injectable } from '@shared/container';
-import { API_ADMIN_FEEDBACK } from '@config/apiRoutes';
 import {
+  API_ADMIN_FEEDBACK,
+  API_ADMIN_FEEDBACK_GITHUB_ISSUE
+} from '@config/apiRoutes';
+import {
+  userFeedbackAdminGithubIssueOkSchema,
   userFeedbackAdminListSchema,
   userFeedbackAdminStatusOkSchema,
+  type UserFeedbackAdminGithubIssueOkType,
   type UserFeedbackAdminListType,
   type UserFeedbackAdminStatusOkType,
   type UserFeedbackStatusType
@@ -36,5 +41,18 @@ export class AdminFeedbackApi {
     });
     const envelope = response.data as NextKitApiSuccess<unknown>;
     return userFeedbackAdminStatusOkSchema.parse(envelope.data ?? envelope);
+  }
+
+  public async createGithubIssue(
+    id: string
+  ): Promise<UserFeedbackAdminGithubIssueOkType> {
+    const response = await this.appApiRequester.post(
+      API_ADMIN_FEEDBACK_GITHUB_ISSUE,
+      { id }
+    );
+    const envelope = response.data as NextKitApiSuccess<unknown>;
+    return userFeedbackAdminGithubIssueOkSchema.parse(
+      envelope.data ?? envelope
+    );
   }
 }

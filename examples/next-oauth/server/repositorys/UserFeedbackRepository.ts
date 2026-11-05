@@ -1,7 +1,10 @@
+import { randomUUID } from 'crypto';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
 import {
+  FEEDBACK_SCREENSHOT_BUCKET,
+  FEEDBACK_SCREENSHOT_SIGNED_URL_EXPIRES_SEC,
   UserFeedbackGithubSyncStatus,
   UserFeedbackStatus,
   feedbackClientContextSchema,
@@ -11,16 +14,19 @@ import {
   type FeedbackClientContextType,
   type UserFeedbackAdminItemType,
   type UserFeedbackCategoryType,
+  type UserFeedbackGithubSyncStatusType,
   type UserFeedbackItemPublicType,
   type UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
 import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 
 const SELECT_OWN =
-  'id,user_id,category,body,page_url,user_agent,client_context,status,created_at' as const;
+  'id,user_id,category,body,page_url,user_agent,client_context,screenshot_paths,status,created_at' as const;
 
 const SELECT_ADMIN =
-  'id,user_id,category,body,page_url,user_agent,client_context,status,created_at,github_issue_number,github_issue_url,github_sync_status,github_sync_error,fe_users(display_name)' as const;
+  'id,user_id,category,body,page_url,user_agent,client_context,screenshot_paths,status,created_at,github_issue_number,github_issue_url,github_sync_status,github_sync_error,fe_users(display_name)' as const;
+
+const GITHUB_SYNC_ERROR_MAX = 500;
 
 type FeedbackDbRowType = {
   readonly id: string;
@@ -30,6 +36,7 @@ type FeedbackDbRowType = {
   readonly page_url: string | null;
   readonly user_agent: string | null;
   readonly client_context: unknown;
+  readonly screenshot_paths: string[] | null;
   readonly status: string;
   readonly created_at: string;
 };
@@ -51,6 +58,13 @@ export type UserFeedbackInsertFieldsType = {
   readonly pageUrl: string | null;
   readonly userAgent: string | null;
   readonly clientContext: FeedbackClientContextType | null;
+};
+
+export type UserFeedbackGithubSyncFieldsType = {
+  readonly status: UserFeedbackGithubSyncStatusType;
+  readonly issueNumber: number | null;
+  readonly issueUrl: string | null;
+  readonly error: string | null;
 };
 
 /**
@@ -112,9 +126,125 @@ export class UserFeedbackRepository {
       .order('created_at', { ascending: false })
       .limit(limit);
     this.supabaseBridge.throwIfError(response);
-    return ((response.data ?? []) as FeedbackAdminDbRowType[]).map(
-      mapAdminRow
-    );
+    const rows = (response.data ?? []) as FeedbackAdminDbRowType[];
+    const items: UserFeedbackAdminItemType[] = [];
+    for (const row of rows) {
+      const paths = screenshotPathsOf(row);
+      const urls = await this.createSignedUrls(paths);
+      items.push(mapAdminRow(row, urls));
+    }
+    return items;
+  }
+
+  public async findByIdAsAdmin(
+    feedbackId: string
+  ): Promise<UserFeedbackAdminItemType | null> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .select(SELECT_ADMIN)
+      .eq('id', feedbackId)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(response);
+    const row = response.data as FeedbackAdminDbRowType | null;
+    if (!row) {
+      return null;
+    }
+    const paths = screenshotPathsOf(row);
+    const urls = await this.createSignedUrls(paths);
+    return mapAdminRow(row, urls);
+  }
+
+  public async findOwnedId(feedbackId: string): Promise<string | null> {
+    const userId = await this.requestAuthUserId.requireUserId();
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .select('id')
+      .eq('id', feedbackId)
+      .eq('user_id', userId)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(response);
+    const row = response.data as { readonly id: string } | null;
+    return row?.id ?? null;
+  }
+
+  public async updateScreenshotPathsAsAdmin(
+    feedbackId: string,
+    userId: string,
+    paths: readonly string[]
+  ): Promise<readonly string[]> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .update({
+        screenshot_paths: [...paths],
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', feedbackId)
+      .eq('user_id', userId)
+      .select('screenshot_paths')
+      .single();
+    this.supabaseBridge.throwIfError(response);
+    const row = response.data as { readonly screenshot_paths: string[] | null };
+    return row.screenshot_paths ?? [];
+  }
+
+  public async uploadScreenshotObject(
+    objectPath: string,
+    bytes: Buffer,
+    contentType: string
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase.storage
+      .from(FEEDBACK_SCREENSHOT_BUCKET)
+      .upload(objectPath, bytes, {
+        contentType,
+        upsert: false
+      });
+    if (response.error) {
+      throw new Error(
+        `feedback screenshot upload failed: ${response.error.message}`
+      );
+    }
+  }
+
+  public async updateGithubSyncAsAdmin(
+    feedbackId: string,
+    fields: UserFeedbackGithubSyncFieldsType
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const now = new Date().toISOString();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .update({
+        github_sync_status: fields.status,
+        github_issue_number: fields.issueNumber,
+        github_issue_url: fields.issueUrl,
+        github_sync_error: fields.error
+          ? fields.error.slice(0, GITHUB_SYNC_ERROR_MAX)
+          : null,
+        github_synced_at:
+          fields.status === UserFeedbackGithubSyncStatus.synced ? now : null,
+        updated_at: now
+      })
+      .eq('id', feedbackId);
+    this.supabaseBridge.throwIfError(response);
+  }
+
+  public async updateStatusByIssueNumberAsAdmin(
+    issueNumber: number,
+    status: UserFeedbackStatusType
+  ): Promise<number> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('github_issue_number', issueNumber)
+      .neq('status', status)
+      .select('id');
+    this.supabaseBridge.throwIfError(response);
+    return (response.data ?? []).length;
   }
 
   public async updateStatusAsAdmin(
@@ -153,6 +283,37 @@ export class UserFeedbackRepository {
     this.supabaseBridge.throwIfError(response);
     return response.count ?? 0;
   }
+
+  /**
+   * 生成临时对象路径：`{userId}/{feedbackId}/{uuid}-{index}.jpg`
+   */
+  public buildScreenshotObjectPath(
+    userId: string,
+    feedbackId: string,
+    index: number
+  ): string {
+    return `${userId}/${feedbackId}/${randomUUID()}-${String(index)}.jpg`;
+  }
+
+  protected async createSignedUrls(
+    paths: readonly string[]
+  ): Promise<string[]> {
+    if (paths.length === 0) {
+      return [];
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const urls: string[] = [];
+    for (const path of paths) {
+      const response = await supabase.storage
+        .from(FEEDBACK_SCREENSHOT_BUCKET)
+        .createSignedUrl(path, FEEDBACK_SCREENSHOT_SIGNED_URL_EXPIRES_SEC);
+      if (response.error || !response.data?.signedUrl) {
+        continue;
+      }
+      urls.push(response.data.signedUrl);
+    }
+    return urls;
+  }
 }
 
 function parseClientContext(
@@ -163,6 +324,10 @@ function parseClientContext(
   }
   const parsed = feedbackClientContextSchema.safeParse(value);
   return parsed.success ? parsed.data : null;
+}
+
+function screenshotPathsOf(row: FeedbackDbRowType): string[] {
+  return row.screenshot_paths ?? [];
 }
 
 function rowToPublic(row: FeedbackDbRowType): UserFeedbackItemPublicType {
@@ -188,8 +353,10 @@ function displayNameOf(row: FeedbackAdminDbRowType): string {
  * 管理端行映射（Overview / Admin 列表共用）。
  */
 export function mapAdminRow(
-  row: FeedbackAdminDbRowType
+  row: FeedbackAdminDbRowType,
+  screenshotUrls: readonly string[] = []
 ): UserFeedbackAdminItemType {
+  const paths = screenshotPathsOf(row);
   return {
     id: row.id,
     userId: row.user_id,
@@ -199,6 +366,8 @@ export function mapAdminRow(
     pageUrl: row.page_url,
     userAgent: row.user_agent,
     clientContext: parseClientContext(row.client_context),
+    screenshotPaths: paths,
+    screenshotUrls: [...screenshotUrls],
     status: userFeedbackStatusSchema.parse(row.status),
     githubIssueNumber: row.github_issue_number,
     githubIssueUrl: row.github_issue_url,

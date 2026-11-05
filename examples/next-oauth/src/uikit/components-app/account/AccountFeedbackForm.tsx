@@ -7,6 +7,8 @@ import { UserFeedbackApi } from '@/impls/appApi/UserFeedbackApi';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { AccountI18nInterface } from '@config/i18n-mapping/accountI18n';
 import {
+  FEEDBACK_SCREENSHOT_MAX_BYTES,
+  FEEDBACK_SCREENSHOT_MAX_COUNT,
   USER_FEEDBACK_CATEGORIES,
   UserFeedbackCategory,
   type UserFeedbackCategoryType
@@ -16,7 +18,7 @@ const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 
 /**
- * 个人中心提交反馈表单。
+ * 个人中心提交反馈表单（可选截图，提交后再上传）。
  */
 export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
   const api = useIOC(UserFeedbackApi);
@@ -24,6 +26,7 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
     UserFeedbackCategory.bug
   );
   const [body, setBody] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -47,7 +50,7 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
     setError(null);
     setSuccess(false);
     try {
-      await api.create({
+      const created = await api.create({
         category,
         body: trimmed,
         pageUrl:
@@ -59,7 +62,11 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
           userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
         }
       });
+      if (files.length > 0) {
+        await api.uploadScreenshots(created.item.id, files);
+      }
       setBody('');
+      setFiles([]);
       setSuccess(true);
     } catch {
       setError(tt.feedbackError);
@@ -106,6 +113,28 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
             className={clsx(inputClass, 'resize-y')}
             onChange={(e) => setBody(e.target.value)}
           />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="text-secondary-text">
+            {tt.feedbackScreenshotsLabel}
+          </span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            disabled={saving}
+            className="text-sm text-secondary-text file:mr-3 file:rounded-lg file:border-0 file:bg-elevated file:px-3 file:py-1.5 file:text-sm file:font-medium"
+            onChange={(e) => {
+              const picked = Array.from(e.target.files ?? [])
+                .filter((file) => file.size <= FEEDBACK_SCREENSHOT_MAX_BYTES)
+                .slice(0, FEEDBACK_SCREENSHOT_MAX_COUNT);
+              setFiles(picked);
+            }}
+          />
+          <span className="text-xs text-tertiary-text">
+            {tt.feedbackScreenshotsHint}
+            {files.length > 0 ? ` · ${String(files.length)}` : ''}
+          </span>
         </label>
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
         {success ? (

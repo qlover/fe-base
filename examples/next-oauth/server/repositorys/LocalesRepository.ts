@@ -9,6 +9,7 @@ import { defaultSearchParams } from '@config/common';
 import { FeTables } from '@config/feTables';
 import { i18nConfig, type LocaleType } from '@config/i18n';
 import { I } from '@config/ioc-identifiter';
+import { buildIlikeOrString } from '@server/utils/PostgrestIlikeOrUtil';
 import { FeSupabaseRepo } from './FeSupabaseRepo';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -248,14 +249,22 @@ export class LocalesRepository extends FeSupabaseRepo<LocalesSchema> {
 
       if (localeCol) {
         query = query.or(
-          `value.ilike.%${kw}%,${localeCol}.ilike.%${kw}%,description.ilike.%${kw}%,namespace.ilike.%${kw}%`
+          buildIlikeOrString({
+            columns: ['value', localeCol, 'description', 'namespace'],
+            query: kw
+          })
         );
       } else {
-        const localeIlikes = i18nConfig.supportedLngs
-          .map((locale) => `${locale}.ilike.%${kw}%`)
-          .join(',');
         query = query.or(
-          `value.ilike.%${kw}%,${localeIlikes},description.ilike.%${kw}%,namespace.ilike.%${kw}%`
+          buildIlikeOrString({
+            columns: [
+              'value',
+              ...i18nConfig.supportedLngs,
+              'description',
+              'namespace'
+            ],
+            query: kw
+          })
         );
       }
     }

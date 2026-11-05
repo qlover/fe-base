@@ -128,6 +128,13 @@ export type UserFeedbackListPublicType = z.infer<
   typeof userFeedbackListPublicSchema
 >;
 
+/** Storage / 上传约束（服务端与客户端共用）。 */
+export const FEEDBACK_SCREENSHOT_BUCKET = 'fe-user-feedback' as const;
+export const FEEDBACK_SCREENSHOT_MAX_COUNT = 3 as const;
+export const FEEDBACK_SCREENSHOT_MAX_BYTES = 1_572_864 as const;
+/** Admin 列表签名 URL 有效期（秒）。 */
+export const FEEDBACK_SCREENSHOT_SIGNED_URL_EXPIRES_SEC = 3600 as const;
+
 /** 管理端列表行。 */
 export const userFeedbackAdminItemSchema = z.object({
   id: z.string().uuid(),
@@ -138,6 +145,8 @@ export const userFeedbackAdminItemSchema = z.object({
   pageUrl: z.string().nullable(),
   userAgent: z.string().nullable(),
   clientContext: feedbackClientContextSchema.nullable(),
+  screenshotPaths: z.array(z.string().min(1).max(500)).max(3),
+  screenshotUrls: z.array(z.string().min(1)).max(3),
   status: userFeedbackStatusSchema,
   githubIssueNumber: z.number().int().positive().nullable(),
   githubIssueUrl: z.string().nullable(),
@@ -175,4 +184,34 @@ export const userFeedbackAdminStatusOkSchema = z.object({
 
 export type UserFeedbackAdminStatusOkType = z.infer<
   typeof userFeedbackAdminStatusOkSchema
+>;
+
+export const userFeedbackScreenshotsOkSchema = z.object({
+  ok: z.literal(true),
+  screenshotPaths: z.array(z.string().min(1).max(500)).max(3)
+});
+
+export type UserFeedbackScreenshotsOkType = z.infer<
+  typeof userFeedbackScreenshotsOkSchema
+>;
+
+export const userFeedbackAdminGithubIssueBodySchema = z.object({
+  id: z.string().uuid()
+});
+
+export type UserFeedbackAdminGithubIssueBodyType = z.infer<
+  typeof userFeedbackAdminGithubIssueBodySchema
+>;
+
+export const userFeedbackAdminGithubIssueOkSchema = z.object({
+  ok: z.literal(true),
+  id: z.string().uuid(),
+  githubSyncStatus: userFeedbackGithubSyncStatusSchema,
+  githubIssueNumber: z.number().int().positive().nullable(),
+  githubIssueUrl: z.string().nullable(),
+  githubSyncError: z.string().nullable()
+});
+
+export type UserFeedbackAdminGithubIssueOkType = z.infer<
+  typeof userFeedbackAdminGithubIssueOkSchema
 >;

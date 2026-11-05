@@ -353,7 +353,14 @@ export const adminFeedback18n = Object.freeze({
   categoryFeature: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_FEATURE,
   categoryPerformance: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_PERFORMANCE,
   categoryContent: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_CONTENT,
-  categoryOther: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_OTHER
+  categoryOther: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_OTHER,
+  colScreenshots: feedbackKeys.ADMIN_FEEDBACK_COL_SCREENSHOTS,
+  colGithub: feedbackKeys.ADMIN_FEEDBACK_COL_GITHUB,
+  githubCreate: feedbackKeys.ADMIN_FEEDBACK_GITHUB_CREATE,
+  githubRetry: feedbackKeys.ADMIN_FEEDBACK_GITHUB_RETRY,
+  githubSkipped: feedbackKeys.ADMIN_FEEDBACK_GITHUB_SKIPPED,
+  githubFailed: feedbackKeys.ADMIN_FEEDBACK_GITHUB_FAILED,
+  githubPending: feedbackKeys.ADMIN_FEEDBACK_GITHUB_PENDING
 });
 
 export const adminMailLogs18n = Object.freeze({
