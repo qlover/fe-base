@@ -7,6 +7,7 @@ import {
   ROUTE_ACCOUNT,
   ROUTE_ADMIN_ROLES,
   ROUTE_CALLBACK_EMAIL_LOGIN,
+  ROUTE_CHANGELOG,
   ROUTE_DEMO_UI,
   ROUTE_DEVELOPER_APPS,
   ROUTE_LOGIN,
@@ -84,6 +85,10 @@ export const routing = defineRouting({
     '/about': {
       en: '/about',
       zh: '/about'
+    },
+    [ROUTE_CHANGELOG]: {
+      en: '/changelog',
+      zh: '/changelog'
     }
   }
 });

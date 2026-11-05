@@ -4,6 +4,12 @@ export const envPrefix = 'NEXT_PUBLIC_';
 
 export const browserGlobalsName = 'feGlobals';
 
+/**
+ * 包内 CHANGELOG 在 GitHub 上的 blob 地址（公开页「在 GitHub 查看」）。
+ */
+export const githubChangelogUrl =
+  'https://github.com/qlover/fe-base/blob/master/examples/next-oauth/CHANGELOG.md';
+
 export const loggerStyles = {
   fatal: { color: '#ff0000', fontWeight: 'bold' },
   error: { color: '#ff0000' },

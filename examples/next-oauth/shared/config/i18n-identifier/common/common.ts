@@ -226,6 +226,13 @@ export const COMMON_HEADER_NAV_DOCS = 'common:header_nav__docs';
 export const COMMON_HEADER_NAV_ABOUT = 'common:header_nav__about';
 
 /**
+ * @description App header nav - Changelog
+ * @localZh 更新日志
+ * @localEn Changelog
+ */
+export const COMMON_HEADER_NAV_CHANGELOG = 'common:header_nav__changelog';
+
+/**
  * @description App header nav - Developer console
  * @localZh 开发者
  * @localEn Developer

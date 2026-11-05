@@ -100,6 +100,9 @@ export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
 
 export const ROUTE_ABOUT = '/about' as const;
 
+/** 公开更新日志（读取包内 CHANGELOG.md）。 */
+export const ROUTE_CHANGELOG = '/changelog' as const;
+
 /** UI showcase / kit preview (Pages Router). */
 export const ROUTE_DEMO_UI = '/demo-ui' as const;
 
