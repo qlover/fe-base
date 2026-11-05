@@ -80,6 +80,11 @@ export const ROUTE_ADMIN_SETTINGS = '/admin/settings' as const;
 export const ROUTE_ADMIN_MAIL_LOGS = '/admin/mail-logs' as const;
 
 /**
+ * Admin 用户反馈。Pages Router: `src/pages/[locale]/admin/feedback.tsx`。
+ */
+export const ROUTE_ADMIN_FEEDBACK = '/admin/feedback' as const;
+
+/**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
  */
 export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
@@ -179,6 +184,7 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_SETTINGS,
   ROUTE_ADMIN_MAIL_LOGS,
+  ROUTE_ADMIN_FEEDBACK,
   ROUTE_REQUEST_LOGS,
   ROUTE_ACCOUNT,
   ROUTE_DEVELOPER_APPS,

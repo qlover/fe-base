@@ -40,9 +40,10 @@ export function AdminHomeKpiGrid({
   readonly current: AdminOverviewMetricsType;
   readonly previous: AdminOverviewMetricsType;
 }): ReactNode {
-  const items: ReadonlyArray<KpiItemType> = [
+  const items: ReadonlyArray<KpiItemType & { readonly neutral?: boolean }> = [
     { key: 'signups', label: tt.kpiSignups },
-    { key: 'activeUsers', label: tt.kpiActiveUsers }
+    { key: 'activeUsers', label: tt.kpiActiveUsers },
+    { key: 'feedback', label: tt.kpiFeedback, neutral: true }
   ];
   const absolute = range === AdminOverviewRange.today;
 
@@ -55,11 +56,12 @@ export function AdminHomeKpiGrid({
           {absolute ? tt.kpiCompareToday : tt.kpiCompare}
         </span>
       </h2>
-      <div className="mt-2 grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
         {items.map((item) => {
           const value = current[item.key];
           const diff = value - previous[item.key];
-          const tone = diff === 0 ? 'flat' : diff > 0 ? 'up' : 'down';
+          const tone =
+            item.neutral || diff === 0 ? 'flat' : diff > 0 ? 'up' : 'down';
           return (
             <div
               data-testid="AdminHomeKpiCard"

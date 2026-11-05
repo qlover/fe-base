@@ -14,6 +14,7 @@ import {
 } from '@schemas/AdminOverviewSchema';
 import { AdminHomeChecksCard } from './admin-home/AdminHomeChecksCard';
 import { AdminHomeFailuresCard } from './admin-home/AdminHomeFailuresCard';
+import { AdminHomeFeedbackCard } from './admin-home/AdminHomeFeedbackCard';
 import { AdminHomeKpiGrid } from './admin-home/AdminHomeKpiGrid';
 import { AdminHomeRangeSwitch } from './admin-home/AdminHomeRangeSwitch';
 import { AdminHomeShortcuts } from './admin-home/AdminHomeShortcuts';
@@ -74,6 +75,8 @@ export function AdminHomePanel({ tt }: AdminHomePanelProps): ReactElement {
   const nothingVisible =
     data !== null &&
     data.metrics === null &&
+    data.feedbackTodo === null &&
+    data.latestFeedback === null &&
     data.failures === null &&
     data.checks === null;
 
@@ -119,7 +122,12 @@ export function AdminHomePanel({ tt }: AdminHomePanelProps): ReactElement {
 
       {data ? (
         <div className={clsx('transition-opacity', loading && 'opacity-60')}>
-          <AdminHomeTodoCards tt={tt} locale={locale} failures={data.failures} />
+          <AdminHomeTodoCards
+            tt={tt}
+            locale={locale}
+            feedbackTodo={data.feedbackTodo}
+            failures={data.failures}
+          />
 
           {data.metrics ? (
             <AdminHomeKpiGrid
@@ -152,14 +160,26 @@ export function AdminHomePanel({ tt }: AdminHomePanelProps): ReactElement {
             </section>
           ) : null}
 
-          {data.failures ? (
-            <section className="mt-4">
-              <AdminHomeFailuresCard
-                tt={tt}
-                locale={locale}
-                failures={data.failures}
-                nowMs={nowMs}
-              />
+          {data.latestFeedback || data.failures ? (
+            <section className={clsx('mt-4', ADMIN_HOME_GRID_CLS)}>
+              {data.latestFeedback ? (
+                <AdminHomeFeedbackCard
+                  tt={tt}
+                  locale={locale}
+                  items={data.latestFeedback}
+                  className={clsx(
+                    data.failures ? 'lg:col-span-2' : 'lg:col-span-3'
+                  )}
+                />
+              ) : null}
+              {data.failures ? (
+                <AdminHomeFailuresCard
+                  tt={tt}
+                  locale={locale}
+                  failures={data.failures}
+                  nowMs={nowMs}
+                />
+              ) : null}
             </section>
           ) : null}
 

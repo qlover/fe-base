@@ -133,6 +133,13 @@ export const COMMON_ADMIN_NAV_SETTINGS = 'common:admin_nav__settings';
 export const COMMON_ADMIN_NAV_MAIL_LOGS = 'common:admin_nav__mail_logs';
 
 /**
+ * @description Admin nav user feedback
+ * @localZh 用户反馈
+ * @localEn Feedback
+ */
+export const COMMON_ADMIN_NAV_FEEDBACK = 'common:admin_nav__feedback';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout

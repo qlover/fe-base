@@ -56,7 +56,23 @@ export const accountI18n = Object.freeze({
   linkedEmpty: accountKeys.PAGE_ACCOUNT_LINKED_EMPTY,
   linked: accountKeys.PAGE_ACCOUNT_LINKED,
   linkedLastLogin: accountKeys.PAGE_ACCOUNT_LINKED_LAST_LOGIN,
-  linkedError: accountKeys.PAGE_ACCOUNT_LINKED_ERROR
+  linkedError: accountKeys.PAGE_ACCOUNT_LINKED_ERROR,
+
+  feedbackSectionTitle: accountKeys.PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE,
+  feedbackDescription: accountKeys.PAGE_ACCOUNT_FEEDBACK_DESCRIPTION,
+  feedbackCategoryLabel: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL,
+  feedbackBodyLabel: accountKeys.PAGE_ACCOUNT_FEEDBACK_BODY_LABEL,
+  feedbackBodyPlaceholder: accountKeys.PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER,
+  feedbackSubmit: accountKeys.PAGE_ACCOUNT_FEEDBACK_SUBMIT,
+  feedbackSuccess: accountKeys.PAGE_ACCOUNT_FEEDBACK_SUCCESS,
+  feedbackError: accountKeys.PAGE_ACCOUNT_FEEDBACK_ERROR,
+  feedbackCategoryBug: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG,
+  feedbackCategoryUx: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX,
+  feedbackCategoryFeature: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE,
+  feedbackCategoryPerformance:
+    accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE,
+  feedbackCategoryContent: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT,
+  feedbackCategoryOther: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_OTHER
 });
 
 export type AccountI18nInterface = typeof accountI18n;

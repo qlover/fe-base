@@ -83,6 +83,13 @@ export const ADMIN_HOME_HINT_REQUEST_LOGS = 'admin_home:hint_request_logs';
 export const ADMIN_HOME_HINT_MAIL_LOGS = 'admin_home:hint_mail_logs';
 
 /**
+ * @description Shortcut hint: feedback
+ * @localZh 用户提交的问题与建议
+ * @localEn User-submitted issues and ideas
+ */
+export const ADMIN_HOME_HINT_FEEDBACK = 'admin_home:hint_feedback';
+
+/**
  * @description Range: today
  * @localZh 今天
  * @localEn Today
@@ -123,6 +130,27 @@ export const ADMIN_HOME_SECTION_KPI = 'admin_home:section_kpi';
  * @localEn Shortcuts
  */
 export const ADMIN_HOME_SECTION_SHORTCUTS = 'admin_home:section_shortcuts';
+
+/**
+ * @description Todo: open feedback
+ * @localZh 待处理反馈
+ * @localEn Open feedback
+ */
+export const ADMIN_HOME_TODO_OPEN_FEEDBACK = 'admin_home:todo_open_feedback';
+
+/**
+ * @description Todo: stale feedback prefix
+ * @localZh 超过 48 小时
+ * @localEn Older than 48h
+ */
+export const ADMIN_HOME_TODO_STALE_PREFIX = 'admin_home:todo_stale_prefix';
+
+/**
+ * @description Todo: no stale feedback
+ * @localZh 暂无超时未处理
+ * @localEn None overdue
+ */
+export const ADMIN_HOME_TODO_STALE_NONE = 'admin_home:todo_stale_none';
 
 /**
  * @description Todo: 24h failures
@@ -166,6 +194,34 @@ export const ADMIN_HOME_KPI_SIGNUPS = 'admin_home:kpi_signups';
  * @localEn Active users
  */
 export const ADMIN_HOME_KPI_ACTIVE_USERS = 'admin_home:kpi_active_users';
+
+/**
+ * @description KPI: feedback
+ * @localZh 新反馈
+ * @localEn New feedback
+ */
+export const ADMIN_HOME_KPI_FEEDBACK = 'admin_home:kpi_feedback';
+
+/**
+ * @description Latest feedback card title
+ * @localZh 最新反馈
+ * @localEn Latest feedback
+ */
+export const ADMIN_HOME_FEEDBACK_TITLE = 'admin_home:feedback_title';
+
+/**
+ * @description Latest feedback: view all
+ * @localZh 全部
+ * @localEn All
+ */
+export const ADMIN_HOME_FEEDBACK_ALL = 'admin_home:feedback_all';
+
+/**
+ * @description Latest feedback empty
+ * @localZh 暂无反馈
+ * @localEn No feedback yet
+ */
+export const ADMIN_HOME_FEEDBACK_EMPTY = 'admin_home:feedback_empty';
 
 /**
  * @description Trend chart title

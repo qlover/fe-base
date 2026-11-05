@@ -10,6 +10,7 @@ import { UserService } from '@/impls/UserService';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
+import { AccountFeedbackForm } from '@/uikit/components-app/account/AccountFeedbackForm';
 import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
 import { ChangePasswordForm } from '@/uikit/components-app/account/ChangePasswordForm';
 import { LinkedLoginsSection } from '@/uikit/components-app/account/LinkedLoginsSection';
@@ -293,6 +294,10 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
           />
         </section>
       ) : null}
+
+      <div className={clsx(needsBindEmail && 'lg:col-span-2')}>
+        <AccountFeedbackForm tt={tt} />
+      </div>
 
       <section
         className={clsx(

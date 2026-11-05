@@ -25,7 +25,9 @@ export const FeTables = {
   /** Transactional mail audit (memory | resend). */
   mailLogs: 'fe_mail_logs',
   /** Forgot-password reset links (hashed token, single use). */
-  passwordResetTokens: 'fe_password_reset_tokens'
+  passwordResetTokens: 'fe_password_reset_tokens',
+  /** User feedback (admin list + account submit). */
+  userFeedback: 'fe_user_feedback'
 } as const;
 
 export type FeTableName = (typeof FeTables)[keyof typeof FeTables];

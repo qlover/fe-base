@@ -6,6 +6,15 @@
  */
 
 /**
+ * API path: `/api/admin/feedback`
+ *
+ * @see [src/app/api/admin/feedback/route.ts](../../src/app/api/admin/feedback/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/route.ts`
+ */
+export const API_ADMIN_FEEDBACK = '/api/admin/feedback' as const;
+
+/**
  * API path: `/api/admin/locales`
  *
  * @see [src/app/api/admin/locales/route.ts](../../src/app/api/admin/locales/route.ts)
@@ -264,6 +273,15 @@ export const API_USER_BIND_EMAIL_VERIFY =
 export const API_USER_DISPLAY_NAME = '/api/user/display-name' as const;
 
 /**
+ * API path: `/api/user/feedback`
+ *
+ * @see [src/app/api/user/feedback/route.ts](../../src/app/api/user/feedback/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/feedback/route.ts`
+ */
+export const API_USER_FEEDBACK = '/api/user/feedback' as const;
+
+/**
  * API path: `/api/user/linked-logins`
  *
  * @see [src/app/api/user/linked-logins/route.ts](../../src/app/api/user/linked-logins/route.ts)
@@ -372,6 +390,7 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
 export const API_USER_SESSION = '/api/user/session' as const;
 
 export type ApiRoutePath =
+  | typeof API_ADMIN_FEEDBACK
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
@@ -400,6 +419,7 @@ export type ApiRoutePath =
   | typeof API_USER_BIND_EMAIL_SEND
   | typeof API_USER_BIND_EMAIL_VERIFY
   | typeof API_USER_DISPLAY_NAME
+  | typeof API_USER_FEEDBACK
   | typeof API_USER_LINKED_LOGINS
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGIN_PROVIDER

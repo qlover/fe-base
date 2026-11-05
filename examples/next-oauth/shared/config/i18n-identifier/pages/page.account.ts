@@ -323,3 +323,112 @@ export const PAGE_ACCOUNT_LINKED_LAST_LOGIN =
  * @localEn Failed to load linked logins. Please try again.
  */
 export const PAGE_ACCOUNT_LINKED_ERROR = 'page_account:linked_error';
+
+/**
+ * @description Feedback section title
+ * @localZh 意见反馈
+ * @localEn Feedback
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE =
+  'page_account:feedback_section_title';
+
+/**
+ * @description Feedback section description
+ * @localZh 告诉我们你遇到的问题或改进建议
+ * @localEn Tell us about issues or ideas for improvement
+ */
+export const PAGE_ACCOUNT_FEEDBACK_DESCRIPTION =
+  'page_account:feedback_description';
+
+/**
+ * @description Feedback category label
+ * @localZh 分类
+ * @localEn Category
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL =
+  'page_account:feedback_category_label';
+
+/**
+ * @description Feedback body label
+ * @localZh 内容
+ * @localEn Details
+ */
+export const PAGE_ACCOUNT_FEEDBACK_BODY_LABEL =
+  'page_account:feedback_body_label';
+
+/**
+ * @description Feedback body placeholder
+ * @localZh 请尽量描述复现步骤与期望结果
+ * @localEn Include steps to reproduce and what you expected
+ */
+export const PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER =
+  'page_account:feedback_body_placeholder';
+
+/**
+ * @description Feedback submit
+ * @localZh 提交反馈
+ * @localEn Submit feedback
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SUBMIT = 'page_account:feedback_submit';
+
+/**
+ * @description Feedback success
+ * @localZh 感谢反馈，我们已收到
+ * @localEn Thanks — we received your feedback
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SUCCESS = 'page_account:feedback_success';
+
+/**
+ * @description Feedback error
+ * @localZh 提交失败，请稍后重试
+ * @localEn Failed to submit. Please try again.
+ */
+export const PAGE_ACCOUNT_FEEDBACK_ERROR = 'page_account:feedback_error';
+
+/**
+ * @description Feedback category bug
+ * @localZh 缺陷
+ * @localEn Bug
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG =
+  'page_account:feedback_category_bug';
+
+/**
+ * @description Feedback category ux
+ * @localZh 体验
+ * @localEn UX
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX =
+  'page_account:feedback_category_ux';
+
+/**
+ * @description Feedback category feature
+ * @localZh 功能建议
+ * @localEn Feature
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE =
+  'page_account:feedback_category_feature';
+
+/**
+ * @description Feedback category performance
+ * @localZh 性能
+ * @localEn Performance
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE =
+  'page_account:feedback_category_performance';
+
+/**
+ * @description Feedback category content
+ * @localZh 内容
+ * @localEn Content
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT =
+  'page_account:feedback_category_content';
+
+/**
+ * @description Feedback category other
+ * @localZh 其他
+ * @localEn Other
+ */
+export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_OTHER =
+  'page_account:feedback_category_other';

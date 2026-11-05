@@ -28,7 +28,9 @@ export const PermissionKey = {
   admin_site_settings_read: 'admin_site_settings_read',
   admin_site_settings_write: 'admin_site_settings_write',
   admin_mail_logs_read: 'admin_mail_logs_read',
-  admin_mail_test: 'admin_mail_test'
+  admin_mail_test: 'admin_mail_test',
+  admin_feedback_read: 'admin_feedback_read',
+  admin_feedback_write: 'admin_feedback_write'
 } as const;
 
 export type AppPermissionKey =

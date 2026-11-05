@@ -3,11 +3,14 @@ import { inject, injectable } from '@shared/container';
 import type {
   AdminOverviewCheckType,
   AdminOverviewFailuresType,
+  AdminOverviewFeedbackTodoType,
   AdminOverviewRangeType,
   AdminOverviewType
 } from '@schemas/AdminOverviewSchema';
+import type { UserFeedbackAdminItemType } from '@schemas/UserFeedbackSchema';
 import type { AdminOverviewServiceInterface } from '@server/interfaces/AdminOverviewServiceInterface';
 import { AdminOverviewRepository } from '@server/repositorys/AdminOverviewRepository';
+import { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
 import { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
 import { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 import { AdminOverviewConfigCheckService } from './AdminOverviewConfigCheckService';
@@ -19,10 +22,13 @@ import {
 const CACHE_KEY_PREFIX = 'admin-overview:v1';
 const CACHE_TTL_MS = 5 * 60_000;
 const DAY_MS = 86_400_000;
+const FEEDBACK_STALE_MS = 2 * DAY_MS;
+const LATEST_FEEDBACK_LIMIT = 5;
 const FAILURE_GROUP_LIMIT = 5;
 
 type AdminOverviewSectionFlagsType = {
   readonly metrics: boolean;
+  readonly feedback: boolean;
   readonly failures: boolean;
   readonly checks: boolean;
 };
@@ -44,6 +50,8 @@ export class AdminOverviewService implements AdminOverviewServiceInterface {
     protected readonly rangeResolver: AdminOverviewRangeResolver,
     @inject(AdminOverviewRepository)
     protected readonly overviewRepository: AdminOverviewRepository,
+    @inject(UserFeedbackRepository)
+    protected readonly feedbackRepository: UserFeedbackRepository,
     @inject(AdminOverviewConfigCheckService)
     protected readonly configCheck: AdminOverviewConfigCheckService,
     @inject(MemoryKvCacheService)
@@ -57,13 +65,16 @@ export class AdminOverviewService implements AdminOverviewServiceInterface {
     const can = await this.permissions.createChecker();
     const flags: AdminOverviewSectionFlagsType = {
       metrics: can(PermissionKey.admin_users_read),
+      feedback: can(PermissionKey.admin_feedback_read),
       failures: can(PermissionKey.admin_request_logs_read),
       checks: can(PermissionKey.admin_site_settings_read)
     };
     const now = new Date();
 
-    const [stats, checks] = await Promise.all([
+    const [stats, feedbackTodo, latestFeedback, checks] = await Promise.all([
       this.loadStatsCached(range, flags, now),
+      flags.feedback ? this.loadFeedbackTodo(now) : Promise.resolve(null),
+      flags.feedback ? this.loadLatestFeedback() : Promise.resolve(null),
       flags.checks
         ? this.configCheck.check()
         : Promise.resolve<AdminOverviewCheckType[] | null>(null)
@@ -73,6 +84,8 @@ export class AdminOverviewService implements AdminOverviewServiceInterface {
       range,
       generatedAt: now.toISOString(),
       ...stats,
+      feedbackTodo,
+      latestFeedback,
       checks
     };
   }
@@ -145,5 +158,21 @@ export class AdminOverviewService implements AdminOverviewServiceInterface {
       this.overviewRepository.fetchFailureGroups(dayAgo, FAILURE_GROUP_LIMIT)
     ]);
     return { last24h, previous24h, top };
+  }
+
+  protected async loadFeedbackTodo(
+    now: Date
+  ): Promise<AdminOverviewFeedbackTodoType> {
+    const [openTotal, openStale] = await Promise.all([
+      this.feedbackRepository.countOpenFeedback(),
+      this.feedbackRepository.countOpenFeedback(
+        new Date(now.getTime() - FEEDBACK_STALE_MS)
+      )
+    ]);
+    return { openTotal, openStale };
+  }
+
+  protected async loadLatestFeedback(): Promise<UserFeedbackAdminItemType[]> {
+    return this.feedbackRepository.listAllForAdmin(LATEST_FEEDBACK_LIMIT);
   }
 }

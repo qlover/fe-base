@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { userFeedbackAdminItemSchema } from './UserFeedbackSchema';
 
 /**
  * 概览时间范围（天）：1 = 今天（北京时间 0 点起），7 / 30 = 滚动窗口。
@@ -30,7 +31,8 @@ const countSchema = z.number().int().nonnegative();
  */
 export const adminOverviewMetricsSchema = z.object({
   signups: countSchema,
-  activeUsers: countSchema
+  activeUsers: countSchema,
+  feedback: countSchema
 });
 
 export type AdminOverviewMetricsType = z.infer<
@@ -77,6 +79,16 @@ export const adminOverviewFailuresSchema = z.object({
 
 export type AdminOverviewFailuresType = z.infer<
   typeof adminOverviewFailuresSchema
+>;
+
+export const adminOverviewFeedbackTodoSchema = z.object({
+  openTotal: countSchema,
+  /** 待处理超过 48 小时 */
+  openStale: countSchema
+});
+
+export type AdminOverviewFeedbackTodoType = z.infer<
+  typeof adminOverviewFeedbackTodoSchema
 >;
 
 /** 配置检查项（oauth 模板域） */
@@ -131,6 +143,8 @@ export const adminOverviewSchema = z.object({
     })
     .nullable(),
   trend: adminOverviewTrendSchema.nullable(),
+  feedbackTodo: adminOverviewFeedbackTodoSchema.nullable(),
+  latestFeedback: z.array(userFeedbackAdminItemSchema).nullable(),
   failures: adminOverviewFailuresSchema.nullable(),
   checks: z.array(adminOverviewCheckSchema).nullable()
 });

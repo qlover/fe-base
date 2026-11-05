@@ -40,7 +40,8 @@ export function AdminHomeShortcuts({
     permissions: tt.hintPermissions,
     settings: tt.hintSettings,
     'request-logs': tt.hintRequestLogs,
-    'mail-logs': tt.hintMailLogs
+    'mail-logs': tt.hintMailLogs,
+    feedback: tt.hintFeedback
   };
 
   if (shortcuts.length === 0) {

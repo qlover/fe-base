@@ -3,6 +3,7 @@ import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
+import * as feedbackKeys from '../i18n-identifier/pages/page.admin.feedback';
 import * as mailLogsKeys from '../i18n-identifier/pages/page.admin.mail-logs';
 import * as memoryKvKeys from '../i18n-identifier/pages/page.admin.memory-kv';
 import * as otpMonitorKeys from '../i18n-identifier/pages/page.admin.otp-monitor';
@@ -61,18 +62,26 @@ export const adminHome18n = Object.freeze({
   hintSettings: homeKeys.ADMIN_HOME_HINT_SETTINGS,
   hintRequestLogs: homeKeys.ADMIN_HOME_HINT_REQUEST_LOGS,
   hintMailLogs: homeKeys.ADMIN_HOME_HINT_MAIL_LOGS,
+  hintFeedback: homeKeys.ADMIN_HOME_HINT_FEEDBACK,
   rangeToday: homeKeys.ADMIN_HOME_RANGE_TODAY,
   rangeWeek: homeKeys.ADMIN_HOME_RANGE_WEEK,
   rangeMonth: homeKeys.ADMIN_HOME_RANGE_MONTH,
   sectionTodo: homeKeys.ADMIN_HOME_SECTION_TODO,
   sectionKpi: homeKeys.ADMIN_HOME_SECTION_KPI,
   sectionShortcuts: homeKeys.ADMIN_HOME_SECTION_SHORTCUTS,
+  todoOpenFeedback: homeKeys.ADMIN_HOME_TODO_OPEN_FEEDBACK,
+  todoStalePrefix: homeKeys.ADMIN_HOME_TODO_STALE_PREFIX,
+  todoStaleNone: homeKeys.ADMIN_HOME_TODO_STALE_NONE,
   todoFailures: homeKeys.ADMIN_HOME_TODO_FAILURES,
   todoFailuresCompare: homeKeys.ADMIN_HOME_TODO_FAILURES_COMPARE,
   kpiCompare: homeKeys.ADMIN_HOME_KPI_COMPARE,
   kpiCompareToday: homeKeys.ADMIN_HOME_KPI_COMPARE_TODAY,
   kpiSignups: homeKeys.ADMIN_HOME_KPI_SIGNUPS,
   kpiActiveUsers: homeKeys.ADMIN_HOME_KPI_ACTIVE_USERS,
+  kpiFeedback: homeKeys.ADMIN_HOME_KPI_FEEDBACK,
+  feedbackTitle: homeKeys.ADMIN_HOME_FEEDBACK_TITLE,
+  feedbackAll: homeKeys.ADMIN_HOME_FEEDBACK_ALL,
+  feedbackEmpty: homeKeys.ADMIN_HOME_FEEDBACK_EMPTY,
   trendTitle: homeKeys.ADMIN_HOME_TREND_TITLE,
   checksTitle: homeKeys.ADMIN_HOME_CHECKS_TITLE,
   checksSub: homeKeys.ADMIN_HOME_CHECKS_SUB,
@@ -113,6 +122,8 @@ export type AdminOtpMonitorI18nInterface = typeof adminOtpMonitor18n;
 export type AdminMemoryKvI18nInterface = typeof adminMemoryKv18n;
 
 export type AdminMailLogsI18nInterface = typeof adminMailLogs18n;
+
+export type AdminFeedbackI18nInterface = typeof adminFeedback18n;
 
 export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
@@ -318,6 +329,31 @@ export const adminSettings18n = Object.freeze({
   mailTestFailed: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_FAILED,
   mailTestInvalid: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_INVALID,
   mailTestHint: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_HINT
+});
+
+export const adminFeedback18n = Object.freeze({
+  title: feedbackKeys.ADMIN_FEEDBACK_TITLE,
+  description: feedbackKeys.ADMIN_FEEDBACK_DESCRIPTION,
+  content: feedbackKeys.ADMIN_FEEDBACK_DESCRIPTION,
+  keywords: feedbackKeys.ADMIN_FEEDBACK_KEYWORDS,
+  refresh: feedbackKeys.ADMIN_FEEDBACK_REFRESH,
+  loadFailed: feedbackKeys.ADMIN_FEEDBACK_LOAD_FAILED,
+  forbidden: feedbackKeys.ADMIN_FEEDBACK_FORBIDDEN,
+  colCreated: feedbackKeys.ADMIN_FEEDBACK_COL_CREATED,
+  colUser: feedbackKeys.ADMIN_FEEDBACK_COL_USER,
+  colCategory: feedbackKeys.ADMIN_FEEDBACK_COL_CATEGORY,
+  colBody: feedbackKeys.ADMIN_FEEDBACK_COL_BODY,
+  colStatus: feedbackKeys.ADMIN_FEEDBACK_COL_STATUS,
+  statusOpen: feedbackKeys.ADMIN_FEEDBACK_STATUS_OPEN,
+  statusReviewing: feedbackKeys.ADMIN_FEEDBACK_STATUS_REVIEWING,
+  statusResolved: feedbackKeys.ADMIN_FEEDBACK_STATUS_RESOLVED,
+  statusClosed: feedbackKeys.ADMIN_FEEDBACK_STATUS_CLOSED,
+  categoryBug: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_BUG,
+  categoryUx: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_UX,
+  categoryFeature: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_FEATURE,
+  categoryPerformance: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_PERFORMANCE,
+  categoryContent: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_CONTENT,
+  categoryOther: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_OTHER
 });
 
 export const adminMailLogs18n = Object.freeze({

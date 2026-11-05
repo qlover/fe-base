@@ -16,7 +16,8 @@ const ADMIN_READ = [
   PermissionKey.admin_otp_monitor_read,
   PermissionKey.admin_memory_kv_read,
   PermissionKey.admin_site_settings_read,
-  PermissionKey.admin_mail_logs_read
+  PermissionKey.admin_mail_logs_read,
+  PermissionKey.admin_feedback_read
 ] as const;
 
 const ADMIN_WRITE = [
@@ -28,7 +29,8 @@ const ADMIN_WRITE = [
   PermissionKey.admin_otp_monitor_write,
   PermissionKey.admin_memory_kv_write,
   PermissionKey.admin_site_settings_write,
-  PermissionKey.admin_mail_test
+  PermissionKey.admin_mail_test,
+  PermissionKey.admin_feedback_write
 ] as const;
 
 export const DEFAULT_SYSTEM_ROLE_PERMISSIONS: Record<
@@ -172,5 +174,19 @@ export const PERMISSION_CATALOG_SEED: ReadonlyArray<{
     method: 'POST',
     path: '/api/admin/mail/test',
     description: 'Send test email'
+  },
+  {
+    permissionKey: PermissionKey.admin_feedback_read,
+    type: 'page',
+    method: null,
+    path: '/admin/feedback',
+    description: 'View user feedback'
+  },
+  {
+    permissionKey: PermissionKey.admin_feedback_write,
+    type: 'api',
+    method: 'PATCH',
+    path: '/api/admin/feedback',
+    description: 'Update feedback status'
   }
 ];

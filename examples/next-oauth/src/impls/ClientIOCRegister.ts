@@ -8,6 +8,7 @@ import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
 import { ZustandCounterService } from '@/impls/ZustandCounterService';
 import { IOCIdentifier as I } from '@config/ioc-identifiter';
+import { AdminFeedbackApi } from './appApi/AdminFeedbackApi';
 import { AdminLocalesApi } from './appApi/AdminLocalesApi';
 import { AdminMemoryKvApi } from './appApi/AdminMemoryKvApi';
 import { AdminOtpMonitorApi } from './appApi/AdminOtpMonitorApi';
@@ -18,6 +19,7 @@ import { AdminUsersApi } from './appApi/AdminUsersApi';
 import { AppApiRegister } from './appApi/AppApiRegister';
 import { OAuthClientsApi } from './appApi/OAuthClientsApi';
 import { SiteSettingsApi } from './appApi/SiteSettingsApi';
+import { UserFeedbackApi } from './appApi/UserFeedbackApi';
 import { dialogHandler, logger, JSON, appConfig } from './globals';
 import type {
   IOCContainerInterface,
@@ -61,6 +63,8 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(AdminLocalesApi, ioc.get(AdminLocalesApi));
     ioc.bind(SiteSettingsApi, ioc.get(SiteSettingsApi));
     ioc.bind(AdminOverviewApi, ioc.get(AdminOverviewApi));
+    ioc.bind(AdminFeedbackApi, ioc.get(AdminFeedbackApi));
+    ioc.bind(UserFeedbackApi, ioc.get(UserFeedbackApi));
 
     new AppApiRegister(JSON).register(ioc);
   }

@@ -6,6 +6,7 @@ import {
   AdminOverviewRange
 } from '@schemas/AdminOverviewSchema';
 import type { AdminOverviewRepository } from '@server/repositorys/AdminOverviewRepository';
+import type { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
 import type { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
 import type { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 import type { AdminOverviewConfigCheckService } from '@server/services/admin-overview/AdminOverviewConfigCheckService';
@@ -18,6 +19,8 @@ describe('AdminOverviewService.load', () => {
   let fetchTrend: ReturnType<typeof vi.fn>;
   let countFailures: ReturnType<typeof vi.fn>;
   let fetchFailureGroups: ReturnType<typeof vi.fn>;
+  let countOpenFeedback: ReturnType<typeof vi.fn>;
+  let listAllForAdmin: ReturnType<typeof vi.fn>;
   let check: ReturnType<typeof vi.fn>;
   let getItem: ReturnType<typeof vi.fn>;
   let setItem: ReturnType<typeof vi.fn>;
@@ -25,10 +28,14 @@ describe('AdminOverviewService.load', () => {
 
   beforeEach(() => {
     createChecker = vi.fn();
-    fetchMetrics = vi.fn().mockResolvedValue({ signups: 2, activeUsers: 5 });
+    fetchMetrics = vi
+      .fn()
+      .mockResolvedValue({ signups: 2, activeUsers: 5, feedback: 1 });
     fetchTrend = vi.fn().mockResolvedValue([]);
     countFailures = vi.fn().mockResolvedValue(1);
     fetchFailureGroups = vi.fn().mockResolvedValue([]);
+    countOpenFeedback = vi.fn().mockResolvedValue(3);
+    listAllForAdmin = vi.fn().mockResolvedValue([]);
     check = vi.fn().mockResolvedValue([
       {
         key: AdminOverviewCheckKey.encryptionKey,
@@ -49,6 +56,10 @@ describe('AdminOverviewService.load', () => {
         countFailures,
         fetchFailureGroups
       } as unknown as AdminOverviewRepository,
+      {
+        countOpenFeedback,
+        listAllForAdmin
+      } as unknown as UserFeedbackRepository,
       { check } as unknown as AdminOverviewConfigCheckService,
       { getItem, setItem } as unknown as MemoryKvCacheService
     );
@@ -64,6 +75,8 @@ describe('AdminOverviewService.load', () => {
     expect(overview.metrics).toBeNull();
     expect(overview.trend).toBeNull();
     expect(overview.checks).toBeNull();
+    expect(overview.feedbackTodo).toBeNull();
+    expect(overview.latestFeedback).toBeNull();
     expect(overview.failures).toEqual({
       last24h: 1,
       previous24h: 1,
@@ -73,15 +86,17 @@ describe('AdminOverviewService.load', () => {
     expect(check).not.toHaveBeenCalled();
   });
 
-  it('loads metrics and checks when permitted', async () => {
+  it('loads metrics, feedback and checks when permitted', async () => {
     createChecker.mockResolvedValue(() => true);
 
     const overview = await service.load(AdminOverviewRange.today);
 
     expect(overview.metrics).toEqual({
-      current: { signups: 2, activeUsers: 5 },
-      previous: { signups: 2, activeUsers: 5 }
+      current: { signups: 2, activeUsers: 5, feedback: 1 },
+      previous: { signups: 2, activeUsers: 5, feedback: 1 }
     });
+    expect(overview.feedbackTodo).toEqual({ openTotal: 3, openStale: 3 });
+    expect(overview.latestFeedback).toEqual([]);
     expect(overview.checks).toHaveLength(1);
     expect(setItem).toHaveBeenCalled();
   });
