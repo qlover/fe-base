@@ -1,9 +1,15 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { hasSessionPath, redirectToPath } from '@config/route';
+import {
+  hasSessionPath,
+  isPlatformAdminPath,
+  redirectAwayFromAdmin,
+  redirectToPath
+} from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthSessionServiceInterface } from '@server/interfaces/OAuthSessionServiceInterface';
+import { checkPlatformAdmin } from '@server/utils/checkPlatformAdmin';
 import { isSessionPayloadRevoked } from '@server/utils/sessionRevocation';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type {
@@ -106,6 +112,18 @@ export class OAuthSessionService
       const response = NextResponse.redirect(redirectToPath(request));
       response.cookies.delete(this.sessionKey);
       return response;
+    }
+
+    const pathname = request.nextUrl.pathname;
+    if (isPlatformAdminPath(pathname)) {
+      const userId = String(
+        payload.userId ??
+          (payload as { user?: Pick<UserSchema, 'id'> }).user?.id ??
+          ''
+      );
+      if (!userId || !(await checkPlatformAdmin(userId))) {
+        return NextResponse.redirect(redirectAwayFromAdmin(request));
+      }
     }
 
     // 4. 验证通过，返回正常响应

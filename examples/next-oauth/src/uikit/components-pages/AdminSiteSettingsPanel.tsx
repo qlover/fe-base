@@ -11,6 +11,8 @@ import { clsx } from 'clsx';
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { SiteSettingsApi } from '@/impls/appApi/SiteSettingsApi';
 import { invalidatePublicConfigCache } from '@/impls/fetchPublicConfig';
+import { AdminAnchorTitle } from '@/uikit/components-pages/admin-anchor';
+import { useAdminAnchorFocus } from '@/uikit/components-pages/admin-anchor';
 import { useIOC } from '@/uikit/hook/useIOC';
 import {
   FE_SITE_SETTING_KEYS,
@@ -134,12 +136,14 @@ function SettingRow({
   entry,
   tt,
   children,
-  layout = 'stacked'
+  layout = 'stacked',
+  highlighted = false
 }: {
   entry: FeAdminSiteSettingEntry | undefined;
   tt: AdminSettingsI18nInterface;
   children: ReactNode;
   layout?: 'stacked' | 'inline' | 'wide';
+  highlighted?: boolean;
 }) {
   if (!entry) {
     return null;
@@ -150,9 +154,11 @@ function SettingRow({
 
   return (
     <div
+      id={entry.key}
       data-testid="SettingRow"
       className={clsx(
-        'gap-3 border-b border-primary-border/50 py-4 last:border-b-0',
+        'group gap-3 border-b border-primary-border/50 py-4 last:border-b-0 scroll-mt-24',
+        highlighted && 'rounded-lg bg-brand/5 ring-1 ring-brand/30',
         isInline
           ? 'flex items-start justify-between'
           : isWide
@@ -162,9 +168,12 @@ function SettingRow({
     >
       <div className={clsx('min-w-0', isInline ? 'flex-1 pr-3' : 'flex-1')}>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-primary-text">
+          <AdminAnchorTitle
+            anchor={entry.key}
+            className="text-sm font-semibold text-primary-text"
+          >
             {entry.label}
-          </span>
+          </AdminAnchorTitle>
           <SourceBadge source={entry.source} tt={tt} />
         </div>
         <p className="mt-1 text-sm leading-relaxed text-secondary-text">
@@ -252,6 +261,9 @@ export function AdminSiteSettingsPanel({
         : null;
 
   const byKey = useMemo(() => entryMap(entries), [entries]);
+  const highlightedAnchor = useAdminAnchorFocus(
+    !loading && entries.length > 0
+  );
 
   const load = useCallback(async () => {
     const rows = await runAsyncStore(listStore, siteSettingsApi.list(), {
@@ -300,10 +312,13 @@ export function AdminSiteSettingsPanel({
         }
         payload[key] = value;
       }
+      const sensitiveKeys = new Set(
+        keys.filter((key) => byKey.get(key)?.isSensitive)
+      );
       try {
         const rows = await runAsyncStore(
           saveStore,
-          siteSettingsApi.patch(payload)
+          siteSettingsApi.patch(payload, sensitiveKeys)
         );
         if (!saveStore.isSuccess() || rows === undefined) {
           return;
@@ -398,7 +413,13 @@ export function AdminSiteSettingsPanel({
         }
       >
         {authToggleKeys.map((key) => (
-          <SettingRow key={key} entry={byKey.get(key)} tt={tt} layout="inline">
+          <SettingRow
+            key={key}
+            entry={byKey.get(key)}
+            tt={tt}
+            layout="inline"
+            highlighted={highlightedAnchor === key}
+          >
             <ToggleSwitch
               checked={Boolean(
                 getDraftValue(draft, byKey.get(key), key) === true
@@ -407,7 +428,11 @@ export function AdminSiteSettingsPanel({
             />
           </SettingRow>
         ))}
-        <SettingRow entry={byKey.get(phoneOtpProviderKey)} tt={tt}>
+        <SettingRow
+          entry={byKey.get(phoneOtpProviderKey)}
+          tt={tt}
+          highlighted={highlightedAnchor === phoneOtpProviderKey}
+        >
           <select
             value={(() => {
               const raw = String(
@@ -444,6 +469,9 @@ export function AdminSiteSettingsPanel({
           entry={byKey.get(FE_SITE_SETTING_KEYS.API_CORS_RULES)}
           tt={tt}
           layout="wide"
+          highlighted={
+            highlightedAnchor === FE_SITE_SETTING_KEYS.API_CORS_RULES
+          }
         >
           <CorsRulesEditor
             rules={getCorsRulesDraft(
@@ -484,16 +512,32 @@ export function AdminSiteSettingsPanel({
               ? ''
               : String(raw);
           return (
-            <SettingRow key={key} entry={entry} tt={tt}>
-              <input
-                type={isSensitive ? 'password' : 'text'}
-                value={value}
-                placeholder={
-                  isSensitive ? tt.secretHint : 'https://api.openai.com/v1'
-                }
-                onChange={(event) => setDraftValue(key, event.target.value)}
-                className={formFieldClass}
-              />
+            <SettingRow
+              key={key}
+              entry={entry}
+              tt={tt}
+              layout={entry?.multiline ? 'wide' : 'stacked'}
+              highlighted={highlightedAnchor === key}
+            >
+              {entry?.multiline ? (
+                <textarea
+                  value={value}
+                  rows={6}
+                  placeholder={isSensitive ? tt.secretHint : undefined}
+                  onChange={(event) => setDraftValue(key, event.target.value)}
+                  className={clsx(formFieldClass, 'font-mono')}
+                />
+              ) : (
+                <input
+                  type={isSensitive ? 'password' : 'text'}
+                  value={value}
+                  placeholder={
+                    isSensitive ? tt.secretHint : 'https://api.openai.com/v1'
+                  }
+                  onChange={(event) => setDraftValue(key, event.target.value)}
+                  className={formFieldClass}
+                />
+              )}
             </SettingRow>
           );
         })}

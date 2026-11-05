@@ -1,3 +1,5 @@
+import { Base64Serializer } from '@qlover/fe-corekit/serializer';
+import { StringEncryptor } from '@qlover/next-kit/common';
 import { TokenEncryption } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { oauthUpstreamProviders } from '@config/common';
@@ -24,6 +26,8 @@ import {
   safeParseCorsValue
 } from '@schemas/FeSiteSettingsSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { SiteSettingEncryptionRequiredError } from '@server/errors/SiteSettingEncryptionRequiredError';
+import { SiteSettingInvalidSecretError } from '@server/errors/SiteSettingInvalidSecretError';
 import { SiteSettingsRepo } from '@server/repositorys/SiteSettingsRepo';
 import { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 import {
@@ -89,6 +93,8 @@ function resolveSettingDescription(
 
 @injectable()
 export class SiteSettingsService {
+  protected readonly base64Serializer = new Base64Serializer();
+
   constructor(
     @inject(I.AppConfig)
     protected readonly serverConfig: SeedServerConfigInterface,
@@ -133,6 +139,31 @@ export class SiteSettingsService {
       // Plaintext stored when ENCRYPTION_KEY was missing at write time.
       return ciphertext;
     }
+  }
+
+  /**
+   * 管理端提交的敏感值经 `stringEncryptorKey` 传输加密；解出空串或含控制字符视为非法。
+   */
+  protected decryptTransitSecret(settingKey: string, transit: string): string {
+    let plain = '';
+    try {
+      plain = new StringEncryptor(
+        this.serverConfig.stringEncryptorKey,
+        this.base64Serializer
+      )
+        .decrypt(transit)
+        .trim();
+    } catch {
+      plain = '';
+    }
+
+    if (
+      !plain ||
+      /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFD]/.test(plain)
+    ) {
+      throw new SiteSettingInvalidSecretError(settingKey);
+    }
+    return plain;
   }
 
   public async invalidateCache(): Promise<void> {
@@ -319,6 +350,7 @@ export class SiteSettingsService {
           value: configured ? FE_SITE_SETTING_SECRET_UNCHANGED : '',
           configured,
           isSensitive: true,
+          multiline: definition.multiline === true,
           source
         };
       }
@@ -335,6 +367,7 @@ export class SiteSettingsService {
         value,
         configured: source === 'db',
         isSensitive: false,
+        multiline: definition.multiline === true,
         source
       };
     });
@@ -366,9 +399,17 @@ export class SiteSettingsService {
         ) {
           continue;
         }
+        if (
+          definition.requiresEncryption === true &&
+          this.tryCreateSecretEncryption() === null
+        ) {
+          throw new SiteSettingEncryptionRequiredError(rawKey);
+        }
         rows.push({
           key: rawKey,
-          value: this.encryptSecret(rawValue.trim()),
+          value: this.encryptSecret(
+            this.decryptTransitSecret(rawKey, rawValue.trim())
+          ),
           description: definition.description,
           isSensitive: true
         });

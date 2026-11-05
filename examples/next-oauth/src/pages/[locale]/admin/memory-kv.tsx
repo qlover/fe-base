@@ -1,20 +1,11 @@
-import dynamic from 'next/dynamic';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminMemoryKvPanel } from '@/uikit/components-pages/AdminMemoryKvPanel';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { adminMemoryKv18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminMemoryKvProps {
   messages: Record<string, string>;
@@ -23,23 +14,20 @@ interface AdminMemoryKvProps {
 const namespace = ['admin_memory_kv', 'permission'];
 
 /**
- * Admin process Memory KV (Pages Router / CSR).
- * Entry auth is middleware via LOGINED_PAGES.
+ * 管理后台进程 Memory KV 页（Pages Router / CSR）。
+ * Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminMemoryKvPage({}: AdminMemoryKvProps) {
   const seoMetadata = useI18nMapping(adminMemoryKv18n);
-  const navItems = useAdminNavItems();
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-primary-text">
-          {seoMetadata.title}
-        </h1>
-        <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
-      </div>
+    <AdminPageShell
+      title={seoMetadata.title}
+      description={seoMetadata.description}
+      seoMetadata={seoMetadata}
+    >
       <AdminMemoryKvPanel tt={seoMetadata} />
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
 

@@ -280,6 +280,46 @@ export function hasSessionPath(pathname: string): boolean {
 }
 
 /**
+ * 去掉 locale 前缀后的 pathname（如 `/en/admin` → `/admin`）。
+ */
+export function pathnameWithoutLocale(pathname: string): string {
+  const localeAlt = i18nConfig.supportedLngs.join('|');
+  return pathname.replace(new RegExp(`^\\/(${localeAlt})(?=\\/|$)`), '');
+}
+
+/**
+ * 平台管理后台路径（`/admin`、`/admin/users` …）。
+ */
+export function isPlatformAdminPath(pathname: string): boolean {
+  const withoutLocale = pathnameWithoutLocale(pathname);
+  return (
+    withoutLocale === ROUTE_ADMIN ||
+    withoutLocale.startsWith(`${ROUTE_ADMIN}/`)
+  );
+}
+
+/**
+ * 已登录但非平台管理员访问 `/admin/*` 时的落地页（开发者应用）。
+ */
+export function redirectAwayFromAdmin(request: NextRequest): NextURL {
+  const withoutLocale = pathnameWithoutLocale(request.nextUrl.pathname);
+  const first = request.nextUrl.pathname.split('/').filter(Boolean)[0];
+  const url = request.nextUrl.clone();
+  let pathname: string = ROUTE_DEVELOPER_APPS;
+  if (
+    useLocaleRoutes &&
+    first &&
+    (i18nConfig.supportedLngs as readonly string[]).includes(first) &&
+    withoutLocale !== request.nextUrl.pathname
+  ) {
+    pathname = `/${first}${ROUTE_DEVELOPER_APPS}`;
+  }
+  url.pathname = pathname;
+  url.search = '';
+  return url;
+}
+
+/**
  * Whether the path is an auth page that signed-in users should not visit.
  * @param pathname
  */

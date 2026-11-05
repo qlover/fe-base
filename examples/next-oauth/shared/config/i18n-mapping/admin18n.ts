@@ -1,3 +1,4 @@
+import * as commonAnchorKeys from '../i18n-identifier/common/admin.anchor';
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
@@ -29,6 +30,11 @@ export const adminTableI18n = {
   prev: commonTablesKeys.COMMON_ADMIN_TABLE_PREV,
   next: commonTablesKeys.COMMON_ADMIN_TABLE_NEXT,
   pageSize: commonTablesKeys.COMMON_ADMIN_TABLE_PAGE_SIZE
+} as const;
+
+export const adminAnchorI18n = {
+  copyLink: commonAnchorKeys.COMMON_ADMIN_ANCHOR_COPY_LINK,
+  linkCopied: commonAnchorKeys.COMMON_ADMIN_ANCHOR_LINK_COPIED
 } as const;
 
 export const admin18n = Object.freeze({

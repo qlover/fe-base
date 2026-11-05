@@ -7,12 +7,11 @@ import {
 import { Button } from '@qlover/next-kit/client';
 import { PageI18nProvider } from '@qlover/next-kit/client';
 import { useStrictEffect } from '@qlover/next-kit/client';
-import dynamic from 'next/dynamic';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { RequestLogsApi } from '@/impls/appApi/RequestLogsApi';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -23,14 +22,6 @@ import { I } from '@config/ioc-identifiter';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminRequestLogsProps {
   messages: Record<string, string>;
@@ -44,13 +35,16 @@ const requestLogsSearchDefaultCriteria: ResourceSearchParams = {
   sort: [...defaultSearchParams.sort]
 };
 
+/**
+ * 管理后台请求日志页（Pages Router / CSR）。
+ * Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
+ */
 export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
   const locale = useLocale();
   const pageI18n = useMemo(() => adminRequestLogs18n, []);
   const requestLogsApi = useIOC(RequestLogsApi);
   const dialogHandler = useIOC(I.DialogHandler);
   const seoMetadata = useI18nMapping(pageI18n);
-  const navItems = useAdminNavItems();
   const { allowed: canClear } = useCan(PermissionKey.admin_request_logs_write);
   const [clearing, setClearing] = useState(false);
 
@@ -126,36 +120,30 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
 
   return (
     <PageI18nProvider value={seoMetadata}>
-      <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-        <div>
-          <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h1 className="text-2xl font-semibold text-primary-text">
-                {seoMetadata.title}
-              </h1>
-              <p className="text-secondary-text mt-2">
-                {seoMetadata.description}
-              </p>
-            </div>
-            {canClear ? (
-              <Button
-                variant="danger"
-                disabled={clearing || loading || total === 0}
-                onClick={handleClearLogs}
-              >
-                <TrashIcon className="h-4 w-4" />
-                {seoMetadata.clear}
-              </Button>
-            ) : null}
+      <AdminPageShell
+        title={seoMetadata.title}
+        description={seoMetadata.description}
+        seoMetadata={seoMetadata}
+      >
+        {canClear ? (
+          <div className="mb-4 flex justify-end">
+            <Button
+              variant="danger"
+              disabled={clearing || loading || total === 0}
+              onClick={handleClearLogs}
+            >
+              <TrashIcon className="h-4 w-4" />
+              {seoMetadata.clear}
+            </Button>
           </div>
-          <RequestLogsTable
-            rows={rows}
-            locale={locale}
-            loading={loading || clearing}
-            pagination={tablePagination}
-          />
-        </div>
-      </AdminLayout>
+        ) : null}
+        <RequestLogsTable
+          rows={rows}
+          locale={locale}
+          loading={loading || clearing}
+          pagination={tablePagination}
+        />
+      </AdminPageShell>
     </PageI18nProvider>
   );
 }

@@ -143,7 +143,13 @@ export function AdminMailSettingsPanel({
       payload[key] = value;
     }
 
-    const rows = await runAsyncStore(saveStore, siteSettingsApi.patch(payload));
+    const sensitiveKeys = new Set(
+      MAIL_SAVE_KEYS.filter((key) => byKey.get(key)?.isSensitive)
+    );
+    const rows = await runAsyncStore(
+      saveStore,
+      siteSettingsApi.patch(payload, sensitiveKeys)
+    );
     if (rows === undefined) {
       return;
     }

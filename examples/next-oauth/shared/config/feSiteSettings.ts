@@ -53,6 +53,10 @@ export type FeSiteSettingDefinition = {
   readonly description: string;
   readonly isSensitive: boolean;
   readonly defaultValue?: FeSiteSettingPrimitive;
+  /** Admin 用多行文本框编辑（如 PEM） */
+  readonly multiline?: boolean;
+  /** 无 ENCRYPTION_KEY 时拒绝保存（禁止明文落库） */
+  readonly requiresEncryption?: boolean;
 };
 
 /** Sentinel: admin PATCH omits secret change when value equals this. */
@@ -104,8 +108,9 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
       key: FE_SITE_SETTING_KEYS.OPENAI_API_KEY,
       label: 'OpenAI 兼容 API Key',
       description:
-        'OpenAI 或兼容网关（Cerebras、自建代理等）的 API 密钥。有 ENCRYPTION_KEY 时加密存储，界面不回显明文。',
-      isSensitive: true
+        'OpenAI 或兼容网关（Cerebras、自建代理等）的 API 密钥。必须配置 ENCRYPTION_KEY 加密存储，界面不回显明文。',
+      isSensitive: true,
+      requiresEncryption: true
     },
     {
       key: FE_SITE_SETTING_KEYS.OPENAI_BASE_URL,
@@ -134,8 +139,9 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
       key: FE_SITE_SETTING_KEYS.MAIL_RESEND_API_KEY,
       label: 'Resend API Key',
       description:
-        '邮件通道为 resend 时必填。有 ENCRYPTION_KEY 时加密存储，界面不回显明文。',
-      isSensitive: true
+        '邮件通道为 resend 时必填。必须配置 ENCRYPTION_KEY 加密存储，界面不回显明文。',
+      isSensitive: true,
+      requiresEncryption: true
     },
     {
       key: FE_SITE_SETTING_KEYS.MAIL_FROM_ADDRESS,

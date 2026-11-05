@@ -72,6 +72,7 @@ export type FeAdminSiteSettingEntry = {
   value: string | boolean | string[] | FeCorsRule[];
   configured: boolean;
   isSensitive: boolean;
+  multiline: boolean;
   source: 'db' | 'default';
 };
 

@@ -1,20 +1,11 @@
-import dynamic from 'next/dynamic';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminRolesPanel } from '@/uikit/components-pages/AdminRolesPanel';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { adminRoles18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminRolesProps {
   messages: Record<string, string>;
@@ -23,23 +14,20 @@ interface AdminRolesProps {
 const namespace = ['admin_roles', 'permission'];
 
 /**
- * Admin platform roles (Pages Router / CSR).
- * Entry auth is middleware via LOGINED_PAGES.
+ * 管理后台角色页（Pages Router / CSR）。
+ * Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminRolesPage({}: AdminRolesProps) {
   const seoMetadata = useI18nMapping(adminRoles18n);
-  const navItems = useAdminNavItems();
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-primary-text">
-          {seoMetadata.title}
-        </h1>
-        <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
-      </div>
+    <AdminPageShell
+      title={seoMetadata.title}
+      description={seoMetadata.description}
+      seoMetadata={seoMetadata}
+    >
       <AdminRolesPanel tt={seoMetadata} />
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
 
