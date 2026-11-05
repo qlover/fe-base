@@ -1,7 +1,8 @@
+import { AdminHomePanel } from '@/uikit/components-pages/AdminHomePanel';
 import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
-import { admin18n } from '@config/i18n-mapping/admin18n';
+import { adminHome18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
@@ -13,19 +14,18 @@ interface AdminIndexProps {
 const namespace = 'admin_home';
 
 /**
- * Admin home (Pages Router / CSR).
- * Shell chrome comes from `_app` {@link AdminPagesAppShell}.
+ * Admin 概览首页。Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminIndex({}: AdminIndexProps) {
-  const seoMetadata = useI18nMapping(admin18n);
+  const tt = useI18nMapping(adminHome18n);
 
   return (
     <AdminPageShell
-      title={seoMetadata.title}
-      description={seoMetadata.description}
-      seoMetadata={seoMetadata}
+      title={tt.heading}
+      description={tt.sub}
+      seoMetadata={tt}
     >
-      <p className="text-base text-secondary-text">{seoMetadata.description}</p>
+      <AdminHomePanel tt={tt} />
     </AdminPageShell>
   );
 }

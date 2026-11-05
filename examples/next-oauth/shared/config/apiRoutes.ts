@@ -70,6 +70,15 @@ export const API_ADMIN_MEMORY_KV = '/api/admin/memory-kv' as const;
 export const API_ADMIN_OTP_MONITOR = '/api/admin/otp-monitor' as const;
 
 /**
+ * API path: `/api/admin/overview`
+ *
+ * @see [src/app/api/admin/overview/route.ts](../../src/app/api/admin/overview/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/overview/route.ts`
+ */
+export const API_ADMIN_OVERVIEW = '/api/admin/overview' as const;
+
+/**
  * API path: `/api/admin/permissions`
  *
  * @see [src/app/api/admin/permissions/route.ts](../../src/app/api/admin/permissions/route.ts)
@@ -370,6 +379,7 @@ export type ApiRoutePath =
   | typeof API_ADMIN_MAIL_TEST
   | typeof API_ADMIN_MEMORY_KV
   | typeof API_ADMIN_OTP_MONITOR
+  | typeof API_ADMIN_OVERVIEW
   | typeof API_ADMIN_PERMISSIONS
   | typeof API_ADMIN_REQUEST_LOGS
   | typeof API_ADMIN_ROLES

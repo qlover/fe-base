@@ -11,6 +11,7 @@ import { IOCIdentifier as I } from '@config/ioc-identifiter';
 import { AdminLocalesApi } from './appApi/AdminLocalesApi';
 import { AdminMemoryKvApi } from './appApi/AdminMemoryKvApi';
 import { AdminOtpMonitorApi } from './appApi/AdminOtpMonitorApi';
+import { AdminOverviewApi } from './appApi/AdminOverviewApi';
 import { AdminPermissionsApi } from './appApi/AdminPermissionsApi';
 import { AdminRolesApi } from './appApi/AdminRolesApi';
 import { AdminUsersApi } from './appApi/AdminUsersApi';
@@ -59,6 +60,7 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(AdminUsersApi, ioc.get(AdminUsersApi));
     ioc.bind(AdminLocalesApi, ioc.get(AdminLocalesApi));
     ioc.bind(SiteSettingsApi, ioc.get(SiteSettingsApi));
+    ioc.bind(AdminOverviewApi, ioc.get(AdminOverviewApi));
 
     new AppApiRegister(JSON).register(ioc);
   }

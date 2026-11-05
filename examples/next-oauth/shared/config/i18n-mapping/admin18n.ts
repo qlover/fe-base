@@ -48,6 +48,60 @@ export const admin18n = Object.freeze({
   welcome: homeKeys.ADMIN_HOME_WELCOME
 });
 
+/**
+ * Admin 首页概览面板文案（含 SEO 字段）。
+ */
+export const adminHome18n = Object.freeze({
+  ...admin18n,
+  heading: homeKeys.ADMIN_HOME_HEADING,
+  sub: homeKeys.ADMIN_HOME_SUB,
+  hintUsers: homeKeys.ADMIN_HOME_HINT_USERS,
+  hintRoles: homeKeys.ADMIN_HOME_HINT_ROLES,
+  hintPermissions: homeKeys.ADMIN_HOME_HINT_PERMISSIONS,
+  hintSettings: homeKeys.ADMIN_HOME_HINT_SETTINGS,
+  hintRequestLogs: homeKeys.ADMIN_HOME_HINT_REQUEST_LOGS,
+  hintMailLogs: homeKeys.ADMIN_HOME_HINT_MAIL_LOGS,
+  rangeToday: homeKeys.ADMIN_HOME_RANGE_TODAY,
+  rangeWeek: homeKeys.ADMIN_HOME_RANGE_WEEK,
+  rangeMonth: homeKeys.ADMIN_HOME_RANGE_MONTH,
+  sectionTodo: homeKeys.ADMIN_HOME_SECTION_TODO,
+  sectionKpi: homeKeys.ADMIN_HOME_SECTION_KPI,
+  sectionShortcuts: homeKeys.ADMIN_HOME_SECTION_SHORTCUTS,
+  todoFailures: homeKeys.ADMIN_HOME_TODO_FAILURES,
+  todoFailuresCompare: homeKeys.ADMIN_HOME_TODO_FAILURES_COMPARE,
+  kpiCompare: homeKeys.ADMIN_HOME_KPI_COMPARE,
+  kpiCompareToday: homeKeys.ADMIN_HOME_KPI_COMPARE_TODAY,
+  kpiSignups: homeKeys.ADMIN_HOME_KPI_SIGNUPS,
+  kpiActiveUsers: homeKeys.ADMIN_HOME_KPI_ACTIVE_USERS,
+  trendTitle: homeKeys.ADMIN_HOME_TREND_TITLE,
+  checksTitle: homeKeys.ADMIN_HOME_CHECKS_TITLE,
+  checksSub: homeKeys.ADMIN_HOME_CHECKS_SUB,
+  checksConfigure: homeKeys.ADMIN_HOME_CHECKS_CONFIGURE,
+  checkStateOk: homeKeys.ADMIN_HOME_CHECK_STATE_OK,
+  checkStateWarn: homeKeys.ADMIN_HOME_CHECK_STATE_WARN,
+  checkStateOff: homeKeys.ADMIN_HOME_CHECK_STATE_OFF,
+  checkEncryptionKey: homeKeys.ADMIN_HOME_CHECK_ENCRYPTION_KEY,
+  checkEncryptionKeyDesc: homeKeys.ADMIN_HOME_CHECK_ENCRYPTION_KEY_DESC,
+  checkServiceRoleKey: homeKeys.ADMIN_HOME_CHECK_SERVICE_ROLE_KEY,
+  checkServiceRoleKeyDesc: homeKeys.ADMIN_HOME_CHECK_SERVICE_ROLE_KEY_DESC,
+  checkOpenai: homeKeys.ADMIN_HOME_CHECK_OPENAI,
+  checkOpenaiDesc: homeKeys.ADMIN_HOME_CHECK_OPENAI_DESC,
+  checkMailProvider: homeKeys.ADMIN_HOME_CHECK_MAIL_PROVIDER,
+  checkMailProviderDesc: homeKeys.ADMIN_HOME_CHECK_MAIL_PROVIDER_DESC,
+  checkMailResendApiKey: homeKeys.ADMIN_HOME_CHECK_MAIL_RESEND_API_KEY,
+  checkMailResendApiKeyDesc: homeKeys.ADMIN_HOME_CHECK_MAIL_RESEND_API_KEY_DESC,
+  checkEnvHint: homeKeys.ADMIN_HOME_CHECK_ENV_HINT,
+  failuresTitle: homeKeys.ADMIN_HOME_FAILURES_TITLE,
+  failuresLogs: homeKeys.ADMIN_HOME_FAILURES_LOGS,
+  failuresEmpty: homeKeys.ADMIN_HOME_FAILURES_EMPTY,
+  loadFailed: homeKeys.ADMIN_HOME_LOAD_FAILED,
+  retry: homeKeys.ADMIN_HOME_RETRY,
+  generatedAt: homeKeys.ADMIN_HOME_GENERATED_AT,
+  emptyAll: homeKeys.ADMIN_HOME_EMPTY_ALL
+});
+
+export type AdminHomeI18nInterface = typeof adminHome18n;
+
 export type AdminUsersI18nInterface = typeof adminUsers18n;
 
 export type AdminRolesI18nInterface = typeof adminRoles18n;

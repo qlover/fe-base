@@ -45,6 +45,16 @@ export interface NavItemInterface {
   permissionKey?: AppPermissionKey;
 }
 
+/** Admin 首页快捷入口顺序（按 key 过滤当前用户有权限的项）。 */
+export const ADMIN_HOME_SHORTCUT_KEYS = [
+  'users',
+  'roles',
+  'permissions',
+  'settings',
+  'request-logs',
+  'mail-logs'
+] as const;
+
 export const defaultNavItems: NavItemInterface[] = [
   {
     key: 'dashboard',
