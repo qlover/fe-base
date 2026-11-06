@@ -221,23 +221,51 @@ export class PhoneOtpService {
   protected async ensureAuthUserForPhone(phone: string): Promise<UserSchema> {
     const authEmail = phonePlaceholderEmail(phone);
     const existing = await this.feUsersRepository.findByPhone(phone);
+    const admin = this.supabaseBridge.getAdminSupabase();
+
     if (existing) {
-      const admin = this.supabaseBridge.getAdminSupabase();
       const authUser = await admin.auth.admin.getUserById(existing.id);
       if (authUser.error && !isAuthUserMissingError(authUser.error)) {
         this.supabaseBridge.throwIfError(authUser);
       }
-      const mintEmail = authUser.data.user?.email?.trim() || authEmail;
-      return {
+      if (authUser.data.user?.id) {
+        const mintEmail = authUser.data.user.email?.trim() || authEmail;
+        return {
+          id: existing.id,
+          email: mintEmail,
+          role: UserRole.USER,
+          credential_token: '',
+          created_at: existing.created_at
+        };
+      }
+
+      // Migrated fe_users row without matching auth.users: recreate with same UUID.
+      const recreated = await admin.auth.admin.createUser({
         id: existing.id,
-        email: mintEmail,
-        role: UserRole.USER,
-        credential_token: '',
-        created_at: existing.created_at
-      };
+        email: authEmail,
+        phone,
+        email_confirm: true,
+        phone_confirm: true,
+        user_metadata: { login_phone: phone }
+      });
+      if (recreated.data.user?.id) {
+        return {
+          id: recreated.data.user.id,
+          email: recreated.data.user.email || authEmail,
+          role: UserRole.USER,
+          credential_token: '',
+          created_at: recreated.data.user.created_at
+        };
+      }
+      if (recreated.error && !isAuthUserMissingError(recreated.error)) {
+        this.logger.warn('Recreate auth user for phone profile failed', {
+          phone,
+          profileId: existing.id,
+          error: recreated.error
+        });
+      }
     }
 
-    const admin = this.supabaseBridge.getAdminSupabase();
     const created = await admin.auth.admin.createUser({
       email: authEmail,
       phone,

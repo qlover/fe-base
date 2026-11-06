@@ -10,7 +10,36 @@ import {
 } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
+import { normalizePhoneE164 } from '@shared/utils/phoneUserIdentity';
 import { buildIlikeOrString } from '@server/utils/PostgrestIlikeOrUtil';
+
+/**
+ * Phone lookup candidates: E.164 and legacy digits-only rows from older dumps.
+ */
+function phoneLookupCandidates(phone: string): string[] {
+  const e164 = normalizePhoneE164(phone);
+  const digits = (e164 || phone).replace(/\D/g, '');
+  return Array.from(
+    new Set(
+      [e164, digits, digits ? `+${digits}` : '', phone.trim()].filter(
+        (value) => value.length > 0
+      )
+    )
+  );
+}
+
+function normalizeStoredPhone(
+  phone: string | null | undefined
+): string | null {
+  if (phone == null) {
+    return null;
+  }
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return null;
+  }
+  return normalizePhoneE164(trimmed) || trimmed;
+}
 
 export type FeUserRow = {
   id: string;
@@ -106,18 +135,27 @@ export class FeUsersRepository {
   }
 
   public async findByPhone(phone: string): Promise<FeUserRow | null> {
-    const normalized = phone.trim();
-    if (!normalized) {
+    const candidates = phoneLookupCandidates(phone);
+    if (candidates.length === 0) {
       return null;
     }
     const supabase = this.supabaseBridge.getAdminSupabase();
     const result = await supabase
       .from(FeTables.users)
       .select('*')
-      .eq('phone', normalized)
-      .maybeSingle();
+      .in('phone', candidates)
+      .limit(2);
     this.supabaseBridge.throwIfError(result);
-    return (result.data as FeUserRow | null) ?? null;
+    const rows = (result.data as FeUserRow[] | null) ?? [];
+    if (rows.length === 0) {
+      return null;
+    }
+    const e164 = normalizePhoneE164(phone);
+    const preferred =
+      rows.find((row) => row.phone === e164) ??
+      rows.find((row) => row.phone?.startsWith('+')) ??
+      rows[0];
+    return preferred;
   }
 
   public async getSystemRoleKey(
@@ -171,7 +209,9 @@ export class FeUsersRepository {
           ? input.displayName
           : existing.display_name;
       const nextPhone =
-        input.phone !== undefined ? input.phone : existing.phone;
+        input.phone !== undefined
+          ? normalizeStoredPhone(input.phone)
+          : normalizeStoredPhone(existing.phone);
 
       const result = await supabase
         .from(FeTables.users)
@@ -197,7 +237,7 @@ export class FeUsersRepository {
         id: input.id,
         email: normalizeEmail(input.email ?? null),
         display_name: input.displayName ?? null,
-        phone: input.phone ?? null,
+        phone: normalizeStoredPhone(input.phone),
         role_id: roleId,
         status: 'active'
       })

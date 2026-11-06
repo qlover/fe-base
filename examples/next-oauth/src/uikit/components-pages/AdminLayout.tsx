@@ -2,6 +2,7 @@
 
 import {
   Bars3Icon,
+  ChatBubbleLeftRightIcon,
   CircleStackIcon,
   ClipboardDocumentListIcon,
   Cog6ToothIcon,
@@ -58,7 +59,8 @@ const NAV_ICONS: Record<string, NavIcon> = {
   locales: LanguageIcon,
   settings: Cog6ToothIcon,
   'request-logs': ClipboardDocumentListIcon,
-  'mail-logs': ClipboardDocumentListIcon
+  'mail-logs': ClipboardDocumentListIcon,
+  feedback: ChatBubbleLeftRightIcon
 };
 
 /**
