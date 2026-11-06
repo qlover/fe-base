@@ -4,6 +4,12 @@ export const envPrefix = 'NEXT_PUBLIC_';
 
 export const browserGlobalsName = 'feGlobals';
 
+/**
+ * 包内 CHANGELOG 在 GitHub 上的 blob 地址（公开页「在 GitHub 查看」）。
+ */
+export const githubChangelogUrl =
+  'https://github.com/qlover/fe-base/blob/master/examples/next-oauth/CHANGELOG.md';
+
 export const loggerStyles = {
   fatal: { color: '#ff0000', fontWeight: 'bold' },
   error: { color: '#ff0000' },
@@ -88,8 +94,22 @@ export const URLParamsKeys = {
   /**
    * supabase 回调授权 id 的参数 key
    */
-  oAuthQueryAuthId: 'authorization_id'
+  oAuthQueryAuthId: 'authorization_id',
+
+  /**
+   * 跳转登录页原因（如会话过期）
+   */
+  loginReason: 'reason'
 } as const;
+
+/**
+ * 登录页 `reason` 查询参数取值。
+ */
+export const LOGIN_REASON = {
+  SESSION_EXPIRED: 'session_expired'
+} as const;
+
+export type LoginReasonType = (typeof LOGIN_REASON)[keyof typeof LOGIN_REASON];
 
 /**
  * 查询参数中的语言参数 key
@@ -120,17 +140,23 @@ export function resolveSupabaseOAuthProvider(
  *
  * - `supabase` (default): Supabase Auth password / OTP / SSO
  * - `brain-user`: wrap Brain User login API as OAuth credentials
+ * - `oauth-pkce`: 标准授权码 + PKCE 对接任意外部 IdP（不经 Supabase SSO）
  */
 export const oauthUpstreamProviders = {
   supabase: 'supabase',
-  brainUser: 'brain-user'
+  brainUser: 'brain-user',
+  oauthPkce: 'oauth-pkce'
 } as const;
 export type OAuthUpstreamId = ValueOf<typeof oauthUpstreamProviders>;
 
 export function resolveOAuthUpstreamProvider(
   raw: string | undefined | null
 ): OAuthUpstreamId {
-  return raw === oauthUpstreamProviders.brainUser
-    ? oauthUpstreamProviders.brainUser
-    : oauthUpstreamProviders.supabase;
+  if (raw === oauthUpstreamProviders.brainUser) {
+    return oauthUpstreamProviders.brainUser;
+  }
+  if (raw === oauthUpstreamProviders.oauthPkce) {
+    return oauthUpstreamProviders.oauthPkce;
+  }
+  return oauthUpstreamProviders.supabase;
 }

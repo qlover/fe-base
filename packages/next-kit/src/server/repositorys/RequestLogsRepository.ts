@@ -6,6 +6,7 @@ import type {
 import type { NextKitApiResult } from '../../common/interfaces/NextKitApi';
 import type { ServerContextInterface } from '../interfaces/ServerContextInterface';
 import type { UserLoginContext } from '../interfaces/UserLoginContext';
+import { Operators } from '../interfaces/DBBridgeInterface';
 import { SupabaseRepo, type SupabaseRepoDeps } from './SupabaseRepo';
 
 const DEFAULT_TABLE = 'request_logs';
@@ -82,6 +83,13 @@ export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
       success,
       request_id: correlationId?.trim() ? correlationId : null,
       record_type: request.nextUrl.pathname,
+      http_method: request.method,
+      http_path: request.nextUrl.pathname,
+      http_status: httpStatus,
+      duration_ms: durationMs,
+      ip_address: ipAddress,
+      error_code: errorCode,
+      reason_code: null,
       payload: {
         http_method: request.method,
         http_path: request.nextUrl.pathname,
@@ -119,6 +127,13 @@ export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
       success: true,
       request_id: this.serverContext.getState('uid'),
       record_type: 'auth',
+      http_method: null,
+      http_path: null,
+      http_status: null,
+      duration_ms: null,
+      ip_address: params.ipAddress,
+      error_code: null,
+      reason_code: null,
       payload: {
         auth_provider: params.auth_provider,
         user_agent: params.userAgent,
@@ -127,8 +142,30 @@ export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
       }
     };
 
-    await this.insert({
-      data: data as RequestLogRow
+    const row = { ...data } as RequestLogRow;
+    if (params.user_id) {
+      row.user_id = params.user_id;
+    }
+
+    // Service-role write: cookie RLS only accepts user_id = auth.uid(), which is
+    // null for app sessions that are not Supabase Auth cookies.
+    const { error } = await this.getAdminSupabase()
+      .from(this.tableName)
+      .insert(row);
+    this.throwIfError({ error });
+  }
+
+  /**
+   * Search rows owned by `userId`. Caller-provided `where` is replaced so
+   * clients cannot widen the filter.
+   */
+  public searchForUser(
+    userId: string,
+    criteria: Parameters<RequestLogsRepository['search']>[0]
+  ): ReturnType<RequestLogsRepository['search']> {
+    return this.search({
+      ...criteria,
+      where: [['user_id', Operators.eq, userId]]
     });
   }
 
@@ -141,6 +178,20 @@ export class RequestLogsRepository extends SupabaseRepo<RequestLogRow> {
       .from(this.tableName)
       .delete({ count: 'exact' })
       .not('id', 'is', null);
+
+    this.throwIfError({ error });
+    return count ?? 0;
+  }
+
+  /**
+   * Delete rows owned by `userId` only.
+   */
+  public async clearForUser(userId: string): Promise<number> {
+    const client = this.getAdminSupabase();
+    const { error, count } = await client
+      .from(this.tableName)
+      .delete({ count: 'exact' })
+      .eq('user_id', userId);
 
     this.throwIfError({ error });
     return count ?? 0;

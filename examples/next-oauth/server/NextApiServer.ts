@@ -3,12 +3,12 @@ import {
   createLogger,
   isApiServerContext,
   type ApiServerContext,
+  type BinaryApiPayload,
   type BootstrapServerContextOptions,
   type BootstrapServerPlugin
 } from '@qlover/next-kit/server';
 import { RequestLogsRepository } from '@qlover/next-kit/server';
 import { type NextRequest, NextResponse } from 'next/server';
-import { API_USER_SESSION } from '@config/apiRoutes';
 import { I } from '@config/ioc-identifiter';
 import { oauthI18nIdToRfc } from '@config/oauthErrors';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
@@ -17,10 +17,36 @@ import { createServerIoc } from './serverIoc';
 import { NextApiHandler } from './utils/NextApiHandler';
 import { ServerContext } from './utils/ServerContext';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
+import type { SessionCookieFieldsType } from './services/OAuthSessionService';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 import type { NextKitApiResult } from '@qlover/next-kit/common';
 import type { ServerContextInterface } from '@qlover/next-kit/server';
+
+function readSessionCookieFromResult(
+  result: NextKitApiResult<unknown>
+): SessionCookieFieldsType | null {
+  if (
+    !result.success ||
+    result.data == null ||
+    typeof result.data !== 'object'
+  ) {
+    return null;
+  }
+  const cookie = (result.data as { sessionCookie?: unknown }).sessionCookie;
+  if (cookie == null || typeof cookie !== 'object') {
+    return null;
+  }
+  const fields = cookie as Partial<SessionCookieFieldsType>;
+  if (
+    typeof fields.name !== 'string' ||
+    typeof fields.value !== 'string' ||
+    typeof fields.maxAge !== 'number'
+  ) {
+    return null;
+  }
+  return fields as SessionCookieFieldsType;
+}
 
 export type NextApiServerContext = ApiServerContext;
 
@@ -28,6 +54,12 @@ type RunWithInit = {
   successHeaders?: HeadersInit;
   errorHeaders?: HeadersInit;
   httpStatus?: number;
+};
+
+type RunWithBinaryInit = RunWithInit & {
+  notFoundHeaders?: HeadersInit;
+  notFoundCacheControl?: string;
+  successCacheControl?: string;
 };
 
 type RunWithTask<Result> = ExecutorAsyncTask<
@@ -122,23 +154,21 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
   /**
    * @override
    *
-   * Skip DB log writes for high-frequency, read-only endpoints so their JSON
-   * response is not held up by a synchronous Supabase INSERT.
-   * `/api/user/session` is called on every page load to restore auth state.
+   * General API **success is not persisted** (noise / table growth).
+   * Only failures are written. Auth login/logout use `insertWithAuth`
+   * separately (not via this hook).
    */
   protected override afterApiResult<Result>(
     envelope: NextKitApiResult<Result>,
     request?: NextRequest
   ): void {
-    if (!request) {
+    if (!request || envelope.success) {
       return;
     }
 
-    if (request.nextUrl.pathname === API_USER_SESSION) {
-      return;
-    }
-
-    this.IOC(RequestLogsRepository).insertWithApiResult(envelope, { request });
+    void this.IOC(RequestLogsRepository).insertWithApiResult(envelope, {
+      request
+    });
   }
 
   /**
@@ -148,8 +178,71 @@ export class NextApiServer extends ApiServer<NextOAuthServerIocMap> {
     task?: RunWithTask<Result>,
     init?: RunWithInit
   ): Promise<NextResponse> {
+    const started = performance.now();
     const result = await this.run(task);
-    return this.returnJson(result, this.mergeResponseInit(init));
+    const response = this.returnJson(result, this.mergeResponseInit(init));
+    response.headers.set(
+      'Server-Timing',
+      `app;dur=${Math.round(performance.now() - started)}`
+    );
+    return response;
+  }
+
+  /**
+   * Binary/image endpoints with CORS header merge + Server-Timing.
+   *
+   * @override
+   */
+  public override async runWithBinary(
+    task?: RunWithTask<BinaryApiPayload | null>,
+    init?: RunWithBinaryInit
+  ): Promise<NextResponse> {
+    const started = performance.now();
+    const response = await super.runWithBinary(
+      task,
+      this.mergeResponseInit(init)
+    );
+    response.headers.set(
+      'Server-Timing',
+      `app;dur=${Math.round(performance.now() - started)}`
+    );
+    return response;
+  }
+
+  /**
+   * Redirect responses must carry the session cookie on the
+   * {@link NextResponse} itself — `cookies().set` alone is often dropped.
+   *
+   * @override
+   */
+  public override async runWithRedirect<Result>(
+    task?: RunWithTask<Result>,
+    init?: RunWithInit
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+    const merged = this.mergeResponseInit(init);
+    const contextHttpStatus = this.serverContext.getState('httpStatus');
+    const redirectUrl = this.serverContext.getState('redirectUrl');
+
+    if (redirectUrl) {
+      const response = NextResponse.redirect(redirectUrl, {
+        status: contextHttpStatus ?? 307,
+        headers: merged?.successHeaders ?? merged?.errorHeaders
+      });
+      const sessionCookie = readSessionCookieFromResult(result);
+      if (sessionCookie != null) {
+        response.cookies.set(sessionCookie.name, sessionCookie.value, {
+          httpOnly: sessionCookie.httpOnly,
+          secure: sessionCookie.secure,
+          sameSite: sessionCookie.sameSite,
+          path: sessionCookie.path,
+          maxAge: sessionCookie.maxAge
+        });
+      }
+      return response;
+    }
+
+    return this.returnJson(result, merged);
   }
 
   /**

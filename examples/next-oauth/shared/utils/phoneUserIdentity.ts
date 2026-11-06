@@ -10,6 +10,21 @@ export function isPhonePlaceholderEmail(
   return email.trim().toLowerCase().endsWith(PHONE_PLACEHOLDER_EMAIL_SUFFIX);
 }
 
+/**
+ * 业务邮箱：排除手机占位邮箱与空值；返回小写归一结果。
+ *
+ * @param email - Auth / fe_users 上的 email 字段
+ */
+export function toBusinessEmail(
+  email: string | null | undefined
+): string | null {
+  const trimmed = email?.trim().toLowerCase() ?? '';
+  if (!trimmed || isPhonePlaceholderEmail(trimmed)) {
+    return null;
+  }
+  return trimmed;
+}
+
 export function phonePlaceholderEmail(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   return digits

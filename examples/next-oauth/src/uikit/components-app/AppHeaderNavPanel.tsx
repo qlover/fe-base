@@ -5,6 +5,8 @@ import { Button } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import {
+  ROUTE_ABOUT,
+  ROUTE_CHANGELOG,
   ROUTE_DEMO_UI,
   ROUTE_DEVELOPER_APPS,
   ROUTE_DOCS_OAUTH
@@ -14,13 +16,15 @@ import type { ReactNode } from 'react';
 export interface AppHeaderNavTT {
   navDocs: string;
   navAbout: string;
+  navChangelog: string;
   navDeveloper: string;
   navDemoUi: string;
 }
 
 type HeaderNavHref =
   | typeof ROUTE_DOCS_OAUTH
-  | '/about'
+  | typeof ROUTE_ABOUT
+  | typeof ROUTE_CHANGELOG
   | typeof ROUTE_DEVELOPER_APPS
   | typeof ROUTE_DEMO_UI;
 
@@ -73,11 +77,18 @@ export function AppHeaderNavPanel({
           {tt.navDocs}
         </NavLink>
         <NavLink
-          href="/about"
+          href={ROUTE_ABOUT}
           className={desktopNavLinkClassName}
           title={tt.navAbout}
         >
           {tt.navAbout}
+        </NavLink>
+        <NavLink
+          href={ROUTE_CHANGELOG}
+          className={desktopNavLinkClassName}
+          title={tt.navChangelog}
+        >
+          {tt.navChangelog}
         </NavLink>
         <NavLink
           href={ROUTE_DEVELOPER_APPS}
@@ -134,11 +145,18 @@ export function AppHeaderNavPanel({
             {tt.navDocs}
           </NavLink>
           <NavLink
-            href="/about"
+            href={ROUTE_ABOUT}
             className={navLinkClassName}
             title={tt.navAbout}
           >
             {tt.navAbout}
+          </NavLink>
+          <NavLink
+            href={ROUTE_CHANGELOG}
+            className={navLinkClassName}
+            title={tt.navChangelog}
+          >
+            {tt.navChangelog}
           </NavLink>
           <NavLink
             href={ROUTE_DEVELOPER_APPS}

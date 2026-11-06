@@ -1,20 +1,13 @@
-import dynamic from 'next/dynamic';
+import { AdminGithubSettingsPanel } from '@/uikit/components-pages/AdminGithubSettingsPanel';
+import { AdminMailSettingsPanel } from '@/uikit/components-pages/AdminMailSettingsPanel';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminSiteSettingsPanel } from '@/uikit/components-pages/AdminSiteSettingsPanel';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { adminSettings18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminSettingsProps {
   messages: Record<string, string>;
@@ -23,23 +16,24 @@ interface AdminSettingsProps {
 const namespace = ['admin_settings', 'permission'];
 
 /**
- * Admin site settings (Pages Router / CSR).
- * Entry auth is middleware via LOGINED_PAGES.
+ * 管理后台站点设置页（Pages Router / CSR）。
+ * Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminSettingsPage({}: AdminSettingsProps) {
   const seoMetadata = useI18nMapping(adminSettings18n);
-  const navItems = useAdminNavItems();
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-primary-text">
-          {seoMetadata.title}
-        </h1>
-        <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
+    <AdminPageShell
+      title={seoMetadata.title}
+      description={seoMetadata.description}
+      seoMetadata={seoMetadata}
+    >
+      <div className="flex w-full flex-col gap-4 sm:gap-5">
+        <AdminSiteSettingsPanel tt={seoMetadata} />
+        <AdminMailSettingsPanel tt={seoMetadata} />
+        <AdminGithubSettingsPanel tt={seoMetadata} />
       </div>
-      <AdminSiteSettingsPanel tt={seoMetadata} />
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
 

@@ -250,6 +250,157 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
     }
   }
 
+  /** 合并账户：删手机侧凭证行。 */
+  public async deleteUserCredentials(userId: string): Promise<void> {
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { error } = await supabase
+      .from(FeTables.oauthUserCredentials)
+      .delete()
+      .eq('user_id', userId);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /** 合并账户：OAuth 客户端所有者 A→B。 */
+  public async reassignClientOwner(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    if (fromUserId === toUserId) {
+      return;
+    }
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { error } = await supabase
+      .from(FeTables.oauthClients)
+      .update({
+        owner_user_id: toUserId,
+        updated_at: new Date().toISOString()
+      })
+      .eq('owner_user_id', fromUserId);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /** 合并账户：未吊销 refresh token 的 user_id A→B。 */
+  public async reassignRefreshTokensUserId(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    if (fromUserId === toUserId) {
+      return;
+    }
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const { error } = await supabase
+      .from(FeTables.oauthRefreshTokens)
+      .update({ user_id: toUserId })
+      .eq('user_id', fromUserId)
+      .eq('revoked', false);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * 合并账户：consent grants user_id A→B。
+   * 与 B 主键冲突的行直接删除 A 侧，避免 (user, client, device) 冲突。
+   */
+  public async reassignConsentGrantsUserId(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    if (fromUserId === toUserId) {
+      return;
+    }
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const existing = await supabase
+      .from(FeTables.oauthConsentGrants)
+      .select('client_id, device_id')
+      .eq('user_id', toUserId);
+    if (existing.error) {
+      throw new Error(existing.error.message);
+    }
+    const taken = new Set(
+      (
+        (existing.data ?? []) as Array<{ client_id: string; device_id: string }>
+      ).map((row) => `${row.client_id}\0${row.device_id}`)
+    );
+
+    const fromRows = await supabase
+      .from(FeTables.oauthConsentGrants)
+      .select('client_id, device_id')
+      .eq('user_id', fromUserId);
+    if (fromRows.error) {
+      throw new Error(fromRows.error.message);
+    }
+
+    for (const row of (fromRows.data ?? []) as Array<{
+      client_id: string;
+      device_id: string;
+    }>) {
+      const key = `${row.client_id}\0${row.device_id}`;
+      if (taken.has(key)) {
+        const deleted = await supabase
+          .from(FeTables.oauthConsentGrants)
+          .delete()
+          .eq('user_id', fromUserId)
+          .eq('client_id', row.client_id)
+          .eq('device_id', row.device_id);
+        if (deleted.error) {
+          throw new Error(deleted.error.message);
+        }
+      }
+    }
+
+    const { error } = await supabase
+      .from(FeTables.oauthConsentGrants)
+      .update({ user_id: toUserId })
+      .eq('user_id', fromUserId);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * 合并账户：oauth user links。
+   * `auth_user_id` 为主键：若 B 已有链接则删 A；否则把 A 的 auth_user_id 改为 B。
+   */
+  public async reassignUserLinks(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    if (fromUserId === toUserId) {
+      return;
+    }
+    const supabase = await this.supabaseBridge.getAdminSupabase();
+    const target = await supabase
+      .from(FeTables.oauthUserLinks)
+      .select('auth_user_id')
+      .eq('auth_user_id', toUserId)
+      .maybeSingle();
+    if (target.error) {
+      throw new Error(target.error.message);
+    }
+    if (target.data) {
+      const deleted = await supabase
+        .from(FeTables.oauthUserLinks)
+        .delete()
+        .eq('auth_user_id', fromUserId);
+      if (deleted.error) {
+        throw new Error(deleted.error.message);
+      }
+      return;
+    }
+    const { error } = await supabase
+      .from(FeTables.oauthUserLinks)
+      .update({ auth_user_id: toUserId })
+      .eq('auth_user_id', fromUserId);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
   /**
    * @override
    */

@@ -39,7 +39,9 @@ export const fePublicConfigSchema = z.object({
     /** `memory` | `supabase` (+ future SMS providers). */
     phoneOtpProvider: z.string(),
     githubOauthEnabled: z.boolean(),
-    googleOauthEnabled: z.boolean()
+    googleOauthEnabled: z.boolean(),
+    /** 是否开放「忘记密码」邮件重置（来自 `mail.password_reset_enabled`）。 */
+    passwordResetEnabled: z.boolean()
   })
 });
 
@@ -70,6 +72,7 @@ export type FeAdminSiteSettingEntry = {
   value: string | boolean | string[] | FeCorsRule[];
   configured: boolean;
   isSensitive: boolean;
+  multiline: boolean;
   source: 'db' | 'default';
 };
 

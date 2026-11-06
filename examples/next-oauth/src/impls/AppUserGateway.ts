@@ -3,7 +3,9 @@ import { SignOtpResult, SignWithOtpParams } from '@qlover/oauth-wrapper';
 import { inject, injectable } from '@shared/container';
 import { LoginProviderType } from '@config/common';
 import * as apiRoutes from '@config/route';
+import type { BindEmailVerifyResultType } from '@schemas/BindEmailSchema';
 import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
+import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
@@ -257,5 +259,107 @@ export class AppUserGateway implements UserServiceGatewayInterface {
     if (!response.data.success) {
       throw new Error(response.data.message || 'Change password failed');
     }
+  }
+
+  /**
+   * 自助修改显示名；成功返回更新后的会话用户（含新 `name`）。
+   *
+   * @param params - `{ display_name }`
+   */
+  public async updateDisplayName(params: {
+    display_name: string;
+  }): Promise<UserSchema> {
+    const response = await this.client.request<
+      NextKitApiResult<UserSchema>,
+      { display_name: string }
+    >({
+      url: apiRoutes.API_USER_DISPLAY_NAME,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Update display name failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * 拉取当前用户已关联的第三方登录列表（只读）。
+   *
+   * @param config - 可选 AbortSignal
+   */
+  public async fetchLinkedLogins(config?: {
+    signal?: AbortSignal;
+  }): Promise<LinkedLoginType[]> {
+    const response = await this.client.request<
+      NextKitApiResult<LinkedLoginType[]>,
+      undefined
+    >({
+      url: apiRoutes.API_USER_LINKED_LOGINS,
+      method: HttpMethods.GET,
+      signal: config?.signal,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Load linked logins failed');
+    }
+
+    return response.data.data ?? [];
+  }
+
+  /** 向目标邮箱发送绑定 OTP。 */
+  public async sendBindEmail(params: {
+    email: string;
+  }): Promise<SignOtpResult> {
+    const response = await this.client.request<
+      NextKitApiResult<SignOtpResult>,
+      { email: string }
+    >({
+      url: apiRoutes.API_USER_BIND_EMAIL_SEND,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Send bind-email OTP failed'
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /** 校验绑定 OTP；返回是否合并及新会话用户。 */
+  public async verifyBindEmail(params: {
+    email: string;
+    token: string;
+  }): Promise<BindEmailVerifyResultType> {
+    const response = await this.client.request<
+      NextKitApiResult<BindEmailVerifyResultType>,
+      { email: string; token: string }
+    >({
+      url: apiRoutes.API_USER_BIND_EMAIL_VERIFY,
+      method: HttpMethods.POST,
+      data: params,
+      disabledDialogError: true
+    });
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        (!response.data.success && response.data.message) ||
+          'Verify bind-email failed'
+      );
+    }
+
+    return response.data.data;
   }
 }

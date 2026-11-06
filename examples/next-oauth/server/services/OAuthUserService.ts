@@ -24,6 +24,10 @@ import { ROUTE_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import {
+  OAuthSessionService,
+  type SessionCookieFieldsType
+} from '@server/services/OAuthSessionService';
 import { PhoneOtpService } from '@server/services/PhoneOtpService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
@@ -38,6 +42,11 @@ import type { UserSchema } from '@qlover/next-kit/common';
 import type { ServerAuthInterface } from '@qlover/next-kit/server';
 import type { Provider } from '@supabase/supabase-js';
 
+export type ProviderCallbackRedirectType = {
+  readonly redirectUrl: string;
+  readonly sessionCookie?: SessionCookieFieldsType;
+};
+
 @injectable()
 export class OAuthUserService
   implements UserServiceInterface, ServerAuthInterface
@@ -47,6 +56,9 @@ export class OAuthUserService
 
   @inject(I.AppConfig)
   protected config!: SeedServerConfigInterface;
+
+  /** Request-scoped memo for {@link getUser} (IOC is per-request). */
+  protected memoUserSchema: Promise<UserSchema | null> | null = null;
 
   constructor(
     @inject(PasswordEncrypt)
@@ -81,14 +93,6 @@ export class OAuthUserService
 
     this.logger.info('OAuth wrapper login success', { email: params.email });
 
-    await this.requestLogsRepository.insertWithAuth({
-      event_type: 'login',
-      auth_provider: 'oauth-wrapper',
-      userAgent: params.loginContext?.userAgent ?? null,
-      ipAddress: params.loginContext?.ipAddress ?? null,
-      login_method: 'password'
-    });
-
     const user = await this.oauthProvider.getUserSchema();
     if (!user) {
       throw new ExecutorError(
@@ -96,6 +100,15 @@ export class OAuthUserService
         'OAuth app user missing after login'
       );
     }
+
+    await this.requestLogsRepository.insertWithAuth({
+      event_type: 'login',
+      auth_provider: 'oauth-wrapper',
+      userAgent: params.loginContext?.userAgent ?? null,
+      ipAddress: params.loginContext?.ipAddress ?? null,
+      login_method: 'password',
+      user_id: String(user.id)
+    });
 
     return user;
   }
@@ -153,7 +166,10 @@ export class OAuthUserService
    * @override
    */
   public async getUser(throwError?: boolean): Promise<UserSchema | null> {
-    const user = await this.oauthProvider.getUserSchema();
+    if (!this.memoUserSchema) {
+      this.memoUserSchema = this.oauthProvider.getUserSchema();
+    }
+    const user = await this.memoUserSchema;
 
     if (throwError && !user) {
       throw new ExecutorError(API_USER_NOT_FOUND);
@@ -224,10 +240,20 @@ export class OAuthUserService
       const channel = await this.phoneOtpService.getProviderName();
       if (channel !== 'supabase') {
         if (body.token) {
-          return this.phoneOtpService.verifyAndLogin({
+          const result = await this.phoneOtpService.verifyAndLogin({
             phone: body.phone,
             token: body.token
           });
+          const user = await this.oauthProvider.getUserSchema();
+          await this.requestLogsRepository.insertWithAuth({
+            event_type: 'login',
+            auth_provider: 'phone-otp',
+            userAgent: null,
+            ipAddress: options?.clientIp ?? null,
+            login_method: 'phone-otp',
+            user_id: user?.id ? String(user.id) : undefined
+          });
+          return result;
         }
         return this.phoneOtpService.send({
           phone: body.phone,
@@ -283,7 +309,7 @@ export class OAuthUserService
    */
   public async loginWithProviderCallback(
     query: LoginWithProviderCallbackSchema
-  ): Promise<ResultHandlerContext> {
+  ): Promise<ResultHandlerContext & ProviderCallbackRedirectType> {
     const siteUrl = query.origin ?? this.config.siteUrl;
     const siteBase = siteUrl.replace(/\/$/, '');
 
@@ -320,9 +346,15 @@ export class OAuthUserService
 
     await this.oauthProvider.loginWithSession?.(result.data.session!);
 
+    const sessionService = new OAuthSessionService(this.config);
+    const payload = await sessionService.getSession();
+    const sessionCookie =
+      payload != null ? sessionService.buildSessionCookie(payload) : undefined;
+
     const nextPathname = query.next ?? '/';
     return {
-      redirectUrl: new URL(nextPathname, `${siteBase}/`).toString()
+      redirectUrl: new URL(nextPathname, `${siteBase}/`).toString(),
+      ...(sessionCookie ? { sessionCookie } : {})
     };
   }
 }

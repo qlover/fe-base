@@ -13,6 +13,27 @@ export const COMMON_SAVE = 'common:save';
 export const COMMON_CANCEL = 'common:cancel';
 
 /**
+ * @description Unsaved leave dialog title
+ * @localZh 有未保存的更改
+ * @localEn Unsaved changes
+ */
+export const COMMON_UNSAVED_LEAVE_TITLE = 'common:unsaved_leave_title';
+
+/**
+ * @description Unsaved leave dialog content
+ * @localZh 离开后将丢失未保存的修改，确定离开吗？
+ * @localEn You will lose unsaved changes if you leave. Leave anyway?
+ */
+export const COMMON_UNSAVED_LEAVE_CONTENT = 'common:unsaved_leave_content';
+
+/**
+ * @description Unsaved leave confirm (leave)
+ * @localZh 离开
+ * @localEn Leave
+ */
+export const COMMON_UNSAVED_LEAVE_OK = 'common:unsaved_leave_ok';
+
+/**
  * @description Create
  * @localZh 创建
  * @localEn Create
@@ -126,6 +147,20 @@ export const COMMON_ADMIN_NAV_MEMORY_KV = 'common:admin_nav__memory_kv';
 export const COMMON_ADMIN_NAV_SETTINGS = 'common:admin_nav__settings';
 
 /**
+ * @description Admin nav mail logs
+ * @localZh 邮件日志
+ * @localEn Mail logs
+ */
+export const COMMON_ADMIN_NAV_MAIL_LOGS = 'common:admin_nav__mail_logs';
+
+/**
+ * @description Admin nav user feedback
+ * @localZh 用户反馈
+ * @localEn Feedback
+ */
+export const COMMON_ADMIN_NAV_FEEDBACK = 'common:admin_nav__feedback';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout
@@ -205,6 +240,13 @@ export const COMMON_SIGNED_IN_AS = 'common:signed_in_as';
 export const COMMON_ACCOUNT_CENTER = 'common:account_center';
 
 /**
+ * @description Settings center menu item
+ * @localZh 设置
+ * @localEn Settings
+ */
+export const COMMON_SETTINGS_CENTER = 'common:settings_center';
+
+/**
  * @description App header nav - Docs
  * @localZh 文档
  * @localEn Docs
@@ -217,6 +259,13 @@ export const COMMON_HEADER_NAV_DOCS = 'common:header_nav__docs';
  * @localEn About
  */
 export const COMMON_HEADER_NAV_ABOUT = 'common:header_nav__about';
+
+/**
+ * @description App header nav - Changelog
+ * @localZh 更新日志
+ * @localEn Changelog
+ */
+export const COMMON_HEADER_NAV_CHANGELOG = 'common:header_nav__changelog';
 
 /**
  * @description App header nav - Developer console

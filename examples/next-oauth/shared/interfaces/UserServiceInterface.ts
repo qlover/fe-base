@@ -1,5 +1,6 @@
 import type { LoginProviderType } from '@config/common';
 import type { ChangePasswordInput } from '@schemas/ChangePasswordSchema';
+import type { SessionCapabilitiesStoreInterface } from '@interfaces/SessionCapabilitiesInterface';
 import type {
   UserService as CorekitBridgeUserServiceInterface,
   GatewayResult,
@@ -14,18 +15,31 @@ export type LoginProviderResult = {
   provider: string;
 };
 
-export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
-  UserSchema,
-  UserCredential
-> {
-  // You can add your own methods here
-
+export interface UserServiceInterface
+  extends
+    CorekitBridgeUserServiceInterface<UserSchema, UserCredential>,
+    SessionCapabilitiesStoreInterface {
   /**
    * Get the user token
    *
    * This is a extends method from the corekit-bridge UserServiceInterface.
    */
   getToken(): string;
+
+  /**
+   * 等待会话恢复结束；已登录或恢复成功返回 true。
+   */
+  awaitSessionReady(): Promise<boolean>;
+
+  /**
+   * 本地会话失效：清空用户 store（触发用户作用域重置），标记会话已确认。
+   */
+  expireSession(): void;
+
+  /**
+   * 用服务端返回的会话用户覆盖本地 store。
+   */
+  applySessionUser(user: UserSchema): void;
 }
 
 export type OAuthConsentPayload = {

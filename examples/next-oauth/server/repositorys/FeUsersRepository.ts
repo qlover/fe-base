@@ -1,4 +1,5 @@
 import { UserRole, type UserRoleType } from '@qlover/next-kit/common';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import {
   PlatformRoleKey,
@@ -9,7 +10,34 @@ import {
   type SystemRoleType
 } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
+import { normalizePhoneE164 } from '@shared/utils/phoneUserIdentity';
 import { FeTables } from '@config/feTables';
+
+/**
+ * Phone lookup candidates: E.164 and legacy digits-only rows from older dumps.
+ */
+function phoneLookupCandidates(phone: string): string[] {
+  const e164 = normalizePhoneE164(phone);
+  const digits = (e164 || phone).replace(/\D/g, '');
+  return Array.from(
+    new Set(
+      [e164, digits, digits ? `+${digits}` : '', phone.trim()].filter(
+        (value) => value.length > 0
+      )
+    )
+  );
+}
+
+function normalizeStoredPhone(phone: string | null | undefined): string | null {
+  if (phone == null) {
+    return null;
+  }
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return null;
+  }
+  return normalizePhoneE164(trimmed) || trimmed;
+}
 
 export type FeUserRow = {
   id: string;
@@ -18,6 +46,8 @@ export type FeUserRow = {
   phone: string | null;
   role_id: string;
   status: 'active' | 'suspended';
+  /** 早于该时间签发的会话 JWT 视为失效（重置密码后写入）。 */
+  sessions_revoked_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -49,8 +79,9 @@ export class FeUsersRepository {
     return (result.data as FeUserRow | null) ?? null;
   }
 
-  public async findByPhone(phone: string): Promise<FeUserRow | null> {
-    const normalized = phone.trim();
+  /** 按业务邮箱（小写归一）查询资料行。 */
+  public async findByEmail(email: string): Promise<FeUserRow | null> {
+    const normalized = normalizeEmail(email);
     if (!normalized) {
       return null;
     }
@@ -58,10 +89,71 @@ export class FeUsersRepository {
     const result = await supabase
       .from(FeTables.users)
       .select('*')
-      .eq('phone', normalized)
+      .eq('email', normalized)
       .maybeSingle();
     this.supabaseBridge.throwIfError(result);
     return (result.data as FeUserRow | null) ?? null;
+  }
+
+  /** 写入「撤销所有会话」时间点（ISO）。 */
+  public async setSessionsRevokedAt(
+    userId: string,
+    revokedAtIso: string
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update({ sessions_revoked_at: revokedAtIso })
+      .eq('id', userId);
+    this.supabaseBridge.throwIfError(result);
+  }
+
+  /**
+   * 自助修改显示名（窄更新，不改其它资料字段）。
+   *
+   * @param userId - 用户 id
+   * @param displayName - 已通过 DisplayNameSchema 校验的展示名
+   */
+  public async updateDisplayName(
+    userId: string,
+    displayName: string
+  ): Promise<FeUserRow> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update({
+        display_name: displayName,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
+      .select('*')
+      .single();
+    this.supabaseBridge.throwIfError(result);
+    return result.data as FeUserRow;
+  }
+
+  public async findByPhone(phone: string): Promise<FeUserRow | null> {
+    const candidates = phoneLookupCandidates(phone);
+    if (candidates.length === 0) {
+      return null;
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .select('*')
+      .in('phone', candidates)
+      .limit(2);
+    this.supabaseBridge.throwIfError(result);
+    const rows = (result.data as FeUserRow[] | null) ?? [];
+    if (rows.length === 0) {
+      return null;
+    }
+    const e164 = normalizePhoneE164(phone);
+    const preferred =
+      rows.find((row) => row.phone === e164) ??
+      rows.find((row) => row.phone?.startsWith('+')) ??
+      rows[0];
+    return preferred;
   }
 
   public async getSystemRoleKey(
@@ -115,7 +207,9 @@ export class FeUsersRepository {
           ? input.displayName
           : existing.display_name;
       const nextPhone =
-        input.phone !== undefined ? input.phone : existing.phone;
+        input.phone !== undefined
+          ? normalizeStoredPhone(input.phone)
+          : normalizeStoredPhone(existing.phone);
 
       const result = await supabase
         .from(FeTables.users)
@@ -141,7 +235,7 @@ export class FeUsersRepository {
         id: input.id,
         email: normalizeEmail(input.email ?? null),
         display_name: input.displayName ?? null,
-        phone: input.phone ?? null,
+        phone: normalizeStoredPhone(input.phone),
         role_id: roleId,
         status: 'active'
       })
@@ -170,6 +264,49 @@ export class FeUsersRepository {
       .single();
     this.supabaseBridge.throwIfError(result);
     return result.data as FeUserRow;
+  }
+
+  /**
+   * 窄更新邮箱 / 手机 / 显示名（绑邮箱与合并账户用）。
+   * 传入的字段才写入；`undefined` 表示不动。
+   */
+  public async updateEmailAndPhone(params: {
+    readonly userId: string;
+    readonly email?: string | null;
+    readonly phone?: string | null;
+    readonly displayName?: string | null;
+  }): Promise<FeUserRow> {
+    const patch: Record<string, string | null> = {
+      updated_at: new Date().toISOString()
+    };
+    if (params.email !== undefined) {
+      patch.email = normalizeEmail(params.email);
+    }
+    if (params.phone !== undefined) {
+      patch.phone = params.phone;
+    }
+    if (params.displayName !== undefined) {
+      patch.display_name = params.displayName;
+    }
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .update(patch)
+      .eq('id', params.userId)
+      .select('*')
+      .single();
+    this.supabaseBridge.throwIfError(result);
+    return result.data as FeUserRow;
+  }
+
+  /** 删除 `fe_users` 行（合并后清理手机号侧资料）。 */
+  public async deleteById(userId: string): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const result = await supabase
+      .from(FeTables.users)
+      .delete()
+      .eq('id', userId);
+    this.supabaseBridge.throwIfError(result);
   }
 
   /**
@@ -203,9 +340,11 @@ export class FeUsersRepository {
       .range(offset, offset + limit - 1);
 
     if (q.length > 0) {
-      const pattern = `%${q.replace(/[%_,]/g, '')}%`;
       builder = builder.or(
-        `email.ilike."${pattern}",display_name.ilike."${pattern}",phone.ilike."${pattern}"`
+        buildIlikeOrString({
+          columns: ['email', 'display_name', 'phone'],
+          query: q
+        })
       );
     }
 

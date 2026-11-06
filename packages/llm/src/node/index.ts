@@ -1,0 +1,1 @@
+export { createProxyFetch } from './createProxyFetch';

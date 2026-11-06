@@ -11,7 +11,9 @@ import { FeTables } from '@config/feTables';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import { GithubAppIssueGateway } from './adapters/GithubAppIssueGateway';
 import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
+import { GenericUpstreamOAuthProvider } from './providers/GenericUpstreamOAuthProvider';
 import { SupabaseOAuthProvider } from './providers/SupabaseOAuthProvider';
 import { FeSupabaseRepo } from './repositorys/FeSupabaseRepo';
 import { ServerContext } from './utils/ServerContext';
@@ -76,7 +78,7 @@ const ServerIocRegister: IOCRegisterInterface<
     );
 
     // 默认路径与历史 next-oauth 一致：SupabaseOAuthProvider。
-    // 仅当 NEXT_PUBLIC_OAUTH_UPSTREAM_PROVIDER=brain-user 时启用 BrainUser。
+    // brain-user / oauth-pkce 为可选上游。
     if (
       serverConfig.oauthUpstreamProvider === oauthUpstreamProviders.brainUser
     ) {
@@ -84,8 +86,17 @@ const ServerIocRegister: IOCRegisterInterface<
         I.OAuthWrapperProviderInterface,
         ioc.get(BrainUserOAuthProvider)
       );
+    } else if (
+      serverConfig.oauthUpstreamProvider === oauthUpstreamProviders.oauthPkce
+    ) {
+      ioc.bind(
+        I.OAuthWrapperProviderInterface,
+        ioc.get(GenericUpstreamOAuthProvider)
+      );
     } else {
       ioc.bind(I.OAuthWrapperProviderInterface, ioc.get(SupabaseOAuthProvider));
     }
+
+    ioc.bind(I.GithubIssueGatewayInterface, ioc.get(GithubAppIssueGateway));
   }
 };

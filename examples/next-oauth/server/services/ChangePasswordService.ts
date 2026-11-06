@@ -1,8 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
-import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { PasswordEncrypt, SupabaseRepo } from '@qlover/next-kit/server';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { inject, injectable } from '@shared/container';
+import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
 import { isPhonePlaceholderEmail } from '@shared/utils/phoneUserIdentity';
 import { oauthUpstreamProviders } from '@config/common';
 import {
@@ -16,10 +15,14 @@ import {
 import { I } from '@config/ioc-identifiter';
 import { isValidPassword } from '@schemas/ChangePasswordSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { PasswordChangedNotifyServiceInterface } from '@server/interfaces/PasswordChangedNotifyServiceInterface';
+import type { PasswordResetRequestMetaType } from '@server/interfaces/PasswordResetServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
+import { PasswordChangedNotifyService } from '@server/services/PasswordChangedNotifyService';
 import { resolveSupabaseLoginPassword } from '@server/utils/supabaseLoginPassword';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Change the Supabase Auth password of the signed-in user.
@@ -34,17 +37,24 @@ export class ChangePasswordService {
     @inject(PasswordEncrypt)
     protected readonly encryptor: EncryptorInterface<string, string>,
     @inject(ServerConfig)
-    protected readonly serverConfig: SeedServerConfigInterface
+    protected readonly serverConfig: SeedServerConfigInterface,
+    @inject(PasswordChangedNotifyService)
+    protected readonly passwordChangedNotify: PasswordChangedNotifyServiceInterface
   ) {}
 
   /**
    * Verify the current password against Supabase Auth, then set the new one.
-   * Other sessions are left untouched.
+   * Other sessions are left untouched (sessions are NOT revoked here).
+   *
+   * 成功后按站点设置 `mail.password_changed_notify_enabled` 尽力发送「密码已修改」通知；
+   * 通知失败不影响修改结果。
    */
   public async changePassword(params: {
     userId: string;
     currentPassword: string;
     newPassword: string;
+    /** 请求来源，仅用于通知邮件的语言与审计；缺省时不发通知。 */
+    notifyMeta?: PasswordResetRequestMetaType;
   }): Promise<void> {
     if (
       this.serverConfig.oauthUpstreamProvider ===
@@ -78,6 +88,16 @@ export class ChangePasswordService {
     });
     this.supabaseBridge.throwIfError(updated);
     this.logger.info('ChangePasswordService: password changed', { userId });
+
+    if (params.notifyMeta) {
+      await this.passwordChangedNotify.notify({
+        userId,
+        email,
+        locale: params.notifyMeta.locale,
+        clientIp: params.notifyMeta.clientIp,
+        userAgent: params.notifyMeta.userAgent
+      });
+    }
   }
 
   protected async verifyCurrentPassword(
@@ -98,15 +118,6 @@ export class ChangePasswordService {
   }
 
   protected createEphemeralAuthClient(): SupabaseClient {
-    if (!SUPABASE_URL || !SUPABASE_KEY) {
-      throw new Error('SUPABASE_URL and SUPABASE_KEY are required');
-    }
-    return createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-      }
-    });
+    return createSharedEphemeralAuthClient();
   }
 }

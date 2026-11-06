@@ -10,6 +10,7 @@ import { useStrictEffect } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { AdminRolesApi } from '@/impls/appApi/AdminRolesApi';
+import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
 import { useCan, PermissionKey } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
@@ -180,6 +181,36 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
     const savedSet = new Set(saved);
     return current.some((key) => !savedSet.has(key));
   };
+
+  const panelDirty = useMemo((): boolean => {
+    return (data?.roles ?? []).some((role) => {
+      const current = draft[role.id] ?? [];
+      const saved = role.permissionKeys;
+      if (current.length !== saved.length) {
+        return true;
+      }
+      const savedSet = new Set(saved);
+      return current.some((key) => !savedSet.has(key));
+    });
+  }, [data?.roles, draft]);
+
+  const discardDraft = useCallback((): void => {
+    if (!data?.roles) {
+      setDraft({});
+      return;
+    }
+    const nextDraft: Record<string, string[]> = {};
+    for (const role of data.roles) {
+      nextDraft[role.id] = [...role.permissionKeys];
+    }
+    setDraft(nextDraft);
+  }, [data]);
+
+  useAdminUnsavedNavigationGuard(
+    panelDirty,
+    discardDraft,
+    '[data-testid="AdminRolesPanel"]'
+  );
 
   const handleSave = async (role: AdminRoleItem) => {
     if (!canWrite) return;

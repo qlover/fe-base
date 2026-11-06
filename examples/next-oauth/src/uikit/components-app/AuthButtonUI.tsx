@@ -7,11 +7,12 @@ import {
   COMMON_ACCOUNT_CENTER,
   COMMON_LOGOUT_DIALOG_CONTENT,
   COMMON_LOGOUT_DIALOG_TITLE,
+  COMMON_SETTINGS_CENTER,
   COMMON_SIGNED_IN_AS,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
 } from '@config/i18n-identifier/common/common';
 import { I } from '@config/ioc-identifiter';
-import { ROUTE_ACCOUNT, ROUTE_LOGIN } from '@config/route';
+import { ROUTE_ACCOUNT, ROUTE_LOGIN, ROUTE_SETTINGS } from '@config/route';
 import { useI18nMapping } from '../hook/useI18nMapping';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
@@ -52,6 +53,7 @@ export function AuthButtonUI(props: {
   const emailLabel = userEmail?.trim() ?? '';
   const signedInLabel = t(COMMON_SIGNED_IN_AS);
   const accountLabel = t(COMMON_ACCOUNT_CENTER);
+  const settingsLabel = t(COMMON_SETTINGS_CENTER);
 
   const menuItems = useMemo(() => {
     const items: {
@@ -82,13 +84,26 @@ export function AuthButtonUI(props: {
     });
 
     items.push({
+      key: 'settings',
+      label: (
+        <LocaleLink
+          href={ROUTE_SETTINGS}
+          title={settingsLabel}
+          className="block w-full text-inherit"
+        >
+          {settingsLabel}
+        </LocaleLink>
+      )
+    });
+
+    items.push({
       key: 'logout',
       label: logoutTt.title,
       disabled: false
     });
 
     return items;
-  }, [accountLabel, emailLabel, logoutTt.title]);
+  }, [accountLabel, emailLabel, logoutTt.title, settingsLabel]);
 
   const onLogout = useCallback(() => {
     dialogHandler.confirm({

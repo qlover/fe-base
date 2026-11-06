@@ -23,24 +23,40 @@ import {
 import { inject, injectable } from '@shared/container';
 import {
   API_CHANGE_PASSWORD_INVALID,
-  API_NOT_AUTHORIZED
+  API_DISPLAY_NAME_INVALID,
+  API_MAIL_RECIPIENT_INVALID,
+  API_NOT_AUTHORIZED,
+  API_OTP_CODE_INVALID
 } from '@config/i18n-identifier/api';
+import {
+  bindEmailSendSchema,
+  bindEmailVerifySchema,
+  type BindEmailVerifyResultType
+} from '@schemas/BindEmailSchema';
 import {
   changePasswordSchema,
   type ChangePasswordInput
 } from '@schemas/ChangePasswordSchema';
+import { displayNameUpdateSchema } from '@schemas/DisplayNameSchema';
+import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
-import {
-  defaultPlatformRoleFromUserRole,
-  FeUsersRepository
-} from '@server/repositorys/FeUsersRepository';
+import type { BindEmailServiceInterface } from '@server/interfaces/BindEmailServiceInterface';
+import type { LinkedLoginServiceInterface } from '@server/interfaces/LinkedLoginServiceInterface';
+import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
+import type { UserProfileServiceInterface } from '@server/interfaces/UserProfileServiceInterface';
+import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { ServerConfig } from '@server/ServerConfig';
+import { BindEmailService } from '@server/services/BindEmailService';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
+import { LinkedLoginService } from '@server/services/LinkedLoginService';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { OtpSendRateLimitService } from '@server/services/OtpSendRateLimitService';
+import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import { RolePermissionService } from '@server/services/RolePermissionService';
+import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
+import { UserProfileService } from '@server/services/UserProfileService';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,
@@ -77,7 +93,17 @@ export class UserController {
     @inject(FeUsersRepository)
     protected feUsersRepository: FeUsersRepository,
     @inject(ChangePasswordService)
-    protected changePasswordService: ChangePasswordService
+    protected changePasswordService: ChangePasswordService,
+    @inject(UserProfileService)
+    protected userProfileService: UserProfileServiceInterface,
+    @inject(BindEmailService)
+    protected bindEmailService: BindEmailServiceInterface,
+    @inject(LinkedLoginService)
+    protected linkedLoginService: LinkedLoginServiceInterface,
+    @inject(SupabaseSessionGuardService)
+    protected sessionGuard: SupabaseSessionGuardInterface,
+    @inject(RequestLocaleResolver)
+    protected localeResolver: RequestLocaleResolver
   ) {
     this.stringEncryptor = new StringEncryptor(
       serverConfig.stringEncryptorKey,
@@ -85,27 +111,18 @@ export class UserController {
     );
   }
 
-  /** Attach platform RBAC fields for client `useCan` / nav gates. */
+  /**
+   * Attach platform RBAC fields for client `useCan` / nav gates.
+   * Profile row is ensured on login via {@link UserProfileSyncService}; here
+   * we only read. Missing row falls back to UserRole mapping.
+   */
   protected async withPermissions(
     user: UserSchema
   ): Promise<SessionUserWithPermissions> {
-    await this.rolePermissionService.ensureLoaded();
-
-    try {
-      await this.feUsersRepository.ensureProfile({
-        id: user.id,
-        email: user.email || null,
-        displayName: user.name ?? null,
-        phone: user.phone ?? null,
-        defaultRoleKey: defaultPlatformRoleFromUserRole(user.role)
-      });
-    } catch {
-      // Table missing / RLS: fall back to UserRole mapping below.
-    }
-
-    const fromDb = await this.feUsersRepository
-      .getSystemRoleKey(user.id)
-      .catch(() => null);
+    const [, fromDb] = await Promise.all([
+      this.rolePermissionService.ensureLoaded(),
+      this.feUsersRepository.getSystemRoleKey(user.id).catch(() => null)
+    ]);
     const system_role = normalizeSystemRole(
       fromDb ?? platformRoleFromUserRole(user.role)
     );
@@ -170,13 +187,27 @@ export class UserController {
     return await this.userService.logout(serverContext);
   }
 
+  /**
+   * Current session user. When Supabase recovery fails the app session is
+   * cleared and this returns null (same shape as unauthenticated).
+   */
   public async refresh(): Promise<SessionUserWithPermissions | null> {
     const user = await this.userService.getSessionUser();
     if (!user) {
       return null;
     }
-    const withPerms = await this.withPermissions(user);
-    return { ...withPerms, credential_token: '' };
+    try {
+      const [, withPerms] = await Promise.all([
+        this.sessionGuard.ensureForCurrentUser(),
+        this.withPermissions(user)
+      ]);
+      return { ...withPerms, credential_token: '' };
+    } catch (error) {
+      if (error instanceof ExecutorError && error.id === API_NOT_AUTHORIZED) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   public async getUser(): Promise<SessionUserWithPermissions | null> {
@@ -185,20 +216,32 @@ export class UserController {
   }
 
   /**
-   * Paged `fe_request_logs` for the current session user.
+   * Paged `fe_request_logs` for the current session user only.
    * Response shape matches {@link ResourceSearchResult}.
    */
   public async searchRequestLogsForCurrentUser(
     query: unknown
   ): Promise<ResourceSearchResult<RequestLogRow>> {
+    const user = await this.userService.getSessionUser();
+    if (!user?.id) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
     const criteria = await this.searchParamsValidator.getThrow(query);
-
-    return await this.requestLogsRepository.search(criteria);
+    return await this.requestLogsRepository.searchForUser(
+      String(user.id),
+      criteria
+    );
   }
 
-  /** Clears all request log rows (see repository note). */
-  public async clearRequestLogs(): Promise<{ deleted: number }> {
-    const deleted = await this.requestLogsRepository.clearAll();
+  /** Clears request log rows owned by the current session user. */
+  public async clearOwnRequestLogs(): Promise<{ deleted: number }> {
+    const user = await this.userService.getSessionUser();
+    if (!user?.id) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const deleted = await this.requestLogsRepository.clearForUser(
+      String(user.id)
+    );
     return { deleted };
   }
 
@@ -252,7 +295,97 @@ export class UserController {
     return this.userService.loginWithProviderCallback(params);
   }
 
-  public async changePassword(body: unknown): Promise<void> {
+  /**
+   * 向目标邮箱发送绑定用 OTP。
+   *
+   * @param body - `{ email }`
+   * @param request - 用于 IP 发码限流
+   */
+  public async bindEmailSend(
+    body: unknown,
+    request?: NextRequest
+  ): Promise<SignOtpResult> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = bindEmailSendSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_MAIL_RECIPIENT_INVALID);
+    }
+    const clientIp = request ? getClientIpFromRequest(request) : 'unknown';
+    await this.otpSendRateLimit.assertCanSend(clientIp);
+    return this.bindEmailService.send({
+      currentUserId: user.id,
+      email: parsed.data.email
+    });
+  }
+
+  /**
+   * 校验邮箱 OTP 并完成绑定或账户合并。
+   *
+   * @param body - `{ email, token }`
+   */
+  public async bindEmailVerify(
+    body: unknown
+  ): Promise<BindEmailVerifyResultType> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = bindEmailVerifySchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_OTP_CODE_INVALID);
+    }
+    return this.bindEmailService.verify({
+      currentUserId: user.id,
+      email: parsed.data.email,
+      token: parsed.data.token
+    });
+  }
+
+  /**
+   * 列出当前用户已关联的第三方登录（只读）。
+   */
+  public async listLinkedLogins(): Promise<LinkedLoginType[]> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    return this.linkedLoginService.listForUser(user.id);
+  }
+
+  /**
+   * 自助修改显示名：写库并同步会话 cookie 的 `name`。
+   *
+   * @param body - `{ display_name }`
+   * @returns 更新后的嵌入会话用户
+   */
+  public async updateDisplayName(body: unknown): Promise<UserSchema> {
+    const user = await this.userService.getSessionUser();
+    if (!user) {
+      throw new ExecutorError(API_NOT_AUTHORIZED);
+    }
+    const parsed = displayNameUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(API_DISPLAY_NAME_INVALID);
+    }
+    return this.userProfileService.updateDisplayName(
+      user.id,
+      parsed.data.display_name
+    );
+  }
+
+  /**
+   * 登录态修改密码（不撤销会话）。
+   *
+   * @param body - 加密后的 `current_password` / `new_password`
+   * @param request - 可选；提供时用于「密码已修改」通知邮件的语言与来源
+   */
+  public async changePassword(
+    body: unknown,
+    request?: NextRequest
+  ): Promise<void> {
     const user = await this.userService.getSessionUser();
     if (!user) {
       throw new ExecutorError(API_NOT_AUTHORIZED);
@@ -279,7 +412,14 @@ export class UserController {
     await this.changePasswordService.changePassword({
       userId: user.id,
       currentPassword: parsed.data.current_password,
-      newPassword: parsed.data.new_password
+      newPassword: parsed.data.new_password,
+      notifyMeta: request
+        ? {
+            locale: this.localeResolver.resolve(request),
+            clientIp: getClientIpFromRequest(request),
+            userAgent: request.headers.get('user-agent')
+          }
+        : undefined
     });
   }
 }

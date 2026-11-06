@@ -1,11 +1,21 @@
 import { API_CLIENTS_2, API_CLIENTS_ROTATE_SECRET } from './apiRoutes';
 import { useLocaleRoutes } from './common';
 import { i18nConfig } from './i18n';
+import { SETTINGS_LOGGED_IN_ROUTES } from './SettingsNavConfig';
 import type { LocaleType } from './i18n';
 import type { NextURL } from 'next/dist/server/web/next-url';
 import type { NextRequest } from 'next/server';
 
 export * from './apiRoutes';
+
+export {
+  ROUTE_SETTINGS,
+  ROUTE_SETTINGS_SECURITY,
+  ROUTE_SETTINGS_LANGUAGE,
+  ROUTE_SETTINGS_APPEARANCE,
+  ROUTE_SETTINGS_FEEDBACK,
+  SETTINGS_LOGGED_IN_ROUTES
+} from './SettingsNavConfig';
 
 /**
  * 登录页面路由地址
@@ -16,6 +26,16 @@ export const ROUTE_LOGIN = '/auth/login' as const;
  * 注册页面路由地址
  */
 export const ROUTE_REGISTER = '/auth/register' as const;
+
+/**
+ * 忘记密码页面（输入邮箱申请重置链接）。App Router: `src/app/[locale]/auth/forgot-password/page.tsx`。
+ */
+export const ROUTE_AUTH_FORGOT_PASSWORD = '/auth/forgot-password' as const;
+
+/**
+ * 重置密码页面（邮件链接落地页，携带 `?token=`）。App Router: `src/app/[locale]/auth/reset-password/page.tsx`。
+ */
+export const ROUTE_AUTH_RESET_PASSWORD = '/auth/reset-password' as const;
 
 /**
  * Email OTP / Magic Link callback page.
@@ -65,6 +85,16 @@ export const ROUTE_ADMIN_LOCALES = '/admin/locales' as const;
 export const ROUTE_ADMIN_SETTINGS = '/admin/settings' as const;
 
 /**
+ * Admin 邮件发送日志。Pages Router: `src/pages/[locale]/admin/mail-logs.tsx`。
+ */
+export const ROUTE_ADMIN_MAIL_LOGS = '/admin/mail-logs' as const;
+
+/**
+ * Admin 用户反馈。Pages Router: `src/pages/[locale]/admin/feedback.tsx`。
+ */
+export const ROUTE_ADMIN_FEEDBACK = '/admin/feedback' as const;
+
+/**
  * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
  */
 export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
@@ -84,6 +114,9 @@ export const ROUTE_OAUTH_AUTHORIZE = '/oauth/authorize' as const;
 export const ROUTE_OAUTH_PLAYGROUND = '/oauth/playground' as const;
 
 export const ROUTE_ABOUT = '/about' as const;
+
+/** 公开更新日志（读取包内 CHANGELOG.md）。 */
+export const ROUTE_CHANGELOG = '/changelog' as const;
 
 /** UI showcase / kit preview (Pages Router). */
 export const ROUTE_DEMO_UI = '/demo-ui' as const;
@@ -131,6 +164,8 @@ export const AUTH_ROUTES = [
   ROUTE_HOME,
   ROUTE_LOGIN,
   ROUTE_REGISTER,
+  ROUTE_AUTH_FORGOT_PASSWORD,
+  ROUTE_AUTH_RESET_PASSWORD,
   ROUTE_CALLBACK_EMAIL_LOGIN,
   ROUTE_DOCS_OAUTH,
   ROUTE_ABOUT,
@@ -158,8 +193,11 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_MEMORY_KV,
   ROUTE_ADMIN_LOCALES,
   ROUTE_ADMIN_SETTINGS,
+  ROUTE_ADMIN_MAIL_LOGS,
+  ROUTE_ADMIN_FEEDBACK,
   ROUTE_REQUEST_LOGS,
   ROUTE_ACCOUNT,
+  ...SETTINGS_LOGGED_IN_ROUTES,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_PLAYGROUND,
   // Consent requires an app session; gate here so unauthenticated users
@@ -187,7 +225,12 @@ export function isOAuthLocaleAgnosticPath(pathname: string): boolean {
 }
 
 /** Auth pages for unauthenticated users only (signed-in users should redirect away). */
-export const GUEST_ONLY_AUTH_PAGES = [ROUTE_LOGIN, ROUTE_REGISTER] as const;
+export const GUEST_ONLY_AUTH_PAGES = [
+  ROUTE_LOGIN,
+  ROUTE_REGISTER,
+  ROUTE_AUTH_FORGOT_PASSWORD,
+  ROUTE_AUTH_RESET_PASSWORD
+] as const;
 
 /**
  * Returns true if pathname is a public route (no auth required).
@@ -254,6 +297,45 @@ export function hasSessionPath(pathname: string): boolean {
   return LOGINED_PAGES.some(
     (route) => pathname === route || pathname.endsWith(route)
   );
+}
+
+/**
+ * 去掉 locale 前缀后的 pathname（如 `/en/admin` → `/admin`）。
+ */
+export function pathnameWithoutLocale(pathname: string): string {
+  const localeAlt = i18nConfig.supportedLngs.join('|');
+  return pathname.replace(new RegExp(`^\\/(${localeAlt})(?=\\/|$)`), '');
+}
+
+/**
+ * 平台管理后台路径（`/admin`、`/admin/users` …）。
+ */
+export function isPlatformAdminPath(pathname: string): boolean {
+  const withoutLocale = pathnameWithoutLocale(pathname);
+  return (
+    withoutLocale === ROUTE_ADMIN || withoutLocale.startsWith(`${ROUTE_ADMIN}/`)
+  );
+}
+
+/**
+ * 已登录但非平台管理员访问 `/admin/*` 时的落地页（开发者应用）。
+ */
+export function redirectAwayFromAdmin(request: NextRequest): NextURL {
+  const withoutLocale = pathnameWithoutLocale(request.nextUrl.pathname);
+  const first = request.nextUrl.pathname.split('/').filter(Boolean)[0];
+  const url = request.nextUrl.clone();
+  let pathname: string = ROUTE_DEVELOPER_APPS;
+  if (
+    useLocaleRoutes &&
+    first &&
+    (i18nConfig.supportedLngs as readonly string[]).includes(first) &&
+    withoutLocale !== request.nextUrl.pathname
+  ) {
+    pathname = `/${first}${ROUTE_DEVELOPER_APPS}`;
+  }
+  url.pathname = pathname;
+  url.search = '';
+  return url;
 }
 
 /**

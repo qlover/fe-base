@@ -1,19 +1,11 @@
-import dynamic from 'next/dynamic';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
+import { AdminHomePanel } from '@/uikit/components-pages/AdminHomePanel';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
-import { admin18n } from '@config/i18n-mapping/admin18n';
+import { adminHome18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminIndexProps {
   messages: Record<string, string>;
@@ -22,17 +14,15 @@ interface AdminIndexProps {
 const namespace = 'admin_home';
 
 /**
- * Admin home (Pages Router / CSR).
- * Entry auth is middleware via LOGINED_PAGES.
+ * Admin 概览首页。Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminIndex({}: AdminIndexProps) {
-  const seoMetadata = useI18nMapping(admin18n);
-  const navItems = useAdminNavItems();
+  const tt = useI18nMapping(adminHome18n);
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-      <div>{seoMetadata.description}</div>
-    </AdminLayout>
+    <AdminPageShell title={tt.heading} description={tt.sub} seoMetadata={tt}>
+      <AdminHomePanel tt={tt} />
+    </AdminPageShell>
   );
 }
 

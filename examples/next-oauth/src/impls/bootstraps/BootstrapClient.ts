@@ -3,9 +3,12 @@ import { browserGlobalsName } from '@config/common';
 import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
 import { isAuthCallbackPath } from '@config/route';
 import * as globals from '../globals';
+import { exampleBackgroundTask } from './ExampleBackgroundTask';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import { restoreUserService } from './RestoreUserService';
+import { UserScopeResetService } from './UserScopeResetService';
+import type { UserService } from '../UserService';
 import type {
   BootstrapExecutorPlugin,
   IOCContainerInterface,
@@ -63,13 +66,19 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
     const i18nService = this.IOC(I.I18nServiceInterface);
     i18nService.setPathname(pathname ?? '');
 
-    const bootstrapList: BootstrapExecutorPlugin[] = [i18nService];
+    const bootstrapList: BootstrapExecutorPlugin[] = [
+      i18nService,
+      this.createUserScopeReset()
+    ];
 
     // Auth callback pages (/callback/*) establish session first;
     // skip premature /api/user/session restore.
     if (!isAuthCallbackPath(pathname ?? '')) {
       bootstrapList.push(restoreUserService);
     }
+
+    // Memory background tasks (start/stop + enqueue); see docs/client-background-plugin.md
+    bootstrapList.push(exampleBackgroundTask);
 
     if (!appConfig.isProduction) {
       bootstrapList.push(printBootstrap);
@@ -78,5 +87,13 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
     bootstrapList.push(IocIdentifierTest);
 
     return bootstrapList;
+  }
+
+  /**
+   * 登记用户作用域可重置对象（权限 store 等）；退出 / 失效 / 换号时清空。
+   */
+  protected createUserScopeReset(): UserScopeResetService {
+    const userService = this.IOC(I.UserServiceInterface) as UserService;
+    return new UserScopeResetService(userService, [userService]);
   }
 }

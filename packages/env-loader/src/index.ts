@@ -176,7 +176,12 @@ export class Env {
   }
 
   /**
-   * from current directory to root directory, search and load .env file
+   * Walk from `cwd` toward the filesystem root and load every directory that
+   * has matching `.env*` files. Ancestor dirs load first; nearer dirs override
+   * (monorepo root `.env` + package `.env.local`).
+   *
+   * Within each directory, files stack from base → preferred (see {@link load}).
+   *
    * @param options - Search and load options (supports dotenv options except `path`)
    * @returns {Env} environment variable loader instance
    */
@@ -188,60 +193,63 @@ export class Env {
     maxDepth = 5,
     ...dotenvOptions
   }: SearchEnvOptions = {}): Env {
-    // limit max search depth to 10
-    // don't override maxDepth if it's not set
     maxDepth = Math.min(maxDepth, 8);
 
     const resolvedPreloadList = Env.resolvePreloadList(preloadList, envVar);
-
-    // create Env instance
     const env = new Env({ rootPath: cwd, logger });
 
-    // recursive search up, until find .env file or reach root directory
+    const dirsWithEnv: string[] = [];
     let currentDir = cwd;
     let lastDir = '';
-    let found = false;
     let searchCount = 0;
 
     while (currentDir !== lastDir) {
-      // check if current directory exists environment file
-      found = resolvedPreloadList.some((file) =>
+      const hasEnv = resolvedPreloadList.some((file) =>
         existsSync(resolve(currentDir, file))
       );
-
-      if (found) {
-        env.load({
-          ...dotenvOptions,
-          preloadList: resolvedPreloadList,
-          rootPath: currentDir
-        });
-        break;
+      if (hasEnv) {
+        dirsWithEnv.push(currentDir);
       }
 
-      // check if reached max search depth
       searchCount++;
       if (searchCount >= maxDepth) {
-        logger?.warn(
-          `Search depth exceeded ${maxDepth} levels, stopping search at ${currentDir}`
-        );
+        if (!dirsWithEnv.length) {
+          logger?.warn(
+            `Search depth exceeded ${maxDepth} levels, stopping search at ${currentDir}`
+          );
+        }
         break;
       }
 
       lastDir = currentDir;
       currentDir = dirname(currentDir);
 
-      // check if reached root directory
       if (currentDir === lastDir) {
-        logger?.warn('Reached root directory, stopping search');
+        if (!dirsWithEnv.length) {
+          logger?.warn('Reached root directory, stopping search');
+        }
         break;
       }
     }
 
-    if (!found && logger) {
-      logger.warn(
+    if (!dirsWithEnv.length) {
+      logger?.warn(
         `No environment files (${resolvedPreloadList.join(', ')}) found in directory tree from ${cwd} to ${currentDir}`
       );
+      return env;
     }
+
+    // Root-most first; later (nearer) loads override.
+    const loadOrder = [...dirsWithEnv].reverse();
+    loadOrder.forEach((rootPath, index) => {
+      env.load({
+        ...dotenvOptions,
+        preloadList: resolvedPreloadList,
+        rootPath,
+        // Nearer directories must win over ancestors.
+        override: index > 0 ? true : dotenvOptions.override
+      });
+    });
 
     return env;
   }
@@ -266,6 +274,12 @@ export class Env {
    * });
    * ```
    */
+  /**
+   * Load every existing file in `preloadList`.
+   *
+   * `resolvePreloadList` puts `.env.<APP_ENV>` first; for stacking we reverse
+   * so base (`.env`) loads first and preferred overrides last.
+   */
   public load(options: LoadOptions = { preloadList: [] }): void {
     const {
       rootPath,
@@ -281,18 +295,26 @@ export class Env {
     }
 
     const resolvedRootPath = rootPath || this.rootPath || resolve('./');
+    // preferred-first → stack as base → preferred
+    const stackOrder = [...preloadList].reverse();
+    let loadedCount = 0;
 
-    for (const file of preloadList) {
+    for (const file of stackOrder) {
       const envLocalPath = resolve(resolvedRootPath, file);
-      if (existsSync(envLocalPath)) {
-        // `path` is always resolved by this package and must win over caller input
-        config({ ...dotenvOptions, path: envLocalPath });
-        this.logger?.debug?.(`Loaded \`${envLocalPath}\` file`);
-        return;
+      if (!existsSync(envLocalPath)) {
+        continue;
       }
+      // Later files in the stack override earlier ones.
+      const override =
+        loadedCount > 0 ? true : (dotenvOptions.override ?? false);
+      config({ ...dotenvOptions, path: envLocalPath, override });
+      this.logger?.debug?.(`Loaded \`${envLocalPath}\` file`);
+      loadedCount += 1;
     }
 
-    this.logger?.warn?.('No .env file found');
+    if (loadedCount === 0) {
+      this.logger?.warn?.('No .env file found');
+    }
   }
 
   /**

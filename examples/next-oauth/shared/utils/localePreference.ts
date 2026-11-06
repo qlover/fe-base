@@ -25,6 +25,26 @@ export const localeCookieConfig = {
   maxAge: LOCALE_COOKIE_MAX_AGE_SEC
 };
 
+/** Query keys that can force locale in middleware (SSO / OIDC). */
+export const LOCALE_PREFERENCE_QUERY_KEYS = ['ui_locales', 'locale'] as const;
+
+/**
+ * Persist locale for subsequent requests (Pages soft nav does not hit middleware).
+ * Safe to call from client components only.
+ */
+export function persistLocaleCookie(locale: LocaleType): void {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  const { name, path, maxAge, sameSite } = localeCookieConfig;
+  document.cookie = [
+    `${name}=${encodeURIComponent(locale)}`,
+    `path=${path}`,
+    `max-age=${maxAge}`,
+    `samesite=${sameSite}`
+  ].join('; ');
+}
+
 /**
  * OIDC-style `ui_locales` (space/comma separated) or `locale` query → app locale.
  * Matches exact supported codes, or BCP-47 prefixes (e.g. `zh-CN` → `zh`).

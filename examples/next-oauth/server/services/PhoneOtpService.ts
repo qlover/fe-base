@@ -23,6 +23,7 @@ import {
   safeEqualOtp
 } from '@server/repositorys/FePhoneOtpsRepository';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
+import { AliyunSmsPhoneOtpProvider } from '@server/services/phoneOtp/AliyunSmsPhoneOtpProvider';
 import { MemoryPhoneOtpProvider } from '@server/services/phoneOtp/MemoryPhoneOtpProvider';
 import type { PhoneOtpProviderInterface } from '@server/services/phoneOtp/PhoneOtpProviderInterface';
 import { SiteSettingsService } from '@server/services/SiteSettingsService';
@@ -58,6 +59,8 @@ export class PhoneOtpService {
     protected readonly supabaseBridge: SupabaseRepo<unknown>,
     @inject(MemoryPhoneOtpProvider)
     protected readonly memoryProvider: MemoryPhoneOtpProvider,
+    @inject(AliyunSmsPhoneOtpProvider)
+    protected readonly aliyunSmsProvider: AliyunSmsPhoneOtpProvider,
     @inject(I.OAuthWrapperProviderInterface)
     protected readonly oauthProvider: OAuthWrapperProviderInterface,
     @inject(SupabaseSessionMintService)
@@ -183,7 +186,9 @@ export class PhoneOtpService {
     if (name === 'memory') {
       return this.memoryProvider;
     }
-    // Future: `aliyun` → return this.aliyunProvider
+    if (name === 'aliyun') {
+      return this.aliyunSmsProvider;
+    }
     throw new ExecutorError(
       API_OTP_CODE_INVALID,
       `Unsupported app-owned phone OTP provider: ${name}`
@@ -221,23 +226,51 @@ export class PhoneOtpService {
   protected async ensureAuthUserForPhone(phone: string): Promise<UserSchema> {
     const authEmail = phonePlaceholderEmail(phone);
     const existing = await this.feUsersRepository.findByPhone(phone);
+    const admin = this.supabaseBridge.getAdminSupabase();
+
     if (existing) {
-      const admin = this.supabaseBridge.getAdminSupabase();
       const authUser = await admin.auth.admin.getUserById(existing.id);
       if (authUser.error && !isAuthUserMissingError(authUser.error)) {
         this.supabaseBridge.throwIfError(authUser);
       }
-      const mintEmail = authUser.data.user?.email?.trim() || authEmail;
-      return {
+      if (authUser.data.user?.id) {
+        const mintEmail = authUser.data.user.email?.trim() || authEmail;
+        return {
+          id: existing.id,
+          email: mintEmail,
+          role: UserRole.USER,
+          credential_token: '',
+          created_at: existing.created_at
+        };
+      }
+
+      // Migrated fe_users row without matching auth.users: recreate with same UUID.
+      const recreated = await admin.auth.admin.createUser({
         id: existing.id,
-        email: mintEmail,
-        role: UserRole.USER,
-        credential_token: '',
-        created_at: existing.created_at
-      };
+        email: authEmail,
+        phone,
+        email_confirm: true,
+        phone_confirm: true,
+        user_metadata: { login_phone: phone }
+      });
+      if (recreated.data.user?.id) {
+        return {
+          id: recreated.data.user.id,
+          email: recreated.data.user.email || authEmail,
+          role: UserRole.USER,
+          credential_token: '',
+          created_at: recreated.data.user.created_at
+        };
+      }
+      if (recreated.error && !isAuthUserMissingError(recreated.error)) {
+        this.logger.warn('Recreate auth user for phone profile failed', {
+          phone,
+          profileId: existing.id,
+          error: recreated.error
+        });
+      }
     }
 
-    const admin = this.supabaseBridge.getAdminSupabase();
     const created = await admin.auth.admin.createUser({
       email: authEmail,
       phone,

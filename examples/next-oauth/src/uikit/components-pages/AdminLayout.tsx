@@ -2,6 +2,7 @@
 
 import {
   Bars3Icon,
+  ChatBubbleLeftRightIcon,
   CircleStackIcon,
   ClipboardDocumentListIcon,
   Cog6ToothIcon,
@@ -40,8 +41,8 @@ export interface AdminLayoutProps {
   collapsedSidebar?: boolean;
   /** Called when sidebar toggle is clicked (optional; uses internal state if not provided) */
   onToggleSidebar?: () => void;
-  /** Header title and i18n */
-  seoMetadata: PageI18nInterface;
+  /** Document title / SEO；常驻壳场景可省略，由各页 AdminPageShell 负责 */
+  seoMetadata?: PageI18nInterface;
   /** Extra class for the root container */
   className?: string;
 }
@@ -57,7 +58,9 @@ const NAV_ICONS: Record<string, NavIcon> = {
   'memory-kv': CircleStackIcon,
   locales: LanguageIcon,
   settings: Cog6ToothIcon,
-  'request-logs': ClipboardDocumentListIcon
+  'request-logs': ClipboardDocumentListIcon,
+  'mail-logs': ClipboardDocumentListIcon,
+  feedback: ChatBubbleLeftRightIcon
 };
 
 /**
@@ -177,7 +180,7 @@ export function AdminLayout({
         className
       )}
     >
-      <ClientSeo i18nInterface={seoMetadata} />
+      {seoMetadata ? <ClientSeo i18nInterface={seoMetadata} /> : null}
 
       <header
         data-testid="AdminLayoutHeader"
@@ -224,12 +227,14 @@ export function AdminLayout({
               </span>
             </LocaleLink>
             <span className="bg-primary-border max-sm:hidden h-4 w-px block" />
-            <span
-              data-testid="admin-header-title"
-              className="text-secondary-text max-sm:hidden truncate text-sm inline"
-            >
-              {seoMetadata.title}
-            </span>
+            {seoMetadata?.title ? (
+              <span
+                data-testid="admin-header-title"
+                className="text-secondary-text max-sm:hidden truncate text-sm inline"
+              >
+                {seoMetadata.title}
+              </span>
+            ) : null}
           </div>
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">

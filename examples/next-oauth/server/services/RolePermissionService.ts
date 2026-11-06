@@ -94,15 +94,16 @@ export class RolePermissionService {
 
   protected async loadFromRepo(): Promise<void> {
     try {
+      // Always trust DB maps (including roles with []). Falling back to
+      // DEFAULT_SYSTEM_ROLE_PERMISSIONS when maps are empty would undo an
+      // admin who cleared every assignment.
       const maps = await this.repo.getAssignmentMaps();
-      if (Object.keys(maps).length === 0) {
-        setPermissionMaps({ roles: defaultRoleMaps() });
-        this.logger.warn(
-          'Role assignments empty; using DEFAULT_SYSTEM_ROLE_PERMISSIONS'
-        );
-        return;
-      }
       setPermissionMaps({ roles: maps });
+      if (Object.keys(maps).length === 0) {
+        this.logger.warn(
+          'Role assignment maps empty (no roles in DB); permission checks will deny until roles exist'
+        );
+      }
     } catch (error) {
       setPermissionMaps({ roles: defaultRoleMaps() });
       this.logger.warn(

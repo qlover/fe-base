@@ -42,18 +42,20 @@ function num(v: unknown): number | null {
 
 function formatHttp(row: RequestLogRow): string {
   const p = payloadObj(row);
-  const method = str(p.http_method) ?? '';
-  const path = str(p.http_path) ?? '';
+  const method = str(row.http_method) ?? str(p.http_method) ?? '';
+  const path = str(row.http_path) ?? str(p.http_path) ?? '';
   if (!method && !path) return '—';
   return [method, path].filter(Boolean).join(' ');
 }
 
 function formatError(row: RequestLogRow): string {
   const p = payloadObj(row);
-  const code = str(p.error_code);
+  const code = str(row.error_code) ?? str(p.error_code);
+  const reason = str(row.reason_code) ?? str(p.reason_code);
   const message = str(p.error_message);
-  if (!code && !message) return '—';
-  return [code, message].filter(Boolean).join(' · ');
+  const parts = [code, reason, message].filter(Boolean);
+  if (parts.length === 0) return '—';
+  return parts.join(' · ');
 }
 
 export function RequestLogsTable(props: {
@@ -122,7 +124,7 @@ export function RequestLogsTable(props: {
       key: 'http_status',
       width: 72,
       render: (_, row) => {
-        const v = num(payloadObj(row).http_status);
+        const v = num(row.http_status) ?? num(payloadObj(row).http_status);
         return v == null ? '—' : String(v);
       }
     },
@@ -131,7 +133,7 @@ export function RequestLogsTable(props: {
       key: 'duration_ms',
       width: 104,
       render: (_, row) => {
-        const v = num(payloadObj(row).duration_ms);
+        const v = num(row.duration_ms) ?? num(payloadObj(row).duration_ms);
         return v == null ? '—' : String(v);
       }
     },
@@ -139,7 +141,8 @@ export function RequestLogsTable(props: {
       title: tt.colIp,
       key: 'ip_address',
       width: 120,
-      render: (_, row) => str(payloadObj(row).ip_address) ?? '—'
+      render: (_, row) =>
+        str(row.ip_address) ?? str(payloadObj(row).ip_address) ?? '—'
     },
     {
       title: tt.colLoginMethod,

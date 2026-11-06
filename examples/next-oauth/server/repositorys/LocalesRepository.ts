@@ -3,6 +3,7 @@ import {
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
 import { localesSchema, type LocalesSchema } from '@qlover/next-kit/common';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { inject, injectable } from '@shared/container';
 import { createAdminClient, createServerClient } from '@shared/supabase/server';
 import { defaultSearchParams } from '@config/common';
@@ -248,14 +249,22 @@ export class LocalesRepository extends FeSupabaseRepo<LocalesSchema> {
 
       if (localeCol) {
         query = query.or(
-          `value.ilike.%${kw}%,${localeCol}.ilike.%${kw}%,description.ilike.%${kw}%,namespace.ilike.%${kw}%`
+          buildIlikeOrString({
+            columns: ['value', localeCol, 'description', 'namespace'],
+            query: kw
+          })
         );
       } else {
-        const localeIlikes = i18nConfig.supportedLngs
-          .map((locale) => `${locale}.ilike.%${kw}%`)
-          .join(',');
         query = query.or(
-          `value.ilike.%${kw}%,${localeIlikes},description.ilike.%${kw}%,namespace.ilike.%${kw}%`
+          buildIlikeOrString({
+            columns: [
+              'value',
+              ...i18nConfig.supportedLngs,
+              'description',
+              'namespace'
+            ],
+            query: kw
+          })
         );
       }
     }

@@ -1331,6 +1331,16 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
 
+  packages/llm:
+    devDependencies:
+      '@qlover/fe-corekit':
+        specifier: workspace:*
+        version: link:../fe-corekit
+    optionalDependencies:
+      undici:
+        specifier: ^7.0.0
+        version: 7.29.1
+
   packages/logger: {}
 
   packages/next-kit:

@@ -5,16 +5,19 @@ import { I } from '@config/ioc-identifiter';
 import type { FeSiteSettingRow } from '@schemas/FeSiteSettingsSchema';
 import { FeSupabaseRepo } from './FeSupabaseRepo';
 import type { LoggerInterface } from '@qlover/logger';
+import type {
+  SiteSettingUpsertInputType,
+  SiteSettingsStoreInterface
+} from '@qlover/next-kit/server';
 
-export type FeSiteSettingUpsertInput = {
-  readonly key: string;
-  readonly value: unknown;
-  readonly description: string;
-  readonly isSensitive: boolean;
-};
+/** @deprecated 使用 kit {@link SiteSettingUpsertInputType} */
+export type FeSiteSettingUpsertInput = SiteSettingUpsertInputType;
 
 @injectable()
-export class SiteSettingsRepo extends FeSupabaseRepo<FeSiteSettingRow> {
+export class SiteSettingsRepo
+  extends FeSupabaseRepo<FeSiteSettingRow>
+  implements SiteSettingsStoreInterface
+{
   constructor(@inject(I.Logger) logger: LoggerInterface) {
     super(FeTables.siteSettings, {
       logger,
@@ -23,6 +26,9 @@ export class SiteSettingsRepo extends FeSupabaseRepo<FeSiteSettingRow> {
     });
   }
 
+  /**
+   * @override
+   */
   public async getAll(): Promise<FeSiteSettingRow[]> {
     const result = await this.getAdminSupabase()
       .from(FeTables.siteSettings)
@@ -31,7 +37,12 @@ export class SiteSettingsRepo extends FeSupabaseRepo<FeSiteSettingRow> {
     return (result.data ?? []) as FeSiteSettingRow[];
   }
 
-  public async upsertMany(rows: FeSiteSettingUpsertInput[]): Promise<void> {
+  /**
+   * @override
+   */
+  public async upsertMany(
+    rows: readonly SiteSettingUpsertInputType[]
+  ): Promise<void> {
     if (rows.length === 0) {
       return;
     }

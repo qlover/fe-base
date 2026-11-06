@@ -1,7 +1,10 @@
+import * as commonAnchorKeys from '../i18n-identifier/common/admin.anchor';
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
+import * as feedbackKeys from '../i18n-identifier/pages/page.admin.feedback';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
+import * as mailLogsKeys from '../i18n-identifier/pages/page.admin.mail-logs';
 import * as memoryKvKeys from '../i18n-identifier/pages/page.admin.memory-kv';
 import * as otpMonitorKeys from '../i18n-identifier/pages/page.admin.otp-monitor';
 import * as permissionsKeys from '../i18n-identifier/pages/page.admin.permissions';
@@ -30,6 +33,11 @@ export const adminTableI18n = {
   pageSize: commonTablesKeys.COMMON_ADMIN_TABLE_PAGE_SIZE
 } as const;
 
+export const adminAnchorI18n = {
+  copyLink: commonAnchorKeys.COMMON_ADMIN_ANCHOR_COPY_LINK,
+  linkCopied: commonAnchorKeys.COMMON_ADMIN_ANCHOR_LINK_COPIED
+} as const;
+
 export const admin18n = Object.freeze({
   // basic meta properties
   title: homeKeys.ADMIN_HOME_TITLE,
@@ -41,6 +49,68 @@ export const admin18n = Object.freeze({
   welcome: homeKeys.ADMIN_HOME_WELCOME
 });
 
+/**
+ * Admin 首页概览面板文案（含 SEO 字段）。
+ */
+export const adminHome18n = Object.freeze({
+  ...admin18n,
+  heading: homeKeys.ADMIN_HOME_HEADING,
+  sub: homeKeys.ADMIN_HOME_SUB,
+  hintUsers: homeKeys.ADMIN_HOME_HINT_USERS,
+  hintRoles: homeKeys.ADMIN_HOME_HINT_ROLES,
+  hintPermissions: homeKeys.ADMIN_HOME_HINT_PERMISSIONS,
+  hintSettings: homeKeys.ADMIN_HOME_HINT_SETTINGS,
+  hintRequestLogs: homeKeys.ADMIN_HOME_HINT_REQUEST_LOGS,
+  hintMailLogs: homeKeys.ADMIN_HOME_HINT_MAIL_LOGS,
+  hintFeedback: homeKeys.ADMIN_HOME_HINT_FEEDBACK,
+  rangeToday: homeKeys.ADMIN_HOME_RANGE_TODAY,
+  rangeWeek: homeKeys.ADMIN_HOME_RANGE_WEEK,
+  rangeMonth: homeKeys.ADMIN_HOME_RANGE_MONTH,
+  sectionTodo: homeKeys.ADMIN_HOME_SECTION_TODO,
+  sectionKpi: homeKeys.ADMIN_HOME_SECTION_KPI,
+  sectionShortcuts: homeKeys.ADMIN_HOME_SECTION_SHORTCUTS,
+  todoOpenFeedback: homeKeys.ADMIN_HOME_TODO_OPEN_FEEDBACK,
+  todoStalePrefix: homeKeys.ADMIN_HOME_TODO_STALE_PREFIX,
+  todoStaleNone: homeKeys.ADMIN_HOME_TODO_STALE_NONE,
+  todoFailures: homeKeys.ADMIN_HOME_TODO_FAILURES,
+  todoFailuresCompare: homeKeys.ADMIN_HOME_TODO_FAILURES_COMPARE,
+  kpiCompare: homeKeys.ADMIN_HOME_KPI_COMPARE,
+  kpiCompareToday: homeKeys.ADMIN_HOME_KPI_COMPARE_TODAY,
+  kpiSignups: homeKeys.ADMIN_HOME_KPI_SIGNUPS,
+  kpiActiveUsers: homeKeys.ADMIN_HOME_KPI_ACTIVE_USERS,
+  kpiFeedback: homeKeys.ADMIN_HOME_KPI_FEEDBACK,
+  feedbackTitle: homeKeys.ADMIN_HOME_FEEDBACK_TITLE,
+  feedbackAll: homeKeys.ADMIN_HOME_FEEDBACK_ALL,
+  feedbackEmpty: homeKeys.ADMIN_HOME_FEEDBACK_EMPTY,
+  trendTitle: homeKeys.ADMIN_HOME_TREND_TITLE,
+  checksTitle: homeKeys.ADMIN_HOME_CHECKS_TITLE,
+  checksSub: homeKeys.ADMIN_HOME_CHECKS_SUB,
+  checksConfigure: homeKeys.ADMIN_HOME_CHECKS_CONFIGURE,
+  checkStateOk: homeKeys.ADMIN_HOME_CHECK_STATE_OK,
+  checkStateWarn: homeKeys.ADMIN_HOME_CHECK_STATE_WARN,
+  checkStateOff: homeKeys.ADMIN_HOME_CHECK_STATE_OFF,
+  checkEncryptionKey: homeKeys.ADMIN_HOME_CHECK_ENCRYPTION_KEY,
+  checkEncryptionKeyDesc: homeKeys.ADMIN_HOME_CHECK_ENCRYPTION_KEY_DESC,
+  checkServiceRoleKey: homeKeys.ADMIN_HOME_CHECK_SERVICE_ROLE_KEY,
+  checkServiceRoleKeyDesc: homeKeys.ADMIN_HOME_CHECK_SERVICE_ROLE_KEY_DESC,
+  checkOpenai: homeKeys.ADMIN_HOME_CHECK_OPENAI,
+  checkOpenaiDesc: homeKeys.ADMIN_HOME_CHECK_OPENAI_DESC,
+  checkMailProvider: homeKeys.ADMIN_HOME_CHECK_MAIL_PROVIDER,
+  checkMailProviderDesc: homeKeys.ADMIN_HOME_CHECK_MAIL_PROVIDER_DESC,
+  checkMailResendApiKey: homeKeys.ADMIN_HOME_CHECK_MAIL_RESEND_API_KEY,
+  checkMailResendApiKeyDesc: homeKeys.ADMIN_HOME_CHECK_MAIL_RESEND_API_KEY_DESC,
+  checkEnvHint: homeKeys.ADMIN_HOME_CHECK_ENV_HINT,
+  failuresTitle: homeKeys.ADMIN_HOME_FAILURES_TITLE,
+  failuresLogs: homeKeys.ADMIN_HOME_FAILURES_LOGS,
+  failuresEmpty: homeKeys.ADMIN_HOME_FAILURES_EMPTY,
+  loadFailed: homeKeys.ADMIN_HOME_LOAD_FAILED,
+  retry: homeKeys.ADMIN_HOME_RETRY,
+  generatedAt: homeKeys.ADMIN_HOME_GENERATED_AT,
+  emptyAll: homeKeys.ADMIN_HOME_EMPTY_ALL
+});
+
+export type AdminHomeI18nInterface = typeof adminHome18n;
+
 export type AdminUsersI18nInterface = typeof adminUsers18n;
 
 export type AdminRolesI18nInterface = typeof adminRoles18n;
@@ -50,6 +120,10 @@ export type AdminPermissionsI18nInterface = typeof adminPermissions18n;
 export type AdminOtpMonitorI18nInterface = typeof adminOtpMonitor18n;
 
 export type AdminMemoryKvI18nInterface = typeof adminMemoryKv18n;
+
+export type AdminMailLogsI18nInterface = typeof adminMailLogs18n;
+
+export type AdminFeedbackI18nInterface = typeof adminFeedback18n;
 
 export type AdminLocalesI18nInterface = typeof adminLocales18n;
 
@@ -225,6 +299,8 @@ export const adminSettings18n = Object.freeze({
   keywords: settingsKeys.ADMIN_SETTINGS_KEYWORDS,
   sectionAuth: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH,
   sectionAuthDesc: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH_DESC,
+  sectionAliyunSms: settingsKeys.ADMIN_SETTINGS_SECTION_ALIYUN_SMS,
+  sectionAliyunSmsDesc: settingsKeys.ADMIN_SETTINGS_SECTION_ALIYUN_SMS_DESC,
   sectionOpenai: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI,
   sectionOpenaiDesc: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI_DESC,
   sectionApi: settingsKeys.ADMIN_SETTINGS_SECTION_API,
@@ -245,7 +321,79 @@ export const adminSettings18n = Object.freeze({
   corsRemove: settingsKeys.ADMIN_SETTINGS_CORS_REMOVE,
   corsEmpty: settingsKeys.ADMIN_SETTINGS_CORS_EMPTY,
   corsOriginInvalid: settingsKeys.ADMIN_SETTINGS_CORS_ORIGIN_INVALID,
-  corsDuplicate: settingsKeys.ADMIN_SETTINGS_CORS_DUPLICATE
+  corsDuplicate: settingsKeys.ADMIN_SETTINGS_CORS_DUPLICATE,
+  sectionMail: settingsKeys.ADMIN_SETTINGS_SECTION_MAIL,
+  sectionMailDesc: settingsKeys.ADMIN_SETTINGS_SECTION_MAIL_DESC,
+  mailTestPlaceholder: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_PLACEHOLDER,
+  mailTestSend: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SEND,
+  mailTestSending: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SENDING,
+  mailTestSuccess: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_SUCCESS,
+  mailTestFailed: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_FAILED,
+  mailTestInvalid: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_INVALID,
+  mailTestHint: settingsKeys.ADMIN_SETTINGS_MAIL_TEST_HINT
+});
+
+export const adminFeedback18n = Object.freeze({
+  title: feedbackKeys.ADMIN_FEEDBACK_TITLE,
+  description: feedbackKeys.ADMIN_FEEDBACK_DESCRIPTION,
+  content: feedbackKeys.ADMIN_FEEDBACK_DESCRIPTION,
+  keywords: feedbackKeys.ADMIN_FEEDBACK_KEYWORDS,
+  refresh: feedbackKeys.ADMIN_FEEDBACK_REFRESH,
+  loadFailed: feedbackKeys.ADMIN_FEEDBACK_LOAD_FAILED,
+  forbidden: feedbackKeys.ADMIN_FEEDBACK_FORBIDDEN,
+  colCreated: feedbackKeys.ADMIN_FEEDBACK_COL_CREATED,
+  colUser: feedbackKeys.ADMIN_FEEDBACK_COL_USER,
+  colCategory: feedbackKeys.ADMIN_FEEDBACK_COL_CATEGORY,
+  colBody: feedbackKeys.ADMIN_FEEDBACK_COL_BODY,
+  colStatus: feedbackKeys.ADMIN_FEEDBACK_COL_STATUS,
+  statusOpen: feedbackKeys.ADMIN_FEEDBACK_STATUS_OPEN,
+  statusReviewing: feedbackKeys.ADMIN_FEEDBACK_STATUS_REVIEWING,
+  statusResolved: feedbackKeys.ADMIN_FEEDBACK_STATUS_RESOLVED,
+  statusClosed: feedbackKeys.ADMIN_FEEDBACK_STATUS_CLOSED,
+  categoryBug: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_BUG,
+  categoryUx: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_UX,
+  categoryFeature: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_FEATURE,
+  categoryPerformance: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_PERFORMANCE,
+  categoryContent: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_CONTENT,
+  categoryOther: feedbackKeys.ADMIN_FEEDBACK_CATEGORY_OTHER,
+  colScreenshots: feedbackKeys.ADMIN_FEEDBACK_COL_SCREENSHOTS,
+  colGithub: feedbackKeys.ADMIN_FEEDBACK_COL_GITHUB,
+  githubCreate: feedbackKeys.ADMIN_FEEDBACK_GITHUB_CREATE,
+  githubRetry: feedbackKeys.ADMIN_FEEDBACK_GITHUB_RETRY,
+  githubSkipped: feedbackKeys.ADMIN_FEEDBACK_GITHUB_SKIPPED,
+  githubFailed: feedbackKeys.ADMIN_FEEDBACK_GITHUB_FAILED,
+  githubPending: feedbackKeys.ADMIN_FEEDBACK_GITHUB_PENDING
+});
+
+export const adminMailLogs18n = Object.freeze({
+  title: mailLogsKeys.ADMIN_MAIL_LOGS_TITLE,
+  description: mailLogsKeys.ADMIN_MAIL_LOGS_DESCRIPTION,
+  content: mailLogsKeys.ADMIN_MAIL_LOGS_DESCRIPTION,
+  keywords: mailLogsKeys.ADMIN_MAIL_LOGS_KEYWORDS,
+  hint: mailLogsKeys.ADMIN_MAIL_LOGS_HINT,
+  searchPlaceholder: mailLogsKeys.ADMIN_MAIL_LOGS_SEARCH_PLACEHOLDER,
+  templateAll: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_ALL,
+  templateTest: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_TEST,
+  templatePasswordReset: mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_PASSWORD_RESET,
+  templatePasswordChanged:
+    mailLogsKeys.ADMIN_MAIL_LOGS_TEMPLATE_PASSWORD_CHANGED,
+  refresh: mailLogsKeys.ADMIN_MAIL_LOGS_REFRESH,
+  count: mailLogsKeys.ADMIN_MAIL_LOGS_COUNT,
+  colCreated: mailLogsKeys.ADMIN_MAIL_LOGS_COL_CREATED,
+  colTo: mailLogsKeys.ADMIN_MAIL_LOGS_COL_TO,
+  colSubject: mailLogsKeys.ADMIN_MAIL_LOGS_COL_SUBJECT,
+  colTemplate: mailLogsKeys.ADMIN_MAIL_LOGS_COL_TEMPLATE,
+  colProvider: mailLogsKeys.ADMIN_MAIL_LOGS_COL_PROVIDER,
+  colStatus: mailLogsKeys.ADMIN_MAIL_LOGS_COL_STATUS,
+  colDetail: mailLogsKeys.ADMIN_MAIL_LOGS_COL_DETAIL,
+  colIp: mailLogsKeys.ADMIN_MAIL_LOGS_COL_IP,
+  statusSent: mailLogsKeys.ADMIN_MAIL_LOGS_STATUS_SENT,
+  statusFailed: mailLogsKeys.ADMIN_MAIL_LOGS_STATUS_FAILED,
+  bodyHidden: mailLogsKeys.ADMIN_MAIL_LOGS_BODY_HIDDEN,
+  empty: mailLogsKeys.ADMIN_MAIL_LOGS_EMPTY,
+  forbidden: mailLogsKeys.ADMIN_MAIL_LOGS_FORBIDDEN,
+  loadFailed: mailLogsKeys.ADMIN_MAIL_LOGS_LOAD_FAILED,
+  loading: mailLogsKeys.ADMIN_MAIL_LOGS_LOADING
 });
 
 export const adminLocales18n = Object.freeze({

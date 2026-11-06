@@ -151,6 +151,56 @@ export const API_OAUTH_SERVER_ERROR = 'api:oauth_server_error';
 export const API_OAUTH_WRAPPER_AUTH_FAILED = 'api:oauth_wrapper_auth_failed';
 
 /**
+ * @description Supabase / Auth invalid email or password
+ * @localZh 邮箱或密码错误
+ * @localEn Invalid login credentials
+ */
+export const API_INVALID_CREDENTIALS = 'api:invalid_credentials';
+
+/**
+ * @description Supabase auth: email not confirmed
+ * @localZh 请先验证邮箱后再登录
+ * @localEn Please confirm your email before signing in
+ */
+export const API_EMAIL_NOT_CONFIRMED = 'api:email_not_confirmed';
+
+/**
+ * @description Generic Supabase auth failure
+ * @localZh 登录失败，请稍后重试
+ * @localEn Authentication failed, please try again
+ */
+export const API_SUPABASE_AUTH_ERROR = 'api:supabase_auth_error';
+
+/**
+ * @description Password rejected by auth server policy
+ * @localZh 密码强度不足，请换一个更复杂的密码
+ * @localEn Password is too weak, please choose a stronger one
+ */
+export const API_PASSWORD_WEAK = 'api:password_weak';
+
+/**
+ * @description New password equals the current one (auth server)
+ * @localZh 新密码不能与当前密码相同
+ * @localEn New password must differ from the current one
+ */
+export const API_PASSWORD_SAME = 'api:password_same';
+
+/**
+ * @description Password reset link invalid or expired
+ * @localZh 重置链接无效或已过期，请重新申请
+ * @localEn Reset link is invalid or expired. Please request a new one
+ */
+export const API_PASSWORD_RESET_LINK_INVALID =
+  'api:password_reset_link_invalid';
+
+/**
+ * @description Auth email send rate limited
+ * @localZh 邮件发送过于频繁，请稍后再试
+ * @localEn Too many emails sent, please try again later
+ */
+export const API_EMAIL_SEND_RATE_LIMITED = 'api:email_send_rate_limited';
+
+/**
  * @description 请求体为空
  * @localZh 请求参数为空空
  * @localEn Request Params is required
@@ -229,3 +279,89 @@ export const API_CHANGE_PASSWORD_SAME = 'api:change_password_same';
  */
 export const API_CHANGE_PASSWORD_UNSUPPORTED =
   'api:change_password_unsupported';
+
+/**
+ * @description Mail provider is disabled or missing required settings
+ * @localZh 邮件通道未启用或配置不完整
+ * @localEn Mail provider is disabled or not fully configured
+ */
+export const API_MAIL_PROVIDER_NOT_READY = 'api:mail_provider_not_ready';
+
+/**
+ * @description Mail provider rejected or failed to send the message
+ * @localZh 邮件发送失败，请稍后重试
+ * @localEn Failed to send email. Please try again later
+ */
+export const API_MAIL_SEND_FAILED = 'api:mail_send_failed';
+
+/**
+ * @description SMS provider missing required settings
+ * @localZh 短信通道配置不完整
+ * @localEn SMS provider is not fully configured
+ */
+export const API_SMS_PROVIDER_NOT_READY = 'api:sms_provider_not_ready';
+
+/**
+ * @description SMS provider rejected or failed to send
+ * @localZh 短信发送失败，请稍后重试
+ * @localEn Failed to send SMS. Please try again later
+ */
+export const API_SMS_SEND_FAILED = 'api:sms_send_failed';
+
+/**
+ * @description Recipient email is invalid
+ * @localZh 收件邮箱格式不正确
+ * @localEn Recipient email is invalid
+ */
+export const API_MAIL_RECIPIENT_INVALID = 'api:mail_recipient_invalid';
+
+/**
+ * @description Forgot password by email is turned off or unsupported
+ * @localZh 找回密码功能暂未开启
+ * @localEn Password reset is not available
+ */
+export const API_PASSWORD_RESET_DISABLED = 'api:password_reset_disabled';
+
+/**
+ * @description Reset link is invalid, expired or already used
+ * @localZh 重置链接无效或已过期，请重新申请
+ * @localEn The reset link is invalid or has expired. Please request a new one
+ */
+export const API_PASSWORD_RESET_TOKEN_INVALID =
+  'api:password_reset_token_invalid';
+
+/**
+ * @description Too many reset requests
+ * @localZh 请求过于频繁，请稍后再试
+ * @localEn Too many requests. Please try again later
+ */
+export const API_PASSWORD_RESET_RATE_LIMITED =
+  'api:password_reset_rate_limited';
+
+/**
+ * @description Display name format is invalid
+ * @localZh 显示名需为 1–32 位字母、数字或下划线
+ * @localEn Display name must be 1–32 letters, numbers, or underscores
+ */
+export const API_DISPLAY_NAME_INVALID = 'api:display_name_invalid';
+
+/**
+ * @description Current account already has a different verified email
+ * @localZh 当前账号已绑定其他邮箱
+ * @localEn This account already has a different email bound
+ */
+export const API_BIND_EMAIL_ALREADY_BOUND = 'api:bind_email_already_bound';
+
+/**
+ * @description Target email account already has a different phone
+ * @localZh 目标邮箱账号已绑定其他手机号，请先解绑后再合并
+ * @localEn Target email account already has a different phone; unbind it first
+ */
+export const API_BIND_EMAIL_PHONE_CONFLICT = 'api:bind_email_phone_conflict';
+
+/**
+ * @description Bind-email is unsupported for the current OAuth upstream
+ * @localZh 当前登录上游不支持绑定邮箱
+ * @localEn Binding email is not supported for this OAuth upstream
+ */
+export const API_BIND_EMAIL_UNSUPPORTED = 'api:bind_email_unsupported';

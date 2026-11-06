@@ -1,8 +1,10 @@
 import type { I18nService } from '@/impls/I18nService';
+import type { LocalePreferenceService } from '@/impls/LocalePreferenceService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { GithubIssueGatewayInterface } from '@server/interfaces/GithubIssueGatewayInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type { JSONSerializer } from '@qlover/fe-corekit/serializer';
@@ -29,6 +31,7 @@ export const IOCIdentifier = Object.freeze({
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
   ZustandCounterServiceInterface: 'ZustandCounterServiceInterface',
+  LocalePreferenceServiceInterface: 'LocalePreferenceServiceInterface',
   /**
    * OAuth 包装服务提供接口
    */
@@ -39,7 +42,10 @@ export const IOCIdentifier = Object.freeze({
    *
    * 比如当次请求的 locale 等
    */
-  ServerContextInterface: 'ServerContextInterface'
+  ServerContextInterface: 'ServerContextInterface',
+
+  /** GitHub Issue 创建网关 */
+  GithubIssueGatewayInterface: 'GithubIssueGatewayInterface'
 });
 
 export const I = IOCIdentifier;
@@ -71,6 +77,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
   [IOCIdentifier.ZustandCounterServiceInterface]: ZustandCounterService;
+  [IOCIdentifier.LocalePreferenceServiceInterface]: LocalePreferenceService;
   [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 
@@ -79,4 +86,5 @@ export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.OAuthWrapperProviderInterface]: OAuthWrapperProviderInterface;
   [IOCIdentifier.ServerContextInterface]: ServerContextInterface;
+  [IOCIdentifier.GithubIssueGatewayInterface]: GithubIssueGatewayInterface;
 }

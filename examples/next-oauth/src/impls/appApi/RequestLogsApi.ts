@@ -1,5 +1,5 @@
 import { inject } from '@shared/container';
-import { API_USER_REQUEST_LOGS } from '@config/route';
+import { API_ADMIN_REQUEST_LOGS } from '@config/apiRoutes';
 import { AppApiRequester } from './AppApiRequester';
 import type {
   ResourceOptions,
@@ -56,7 +56,7 @@ export class RequestLogsApi implements ResourceSearchInterface<RequestLogRow> {
     criteria: ResourceSearchParams,
     resourceOptions?: ResourceOptions
   ): Promise<ResourceSearchResult<RequestLogRow>> {
-    const response = await this.appApiRequester.get(API_USER_REQUEST_LOGS, {
+    const response = await this.appApiRequester.get(API_ADMIN_REQUEST_LOGS, {
       params: sortCriteriaToQuery(criteria),
       signal: resourceOptions?.signal
     });
@@ -73,7 +73,7 @@ export class RequestLogsApi implements ResourceSearchInterface<RequestLogRow> {
 
   /** Permanently clear all request logs. */
   public async clear(): Promise<{ deleted: number }> {
-    const response = await this.appApiRequester.delete(API_USER_REQUEST_LOGS);
+    const response = await this.appApiRequester.delete(API_ADMIN_REQUEST_LOGS);
     const envelope = response.data as NextKitApiSuccess<{
       deleted: number;
     }>;

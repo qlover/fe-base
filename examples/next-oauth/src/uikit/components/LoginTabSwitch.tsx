@@ -9,6 +9,7 @@ import { useStrictEffect } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import {
   useCallback,
+  useEffect,
   useState,
   type ComponentType,
   type SVGProps
@@ -19,8 +20,14 @@ import { EmailOTPForm } from '@/uikit/components/EmailOTPForm';
 import { GithubIcon, GoogleIcon } from '@/uikit/components/icons';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { PhoneLoginForm } from '@/uikit/components/PhoneLoginForm';
+import { API_USER_LOGIN_UPSTREAM_OAUTH } from '@config/apiRoutes';
 import type { LoginProviderType } from '@config/common';
-import { loginProviders, oauthUpstreamProviders } from '@config/common';
+import {
+  LOGIN_REASON,
+  URLParamsKeys,
+  loginProviders,
+  oauthUpstreamProviders
+} from '@config/common';
 import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import type { FePublicConfig } from '@schemas/FeSiteSettingsSchema';
@@ -64,17 +71,29 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [emailMode, setEmailMode] = useState<EmailMode>('password');
   const [provider, providerStore] = useAsyncStore<ProviderLoginState>();
   const [publicConfig, setPublicConfig] = useState<FePublicConfig | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(null);
   const providerLogining = provider.loading;
-  const error = providerStore.isFailed() ? String(provider.error) : null;
+  const error = providerStore.isFailed() ? String(provider.error) : oauthError;
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
   const supabaseUpstream =
     appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
+  const oauthPkceUpstream =
+    appConfig.oauthUpstreamProvider === oauthUpstreamProviders.oauthPkce;
 
   const phoneLoginEnabled = publicConfig?.auth.phoneLoginEnabled ?? true;
   const phoneOtpProvider =
     publicConfig?.auth.phoneOtpProvider?.trim().toLowerCase() || 'memory';
   const githubOauthEnabled = publicConfig?.auth.githubOauthEnabled ?? true;
   const googleOauthEnabled = publicConfig?.auth.googleOauthEnabled ?? false;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get(URLParamsKeys.loginReason);
+    setSessionExpired(reason === LOGIN_REASON.SESSION_EXPIRED);
+    const upstreamError = params.get('oauth_error')?.trim();
+    setOauthError(upstreamError || null);
+  }, []);
 
   useStrictEffect(() => {
     void fetchPublicConfig().then(setPublicConfig);
@@ -109,6 +128,10 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
     [providerStore, userGateway]
   );
 
+  const onLoginWithUpstreamOidc = useCallback(() => {
+    window.location.assign(API_USER_LOGIN_UPSTREAM_OAUTH);
+  }, []);
+
   const visibleProviders = providersItems.filter((item) => {
     if (item.provider === loginProviders.GitHub) {
       return githubOauthEnabled;
@@ -122,8 +145,49 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const showProviderBlock = supabaseUpstream && visibleProviders.length > 0;
   const showPhoneTab = supabaseUpstream && phoneLoginEnabled;
 
+  if (oauthPkceUpstream) {
+    return (
+      <div data-testid="LoginTabSwitch" className="w-full">
+        {sessionExpired && !error ? (
+          <div
+            role="status"
+            data-testid="LoginSessionExpired"
+            className="bg-brand/10 text-brand mb-4 rounded-xl px-4 py-3 text-sm"
+          >
+            {tt.sessionExpired}
+          </div>
+        ) : null}
+        {error ? (
+          <div
+            role="alert"
+            className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-500 dark:border-red-800 dark:bg-red-950/30"
+          >
+            {error}
+          </div>
+        ) : null}
+        <button
+          data-testid="LoginWithUpstreamOidc"
+          type="button"
+          onClick={onLoginWithUpstreamOidc}
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+        >
+          <span>{tt.withUpstreamOidc}</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div data-testid="LoginTabSwitch" className="w-full">
+      {sessionExpired && !error ? (
+        <div
+          role="status"
+          data-testid="LoginSessionExpired"
+          className="bg-brand/10 text-brand mb-4 rounded-xl px-4 py-3 text-sm"
+        >
+          {tt.sessionExpired}
+        </div>
+      ) : null}
       {error ? (
         <div
           role="alert"
@@ -197,7 +261,12 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
         <>
           {emailMode === 'password' || !supabaseUpstream ? (
             <>
-              <LoginForm tt={tt} />
+              <LoginForm
+                tt={tt}
+                showForgotPassword={
+                  publicConfig?.auth.passwordResetEnabled ?? false
+                }
+              />
               {supabaseUpstream && (
                 <p className="mt-4 text-center">
                   <button

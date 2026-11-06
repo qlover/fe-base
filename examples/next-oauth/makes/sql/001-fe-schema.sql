@@ -24,6 +24,8 @@ drop table if exists public.fe_oauth_user_links cascade;
 drop table if exists public.fe_oauth_consent_grants cascade;
 drop table if exists public.fe_oauth_clients cascade;
 
+drop table if exists public.fe_mail_logs cascade;
+drop table if exists public.fe_password_reset_tokens cascade;
 drop table if exists public.fe_phone_otps cascade;
 drop table if exists public.fe_locales cascade;
 drop table if exists public.fe_site_settings cascade;
@@ -86,7 +88,9 @@ insert into public.fe_permissions (permission_key, type, method, path, descripti
   ('admin_memory_kv_read', 'page', null, '/admin/memory-kv', 'View process Memory KV cache'),
   ('admin_memory_kv_write', 'api', 'POST', '/api/admin/memory-kv', 'Purge process Memory KV cache'),
   ('admin_site_settings_read', 'page', null, '/admin', 'Access admin console / read site settings'),
-  ('admin_site_settings_write', 'api', 'PATCH', '/api/admin/site-settings', 'Update site settings');
+  ('admin_site_settings_write', 'api', 'PATCH', '/api/admin/site-settings', 'Update site settings'),
+  ('admin_mail_logs_read', 'page', null, '/admin/mail-logs', 'List mail send logs'),
+  ('admin_mail_test', 'api', 'POST', '/api/admin/mail/test', 'Send test email');
 
 create table public.fe_role_assignments (
   role_id uuid not null references public.fe_roles (id) on delete cascade,
@@ -111,7 +115,8 @@ join (values
   ('admin_request_logs_read'),
   ('admin_otp_monitor_read'),
   ('admin_memory_kv_read'),
-  ('admin_site_settings_read')
+  ('admin_site_settings_read'),
+  ('admin_mail_logs_read')
 ) as v(permission_key) on true
 where r.key = 'operator';
 
@@ -134,7 +139,9 @@ join (values
   ('admin_memory_kv_read'),
   ('admin_memory_kv_write'),
   ('admin_site_settings_read'),
-  ('admin_site_settings_write')
+  ('admin_site_settings_write'),
+  ('admin_mail_logs_read'),
+  ('admin_mail_test')
 ) as v(permission_key) on true
 where r.key = 'admin';
 
@@ -153,10 +160,13 @@ create table public.fe_users (
   phone text,
   role_id uuid not null references public.fe_roles (id),
   status text not null default 'active' check (status in ('active', 'suspended')),
+  sessions_revoked_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
+comment on column public.fe_users.sessions_revoked_at is
+  'Session JWTs with iat before this time are rejected (set after password reset).';
 comment on table public.fe_users is
   'App user profile and platform role; FK to auth.users. Identity stays in auth.users.';
 comment on column public.fe_users.email is
@@ -221,6 +231,13 @@ create table public.fe_request_logs (
   success boolean not null default true,
   request_id uuid,
   record_type text,
+  http_method text,
+  http_path text,
+  http_status integer,
+  duration_ms integer,
+  ip_address text,
+  error_code text,
+  reason_code text,
   payload jsonb
 );
 
@@ -237,11 +254,11 @@ alter table public.fe_request_logs enable row level security;
 
 create policy "fe_request_logs_select_own" on public.fe_request_logs
   for select
-  using (user_id is not null and auth.uid() = user_id);
+  using (user_id is not null and (select auth.uid()) = user_id);
 
 create policy "fe_request_logs_insert_self_or_anon" on public.fe_request_logs
   for insert
-  with check (user_id is null or auth.uid() = user_id);
+  with check (user_id is null or (select auth.uid()) = user_id);
 
 -- =============================================================================
 -- 4) OAuth wrapper tables
@@ -491,4 +508,98 @@ insert into public.fe_site_settings (key, value, description, is_sensitive) valu
     '[{"origin":"http://localhost:3100","path":"*","methods":["*"]}]'::jsonb,
     'CORS 规则：origin × path × methods。三项均可 *；默认放行 react-seed 本地来源。',
     false
+  ),
+  (
+    'mail.provider',
+    '"disabled"'::jsonb,
+    '事务邮件通道：disabled（关闭）| memory（仅记录，Admin 可见正文）| resend。',
+    false
+  ),
+  (
+    'mail.resend_api_key',
+    '""'::jsonb,
+    'Resend API Key。有 ENCRYPTION_KEY 时加密存储，界面不回显明文。',
+    true
+  ),
+  (
+    'mail.from_address',
+    '""'::jsonb,
+    '发件邮箱地址（需在 Resend 验证发信域名）。',
+    false
+  ),
+  (
+    'mail.from_name',
+    '""'::jsonb,
+    '发件人显示名，同时作为邮件模板中的站点名称。',
+    false
+  ),
+  (
+    'mail.reply_to',
+    '""'::jsonb,
+    '可选：回复邮箱地址。',
+    false
+  ),
+  (
+    'mail.password_reset_enabled',
+    'false'::jsonb,
+    '是否开启「忘记密码」邮件重置（仅 Supabase upstream；需先启用邮件通道）。',
+    false
+  ),
+  (
+    'mail.password_changed_notify_enabled',
+    'false'::jsonb,
+    '密码被修改（含重置）后是否向用户邮箱发送安全通知。',
+    false
   );
+
+-- =============================================================================
+-- 8) Transactional mail + forgot password
+-- =============================================================================
+
+create table public.fe_mail_logs (
+  id uuid primary key default gen_random_uuid(),
+  to_email text not null,
+  subject text not null,
+  template text not null
+    check (template in ('test', 'password_reset', 'password_changed')),
+  provider text not null check (provider in ('memory', 'resend')),
+  status text not null check (status in ('sent', 'failed')),
+  provider_message_id text,
+  error text,
+  body_text text,
+  user_id uuid references auth.users (id) on delete set null,
+  created_ip text,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.fe_mail_logs is
+  'Transactional mail audit (memory | resend). Admin /admin/mail-logs reads this.';
+comment on column public.fe_mail_logs.body_text is
+  'Plain-text body, only stored for memory provider (dev/test). Null for real providers.';
+
+create index idx_fe_mail_logs_created
+  on public.fe_mail_logs (created_at desc);
+
+create index idx_fe_mail_logs_email_template_created
+  on public.fe_mail_logs (to_email, template, created_at desc);
+
+alter table public.fe_mail_logs enable row level security;
+
+create table public.fe_password_reset_tokens (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  email text not null,
+  token_hash text not null unique,
+  expires_at timestamptz not null,
+  used_at timestamptz,
+  created_ip text,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.fe_password_reset_tokens is
+  'Forgot-password reset links. Single use; unused tokens are invalidated after a successful reset.';
+
+create index idx_fe_password_reset_tokens_user_created
+  on public.fe_password_reset_tokens (user_id, created_at desc);
+
+alter table public.fe_password_reset_tokens enable row level security;

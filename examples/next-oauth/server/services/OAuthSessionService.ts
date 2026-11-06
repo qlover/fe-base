@@ -1,15 +1,33 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { hasSessionPath, redirectToPath } from '@config/route';
+import {
+  hasSessionPath,
+  isPlatformAdminPath,
+  redirectAwayFromAdmin,
+  redirectToPath
+} from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthSessionServiceInterface } from '@server/interfaces/OAuthSessionServiceInterface';
+import { checkPlatformAdmin } from '@server/utils/checkPlatformAdmin';
+import { isSessionPayloadRevoked } from '@server/utils/sessionRevocation';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type {
   OAuthSessionInterface,
   OAuthSessionPayload
 } from '@qlover/oauth-wrapper';
 import type { NextRequest } from 'next/server';
+
+/** Cookie fields for attaching a session to a {@link NextResponse}. */
+export type SessionCookieFieldsType = {
+  readonly name: string;
+  readonly value: string;
+  readonly httpOnly: boolean;
+  readonly secure: boolean;
+  readonly sameSite: 'lax';
+  readonly path: string;
+  readonly maxAge: number;
+};
 
 /**
  * 该文件用于页面访问权限控制
@@ -89,22 +107,60 @@ export class OAuthSessionService
       return NextResponse.redirect(redirectToPath(request));
     }
 
+    // 已被「撤销所有会话」（如重置密码）作废的 session：清 cookie 后去登录
+    if (await isSessionPayloadRevoked(payload)) {
+      const response = NextResponse.redirect(redirectToPath(request));
+      response.cookies.delete(this.sessionKey);
+      return response;
+    }
+
+    const pathname = request.nextUrl.pathname;
+    if (isPlatformAdminPath(pathname)) {
+      const userId = String(
+        payload.userId ??
+          (payload as { user?: Pick<UserSchema, 'id'> }).user?.id ??
+          ''
+      );
+      if (!userId || !(await checkPlatformAdmin(userId))) {
+        return NextResponse.redirect(redirectAwayFromAdmin(request));
+      }
+    }
+
     // 4. 验证通过，返回正常响应
     return nextResponse ?? NextResponse.next({ request });
+  }
+
+  /**
+   * Build session cookie fields for attaching to a {@link NextResponse}
+   * (e.g. OAuth redirects). Prefer this over `cookies().set` + redirect —
+   * Next may drop the cookie jar on a freshly constructed redirect response.
+   */
+  public buildSessionCookie(
+    payload: OAuthSessionPayload
+  ): SessionCookieFieldsType {
+    return {
+      name: this.sessionKey,
+      value: this.generateJWT(payload),
+      httpOnly: true,
+      secure: this.secure,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7
+    };
   }
 
   /**
    * @override
    */
   public async setSession(payload: OAuthSessionPayload): Promise<void> {
-    const token = jwt.sign(payload, this.sessionSecret, { expiresIn: '7d' });
+    const cookie = this.buildSessionCookie(payload);
     const cookieStore = await cookies();
-    cookieStore.set(this.sessionKey, token, {
-      httpOnly: true,
-      secure: this.secure,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7
+    cookieStore.set(cookie.name, cookie.value, {
+      httpOnly: cookie.httpOnly,
+      secure: cookie.secure,
+      sameSite: cookie.sameSite,
+      path: cookie.path,
+      maxAge: cookie.maxAge
     });
   }
 
@@ -126,7 +182,39 @@ export class OAuthSessionService
       return null;
     }
 
-    return this.parseJWT(raw, this.sessionSecret);
+    const payload = this.parseJWT(raw, this.sessionSecret);
+    if (!payload) {
+      return null;
+    }
+
+    // 签发时间早于 fe_users.sessions_revoked_at 的会话视为失效。
+    return (await isSessionPayloadRevoked(payload)) ? null : payload;
+  }
+
+  /**
+   * 局部更新会话 cookie 中缓存的用户字段（如改展示名后同步 `name`），并续期 cookie。
+   *
+   * @param patch - 合并进会话 `user` 的字段
+   * @returns 无会话或会话无 user 时返回 false
+   */
+  public async patchSessionUser(patch: Partial<UserSchema>): Promise<boolean> {
+    const payload = (await this.getSession()) as
+      | (OAuthSessionPayload & {
+          user?: UserSchema;
+          iat?: number;
+          exp?: number;
+        })
+      | null;
+    if (!payload?.user) {
+      return false;
+    }
+
+    const { iat: _iat, exp: _exp, ...rest } = payload;
+    await this.setSession({
+      ...rest,
+      user: { ...payload.user, ...patch }
+    } as OAuthSessionPayload);
+    return true;
   }
 
   /**

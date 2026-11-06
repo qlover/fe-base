@@ -1,14 +1,23 @@
 'use client';
 
+import { useMountedClient } from '@qlover/next-kit/client';
 import { AuthButtonUI } from './AuthButtonUI';
 import { useUserAuth } from '../hook/useUserAuth';
+
+const skeleton = (
+  <div
+    data-testid="AuthButton"
+    className="h-8 w-10 sm:h-9 sm:w-16 animate-pulse rounded-lg bg-elevated border border-primary-border/60"
+    aria-hidden
+  />
+);
 
 /**
  * Header auth control: local UI only (login / logout).
  *
- * Page entry is gated by middleware; this reads the client user store from
- * bootstrap (`restoreUserService`) and shows a compact skeleton while loading
- * so the rest of the page is never blocked.
+ * Renders a skeleton on the server pass and the first client render (before
+ * hydration) so SSG HTML matches the first client paint. After mount, show
+ * auth state; keep the skeleton while restoreUser is still loading.
  */
 export function AuthButton(props: {
   loginOnly?: boolean;
@@ -16,15 +25,10 @@ export function AuthButton(props: {
 }) {
   const { loginOnly = false, showLogoutLabel = false } = props;
   const { success, loading, user } = useUserAuth();
+  const mounted = useMountedClient();
 
-  if (loading) {
-    return (
-      <div
-        data-testid="AuthButton"
-        className="h-8 w-10 sm:h-9 sm:w-16 animate-pulse rounded-lg bg-elevated border border-primary-border/60"
-        aria-hidden
-      />
-    );
+  if (!mounted || loading) {
+    return skeleton;
   }
 
   return (

@@ -14,6 +14,7 @@ import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { SystemRole, type SystemRoleType } from '@shared/auth/systemRole';
+import { ADMIN_LINK_QUERY } from '@config/adminLinkQuery';
 import type { AdminUsersI18nInterface } from '@config/i18n-mapping/admin18n';
 import type { AdminUserListItem } from '@schemas/AdminUserSchema';
 
@@ -44,7 +45,16 @@ export function AdminUsersPanel({ tt }: { tt: AdminUsersI18nInterface }) {
   const { allowed: canChangeRole } = useCan(
     PermissionKey.admin_users_system_role
   );
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(() => {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+    return (
+      new URLSearchParams(window.location.search).get(
+        ADMIN_LINK_QUERY.userKeyword
+      ) ?? ''
+    );
+  });
 
   const [list, listStore] =
     usePendingAsyncStore<AsyncState<AdminUserListItem[]>>();

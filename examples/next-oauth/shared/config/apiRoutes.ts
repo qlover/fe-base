@@ -6,6 +6,25 @@
  */
 
 /**
+ * API path: `/api/admin/feedback`
+ *
+ * @see [src/app/api/admin/feedback/route.ts](../../src/app/api/admin/feedback/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/route.ts`
+ */
+export const API_ADMIN_FEEDBACK = '/api/admin/feedback' as const;
+
+/**
+ * API path: `/api/admin/feedback/github-issue`
+ *
+ * @see [src/app/api/admin/feedback/github-issue/route.ts](../../src/app/api/admin/feedback/github-issue/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/github-issue/route.ts`
+ */
+export const API_ADMIN_FEEDBACK_GITHUB_ISSUE =
+  '/api/admin/feedback/github-issue' as const;
+
+/**
  * API path: `/api/admin/locales`
  *
  * @see [src/app/api/admin/locales/route.ts](../../src/app/api/admin/locales/route.ts)
@@ -34,6 +53,24 @@ export const API_ADMIN_LOCALES_NAMESPACES =
   '/api/admin/locales/namespaces' as const;
 
 /**
+ * API path: `/api/admin/mail-logs`
+ *
+ * @see [src/app/api/admin/mail-logs/route.ts](../../src/app/api/admin/mail-logs/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/mail-logs/route.ts`
+ */
+export const API_ADMIN_MAIL_LOGS = '/api/admin/mail-logs' as const;
+
+/**
+ * API path: `/api/admin/mail/test`
+ *
+ * @see [src/app/api/admin/mail/test/route.ts](../../src/app/api/admin/mail/test/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/mail/test/route.ts`
+ */
+export const API_ADMIN_MAIL_TEST = '/api/admin/mail/test' as const;
+
+/**
  * API path: `/api/admin/memory-kv`
  *
  * @see [src/app/api/admin/memory-kv/route.ts](../../src/app/api/admin/memory-kv/route.ts)
@@ -52,6 +89,15 @@ export const API_ADMIN_MEMORY_KV = '/api/admin/memory-kv' as const;
 export const API_ADMIN_OTP_MONITOR = '/api/admin/otp-monitor' as const;
 
 /**
+ * API path: `/api/admin/overview`
+ *
+ * @see [src/app/api/admin/overview/route.ts](../../src/app/api/admin/overview/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/overview/route.ts`
+ */
+export const API_ADMIN_OVERVIEW = '/api/admin/overview' as const;
+
+/**
  * API path: `/api/admin/permissions`
  *
  * @see [src/app/api/admin/permissions/route.ts](../../src/app/api/admin/permissions/route.ts)
@@ -59,6 +105,15 @@ export const API_ADMIN_OTP_MONITOR = '/api/admin/otp-monitor' as const;
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/permissions/route.ts`
  */
 export const API_ADMIN_PERMISSIONS = '/api/admin/permissions' as const;
+
+/**
+ * API path: `/api/admin/request-logs`
+ *
+ * @see [src/app/api/admin/request-logs/route.ts](../../src/app/api/admin/request-logs/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/request-logs/route.ts`
+ */
+export const API_ADMIN_REQUEST_LOGS = '/api/admin/request-logs' as const;
 
 /**
  * API path: `/api/admin/roles`
@@ -115,6 +170,16 @@ export const API_CALLBACK_EMAIL_LOGIN = '/api/callback/email-login' as const;
  */
 export const API_CALLBACK_PROVIDER_LOGIN =
   '/api/callback/provider-login' as const;
+
+/**
+ * API path: `/api/callback/upstream-oauth`
+ *
+ * @see [src/app/api/callback/upstream-oauth/route.ts](../../src/app/api/callback/upstream-oauth/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/upstream-oauth/route.ts`
+ */
+export const API_CALLBACK_UPSTREAM_OAUTH =
+  '/api/callback/upstream-oauth' as const;
 
 /**
  * API path: `/api/clients`
@@ -200,6 +265,62 @@ export const API_PUBLIC_CONFIG = '/api/public-config' as const;
 export const API_REFERENCE = '/api/reference' as const;
 
 /**
+ * API path: `/api/user/bind-email/send`
+ *
+ * @see [src/app/api/user/bind-email/send/route.ts](../../src/app/api/user/bind-email/send/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/bind-email/send/route.ts`
+ */
+export const API_USER_BIND_EMAIL_SEND = '/api/user/bind-email/send' as const;
+
+/**
+ * API path: `/api/user/bind-email/verify`
+ *
+ * @see [src/app/api/user/bind-email/verify/route.ts](../../src/app/api/user/bind-email/verify/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/bind-email/verify/route.ts`
+ */
+export const API_USER_BIND_EMAIL_VERIFY =
+  '/api/user/bind-email/verify' as const;
+
+/**
+ * API path: `/api/user/display-name`
+ *
+ * @see [src/app/api/user/display-name/route.ts](../../src/app/api/user/display-name/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/display-name/route.ts`
+ */
+export const API_USER_DISPLAY_NAME = '/api/user/display-name' as const;
+
+/**
+ * API path: `/api/user/feedback`
+ *
+ * @see [src/app/api/user/feedback/route.ts](../../src/app/api/user/feedback/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/feedback/route.ts`
+ */
+export const API_USER_FEEDBACK = '/api/user/feedback' as const;
+
+/**
+ * API path: `/api/user/feedback/:id/screenshots`
+ *
+ * @see [src/app/api/user/feedback/[id]/screenshots/route.ts](../../src/app/api/user/feedback/[id]/screenshots/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/feedback/[id]/screenshots/route.ts`
+ */
+export const API_USER_FEEDBACK_SCREENSHOTS =
+  '/api/user/feedback/:id/screenshots' as const;
+
+/**
+ * API path: `/api/user/linked-logins`
+ *
+ * @see [src/app/api/user/linked-logins/route.ts](../../src/app/api/user/linked-logins/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/linked-logins/route.ts`
+ */
+export const API_USER_LINKED_LOGINS = '/api/user/linked-logins' as const;
+
+/**
  * API path: `/api/user/login`
  *
  * @see [src/app/api/user/login/route.ts](../../src/app/api/user/login/route.ts)
@@ -216,6 +337,16 @@ export const API_USER_LOGIN = '/api/user/login' as const;
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/provider/route.ts`
  */
 export const API_USER_LOGIN_PROVIDER = '/api/user/login/provider' as const;
+
+/**
+ * API path: `/api/user/login/upstream-oauth`
+ *
+ * @see [src/app/api/user/login/upstream-oauth/route.ts](../../src/app/api/user/login/upstream-oauth/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/upstream-oauth/route.ts`
+ */
+export const API_USER_LOGIN_UPSTREAM_OAUTH =
+  '/api/user/login/upstream-oauth' as const;
 
 /**
  * API path: `/api/user/logout`
@@ -254,6 +385,24 @@ export const API_USER_OTP_VERIFY = '/api/user/otp/verify' as const;
 export const API_USER_PASSWORD = '/api/user/password' as const;
 
 /**
+ * API path: `/api/user/password/forgot`
+ *
+ * @see [src/app/api/user/password/forgot/route.ts](../../src/app/api/user/password/forgot/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/password/forgot/route.ts`
+ */
+export const API_USER_PASSWORD_FORGOT = '/api/user/password/forgot' as const;
+
+/**
+ * API path: `/api/user/password/reset`
+ *
+ * @see [src/app/api/user/password/reset/route.ts](../../src/app/api/user/password/reset/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/password/reset/route.ts`
+ */
+export const API_USER_PASSWORD_RESET = '/api/user/password/reset' as const;
+
+/**
  * API path: `/api/user/register`
  *
  * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
@@ -280,19 +429,35 @@ export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
  */
 export const API_USER_SESSION = '/api/user/session' as const;
 
+/**
+ * API path: `/api/webhooks/github`
+ *
+ * @see [src/app/api/webhooks/github/route.ts](../../src/app/api/webhooks/github/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/webhooks/github/route.ts`
+ */
+export const API_WEBHOOKS_GITHUB = '/api/webhooks/github' as const;
+
 export type ApiRoutePath =
+  | typeof API_ADMIN_FEEDBACK
+  | typeof API_ADMIN_FEEDBACK_GITHUB_ISSUE
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES
+  | typeof API_ADMIN_MAIL_LOGS
+  | typeof API_ADMIN_MAIL_TEST
   | typeof API_ADMIN_MEMORY_KV
   | typeof API_ADMIN_OTP_MONITOR
+  | typeof API_ADMIN_OVERVIEW
   | typeof API_ADMIN_PERMISSIONS
+  | typeof API_ADMIN_REQUEST_LOGS
   | typeof API_ADMIN_ROLES
   | typeof API_ADMIN_SITE_SETTINGS
   | typeof API_ADMIN_USERS
   | typeof API_ADMIN_USERS_SYSTEM_ROLE
   | typeof API_CALLBACK_EMAIL_LOGIN
   | typeof API_CALLBACK_PROVIDER_LOGIN
+  | typeof API_CALLBACK_UPSTREAM_OAUTH
   | typeof API_CLIENTS
   | typeof API_CLIENTS_2
   | typeof API_CLIENTS_ROTATE_SECRET
@@ -302,12 +467,22 @@ export type ApiRoutePath =
   | typeof API_OAUTH_VERIFY
   | typeof API_PUBLIC_CONFIG
   | typeof API_REFERENCE
+  | typeof API_USER_BIND_EMAIL_SEND
+  | typeof API_USER_BIND_EMAIL_VERIFY
+  | typeof API_USER_DISPLAY_NAME
+  | typeof API_USER_FEEDBACK
+  | typeof API_USER_FEEDBACK_SCREENSHOTS
+  | typeof API_USER_LINKED_LOGINS
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGIN_PROVIDER
+  | typeof API_USER_LOGIN_UPSTREAM_OAUTH
   | typeof API_USER_LOGOUT
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY
   | typeof API_USER_PASSWORD
+  | typeof API_USER_PASSWORD_FORGOT
+  | typeof API_USER_PASSWORD_RESET
   | typeof API_USER_REGISTER
   | typeof API_USER_REQUEST_LOGS
-  | typeof API_USER_SESSION;
+  | typeof API_USER_SESSION
+  | typeof API_WEBHOOKS_GITHUB;

@@ -1,20 +1,11 @@
-import dynamic from 'next/dynamic';
 import { AdminLocalesPanel } from '@/uikit/components-pages/AdminLocalesPanel';
-import { useAdminNavItems } from '@/uikit/hook/useAdminNavItems';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { adminLocales18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
-
-const AdminLayout = dynamic(
-  () =>
-    import('@/uikit/components-pages/AdminLayout').then(
-      (mod) => mod.AdminLayout
-    ),
-  { ssr: false }
-);
 
 interface AdminLocalesProps {
   messages: Record<string, string>;
@@ -23,23 +14,20 @@ interface AdminLocalesProps {
 const namespace = ['admin_locales', 'permission'];
 
 /**
- * Admin locales CMS (Pages Router / CSR).
- * Entry auth is middleware via LOGINED_PAGES.
+ * 管理后台多语言 CMS 页（Pages Router / CSR）。
+ * Shell 由 `_app` 的 {@link AdminPagesAppShell} 提供。
  */
 export default function AdminLocalesPage({}: AdminLocalesProps) {
   const seoMetadata = useI18nMapping(adminLocales18n);
-  const navItems = useAdminNavItems();
 
   return (
-    <AdminLayout seoMetadata={seoMetadata} navItems={navItems}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-primary-text">
-          {seoMetadata.title}
-        </h1>
-        <p className="text-secondary-text mt-2">{seoMetadata.description}</p>
-      </div>
+    <AdminPageShell
+      title={seoMetadata.title}
+      description={seoMetadata.description}
+      seoMetadata={seoMetadata}
+    >
       <AdminLocalesPanel tt={seoMetadata} />
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
 
