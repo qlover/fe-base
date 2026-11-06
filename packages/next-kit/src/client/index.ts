@@ -68,7 +68,18 @@ export {
   useReturnTo,
   useWarnTranslations,
   useI18nMapping,
-  usePageI18nMapping
+  usePageI18nMapping,
+  useNavigationGuard,
+  NAVIGATION_GUARD_DECISION,
+  NAVIGATION_GUARD_STATE_KEY,
+  isModifiedAnchorClick,
+  resolveGuardedAnchor,
+  isGuardHistoryState,
+  withGuardHistoryState,
+  type NavigationGuardCopyType,
+  type NavigationGuardDecisionType,
+  type NavigationGuardOptionsType,
+  type UseNavigationGuardParamsType
 } from './hooks';
 
 export type {

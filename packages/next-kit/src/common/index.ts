@@ -30,6 +30,21 @@ export {
   type PagesThemeInitOptions
 } from './utils/getPagesThemeInitScript';
 export {
+  escapeIlikePattern,
+  buildIlikeOrString,
+  type IlikeOrParamsType
+} from './utils/PostgrestIlikeOrUtil';
+export {
+  SseCodec,
+  SseReader,
+  SseWriter,
+  type SseCodecInterface,
+  type SseReaderInterface,
+  type SseWriterInterface,
+  type SseEnvelopeType,
+  type SseWriterRunErrorHandlerType
+} from './sse';
+export {
   TranslateI18nUtil,
   type TranslateFn,
   type TranslateI18nOptions

@@ -11,7 +11,7 @@ import {
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
 import { normalizePhoneE164 } from '@shared/utils/phoneUserIdentity';
-import { buildIlikeOrString } from '@server/utils/PostgrestIlikeOrUtil';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 
 /**
  * Phone lookup candidates: E.164 and legacy digits-only rows from older dumps.

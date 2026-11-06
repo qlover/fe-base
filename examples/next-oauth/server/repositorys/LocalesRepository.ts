@@ -9,7 +9,7 @@ import { defaultSearchParams } from '@config/common';
 import { FeTables } from '@config/feTables';
 import { i18nConfig, type LocaleType } from '@config/i18n';
 import { I } from '@config/ioc-identifiter';
-import { buildIlikeOrString } from '@server/utils/PostgrestIlikeOrUtil';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { FeSupabaseRepo } from './FeSupabaseRepo';
 import type { LoggerInterface } from '@qlover/logger';
 

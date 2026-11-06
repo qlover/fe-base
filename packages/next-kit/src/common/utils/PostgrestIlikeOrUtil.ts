@@ -1,7 +1,7 @@
 /**
  * 多列 ILIKE OR 查询串（PostgREST `.or()`）。
  *
- * 复用方：{@link FeUsersRepository}、{@link LocalesRepository}。
+ * 纯字符串拼装，可在 Node / Edge / 浏览器使用。
  */
 
 export type IlikeOrParamsType = {
