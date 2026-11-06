@@ -1,0 +1,56 @@
+---
+description: examples/next-oauth 服务端分层与可后台任务 Bootstrap 插件规范
+globs: examples/next-oauth/**
+alwaysApply: false
+---
+
+# examples/next-oauth 规范
+
+本文件仅在改动 `examples/next-oauth/**` 时生效。通用协作与 OOP 总纲见 `.cursor/rules/general.mdc`。发布产物（CHANGELOG / version）见 `.cursor/rules/gitcommit.mdc`。
+
+1. **Route（`src/app/api/**/route.ts`）**：新增或扩展 HTTP API / 服务端业务时，必须按 Route → Controller → Service → Repository 落文件，禁止跳层或把业务揉进 route。Route 只做：鉴权插件、`NextApiServer`、读 body / query 原样传入、`IOC(XxxController)` 并直接返回其结果。**禁止**：Zod 校验、业务判断、直接访问 Repository、拼 SQL、调上游、加解密、写日志级编排。
+2. **Controller（`server/controllers/*Controller.ts`）**：只做入参/出参校验（Zod / Validator）、调用 Service、组装对外 DTO。**禁止**：访问 DB、发 HTTP 到上游、加密落库细节（可调 Service）。
+3. **Service（`server/services/*Service.ts`）**：只做业务编排、策略、调用 Repository / 其它 Service / Resolver。**禁止**：直接 `createClient` / 散落 supabase 查询（应交 Repository）。
+4. **Repository（`server/repositorys/*Repository.ts`）**：只做表读写、映射 DB 行 ↔ 领域类型。**禁止**：业务策略、拼 prompt、调外部 API（网关类 Adapter 除外，且不经 Repository 伪装）。
+5. **依赖方向只允许向下**：Route → Controller → Service → Repository（及共享 Util）。上层不反向依赖 UI。
+6. **客户端**（`src/impls` / Panel）只调 `fetch` / `*Api` / 客户端 Service；**不得**复制服务端分层逻辑，也不得绕过 API 直接假造服务端行为。
+7. **落文件清单（新能力最少集）**：纯算法可抽 `server/utils/*Util.ts`（仍须满足 `general.mdc` 第 13 条 Util 准入）；无表则可不建 Repository，但 **不得** 因此把 DB 写进 Controller/Route。
+
+| 层 | 路径示例 |
+| --- | --- |
+| Route | `examples/next-oauth/src/app/api/.../route.ts` |
+| Controller | `examples/next-oauth/server/controllers/XxxController.ts` |
+| Service | `examples/next-oauth/server/services/XxxService.ts` |
+| Repository | `examples/next-oauth/server/repositorys/XxxRepository.ts`（有持久化时） |
+| Schema | `examples/next-oauth/shared/schemas/XxxSchema.ts` |
+
+8. **分层正例 / 反例**：
+
+```text
+✅ route → UserFeedbackController → UserFeedbackService → UserFeedbackRepository
+✅ route 内仅 IOC(Controller)（入参/出参 Zod 均在 Controller）
+
+❌ route.ts 里 schema.parse / Repository.update / 直连上游
+❌ Controller 内写 supabase.from(...)
+❌ Service 里又写一套 HTTP handler
+❌ 「先写在 route 里跑通再拆」——禁止；一开始就分层
+```
+
+9. **可后台任务适用范围**：能在页面外继续 drain / 同步 / 预拉的工作。**不含**必须跟当前页交互的瞬时逻辑。用插件式**内存任务**即可，不强制 Web Worker。
+10. **采集 / 业务面只 `enqueue`（或等价 push）**：禁止在 Panel / 页面 `*Service` 的 mount/dispose / `visibility` / `pagehide` 里散落该任务的 `sync`。
+11. **同步策略收归独立类**：实现 Bootstrap 插件式 `start`/`stop`，在组装点挂载；用**内存单例任务**即可。
+12. **生命周期自管**：idle 定时、`visibilitychange`、`online`、`pagehide`+keepalive 由任务自己注册；`start` 幂等，`stop` 清 timer/监听。
+13. **启动点可换、边界不变**：默认 bootstrap `start()`；若改为「进某页才 start」，只改组装点，**不**把 drain 逻辑写回页面 Service。
+14. **与 UI 编排解耦**：换路由不得依赖「碰巧还在某页」才能排空队列。
+15. **可后台任务不塞进 Route**：服务端 API 分层链路（第 1–8 条）不承担 Bootstrap 任务 drain。
+16. **后台任务正例 / 反例**：
+
+```text
+✅ 业务面 enqueue → Bootstrap 插件 start 后 drain
+✅ NextAfterTaskScheduler / 独立 SyncService 在插件里跑
+
+❌ 页面 dispose 里直接 sync 整队
+❌ 把 idle / keepalive / 重试写进 Panel useEffect 与交互搅在一起
+```
+
+17. **通用能力优先 `@qlover/next-kit`**：ilikeOr、SSE、离开未保存拦截、Dialog、ApiServer 等 Next 适配能力，能沉 kit 则沉 kit；应用只做业务编排与薄接线。禁止在 example 里再复制一套同名工具。

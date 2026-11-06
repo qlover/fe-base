@@ -1,52 +1,47 @@
 ---
-description: Git commit message standards for this repo
+description: Git 提交规范 — 中文说明、禁止作者页脚、禁止手改 CHANGELOG/版本；推荐 commit-tree
 alwaysApply: true
 ---
 
-## Git Commit Standards
+# Git 提交规范
 
-Commit messages use Chinese (subject and body).
+1. **提交说明使用中文**（subject 与 body）。
 
-### Format
+2. **禁止作者类页脚**：严禁在 commit message 末尾追加任何作者 / 共同作者 / Signed-off / Cursor 归属类 trailer。正文在「标题 + 可选 body」结束后即止。禁止示例：
 
 ```
-type(scope?): subject
-
-body?
+Co-authored-by: ...
+Signed-off-by: ...
+Made-with: Cursor
+Generated-by: ...
 ```
 
-Do **not** add author attribution footers such as:
+3. **推荐写法：`git commit-tree`（避免被工具二次注入）**：普通 `git commit` / `git commit --amend -m` 常被 Cursor 自动塞入 `Co-authored-by`。需要干净提交时：
+   1. `git add` 暂存所需文件（勿提交 `.env*.local` 等密钥）。
+   2. `git write-tree` 得到 tree sha。
+   3. 用**仅含中文说明、无 trailer**的 message，经 stdin 调用：`git commit-tree <tree> -p HEAD`
+   4. `git update-ref HEAD <新 commit sha>` 移动当前分支。
+   5. `git log -1 --format=full` 核对：**不得**出现 `Co-authored-by` 等行。
 
-- `Co-authored-by:`
-- `Signed-off-by:`
-- `Made-with: Cursor`
-- other tool/author trailers
+   若已误带 trailer：不要只靠 `--amend -m`（常被再次注入）；用同样流程基于当前 index 重写 commit 对象后再 `update-ref`。
 
-Keep the message to type/subject and optional body only (breaking-change / issue refs are OK if needed).
+4. **格式**：
 
-### Length Limits
+```
+type(scope?): 中文标题
 
-- Subject line: Maximum 50 characters
-- Body line: Maximum 72 characters per line
-- Total commit message: Should not exceed 500 characters
+可选正文
+```
 
-### Types
+- 标题尽量简短（建议 ≤50 字），现在时，句末不加句号。
+- 正文说明「为什么」，不要堆文件清单（除非用户要求）；单行建议 ≤72 字。
+- type：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `chore`
+- 用户未要求时，不要在 footer 写 Breaking Change / issue 引用。
 
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes
-- `refactor`: Code refactoring
-- `perf`: Performance improvements
-- `test`: Adding/updating tests
-- `chore`: Build tasks, configs, etc
-
-### Rules
-
-- Subject: Must be concise (max 50 chars), present tense, no period
-- Scope (Optional): Component name (e.g., auth, api)
-- Body (Optional): Wrap text at 72 chars, use bullet points for multiple items
-- Do not put file lists or author info in the footer
+5. **禁止手改发布产物（changesets 自动生成）**：
+   - **禁止**手动编辑各包根目录的 `CHANGELOG.md`（含 `packages/*/CHANGELOG.md`）。
+   - **禁止**为「顺便发版」手改 `packages/*/package.json` 的 `version` 字段。
+   - 版本与 CHANGELOG 由 **changesets / CI 发版流程**写入；功能 PR 只改源码与测试，需要发版时按仓库惯例补 `.changeset/*.md`（若流程要求），**不要**直接改 CHANGELOG 或 version。
 
 ### Examples
 
@@ -54,4 +49,5 @@ Keep the message to type/subject and optional body only (breaking-change / issue
 feat(auth): 实现 Google OAuth 登录
 fix(api): 修复会话超时问题
 docs: 补充安装步骤
+feat(next-kit): 下沉 ilikeOr 与 SSE 传输
 ```
