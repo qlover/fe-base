@@ -1,0 +1,58 @@
+{
+  "name": "@qlover/llm",
+  "description": "Isomorphic OpenAI-compatible LLM client (completions, streaming text/reasoning, optional Node proxy fetch)",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "README_EN.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "lint": "eslint src --fix",
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/llm"
+  },
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/llm#readme",
+  "keywords": [
+    "llm",
+    "openai",
+    "ollama",
+    "chat-completions",
+    "streaming"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "optionalDependencies": {
+    "undici": "^7.0.0"
+  }
+}
