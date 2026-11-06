@@ -1,8 +1,8 @@
 import { API_CLIENTS_2, API_CLIENTS_ROTATE_SECRET } from './apiRoutes';
 import { useLocaleRoutes } from './common';
 import { i18nConfig } from './i18n';
-import type { LocaleType } from './i18n';
 import { SETTINGS_LOGGED_IN_ROUTES } from './SettingsNavConfig';
+import type { LocaleType } from './i18n';
 import type { NextURL } from 'next/dist/server/web/next-url';
 import type { NextRequest } from 'next/server';
 
@@ -313,8 +313,7 @@ export function pathnameWithoutLocale(pathname: string): string {
 export function isPlatformAdminPath(pathname: string): boolean {
   const withoutLocale = pathnameWithoutLocale(pathname);
   return (
-    withoutLocale === ROUTE_ADMIN ||
-    withoutLocale.startsWith(`${ROUTE_ADMIN}/`)
+    withoutLocale === ROUTE_ADMIN || withoutLocale.startsWith(`${ROUTE_ADMIN}/`)
   );
 }
 

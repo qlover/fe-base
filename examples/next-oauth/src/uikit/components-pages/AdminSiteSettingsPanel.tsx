@@ -271,9 +271,7 @@ export function AdminSiteSettingsPanel({
         : null;
 
   const byKey = useMemo(() => entryMap(entries), [entries]);
-  const highlightedAnchor = useAdminAnchorFocus(
-    !loading && entries.length > 0
-  );
+  const highlightedAnchor = useAdminAnchorFocus(!loading && entries.length > 0);
 
   const load = useCallback(async () => {
     const rows = await runAsyncStore(listStore, siteSettingsApi.list(), {

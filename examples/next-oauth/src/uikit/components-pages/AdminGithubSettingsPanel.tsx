@@ -143,7 +143,9 @@ export function AdminGithubSettingsPanel({
   const privateKeyRaw = String(
     valueOf(FE_SITE_SETTING_KEYS.GITHUB_APP_PRIVATE_KEY)
   );
-  const webhookRaw = String(valueOf(FE_SITE_SETTING_KEYS.GITHUB_WEBHOOK_SECRET));
+  const webhookRaw = String(
+    valueOf(FE_SITE_SETTING_KEYS.GITHUB_WEBHOOK_SECRET)
+  );
 
   return (
     <section

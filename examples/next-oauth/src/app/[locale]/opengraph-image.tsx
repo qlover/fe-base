@@ -9,6 +9,7 @@ export const contentType = SITE_SHARE.imageContentType;
 
 /**
  * Default share image for this locale tree (`og:image` / Twitter card).
+ * Next.js App Router 约定本文件必须 default export。
  */
 export default async function Image(): Promise<ImageResponse> {
   return new ShareCardImageService().render({

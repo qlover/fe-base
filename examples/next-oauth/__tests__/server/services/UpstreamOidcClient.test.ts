@@ -26,7 +26,9 @@ describe('UpstreamOidcClient', () => {
     const started = await client.buildAuthorizeStart({
       redirectUri: 'https://app.example/api/callback/upstream-oauth'
     });
-    expect(started.authorizeUrl).toContain('https://idp.example/oauth/authorize');
+    expect(started.authorizeUrl).toContain(
+      'https://idp.example/oauth/authorize'
+    );
     expect(started.authorizeUrl).toContain('client_id=client-1');
     expect(started.authorizeUrl).toContain('code_challenge=');
     expect(started.authorizeUrl).toContain('code_challenge_method=S256');

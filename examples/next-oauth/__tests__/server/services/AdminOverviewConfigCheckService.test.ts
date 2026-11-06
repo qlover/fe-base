@@ -5,8 +5,8 @@ import {
   AdminOverviewCheckState
 } from '@schemas/AdminOverviewSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { SiteSettingsService } from '@server/services/SiteSettingsService';
 import { AdminOverviewConfigCheckService } from '@server/services/admin-overview/AdminOverviewConfigCheckService';
+import type { SiteSettingsService } from '@server/services/SiteSettingsService';
 
 describe('AdminOverviewConfigCheckService.check', () => {
   let getSecretString: ReturnType<typeof vi.fn>;

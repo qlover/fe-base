@@ -12,8 +12,8 @@ import {
   type UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
 import { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
-import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 import { FeedbackIssueSyncService } from '@server/services/feedback-github/FeedbackIssueSyncService';
+import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 
 export type FeedbackScreenshotUploadType = {
   readonly bytes: Buffer;

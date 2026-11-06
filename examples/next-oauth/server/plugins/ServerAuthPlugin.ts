@@ -10,9 +10,7 @@ import type {
  * API auth plugin: verify the app session, then ensure the Supabase cookie
  * session is usable so RLS does not silently run as anonymous.
  */
-export class ServerAuthPlugin
-  implements BootstrapServerPlugin<NextOAuthServerIocMap>
-{
+export class ServerAuthPlugin implements BootstrapServerPlugin<NextOAuthServerIocMap> {
   public readonly pluginName = 'ServerAuthPlugin';
 
   /**

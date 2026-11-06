@@ -18,6 +18,9 @@ export class GithubAppIssueGateway implements GithubIssueGatewayInterface {
     protected readonly client: GithubAppClient
   ) {}
 
+  /**
+   * @override
+   */
   public async createIssue(
     config: GithubFeedbackConfigType,
     input: GithubIssueCreateInputType

@@ -1,10 +1,10 @@
 'use client';
 
 import { ClientSeo } from '@qlover/next-kit/client';
-import type { ReactNode } from 'react';
 import { AppRoutePagePages } from '@/uikit/components-app/AppRoutePagePages';
 import { SettingsHubLayout } from '@/uikit/components-app/settings/SettingsHubLayout';
 import type { SettingsI18nInterface } from '@config/i18n-mapping/settingsI18n';
+import type { ReactNode } from 'react';
 
 /**
  * Settings 各页共用外壳：AppRoutePage + Hub 布局。

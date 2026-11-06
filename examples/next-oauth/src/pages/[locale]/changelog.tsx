@@ -1,5 +1,4 @@
 import { ClientSeo } from '@qlover/next-kit/client';
-import { useMemo } from 'react';
 import { ChangelogContent } from '@/uikit/components-pages/ChangelogContent';
 import { PagesRoutePage } from '@/uikit/components-pages/PagesRoutePage';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
@@ -9,12 +8,12 @@ import {
   changelogI18n,
   changelogI18nNamespace
 } from '@config/i18n-mapping/changelogI18n';
-import type { NextOauthChangelogReleaseType } from '@server/render/readNextOauthChangelog';
-import { readNextOauthChangelog } from '@server/render/readNextOauthChangelog';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';
 import { PagesRouteParams } from '@server/render/PagesRouteParams';
-import type { GetStaticPropsContext } from 'next';
+import type { NextOauthChangelogReleaseType } from '@server/render/readNextOauthChangelog';
+import { readNextOauthChangelog } from '@server/render/readNextOauthChangelog';
 import { version as appVersion } from '../../../package.json';
+import type { GetStaticPropsContext } from 'next';
 
 interface ChangelogPageProps {
   readonly messages: Record<string, string>;
@@ -30,15 +29,12 @@ export default function ChangelogPage({
   currentVersion
 }: ChangelogPageProps) {
   const seoMetadata = useI18nMapping(changelogI18n);
-  const tt = useMemo(
-    () => ({
-      title: seoMetadata.title,
-      description: seoMetadata.description,
-      current: seoMetadata.current,
-      viewOnGithub: seoMetadata.viewOnGithub
-    }),
-    [seoMetadata]
-  );
+  const tt = {
+    title: seoMetadata.title,
+    description: seoMetadata.description,
+    current: seoMetadata.current,
+    viewOnGithub: seoMetadata.viewOnGithub
+  };
 
   return (
     <PagesRoutePage

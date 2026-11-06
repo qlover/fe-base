@@ -59,7 +59,9 @@ export function AdminHomeFeedbackCard({
                   {item.category}
                 </span>
               </div>
-              <p className="mt-0.5 line-clamp-2 text-primary-text">{item.body}</p>
+              <p className="mt-0.5 line-clamp-2 text-primary-text">
+                {item.body}
+              </p>
             </li>
           ))}
         </ul>

@@ -14,10 +14,10 @@ import { oauthI18nIdToRfc } from '@config/oauthErrors';
 import { nextApiServerBackstop } from './plugins/nextApiServerBackstop';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
-import type { SessionCookieFieldsType } from './services/OAuthSessionService';
 import { NextApiHandler } from './utils/NextApiHandler';
 import { ServerContext } from './utils/ServerContext';
 import type { NextOAuthServerIocMap } from './BootstrapServer';
+import type { SessionCookieFieldsType } from './services/OAuthSessionService';
 import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit/executor';
 import type { NextKitApiResult } from '@qlover/next-kit/common';
@@ -26,7 +26,11 @@ import type { ServerContextInterface } from '@qlover/next-kit/server';
 function readSessionCookieFromResult(
   result: NextKitApiResult<unknown>
 ): SessionCookieFieldsType | null {
-  if (!result.success || result.data == null || typeof result.data !== 'object') {
+  if (
+    !result.success ||
+    result.data == null ||
+    typeof result.data !== 'object'
+  ) {
     return null;
   }
   const cookie = (result.data as { sessionCookie?: unknown }).sessionCookie;

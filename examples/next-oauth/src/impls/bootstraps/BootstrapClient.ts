@@ -2,13 +2,13 @@ import { Bootstrap } from '@qlover/corekit-bridge';
 import { browserGlobalsName } from '@config/common';
 import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
 import { isAuthCallbackPath } from '@config/route';
-import type { UserService } from '../UserService';
 import * as globals from '../globals';
 import { exampleBackgroundTask } from './ExampleBackgroundTask';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import { restoreUserService } from './RestoreUserService';
 import { UserScopeResetService } from './UserScopeResetService';
+import type { UserService } from '../UserService';
 import type {
   BootstrapExecutorPlugin,
   IOCContainerInterface,

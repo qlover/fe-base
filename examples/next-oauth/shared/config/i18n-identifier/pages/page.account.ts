@@ -314,8 +314,7 @@ export const PAGE_ACCOUNT_LINKED = 'page_account:linked';
  * @localZh 最近登录
  * @localEn Last login
  */
-export const PAGE_ACCOUNT_LINKED_LAST_LOGIN =
-  'page_account:linked_last_login';
+export const PAGE_ACCOUNT_LINKED_LAST_LOGIN = 'page_account:linked_last_login';
 
 /**
  * @description Failed to load linked logins

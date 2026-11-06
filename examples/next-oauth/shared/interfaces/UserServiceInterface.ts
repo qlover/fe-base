@@ -16,7 +16,8 @@ export type LoginProviderResult = {
 };
 
 export interface UserServiceInterface
-  extends CorekitBridgeUserServiceInterface<UserSchema, UserCredential>,
+  extends
+    CorekitBridgeUserServiceInterface<UserSchema, UserCredential>,
     SessionCapabilitiesStoreInterface {
   /**
    * Get the user token

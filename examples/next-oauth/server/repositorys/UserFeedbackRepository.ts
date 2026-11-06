@@ -316,9 +316,7 @@ export class UserFeedbackRepository {
   }
 }
 
-function parseClientContext(
-  value: unknown
-): FeedbackClientContextType | null {
+function parseClientContext(value: unknown): FeedbackClientContextType | null {
   if (value == null) {
     return null;
   }
@@ -342,9 +340,7 @@ function rowToPublic(row: FeedbackDbRowType): UserFeedbackItemPublicType {
 }
 
 function displayNameOf(row: FeedbackAdminDbRowType): string {
-  const profile = Array.isArray(row.fe_users)
-    ? row.fe_users[0]
-    : row.fe_users;
+  const profile = Array.isArray(row.fe_users) ? row.fe_users[0] : row.fe_users;
   const name = profile?.display_name?.trim();
   return name && name.length > 0 ? name : row.user_id.slice(0, 8);
 }

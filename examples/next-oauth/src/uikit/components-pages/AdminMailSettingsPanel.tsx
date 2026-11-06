@@ -12,8 +12,8 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { AdminMailApi } from '@/impls/appApi/AdminMailApi';
 import { SiteSettingsApi } from '@/impls/appApi/SiteSettingsApi';
 import { invalidatePublicConfigCache } from '@/impls/fetchPublicConfig';
-import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
+import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import {
   FE_SITE_SETTING_KEYS,

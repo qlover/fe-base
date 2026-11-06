@@ -199,6 +199,7 @@ const eslintConfig = defineConfig([
       'src/app/**/page.tsx',
       'src/app/**/layout.tsx',
       'src/app/**/not-found.tsx',
+      'src/app/**/opengraph-image.tsx',
       'src/i18n/request.ts',
       'src/middleware.ts',
       'src/pages/**/*.tsx',

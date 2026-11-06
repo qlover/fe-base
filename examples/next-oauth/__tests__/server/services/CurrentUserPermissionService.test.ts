@@ -2,16 +2,14 @@ import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PermissionKey } from '@shared/auth/permissionKeys';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
-import { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
-import { PermissionGuardService } from '@server/services/PermissionGuardService';
 import type { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
+import { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
 import type { OAuthUserService } from '@server/services/OAuthUserService';
+import { PermissionGuardService } from '@server/services/PermissionGuardService';
 import type { RolePermissionService } from '@server/services/RolePermissionService';
 
-vi.mock('@shared/auth/systemRole', async () => {
-  const actual = await vi.importActual<
-    typeof import('@shared/auth/systemRole')
-  >('@shared/auth/systemRole');
+vi.mock('@shared/auth/systemRole', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     hasSystemPermission: vi.fn(

@@ -30,9 +30,7 @@ export type GenericUpstreamSessionType = OAuthSessionPayload & {
   readonly refresh_token?: string;
 };
 
-function mapOidcUserToSchema(
-  profile: UpstreamOidcUserInfoType
-): UserSchema {
+function mapOidcUserToSchema(profile: UpstreamOidcUserInfoType): UserSchema {
   const email =
     typeof profile.email === 'string' && profile.email.trim()
       ? profile.email.trim()

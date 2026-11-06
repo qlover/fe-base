@@ -80,6 +80,7 @@ export function LinkedLoginsSection(props: {
             const lastLogin = formatLinkedTimestamp(item.last_login_at, locale);
             return (
               <div
+                data-testid="LinkedLoginsSection"
                 key={`${item.provider}:${item.env ?? ''}:${item.account ?? ''}:${item.linked_at ?? ''}`}
                 className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4"
               >

@@ -12,6 +12,10 @@ import {
   type ReactNode
 } from 'react';
 import { useIOC } from '@/uikit/hook/useIOC';
+import {
+  LOCALE_PREFERENCE_QUERY_KEYS,
+  persistLocaleCookie
+} from '@shared/utils/localePreference';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig, type LocaleType } from '@config/i18n';
 import type { SettingsI18nInterface } from '@config/i18n-mapping/settingsI18n';
@@ -20,10 +24,6 @@ import {
   LOCALE_PREFERENCE_SYSTEM,
   type LocalePreferenceType
 } from '@config/LocalePreferenceConfig';
-import {
-  LOCALE_PREFERENCE_QUERY_KEYS,
-  persistLocaleCookie
-} from '@shared/utils/localePreference';
 import { SettingsLanguageView } from './SettingsLanguageView';
 
 function isLocalePreference(value: string): value is LocalePreferenceType {
@@ -45,9 +45,8 @@ export function SettingsLanguagePanel({
   const currentLocale = useLocale() as LocaleType;
   const localePreference = useIOC(I.LocalePreferenceServiceInterface);
   const [isPending, startTransition] = useTransition();
-  const [preference, setPreference] = useState<LocalePreferenceType>(
-    currentLocale
-  );
+  const [preference, setPreference] =
+    useState<LocalePreferenceType>(currentLocale);
   const [systemLanguageDisplay, setSystemLanguageDisplay] = useState('');
 
   const localeRouter = useMemo(

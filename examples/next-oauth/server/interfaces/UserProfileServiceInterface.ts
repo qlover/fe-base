@@ -11,8 +11,5 @@ export interface UserProfileServiceInterface {
    * @param displayName - 已通过 DisplayNameSchema 校验的展示名
    * @returns 更新后的嵌入会话用户
    */
-  updateDisplayName(
-    userId: string,
-    displayName: string
-  ): Promise<UserSchema>;
+  updateDisplayName(userId: string, displayName: string): Promise<UserSchema>;
 }

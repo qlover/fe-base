@@ -3,7 +3,6 @@
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { useRouter } from 'next/router';
-import type { ReactNode } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import type { SettingsI18nInterface } from '@config/i18n-mapping/settingsI18n';
 import {
@@ -13,6 +12,7 @@ import {
   ROUTE_SETTINGS,
   type SettingsNavItemType
 } from '@config/SettingsNavConfig';
+import type { ReactNode } from 'react';
 
 function resolveI18nField(tt: SettingsI18nInterface, key: string): string {
   const value = (tt as unknown as Record<string, string>)[key];
@@ -147,10 +147,7 @@ function SettingsNavLink({
   );
 }
 
-function resolveSectionTitle(
-  tt: SettingsI18nInterface,
-  id: string
-): string {
+function resolveSectionTitle(tt: SettingsI18nInterface, id: string): string {
   for (const group of SETTINGS_NAV_GROUPS) {
     const hit = group.items.find((i) => i.id === id);
     if (hit != null) {

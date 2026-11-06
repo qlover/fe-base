@@ -38,6 +38,7 @@ import {
   type ChangePasswordInput
 } from '@schemas/ChangePasswordSchema';
 import { displayNameUpdateSchema } from '@schemas/DisplayNameSchema';
+import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
@@ -56,7 +57,6 @@ import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import { RolePermissionService } from '@server/services/RolePermissionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
 import { UserProfileService } from '@server/services/UserProfileService';
-import type { LinkedLoginType } from '@schemas/LinkedLoginSchema';
 import { ResultHandlerContext } from '@server/utils/NextApiHandler';
 import type {
   UserLoginContext,

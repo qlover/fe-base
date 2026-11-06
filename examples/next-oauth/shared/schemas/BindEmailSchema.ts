@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { userSchema } from '@qlover/next-kit/common';
+import { z } from 'zod';
 
 /** POST /api/user/bind-email/send */
 export const bindEmailSendSchema = z.object({

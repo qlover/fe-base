@@ -1,5 +1,5 @@
-import { inject, injectable } from '@shared/container';
 import type { AppPermissionKey } from '@shared/auth/permissionKeys';
+import { inject, injectable } from '@shared/container';
 import {
   PermissionGuardService,
   type PermissionCheckerType

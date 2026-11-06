@@ -7,11 +7,11 @@ import {
 } from '@schemas/AdminOverviewSchema';
 import type { AdminOverviewRepository } from '@server/repositorys/AdminOverviewRepository';
 import type { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
-import type { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
-import type { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 import type { AdminOverviewConfigCheckService } from '@server/services/admin-overview/AdminOverviewConfigCheckService';
 import { AdminOverviewRangeResolver } from '@server/services/admin-overview/AdminOverviewRangeResolver';
 import { AdminOverviewService } from '@server/services/admin-overview/AdminOverviewService';
+import type { CurrentUserPermissionService } from '@server/services/CurrentUserPermissionService';
+import type { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 
 describe('AdminOverviewService.load', () => {
   let createChecker: ReturnType<typeof vi.fn>;

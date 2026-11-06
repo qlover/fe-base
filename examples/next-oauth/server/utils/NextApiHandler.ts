@@ -8,8 +8,8 @@ import {
 import { OAuthWrapperError } from '@qlover/oauth-wrapper';
 import { oauthWrapperI18n } from '@config/i18n-mapping/oauthWrapperI18n';
 import { supabaseAuthErrorI18n } from '@config/i18n-mapping/supabaseAuthErrorI18n';
-import type { OAuthRfcCodeType } from '@qlover/oauth-wrapper';
 import type { NextKitApiResult } from '@qlover/next-kit/common';
+import type { OAuthRfcCodeType } from '@qlover/oauth-wrapper';
 
 export {
   ResultContext,

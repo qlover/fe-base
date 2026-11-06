@@ -1,5 +1,5 @@
-import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminMemoryKvPanel } from '@/uikit/components-pages/AdminMemoryKvPanel';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { adminMemoryKv18n } from '@config/i18n-mapping/admin18n';

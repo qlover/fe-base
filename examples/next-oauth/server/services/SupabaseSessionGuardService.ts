@@ -22,9 +22,7 @@ type AppSessionPayloadType = OAuthSessionPayload & {
  * @see SupabaseSessionGuardInterface
  */
 @injectable()
-export class SupabaseSessionGuardService
-  implements SupabaseSessionGuardInterface
-{
+export class SupabaseSessionGuardService implements SupabaseSessionGuardInterface {
   protected readonly oauthSession: OAuthSessionService;
 
   constructor(

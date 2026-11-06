@@ -1,9 +1,6 @@
 import { RouterService as KitRouterService } from '@qlover/next-kit/client';
 import { inject, injectable } from '@shared/container';
-import {
-  URLParamsKeys,
-  type LoginReasonType
-} from '@config/common';
+import { URLParamsKeys, type LoginReasonType } from '@config/common';
 import { ROUTE_HOME, ROUTE_LOGIN } from '@config/route';
 import type {
   RouterInterface,

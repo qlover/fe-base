@@ -5,7 +5,10 @@ import type {
   ResourceSearchParams,
   ResourceSearchResult
 } from '@qlover/corekit-bridge';
-import type { RequestLogRow, ValidatorInterface } from '@qlover/next-kit/common';
+import type {
+  RequestLogRow,
+  ValidatorInterface
+} from '@qlover/next-kit/common';
 
 /**
  * Admin-only request log search / clear (service-role, unscoped).

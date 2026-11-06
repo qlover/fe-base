@@ -1,6 +1,4 @@
-import {
-  MemoryKvCacheService as KitMemoryKvCacheService
-} from '@qlover/next-kit/server';
+import { MemoryKvCacheService as KitMemoryKvCacheService } from '@qlover/next-kit/server';
 import { injectable } from '@shared/container';
 import type { KvCacheInterface } from '@server/interfaces/KvCacheInterface';
 

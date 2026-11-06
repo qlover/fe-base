@@ -1,8 +1,8 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import { ThemeSwitcher } from '@/uikit/components-app/ThemeSwitcher';
 import type { SettingsI18nInterface } from '@config/i18n-mapping/settingsI18n';
+import type { ReactNode } from 'react';
 
 /**
  * 外观分区：仅 ThemeSwitcher。

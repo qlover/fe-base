@@ -20,6 +20,9 @@ export class GithubWebhookVerifier implements GithubWebhookVerifierInterface {
     protected readonly siteSettings: SiteSettingsService
   ) {}
 
+  /**
+   * @override
+   */
   public async verify(
     rawBody: string,
     signatureHeader: string | null

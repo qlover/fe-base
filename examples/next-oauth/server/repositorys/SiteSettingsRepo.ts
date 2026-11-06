@@ -1,7 +1,3 @@
-import type {
-  SiteSettingUpsertInputType,
-  SiteSettingsStoreInterface
-} from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { createAdminClient, createServerClient } from '@shared/supabase/server';
 import { FeTables } from '@config/feTables';
@@ -9,6 +5,10 @@ import { I } from '@config/ioc-identifiter';
 import type { FeSiteSettingRow } from '@schemas/FeSiteSettingsSchema';
 import { FeSupabaseRepo } from './FeSupabaseRepo';
 import type { LoggerInterface } from '@qlover/logger';
+import type {
+  SiteSettingUpsertInputType,
+  SiteSettingsStoreInterface
+} from '@qlover/next-kit/server';
 
 /** @deprecated 使用 kit {@link SiteSettingUpsertInputType} */
 export type FeSiteSettingUpsertInput = SiteSettingUpsertInputType;
@@ -26,6 +26,9 @@ export class SiteSettingsRepo
     });
   }
 
+  /**
+   * @override
+   */
   public async getAll(): Promise<FeSiteSettingRow[]> {
     const result = await this.getAdminSupabase()
       .from(FeTables.siteSettings)
@@ -34,6 +37,9 @@ export class SiteSettingsRepo
     return (result.data ?? []) as FeSiteSettingRow[];
   }
 
+  /**
+   * @override
+   */
   public async upsertMany(
     rows: readonly SiteSettingUpsertInputType[]
   ): Promise<void> {

@@ -1,19 +1,19 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
-import type { PermissionGuardInterface } from '@qlover/next-kit/server';
 import type { AppPermissionKey } from '@shared/auth/permissionKeys';
+import type { PlatformRoleKeyType } from '@shared/auth/roleKeys';
 import {
   hasSystemPermission,
   normalizeSystemRole,
   platformRoleFromUserRole,
   sessionHasSystemPermission
 } from '@shared/auth/systemRole';
-import type { PlatformRoleKeyType } from '@shared/auth/roleKeys';
 import { inject, injectable } from '@shared/container';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { RolePermissionService } from '@server/services/RolePermissionService';
 import type { UserSchema } from '@qlover/next-kit/common';
+import type { PermissionGuardInterface } from '@qlover/next-kit/server';
 
 export type PermissionCheckerType = (key: AppPermissionKey) => boolean;
 

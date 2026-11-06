@@ -80,7 +80,8 @@ export const ADMIN_FEEDBACK_STATUS_OPEN = 'admin_feedback:status_open';
  * @localZh 处理中
  * @localEn Reviewing
  */
-export const ADMIN_FEEDBACK_STATUS_REVIEWING = 'admin_feedback:status_reviewing';
+export const ADMIN_FEEDBACK_STATUS_REVIEWING =
+  'admin_feedback:status_reviewing';
 
 /**
  * @description Status: resolved
@@ -115,7 +116,8 @@ export const ADMIN_FEEDBACK_CATEGORY_UX = 'admin_feedback:category_ux';
  * @localZh 功能建议
  * @localEn Feature
  */
-export const ADMIN_FEEDBACK_CATEGORY_FEATURE = 'admin_feedback:category_feature';
+export const ADMIN_FEEDBACK_CATEGORY_FEATURE =
+  'admin_feedback:category_feature';
 
 /**
  * @description Category: performance
@@ -130,7 +132,8 @@ export const ADMIN_FEEDBACK_CATEGORY_PERFORMANCE =
  * @localZh 内容
  * @localEn Content
  */
-export const ADMIN_FEEDBACK_CATEGORY_CONTENT = 'admin_feedback:category_content';
+export const ADMIN_FEEDBACK_CATEGORY_CONTENT =
+  'admin_feedback:category_content';
 
 /**
  * @description Category: other

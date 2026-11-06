@@ -1,4 +1,5 @@
 import { UserRole, type UserRoleType } from '@qlover/next-kit/common';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import {
   PlatformRoleKey,
@@ -9,9 +10,8 @@ import {
   type SystemRoleType
 } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
-import { FeTables } from '@config/feTables';
 import { normalizePhoneE164 } from '@shared/utils/phoneUserIdentity';
-import { buildIlikeOrString } from '@qlover/next-kit/common';
+import { FeTables } from '@config/feTables';
 
 /**
  * Phone lookup candidates: E.164 and legacy digits-only rows from older dumps.
@@ -28,9 +28,7 @@ function phoneLookupCandidates(phone: string): string[] {
   );
 }
 
-function normalizeStoredPhone(
-  phone: string | null | undefined
-): string | null {
+function normalizeStoredPhone(phone: string | null | undefined): string | null {
   if (phone == null) {
     return null;
   }

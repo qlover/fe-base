@@ -68,7 +68,9 @@ export function AdminHomeKpiGrid({
               key={item.key}
               className={clsx(ADMIN_HOME_CARD_CLS, 'p-3.5')}
             >
-              <div className="text-secondary-text text-[11px]">{item.label}</div>
+              <div className="text-secondary-text text-[11px]">
+                {item.label}
+              </div>
               <div className="mt-1 text-lg font-semibold tabular-nums">
                 {value.toLocaleString(locale)}
               </div>

@@ -1,6 +1,6 @@
-import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { SettingsDesktopSecurityRedirect } from '@/uikit/components-app/settings/SettingsDesktopSecurityRedirect';
 import { SettingsPageShell } from '@/uikit/components-app/settings/SettingsPageShell';
+import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { settingsI18n } from '@config/i18n-mapping/settingsI18n';
 import type { PagesRouteParamsType } from '@server/render/PagesRouteParams';

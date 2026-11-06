@@ -9,6 +9,4 @@ export const LOCALE_PREFERENCE_STORAGE_KEY =
 
 export const LOCALE_PREFERENCE_SYSTEM = 'system' as const;
 
-export type LocalePreferenceType =
-  | typeof LOCALE_PREFERENCE_SYSTEM
-  | LocaleType;
+export type LocalePreferenceType = typeof LOCALE_PREFERENCE_SYSTEM | LocaleType;

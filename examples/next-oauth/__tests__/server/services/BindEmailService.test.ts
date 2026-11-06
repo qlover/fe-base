@@ -14,9 +14,9 @@ import type { FeUserRow } from '@server/repositorys/FeUsersRepository';
 import type { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import type { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import type { SupabaseSessionMintService } from '@server/services/SupabaseSessionMintService';
+import type { LoggerInterface } from '@qlover/logger';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { SupabaseRepo } from '@qlover/next-kit/server';
-import type { LoggerInterface } from '@qlover/logger';
 
 const verifyOtp = vi.fn();
 const updateUserById = vi.fn();
@@ -145,7 +145,11 @@ function createService(options?: {
   };
 
   const service = new BindEmailService(
-    { info: vi.fn(), warn: vi.fn(), error: vi.fn() } as unknown as LoggerInterface,
+    {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    } as unknown as LoggerInterface,
     {
       oauthUpstreamProvider:
         options?.upstream ?? oauthUpstreamProviders.supabase

@@ -124,12 +124,16 @@ export class AliyunSmsPhoneOtpProvider implements PhoneOtpProviderInterface {
       templateCode,
       templateParamKeyRaw
     ] = await Promise.all([
-      this.siteSettings.getString(FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_ID),
+      this.siteSettings.getString(
+        FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_ID
+      ),
       this.siteSettings.getSecretString(
         FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_SECRET
       ),
       this.siteSettings.getString(FE_SITE_SETTING_KEYS.ALIYUN_SMS_SIGN_NAME),
-      this.siteSettings.getString(FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_CODE),
+      this.siteSettings.getString(
+        FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_CODE
+      ),
       this.siteSettings.getString(
         FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_PARAM_KEY
       )

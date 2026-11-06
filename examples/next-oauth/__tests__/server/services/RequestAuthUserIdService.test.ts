@@ -1,8 +1,8 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
-import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 import type { OAuthUserService } from '@server/services/OAuthUserService';
+import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 
 describe('RequestAuthUserIdService', () => {
   let getUser: ReturnType<typeof vi.fn>;

@@ -10,8 +10,8 @@ import { useStrictEffect } from '@qlover/next-kit/client';
 import { clsx } from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { AdminRolesApi } from '@/impls/appApi/AdminRolesApi';
-import { useCan, PermissionKey } from '@/uikit/hook/useHasPermission';
 import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
+import { useCan, PermissionKey } from '@/uikit/hook/useHasPermission';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { permissionI18nKey } from '@shared/auth/permissionKeys';
@@ -204,7 +204,7 @@ export function AdminRolesPanel({ tt }: { tt: AdminRolesI18nInterface }) {
       nextDraft[role.id] = [...role.permissionKeys];
     }
     setDraft(nextDraft);
-  }, [data?.roles]);
+  }, [data]);
 
   useAdminUnsavedNavigationGuard(
     panelDirty,

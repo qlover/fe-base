@@ -27,6 +27,9 @@ export class LocalePreferenceService implements LocalePreferenceServiceInterface
     return navigator.language ?? '';
   }
 
+  /**
+   * @override
+   */
   public resolveSystemLocale(languageTag?: string | null): LocaleType {
     const raw = (languageTag ?? this.readNavigatorLanguage())
       .trim()
@@ -44,6 +47,9 @@ export class LocalePreferenceService implements LocalePreferenceServiceInterface
     return i18nConfig.fallbackLng;
   }
 
+  /**
+   * @override
+   */
   public read(): LocalePreferenceType | null {
     if (typeof window === 'undefined') {
       return null;
@@ -62,6 +68,9 @@ export class LocalePreferenceService implements LocalePreferenceServiceInterface
     }
   }
 
+  /**
+   * @override
+   */
   public write(preference: LocalePreferenceType): void {
     if (typeof window === 'undefined') {
       return;
@@ -69,6 +78,9 @@ export class LocalePreferenceService implements LocalePreferenceServiceInterface
     window.localStorage.setItem(LOCALE_PREFERENCE_STORAGE_KEY, preference);
   }
 
+  /**
+   * @override
+   */
   public resolveFromPreference(preference: LocalePreferenceType): LocaleType {
     if (preference === LOCALE_PREFERENCE_SYSTEM) {
       return this.resolveSystemLocale();
@@ -76,6 +88,9 @@ export class LocalePreferenceService implements LocalePreferenceServiceInterface
     return preference;
   }
 
+  /**
+   * @override
+   */
   public formatSystemLanguageDisplay(languageTag?: string | null): string {
     const tag = (languageTag ?? this.readNavigatorLanguage()).trim();
     const mapped = this.resolveSystemLocale(tag || null);

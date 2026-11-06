@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import {
   buildIlikeOrString,
   escapeIlikePattern
 } from '@qlover/next-kit/common';
+import { describe, expect, it } from 'vitest';
 
 describe('PostgrestIlikeOrUtil (via next-kit)', () => {
   it('escapes ILIKE wildcards and wraps with quotes', () => {

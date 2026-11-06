@@ -322,8 +322,9 @@ export class OAuthWrapperRepository implements OAuthWrapperRepositoryInterface {
       throw new Error(existing.error.message);
     }
     const taken = new Set(
-      ((existing.data ?? []) as Array<{ client_id: string; device_id: string }>)
-        .map((row) => `${row.client_id}\0${row.device_id}`)
+      (
+        (existing.data ?? []) as Array<{ client_id: string; device_id: string }>
+      ).map((row) => `${row.client_id}\0${row.device_id}`)
     );
 
     const fromRows = await supabase

@@ -35,7 +35,10 @@ export function SettingsDesktopSecurityRedirect({
   }, [router]);
 
   return (
-    <div data-testid="SettingsDesktopSecurityRedirect" className="hidden md:block">
+    <div
+      data-testid="SettingsDesktopSecurityRedirect"
+      className="hidden md:block"
+    >
       <p className="text-secondary-text text-sm">
         <LocaleLink
           href={ROUTE_SETTINGS_SECURITY}

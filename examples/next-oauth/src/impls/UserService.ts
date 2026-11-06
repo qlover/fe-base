@@ -14,9 +14,7 @@ import {
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
 import type { SessionUserPermissions } from '@schemas/RoleSchema';
-import type {
-  SessionCapabilitiesStateInterface
-} from '@interfaces/SessionCapabilitiesInterface';
+import type { SessionCapabilitiesStateInterface } from '@interfaces/SessionCapabilitiesInterface';
 import type { UserScopedResettableInterface } from '@interfaces/UserScopedResettableInterface';
 import type {
   UserServiceGatewayInterface,
@@ -209,6 +207,7 @@ export class UserService
   /**
    * 用服务端返回的会话用户覆盖本地 store（例如改显示名后）。
    *
+   * @override
    * @param user - 嵌入会话用户
    */
   public applySessionUser(user: UserSchema): void {

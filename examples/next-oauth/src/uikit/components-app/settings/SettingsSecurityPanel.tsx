@@ -1,10 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import { ChangePasswordForm } from '@/uikit/components-app/account/ChangePasswordForm';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
-import type { AccountI18nInterface } from '@config/i18n-mapping/accountI18n';
 import { toBusinessEmail } from '@shared/utils/phoneUserIdentity';
+import type { AccountI18nInterface } from '@config/i18n-mapping/accountI18n';
+import type { ReactNode } from 'react';
 
 /**
  * 安全分区：复用改密表单。
@@ -39,7 +39,9 @@ export function SettingsSecurityPanel({
           }}
         />
       ) : (
-        <p className="text-secondary-text text-sm">{tt.passwordEmailRequired}</p>
+        <p className="text-secondary-text text-sm">
+          {tt.passwordEmailRequired}
+        </p>
       )}
     </div>
   );

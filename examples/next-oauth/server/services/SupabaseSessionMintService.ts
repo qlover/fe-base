@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
 import { SupabaseRepo } from '@qlover/next-kit/server';
-import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { inject, injectable } from '@shared/container';
+import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
 import { PHONE_PLACEHOLDER_EMAIL_SUFFIX } from '@shared/utils/phoneUserIdentity';
 import { I } from '@config/ioc-identifiter';
-import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
 import type { LoggerInterface } from '@qlover/logger';
+import type { Session, SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Mints a real Supabase Auth session for phone users that never went through

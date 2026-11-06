@@ -1,6 +1,6 @@
-import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { SettingsPageShell } from '@/uikit/components-app/settings/SettingsPageShell';
 import { SettingsSecurityPanel } from '@/uikit/components-app/settings/SettingsSecurityPanel';
+import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { accountI18n } from '@config/i18n-mapping/accountI18n';
 import { settingsI18n } from '@config/i18n-mapping/settingsI18n';

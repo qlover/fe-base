@@ -105,8 +105,7 @@ export const PAGE_SETTINGS_NAV_FEEDBACK_HINT =
  * @localZh 界面语言
  * @localEn Interface language
  */
-export const PAGE_SETTINGS_LANGUAGE_SECTION =
-  'page_settings:language_section';
+export const PAGE_SETTINGS_LANGUAGE_SECTION = 'page_settings:language_section';
 
 /**
  * @description Language page hint

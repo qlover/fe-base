@@ -12,9 +12,7 @@ import type { LoggerInterface } from '@qlover/logger';
  * Issue 事件 → 反馈状态：只处理配置仓库的 Issue。
  */
 @injectable()
-export class FeedbackIssueStatusSyncService
-  implements FeedbackIssueStatusSyncInterface
-{
+export class FeedbackIssueStatusSyncService implements FeedbackIssueStatusSyncInterface {
   constructor(
     @inject(UserFeedbackRepository)
     protected readonly repository: UserFeedbackRepository,
@@ -26,6 +24,9 @@ export class FeedbackIssueStatusSyncService
     protected readonly logger: LoggerInterface
   ) {}
 
+  /**
+   * @override
+   */
   public async applyIssueEvent(event: GithubIssueEventType): Promise<number> {
     const status = this.statusResolver.resolve(event);
     if (status === null) {

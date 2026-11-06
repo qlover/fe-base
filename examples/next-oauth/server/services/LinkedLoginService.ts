@@ -25,7 +25,13 @@ function pickIdentityAccount(identity: UserIdentity): string | null {
 
 function pickLinkAccount(row: FeOauthUserLinkRow): string | null {
   const extra = row.extra ?? {};
-  for (const key of ['account', 'user_name', 'preferred_username', 'email', 'name']) {
+  for (const key of [
+    'account',
+    'user_name',
+    'preferred_username',
+    'email',
+    'name'
+  ]) {
     const value = extra[key];
     if (typeof value === 'string' && value.trim()) {
       return value.trim();

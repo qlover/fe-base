@@ -1,13 +1,13 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { cookies } from 'next/headers';
 import { inject, injectable } from '@shared/container';
+import { API_SERVER_ERROR } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import { ROUTE_HOME, ROUTE_LOGIN } from '@config/route';
 import { UPSTREAM_OIDC_PKCE_COOKIE } from '@config/UpstreamOidcConfig';
-import { API_SERVER_ERROR } from '@config/i18n-identifier/api';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { I } from '@config/ioc-identifiter';
 import { GenericUpstreamOAuthProvider } from '@server/providers/GenericUpstreamOAuthProvider';
 import { UpstreamOidcClient } from '@server/services/UpstreamOidcClient';
-import { cookies } from 'next/headers';
 import type { LoggerInterface } from '@qlover/logger';
 
 type PkceCookiePayloadType = {

@@ -28,6 +28,9 @@ export class UpstreamOidcClient implements UpstreamOidcClientInterface {
   protected readonly config: UpstreamOidcEnvConfigType =
     resolveUpstreamOidcEnvConfig();
 
+  /**
+   * @override
+   */
   public isConfigured(): boolean {
     return isUpstreamOidcConfigured(this.config);
   }
@@ -42,6 +45,9 @@ export class UpstreamOidcClient implements UpstreamOidcClientInterface {
       : `/${this.config.redirectPath}`;
   }
 
+  /**
+   * @override
+   */
   public async buildAuthorizeStart(params: {
     readonly redirectUri: string;
   }): Promise<UpstreamOidcAuthorizeStartType> {
@@ -64,16 +70,16 @@ export class UpstreamOidcClient implements UpstreamOidcClientInterface {
     return { authorizeUrl, state, codeVerifier };
   }
 
+  /**
+   * @override
+   */
   public async exchangeAuthorizationCode(params: {
     readonly code: string;
     readonly codeVerifier: string;
     readonly redirectUri: string;
   }): Promise<UpstreamOidcTokenResultType> {
     this.assertConfigured();
-    const tokenUrl = this.joinUrl(
-      this.config.serverUrl,
-      this.config.tokenPath
-    );
+    const tokenUrl = this.joinUrl(this.config.serverUrl, this.config.tokenPath);
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
       code: params.code,
@@ -98,7 +104,9 @@ export class UpstreamOidcClient implements UpstreamOidcClientInterface {
     try {
       parsed = JSON.parse(text) as Record<string, unknown>;
     } catch {
-      throw new Error(`Upstream token response is not JSON: ${text.slice(0, 200)}`);
+      throw new Error(
+        `Upstream token response is not JSON: ${text.slice(0, 200)}`
+      );
     }
     if (!response.ok || typeof parsed.access_token !== 'string') {
       const err =
@@ -124,6 +132,9 @@ export class UpstreamOidcClient implements UpstreamOidcClientInterface {
     };
   }
 
+  /**
+   * @override
+   */
   public async fetchUserInfo(
     accessToken: string
   ): Promise<UpstreamOidcUserInfoType> {

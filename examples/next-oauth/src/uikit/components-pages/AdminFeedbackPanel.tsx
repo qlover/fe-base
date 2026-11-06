@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element -- 后台缩略图使用签名 URL，不适用 next/image */
+
 import {
   runAsyncStore,
   usePendingAsyncStore,
@@ -138,18 +140,14 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
           <div className="flex flex-wrap gap-1">
             {row.screenshotUrls.map((url) => (
               <a
+                data-testid="columns"
                 key={url}
                 href={url}
                 target="_blank"
                 rel="noreferrer"
                 className="block h-10 w-10 overflow-hidden rounded border border-primary-border"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={url}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
+                <img src={url} alt="" className="h-full w-full object-cover" />
               </a>
             ))}
           </div>
@@ -163,6 +161,7 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
         if (row.githubIssueUrl && row.githubIssueNumber != null) {
           return (
             <a
+              data-testid="columns"
               href={row.githubIssueUrl}
               target="_blank"
               rel="noreferrer"
@@ -179,7 +178,7 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
               ? tt.githubPending
               : tt.githubSkipped;
         return (
-          <div className="flex flex-col gap-1">
+          <div data-testid="columns" className="flex flex-col gap-1">
             <span className="text-xs text-secondary-text">{label}</span>
             {canWrite ? (
               <button
@@ -213,14 +212,11 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
             disabled={pendingId === row.id}
             className="border-primary-border rounded-lg border bg-bg-container px-2 py-1 text-xs"
             onChange={(e) =>
-              void onStatusChange(
-                row,
-                e.target.value as UserFeedbackStatusType
-              )
+              void onStatusChange(row, e.target.value as UserFeedbackStatusType)
             }
           >
             {Object.values(UserFeedbackStatus).map((status) => (
-              <option key={status} value={status}>
+              <option data-testid="columns" key={status} value={status}>
                 {statusLabels[status]}
               </option>
             ))}
@@ -233,7 +229,10 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
 
   if (authLoading) {
     return (
-      <div data-testid="AdminFeedbackPanel" className="text-sm text-secondary-text">
+      <div
+        data-testid="AdminFeedbackPanel"
+        className="text-sm text-secondary-text"
+      >
         …
       </div>
     );
@@ -241,14 +240,20 @@ export function AdminFeedbackPanel({ tt }: { tt: AdminFeedbackI18nInterface }) {
 
   if (!canRead) {
     return (
-      <div data-testid="AdminFeedbackPanel" className="text-sm text-secondary-text">
+      <div
+        data-testid="AdminFeedbackPanel"
+        className="text-sm text-secondary-text"
+      >
         {tt.forbidden}
       </div>
     );
   }
 
   return (
-    <div data-testid="AdminFeedbackPanel" className="flex w-full flex-col gap-3">
+    <div
+      data-testid="AdminFeedbackPanel"
+      className="flex w-full flex-col gap-3"
+    >
       <div className="flex items-center gap-2">
         <button
           type="button"

@@ -145,10 +145,7 @@ export function createAdminClient(): SupabaseClient {
     __feAdminSupabaseCacheKey?: string;
   };
   const cacheKey = `${url}::${serviceKey.slice(0, 16)}`;
-  if (
-    cache.__feAdminSupabase &&
-    cache.__feAdminSupabaseCacheKey === cacheKey
-  ) {
+  if (cache.__feAdminSupabase && cache.__feAdminSupabaseCacheKey === cacheKey) {
     return cache.__feAdminSupabase;
   }
 

@@ -1,11 +1,7 @@
 import { z } from 'zod';
 
 /** 个人中心展示的第三方登录提供方。 */
-export const linkedLoginProviderSchema = z.enum([
-  'brain',
-  'github',
-  'google'
-]);
+export const linkedLoginProviderSchema = z.enum(['brain', 'github', 'google']);
 
 export type LinkedLoginProviderType = z.infer<typeof linkedLoginProviderSchema>;
 

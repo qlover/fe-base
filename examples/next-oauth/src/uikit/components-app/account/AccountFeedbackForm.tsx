@@ -83,10 +83,14 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
       <h2 className="mb-1 text-base font-semibold text-primary-text">
         {tt.feedbackSectionTitle}
       </h2>
-      <p className="mb-4 text-sm text-secondary-text">{tt.feedbackDescription}</p>
+      <p className="mb-4 text-sm text-secondary-text">
+        {tt.feedbackDescription}
+      </p>
       <form className="flex flex-col gap-3" onSubmit={onSubmit} noValidate>
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-secondary-text">{tt.feedbackCategoryLabel}</span>
+          <span className="text-secondary-text">
+            {tt.feedbackCategoryLabel}
+          </span>
           <select
             value={category}
             disabled={saving}
@@ -96,7 +100,7 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
             }
           >
             {USER_FEEDBACK_CATEGORIES.map((key) => (
-              <option key={key} value={key}>
+              <option data-testid="AccountFeedbackForm" key={key} value={key}>
                 {categoryLabels[key]}
               </option>
             ))}

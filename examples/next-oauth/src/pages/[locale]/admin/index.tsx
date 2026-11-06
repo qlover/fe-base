@@ -20,11 +20,7 @@ export default function AdminIndex({}: AdminIndexProps) {
   const tt = useI18nMapping(adminHome18n);
 
   return (
-    <AdminPageShell
-      title={tt.heading}
-      description={tt.sub}
-      seoMetadata={tt}
-    >
+    <AdminPageShell title={tt.heading} description={tt.sub} seoMetadata={tt}>
       <AdminHomePanel tt={tt} />
     </AdminPageShell>
   );

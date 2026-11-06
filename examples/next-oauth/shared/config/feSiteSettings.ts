@@ -135,7 +135,8 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
     {
       key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_CODE,
       label: '短信模板 CODE',
-      description: '已审核模板代码；模板内容需包含验证码变量（默认变量名 code）。',
+      description:
+        '已审核模板代码；模板内容需包含验证码变量（默认变量名 code）。',
       isSensitive: false,
       defaultValue: ''
     },

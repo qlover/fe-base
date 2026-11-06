@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ExecutorError } from '@qlover/fe-corekit/executor';
-import { AliyunSmsPhoneOtpProvider } from '@server/services/phoneOtp/AliyunSmsPhoneOtpProvider';
 import { API_SMS_PROVIDER_NOT_READY } from '@config/i18n-identifier/api';
+import { AliyunSmsPhoneOtpProvider } from '@server/services/phoneOtp/AliyunSmsPhoneOtpProvider';
 import type { SiteSettingsService } from '@server/services/SiteSettingsService';
+import type { ExecutorError } from '@qlover/fe-corekit/executor';
 import type { LoggerInterface } from '@qlover/logger';
 
 describe('AliyunSmsPhoneOtpProvider', () => {
@@ -70,7 +70,9 @@ describe('AliyunSmsPhoneOtpProvider', () => {
       expiresAt: new Date()
     });
     expect(fetch).toHaveBeenCalled();
-    const calledUrl = String((fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]);
+    const calledUrl = String(
+      (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]
+    );
     expect(calledUrl).toContain('PhoneNumbers=13800138000');
     expect(calledUrl).toContain('Action=SendSms');
     expect(decodeURIComponent(calledUrl)).toContain('"code":"654321"');

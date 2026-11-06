@@ -1,6 +1,6 @@
-import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminGithubSettingsPanel } from '@/uikit/components-pages/AdminGithubSettingsPanel';
 import { AdminMailSettingsPanel } from '@/uikit/components-pages/AdminMailSettingsPanel';
+import { AdminPageShell } from '@/uikit/components-pages/AdminPageShell';
 import { AdminSiteSettingsPanel } from '@/uikit/components-pages/AdminSiteSettingsPanel';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';

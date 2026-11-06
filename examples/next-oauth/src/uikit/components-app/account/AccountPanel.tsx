@@ -7,21 +7,21 @@ import { clsx } from 'clsx';
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
 import { AppUserGateway } from '@/impls/AppUserGateway';
 import { UserService } from '@/impls/UserService';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
+import { LinkedLoginsSection } from '@/uikit/components-app/account/LinkedLoginsSection';
+import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
-import { LinkedLoginsSection } from '@/uikit/components-app/account/LinkedLoginsSection';
-import { LocaleLink } from '@/uikit/components/LocaleLink';
-import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { toBusinessEmail } from '@shared/utils/phoneUserIdentity';
 import {
   maskPhoneForDisplay,
   resolveUserDisplayLabel
 } from '@shared/utils/userIdentity';
-import { I } from '@config/ioc-identifiter';
 import type { AccountI18nInterface } from '@config/i18n-mapping/accountI18n';
 import { settingsI18n } from '@config/i18n-mapping/settingsI18n';
+import { I } from '@config/ioc-identifiter';
 import {
   ROUTE_SETTINGS_FEEDBACK,
   ROUTE_SETTINGS_SECURITY

@@ -1,8 +1,8 @@
 'use client';
 
 import { clsx } from 'clsx';
-import type { ReactNode } from 'react';
 import { LOCALE_PREFERENCE_SYSTEM } from '@config/LocalePreferenceConfig';
+import type { ReactNode } from 'react';
 
 const chipIdleCls = clsx(
   'border-primary-border/70 bg-primary/45 text-primary-text',

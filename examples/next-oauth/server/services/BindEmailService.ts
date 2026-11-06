@@ -1,6 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { SupabaseRepo } from '@qlover/next-kit/server';
-import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { SystemRole } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
 import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
@@ -27,12 +26,13 @@ import {
   type FeUserRow
 } from '@server/repositorys/FeUsersRepository';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
-import { OAuthUserService } from '@server/services/OAuthUserService';
 import { ServerConfig } from '@server/ServerConfig';
+import { OAuthUserService } from '@server/services/OAuthUserService';
 import { SupabaseSessionMintService } from '@server/services/SupabaseSessionMintService';
 import type { LoggerInterface } from '@qlover/logger';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { SignOtpResult } from '@qlover/oauth-wrapper';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 /**
  * 手机号账户绑定邮箱：OTP 校验后挂到当前用户，或合并进已有邮箱账户。
@@ -183,7 +183,9 @@ export class BindEmailService implements BindEmailServiceInterface {
       });
       this.supabaseBridge.throwIfError(updated);
 
-      await this.feUsersRepository.deleteById(otpUser.id).catch(() => undefined);
+      await this.feUsersRepository
+        .deleteById(otpUser.id)
+        .catch(() => undefined);
       const deleted = await admin.auth.admin.deleteUser(otpUser.id);
       if (deleted.error) {
         this.logger.warn('BindEmailService: failed deleting temp otp user', {

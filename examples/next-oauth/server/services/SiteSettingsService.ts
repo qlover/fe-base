@@ -78,18 +78,30 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
     super(repo, cache, logger);
   }
 
+  /**
+   * @override
+   */
   protected getSnapshotCacheKey(): string {
     return SNAPSHOT_CACHE_KEY;
   }
 
+  /**
+   * @override
+   */
   protected getCorsCacheKey(): string {
     return RUNTIME_CORS_CACHE_KEY;
   }
 
+  /**
+   * @override
+   */
   protected getSnapshotTtlMs(): number {
     return CACHE_TTL_MS;
   }
 
+  /**
+   * @override
+   */
   protected tryCreateSecretEncryption(): TokenEncryption | null {
     const key = this.serverConfig.encryptionKey?.trim();
     if (!key) {
@@ -103,6 +115,9 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
     }
   }
 
+  /**
+   * @override
+   */
   protected isSensitiveKey(key: string): boolean {
     if (!isFeSiteSettingKey(key)) {
       return false;
@@ -110,6 +125,9 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
     return getFeSiteSettingDefinition(key).isSensitive;
   }
 
+  /**
+   * @override
+   */
   protected resolveDefaultValue(key: string): SiteSettingPrimitiveType {
     if (!isFeSiteSettingKey(key)) {
       return '';
@@ -135,8 +153,10 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
       plain = '';
     }
 
+    // 拒绝控制字符与替换符，避免脏密文进业务。
     if (
       !plain ||
+      // eslint-disable-next-line no-control-regex -- 故意匹配 C0 控制字符
       /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFD]/.test(plain)
     ) {
       throw new SiteSettingInvalidSecretError(settingKey);
@@ -144,28 +164,46 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
     return plain;
   }
 
+  /**
+   * @override
+   */
   public async getBoolean(key: FeSiteSettingKey): Promise<boolean> {
     return super.getBoolean(key);
   }
 
+  /**
+   * @override
+   */
   public async getString(key: FeSiteSettingKey): Promise<string> {
     return super.getString(key);
   }
 
+  /**
+   * @override
+   */
   public async getStringArray(key: FeSiteSettingKey): Promise<string[]> {
     return super.getStringArray(key);
   }
 
+  /**
+   * @override
+   */
   public async getSecretString(key: FeSiteSettingKey): Promise<string> {
     return super.getSecretString(key);
   }
 
+  /**
+   * @override
+   */
   public async getValue(
     key: FeSiteSettingKey
   ): Promise<FeSiteSettingPrimitive> {
     return (await super.getValue(key)) as FeSiteSettingPrimitive;
   }
 
+  /**
+   * @override
+   */
   public async getCorsConfig(): Promise<RuntimeCorsConfigType> {
     return (await super.getCorsConfig()) as RuntimeCorsConfigType;
   }
@@ -176,6 +214,9 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
       : Object.freeze(['GET', 'POST', 'OPTIONS']);
   }
 
+  /**
+   * @override
+   */
   protected async loadCorsConfigFromStore(): Promise<RuntimeCorsConfigType> {
     const rulesRaw = await this.getValue(FE_SITE_SETTING_KEYS.API_CORS_RULES);
     const apiCorsAllowedMethods = this.resolveDefaultCorsMethods();
@@ -385,6 +426,9 @@ export class SiteSettingsService extends AbstractSiteSettingsService {
     await this.store.upsertMany(missing);
   }
 
+  /**
+   * @override
+   */
   protected async buildSnapshot(): Promise<SiteSettingsSnapshotType> {
     let rows = await this.store.getAll();
     if (rows.length < FE_SITE_SETTING_DEFINITIONS.length) {

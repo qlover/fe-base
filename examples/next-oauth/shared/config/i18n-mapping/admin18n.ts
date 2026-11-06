@@ -1,9 +1,9 @@
 import * as commonAnchorKeys from '../i18n-identifier/common/admin.anchor';
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
+import * as feedbackKeys from '../i18n-identifier/pages/page.admin.feedback';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as localesKeys from '../i18n-identifier/pages/page.admin.locales';
-import * as feedbackKeys from '../i18n-identifier/pages/page.admin.feedback';
 import * as mailLogsKeys from '../i18n-identifier/pages/page.admin.mail-logs';
 import * as memoryKvKeys from '../i18n-identifier/pages/page.admin.memory-kv';
 import * as otpMonitorKeys from '../i18n-identifier/pages/page.admin.otp-monitor';

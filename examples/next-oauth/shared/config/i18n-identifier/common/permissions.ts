@@ -145,8 +145,7 @@ export const PERMISSION_ADMIN_MAIL_TEST = 'permission:admin_mail_test';
  * @localZh 查看用户反馈
  * @localEn View user feedback
  */
-export const PERMISSION_ADMIN_FEEDBACK_READ =
-  'permission:admin_feedback_read';
+export const PERMISSION_ADMIN_FEEDBACK_READ = 'permission:admin_feedback_read';
 
 /**
  * @description Permission: update feedback status

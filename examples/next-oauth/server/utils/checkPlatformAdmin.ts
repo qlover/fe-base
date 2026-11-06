@@ -2,8 +2,8 @@ import {
   isPlatformAdminRole,
   normalizeSystemRole
 } from '@shared/auth/systemRole';
-import { FeTables } from '@config/feTables';
 import { createAdminClient } from '@shared/supabase/server';
+import { FeTables } from '@config/feTables';
 import {
   getPlatformAdminCache,
   resolvePlatformAdminFromDb,

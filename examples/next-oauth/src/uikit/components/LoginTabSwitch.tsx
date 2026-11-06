@@ -74,9 +74,7 @@ export function LoginTabSwitch({ tt }: { tt: LoginI18nInterface }) {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const providerLogining = provider.loading;
-  const error = providerStore.isFailed()
-    ? String(provider.error)
-    : oauthError;
+  const error = providerStore.isFailed() ? String(provider.error) : oauthError;
   /** Supabase-only SSO / OTP / phone. Default upstream keeps these enabled. */
   const supabaseUpstream =
     appConfig.oauthUpstreamProvider === oauthUpstreamProviders.supabase;
