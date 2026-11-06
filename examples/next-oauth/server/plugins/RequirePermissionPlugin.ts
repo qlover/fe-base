@@ -1,20 +1,7 @@
-import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { RequirePermissionPlugin as KitRequirePermissionPlugin } from '@qlover/next-kit/server';
 import type { AppPermissionKey } from '@shared/auth/permissionKeys';
-import {
-  hasSystemPermission,
-  normalizeSystemRole,
-  platformRoleFromUserRole,
-  sessionHasSystemPermission
-} from '@shared/auth/systemRole';
-import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import type { NextOAuthServerIocMap } from '@server/BootstrapServer';
-import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
-import { OAuthUserService } from '@server/services/OAuthUserService';
-import { RolePermissionService } from '@server/services/RolePermissionService';
-import type {
-  BootstrapServerContext,
-  BootstrapServerPlugin
-} from '@qlover/next-kit/server';
+import { PermissionGuardService } from '@server/services/PermissionGuardService';
 
 /**
  * Route-layer gate: inject an immutable permission_key (platform only).
@@ -28,47 +15,8 @@ import type {
  * .use(new RequirePermissionPlugin(PermissionKey.admin_roles_read))
  * ```
  */
-export class RequirePermissionPlugin implements BootstrapServerPlugin<NextOAuthServerIocMap> {
-  public readonly pluginName = 'RequirePermissionPlugin';
-
-  constructor(private readonly permissionKey: AppPermissionKey) {}
-
-  /**
-   * @override
-   */
-  public async onBefore({
-    parameters: { IOC }
-  }: BootstrapServerContext<NextOAuthServerIocMap>): Promise<void> {
-    await IOC(RolePermissionService).ensureLoaded();
-
-    const oauth = IOC(OAuthUserService);
-    const user = (await oauth.getSessionUser()) ?? (await oauth.getUser(false));
-    if (!user?.id) {
-      throw new ExecutorError(API_NOT_AUTHORIZED);
-    }
-
-    // Rich session (permissions / system_role) may allow early.
-    if (sessionHasSystemPermission(user, this.permissionKey) === true) {
-      return;
-    }
-
-    const fromDb = await IOC(FeUsersRepository)
-      .getSystemRoleKey(user.id)
-      .catch(() => null);
-
-    const sessionRole =
-      user && typeof user === 'object' && 'system_role' in user
-        ? (user as { system_role?: unknown }).system_role
-        : undefined;
-
-    const role = normalizeSystemRole(
-      fromDb ??
-        (typeof sessionRole === 'string' ? sessionRole : undefined) ??
-        platformRoleFromUserRole(user.role)
-    );
-
-    if (!hasSystemPermission(role, this.permissionKey)) {
-      throw new ExecutorError(API_NOT_AUTHORIZED);
-    }
+export class RequirePermissionPlugin extends KitRequirePermissionPlugin<NextOAuthServerIocMap> {
+  constructor(permissionKey: AppPermissionKey) {
+    super(permissionKey, (IOC) => IOC(PermissionGuardService));
   }
 }

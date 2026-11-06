@@ -1,33 +1,20 @@
-import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { inject, injectable } from '@shared/container';
 import type { AppPermissionKey } from '@shared/auth/permissionKeys';
 import {
-  hasSystemPermission,
-  normalizeSystemRole,
-  platformRoleFromUserRole,
-  sessionHasSystemPermission
-} from '@shared/auth/systemRole';
-import { inject, injectable } from '@shared/container';
-import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
-import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
-import { OAuthUserService } from '@server/services/OAuthUserService';
-import { RolePermissionService } from '@server/services/RolePermissionService';
+  PermissionGuardService,
+  type PermissionCheckerType
+} from '@server/services/PermissionGuardService';
 
-export type PermissionCheckerType = (key: AppPermissionKey) => boolean;
+export type { PermissionCheckerType };
 
 /**
- * Current-user permission checks (same rules as
- * {@link RequirePermissionPlugin}), for endpoints that need to evaluate
- * multiple keys while shaping a response.
+ * 当前用户多 key 校验入口；委托 {@link PermissionGuardService}。
  */
 @injectable()
 export class CurrentUserPermissionService {
   constructor(
-    @inject(RolePermissionService)
-    protected readonly rolePermissionService: RolePermissionService,
-    @inject(OAuthUserService)
-    protected readonly oauthUserService: OAuthUserService,
-    @inject(FeUsersRepository)
-    protected readonly usersRepository: FeUsersRepository
+    @inject(PermissionGuardService)
+    protected readonly permissionGuard: PermissionGuardService
   ) {}
 
   /**
@@ -36,27 +23,13 @@ export class CurrentUserPermissionService {
    * @throws ExecutorError(API_NOT_AUTHORIZED) when unauthenticated
    */
   public async createChecker(): Promise<PermissionCheckerType> {
-    await this.rolePermissionService.ensureLoaded();
-    const user = await this.oauthUserService.getUser(false);
-    if (!user?.id) {
-      throw new ExecutorError(API_NOT_AUTHORIZED);
-    }
+    return this.permissionGuard.createChecker();
+  }
 
-    const fromDb = await this.usersRepository
-      .getSystemRoleKey(user.id)
-      .catch(() => null);
-    const sessionRole =
-      typeof user === 'object' && 'system_role' in user
-        ? (user as { system_role?: unknown }).system_role
-        : undefined;
-    const role = normalizeSystemRole(
-      fromDb ??
-        (typeof sessionRole === 'string' ? sessionRole : undefined) ??
-        platformRoleFromUserRole(user.role)
-    );
-
-    return (key: AppPermissionKey): boolean =>
-      sessionHasSystemPermission(user, key) === true ||
-      hasSystemPermission(role, key);
+  /**
+   * 单 key 断言（与路由门同源）。
+   */
+  public async assertHasPermission(key: AppPermissionKey): Promise<void> {
+    await this.permissionGuard.assertHasPermission(key);
   }
 }

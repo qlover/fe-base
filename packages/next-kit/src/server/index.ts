@@ -34,6 +34,11 @@ export type {
   SiteSettingPrimitiveType
 } from './interfaces/SiteSettingsServiceInterface';
 export type { ApiCorsConfigLoaderInterface } from './interfaces/ApiCorsConfigLoaderInterface';
+export type { PermissionGuardInterface } from './interfaces/PermissionGuardInterface';
+export {
+  RequirePermissionPlugin,
+  type RequirePermissionResolveGuardType
+} from './plugins/RequirePermissionPlugin';
 export {
   Operators,
   type WhereOperation,
