@@ -54,3 +54,4 @@ alwaysApply: false
 ```
 
 17. **通用能力优先 `@qlover/next-kit`**：ilikeOr、SSE、离开未保存拦截、Dialog、ApiServer 等 Next 适配能力，能沉 kit 则沉 kit；应用只做业务编排与薄接线。禁止在 example 里再复制一套同名工具。
+18. **禁止业务 `Fe` / `fe_` 前缀**：仓库已是 `fe-base`，example 内类名、文件名、配置键命名空间**不要**再加 `Fe` / `fe_`（如 `FeMailLogsRepository`、`FeTables`）。用业务语义命名（`MailLogsRepository`、`mail_logs`）。存量 `Fe*` 不强制整库重命名；**新代码不加**，改动到的文件可顺手去前缀。
