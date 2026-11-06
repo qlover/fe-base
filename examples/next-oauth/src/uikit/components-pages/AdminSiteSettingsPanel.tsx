@@ -13,6 +13,7 @@ import { SiteSettingsApi } from '@/impls/appApi/SiteSettingsApi';
 import { invalidatePublicConfigCache } from '@/impls/fetchPublicConfig';
 import { AdminAnchorTitle } from '@/uikit/components-pages/admin-anchor';
 import { useAdminAnchorFocus } from '@/uikit/components-pages/admin-anchor';
+import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
 import { useIOC } from '@/uikit/hook/useIOC';
 import {
   FE_SITE_SETTING_KEYS,
@@ -244,6 +245,15 @@ export function AdminSiteSettingsPanel({
   const siteSettingsApi = useIOC(SiteSettingsApi);
   const dialogHandler = useIOC(I.DialogHandler);
   const [draft, setDraft] = useState<DraftState>({});
+  const isDirty = Object.keys(draft).length > 0;
+  const discardDraft = useCallback((): void => {
+    setDraft({});
+  }, []);
+  useAdminUnsavedNavigationGuard(
+    isDirty,
+    discardDraft,
+    '[data-testid="AdminSiteSettingsPanel"]'
+  );
 
   const [list, listStore] =
     usePendingAsyncStore<AsyncState<FeAdminSiteSettingEntry[]>>();

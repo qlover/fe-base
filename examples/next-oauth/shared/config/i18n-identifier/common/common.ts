@@ -13,6 +13,27 @@ export const COMMON_SAVE = 'common:save';
 export const COMMON_CANCEL = 'common:cancel';
 
 /**
+ * @description Unsaved leave dialog title
+ * @localZh 有未保存的更改
+ * @localEn Unsaved changes
+ */
+export const COMMON_UNSAVED_LEAVE_TITLE = 'common:unsaved_leave_title';
+
+/**
+ * @description Unsaved leave dialog content
+ * @localZh 离开后将丢失未保存的修改，确定离开吗？
+ * @localEn You will lose unsaved changes if you leave. Leave anyway?
+ */
+export const COMMON_UNSAVED_LEAVE_CONTENT = 'common:unsaved_leave_content';
+
+/**
+ * @description Unsaved leave confirm (leave)
+ * @localZh 离开
+ * @localEn Leave
+ */
+export const COMMON_UNSAVED_LEAVE_OK = 'common:unsaved_leave_ok';
+
+/**
  * @description Create
  * @localZh 创建
  * @localEn Create

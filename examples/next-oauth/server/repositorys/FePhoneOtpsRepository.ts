@@ -1,4 +1,5 @@
 import { createHash, randomInt, timingSafeEqual } from 'node:crypto';
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
@@ -165,9 +166,14 @@ export class FePhoneOtpsRepository {
       .select('*')
       .order('created_at', { ascending: false })
       .limit(limit);
-    const phone = params.phone?.trim();
-    if (phone) {
-      query = query.ilike('phone', `%${phone}%`);
+    const phone = params.phone?.trim() ?? '';
+    if (phone.length > 0) {
+      query = query.or(
+        buildIlikeOrString({
+          columns: ['phone'],
+          query: phone
+        })
+      );
     }
     const result = await query;
     this.supabaseBridge.throwIfError(result);

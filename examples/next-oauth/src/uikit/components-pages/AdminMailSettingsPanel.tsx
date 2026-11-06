@@ -13,6 +13,7 @@ import { AdminMailApi } from '@/impls/appApi/AdminMailApi';
 import { SiteSettingsApi } from '@/impls/appApi/SiteSettingsApi';
 import { invalidatePublicConfigCache } from '@/impls/fetchPublicConfig';
 import { PermissionKey, useCan } from '@/uikit/hook/useHasPermission';
+import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
 import { useIOC } from '@/uikit/hook/useIOC';
 import {
   FE_SITE_SETTING_KEYS,
@@ -92,6 +93,15 @@ export function AdminMailSettingsPanel({
 
   const [draft, setDraft] = useState<MailDraftType>({});
   const [testTo, setTestTo] = useState('');
+  const isDirty = Object.keys(draft).length > 0;
+  const discardDraft = useCallback((): void => {
+    setDraft({});
+  }, []);
+  useAdminUnsavedNavigationGuard(
+    isDirty,
+    discardDraft,
+    '[data-testid="AdminMailSettingsPanel"]'
+  );
   const [list, listStore] =
     usePendingAsyncStore<AsyncState<FeAdminSiteSettingEntry[]>>();
   const [save, saveStore] =

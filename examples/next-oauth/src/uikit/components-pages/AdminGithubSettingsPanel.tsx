@@ -9,6 +9,7 @@ import {
 import { useStrictEffect } from '@qlover/next-kit/client';
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { SiteSettingsApi } from '@/impls/appApi/SiteSettingsApi';
+import { useAdminUnsavedNavigationGuard } from '@/uikit/hook/useAdminUnsavedNavigationGuard';
 import { useIOC } from '@/uikit/hook/useIOC';
 import {
   FE_SITE_SETTING_KEYS,
@@ -70,6 +71,15 @@ export function AdminGithubSettingsPanel({
 }) {
   const siteSettingsApi = useIOC(SiteSettingsApi);
   const [draft, setDraft] = useState<GithubDraftType>({});
+  const isDirty = Object.keys(draft).length > 0;
+  const discardDraft = useCallback((): void => {
+    setDraft({});
+  }, []);
+  useAdminUnsavedNavigationGuard(
+    isDirty,
+    discardDraft,
+    '[data-testid="AdminGithubSettingsPanel"]'
+  );
   const [list, listStore] =
     usePendingAsyncStore<AsyncState<FeAdminSiteSettingEntry[]>>();
   const [save, saveStore] =

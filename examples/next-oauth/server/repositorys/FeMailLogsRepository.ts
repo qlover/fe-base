@@ -1,3 +1,4 @@
+import { buildIlikeOrString } from '@qlover/next-kit/common';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
@@ -79,9 +80,14 @@ export class FeMailLogsRepository {
       .order('created_at', { ascending: false })
       .limit(limit);
 
-    const email = params.email?.trim().replace(/[%_,]/g, '');
-    if (email) {
-      query = query.ilike('to_email', `%${email}%`);
+    const email = params.email?.trim() ?? '';
+    if (email.length > 0) {
+      query = query.or(
+        buildIlikeOrString({
+          columns: ['to_email'],
+          query: email
+        })
+      );
     }
     if (params.template) {
       query = query.eq('template', params.template);
