@@ -140,17 +140,23 @@ export function resolveSupabaseOAuthProvider(
  *
  * - `supabase` (default): Supabase Auth password / OTP / SSO
  * - `brain-user`: wrap Brain User login API as OAuth credentials
+ * - `oauth-pkce`: 标准授权码 + PKCE 对接任意外部 IdP（不经 Supabase SSO）
  */
 export const oauthUpstreamProviders = {
   supabase: 'supabase',
-  brainUser: 'brain-user'
+  brainUser: 'brain-user',
+  oauthPkce: 'oauth-pkce'
 } as const;
 export type OAuthUpstreamId = ValueOf<typeof oauthUpstreamProviders>;
 
 export function resolveOAuthUpstreamProvider(
   raw: string | undefined | null
 ): OAuthUpstreamId {
-  return raw === oauthUpstreamProviders.brainUser
-    ? oauthUpstreamProviders.brainUser
-    : oauthUpstreamProviders.supabase;
+  if (raw === oauthUpstreamProviders.brainUser) {
+    return oauthUpstreamProviders.brainUser;
+  }
+  if (raw === oauthUpstreamProviders.oauthPkce) {
+    return oauthUpstreamProviders.oauthPkce;
+  }
+  return oauthUpstreamProviders.supabase;
 }

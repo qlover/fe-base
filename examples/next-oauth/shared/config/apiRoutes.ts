@@ -172,6 +172,16 @@ export const API_CALLBACK_PROVIDER_LOGIN =
   '/api/callback/provider-login' as const;
 
 /**
+ * API path: `/api/callback/upstream-oauth`
+ *
+ * @see [src/app/api/callback/upstream-oauth/route.ts](../../src/app/api/callback/upstream-oauth/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/upstream-oauth/route.ts`
+ */
+export const API_CALLBACK_UPSTREAM_OAUTH =
+  '/api/callback/upstream-oauth' as const;
+
+/**
  * API path: `/api/clients`
  *
  * @see [src/app/api/clients/route.ts](../../src/app/api/clients/route.ts)
@@ -329,6 +339,16 @@ export const API_USER_LOGIN = '/api/user/login' as const;
 export const API_USER_LOGIN_PROVIDER = '/api/user/login/provider' as const;
 
 /**
+ * API path: `/api/user/login/upstream-oauth`
+ *
+ * @see [src/app/api/user/login/upstream-oauth/route.ts](../../src/app/api/user/login/upstream-oauth/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/upstream-oauth/route.ts`
+ */
+export const API_USER_LOGIN_UPSTREAM_OAUTH =
+  '/api/user/login/upstream-oauth' as const;
+
+/**
  * API path: `/api/user/logout`
  *
  * @see [src/app/api/user/logout/route.ts](../../src/app/api/user/logout/route.ts)
@@ -437,6 +457,7 @@ export type ApiRoutePath =
   | typeof API_ADMIN_USERS_SYSTEM_ROLE
   | typeof API_CALLBACK_EMAIL_LOGIN
   | typeof API_CALLBACK_PROVIDER_LOGIN
+  | typeof API_CALLBACK_UPSTREAM_OAUTH
   | typeof API_CLIENTS
   | typeof API_CLIENTS_2
   | typeof API_CLIENTS_ROTATE_SECRET
@@ -454,6 +475,7 @@ export type ApiRoutePath =
   | typeof API_USER_LINKED_LOGINS
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGIN_PROVIDER
+  | typeof API_USER_LOGIN_UPSTREAM_OAUTH
   | typeof API_USER_LOGOUT
   | typeof API_USER_OTP_LOGIN
   | typeof API_USER_OTP_VERIFY
