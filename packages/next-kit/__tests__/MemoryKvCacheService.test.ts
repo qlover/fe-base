@@ -39,6 +39,25 @@ describe('MemoryKvCacheService', () => {
     expect(await cache.getItem('app:records:u2:a')).toEqual({ n: 2 });
   });
 
+  it('getOrSet coalesces concurrent factories and caches result', async () => {
+    const cache = new MemoryKvCacheService();
+    let runs = 0;
+    const factory = async (): Promise<{ n: number }> => {
+      runs += 1;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return { n: runs };
+    };
+    const [a, b] = await Promise.all([
+      cache.getOrSet('test:gos', factory),
+      cache.getOrSet('test:gos', factory)
+    ]);
+    expect(a).toEqual({ n: 1 });
+    expect(b).toEqual({ n: 1 });
+    expect(runs).toBe(1);
+    expect(await cache.getOrSet('test:gos', factory)).toEqual({ n: 1 });
+    expect(runs).toBe(1);
+  });
+
   it('listEntries returns live keys, prefix filter, and drops expired', async () => {
     let now = 1_000;
     const cache = new MemoryKvCacheService({ nowMs: () => now });

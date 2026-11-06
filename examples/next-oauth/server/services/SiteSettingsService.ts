@@ -1,6 +1,13 @@
 import { Base64Serializer } from '@qlover/fe-corekit/serializer';
 import { StringEncryptor } from '@qlover/next-kit/common';
-import { TokenEncryption } from '@qlover/next-kit/server';
+import {
+  AbstractSiteSettingsService,
+  TokenEncryption,
+  buildRuntimeCorsConfig,
+  type RuntimeCorsConfigType,
+  type SiteSettingPrimitiveType,
+  type SiteSettingsSnapshotType
+} from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { oauthUpstreamProviders } from '@config/common';
 import {
@@ -34,54 +41,14 @@ import {
   buildFeSiteSettingSeedRows,
   resolveFeSiteSettingDefaultValue
 } from '@server/utils/feSiteSettingDefaults';
-import {
-  buildRuntimeCorsConfig,
-  type RuntimeCorsConfig
-} from '@server/utils/resolveRuntimeCorsConfig';
 import type { LoggerInterface } from '@qlover/logger';
 
-const CACHE_KEY = 'fe:site-settings:snapshot';
+const SNAPSHOT_CACHE_KEY = 'site-settings:snapshot';
 /** Process-local CORS hot path; no TTL — write-through on Admin save. */
-export const FE_RUNTIME_CORS_CACHE_KEY = 'fe:runtime-cors-config';
+export const RUNTIME_CORS_CACHE_KEY = 'runtime-cors-config';
+/** @deprecated 使用 {@link RUNTIME_CORS_CACHE_KEY} */
+export const FE_RUNTIME_CORS_CACHE_KEY = RUNTIME_CORS_CACHE_KEY;
 const CACHE_TTL_MS = 60_000;
-
-function parseCsvEnv(value: string | undefined): string[] {
-  if (!value?.trim()) {
-    return [];
-  }
-  return value
-    .split(',')
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-}
-
-type SnapshotType = {
-  readonly values: ReadonlyMap<string, FeSiteSettingPrimitive>;
-  readonly sources: ReadonlyMap<string, 'db' | 'default'>;
-  readonly descriptions: ReadonlyMap<string, string>;
-};
-
-type CachedSnapshotType = {
-  readonly values: Record<string, FeSiteSettingPrimitive>;
-  readonly sources: Record<string, 'db' | 'default'>;
-  readonly descriptions: Record<string, string>;
-};
-
-function toCachedSnapshot(snapshot: SnapshotType): CachedSnapshotType {
-  return {
-    values: Object.fromEntries(snapshot.values),
-    sources: Object.fromEntries(snapshot.sources),
-    descriptions: Object.fromEntries(snapshot.descriptions)
-  };
-}
-
-function fromCachedSnapshot(cached: CachedSnapshotType): SnapshotType {
-  return {
-    values: new Map(Object.entries(cached.values)),
-    sources: new Map(Object.entries(cached.sources)),
-    descriptions: new Map(Object.entries(cached.descriptions ?? {}))
-  };
-}
 
 function resolveSettingDescription(
   definition: FeSiteSettingDefinition,
@@ -91,20 +58,37 @@ function resolveSettingDescription(
   return trimmed || definition.description;
 }
 
+/**
+ * next-oauth 站点设置：键目录 / Public / Admin；通用读写与 CORS 在 kit 基类。
+ */
 @injectable()
-export class SiteSettingsService {
+export class SiteSettingsService extends AbstractSiteSettingsService {
   protected readonly base64Serializer = new Base64Serializer();
 
   constructor(
     @inject(I.AppConfig)
     protected readonly serverConfig: SeedServerConfigInterface,
     @inject(SiteSettingsRepo)
-    protected readonly repo: SiteSettingsRepo,
+    repo: SiteSettingsRepo,
     @inject(MemoryKvCacheService)
-    protected readonly cache: MemoryKvCacheService,
+    cache: MemoryKvCacheService,
     @inject(I.Logger)
-    protected readonly logger: LoggerInterface
-  ) {}
+    logger: LoggerInterface
+  ) {
+    super(repo, cache, logger);
+  }
+
+  protected getSnapshotCacheKey(): string {
+    return SNAPSHOT_CACHE_KEY;
+  }
+
+  protected getCorsCacheKey(): string {
+    return RUNTIME_CORS_CACHE_KEY;
+  }
+
+  protected getSnapshotTtlMs(): number {
+    return CACHE_TTL_MS;
+  }
 
   protected tryCreateSecretEncryption(): TokenEncryption | null {
     const key = this.serverConfig.encryptionKey?.trim();
@@ -119,26 +103,20 @@ export class SiteSettingsService {
     }
   }
 
-  protected encryptSecret(plaintext: string): string {
-    const encryption = this.tryCreateSecretEncryption();
-    if (!encryption) {
-      return plaintext;
+  protected isSensitiveKey(key: string): boolean {
+    if (!isFeSiteSettingKey(key)) {
+      return false;
     }
-    return encryption.encrypt(plaintext);
+    return getFeSiteSettingDefinition(key).isSensitive;
   }
 
-  protected decryptSecret(ciphertext: string): string {
-    const encryption = this.tryCreateSecretEncryption();
-    if (!encryption) {
-      return ciphertext;
+  protected resolveDefaultValue(key: string): SiteSettingPrimitiveType {
+    if (!isFeSiteSettingKey(key)) {
+      return '';
     }
-    try {
-      return encryption.decrypt(ciphertext);
-    } catch (error) {
-      this.logger.warn('Failed to decrypt site setting secret', { error });
-      // Plaintext stored when ENCRYPTION_KEY was missing at write time.
-      return ciphertext;
-    }
+    return resolveFeSiteSettingDefaultValue(
+      getFeSiteSettingDefinition(key)
+    ) as SiteSettingPrimitiveType;
   }
 
   /**
@@ -166,88 +144,30 @@ export class SiteSettingsService {
     return plain;
   }
 
-  public async invalidateCache(): Promise<void> {
-    await this.cache.removeItem(CACHE_KEY);
-  }
-
   public async getBoolean(key: FeSiteSettingKey): Promise<boolean> {
-    const value = await this.getValue(key);
-    if (typeof value === 'boolean') {
-      return value;
-    }
-    if (typeof value === 'string') {
-      const normalized = value.trim().toLowerCase();
-      if (normalized === 'true') {
-        return true;
-      }
-      if (normalized === 'false') {
-        return false;
-      }
-    }
-    return false;
+    return super.getBoolean(key);
   }
 
   public async getString(key: FeSiteSettingKey): Promise<string> {
-    const value = await this.getValue(key);
-    if (typeof value === 'string') {
-      return value;
-    }
-    if (typeof value === 'boolean') {
-      return value ? 'true' : 'false';
-    }
-    if (Array.isArray(value)) {
-      return value.join(',');
-    }
-    return '';
+    return super.getString(key);
   }
 
   public async getStringArray(key: FeSiteSettingKey): Promise<string[]> {
-    const value = await this.getValue(key);
-    if (Array.isArray(value)) {
-      return value.filter(
-        (entry): entry is string => typeof entry === 'string'
-      );
-    }
-    if (typeof value === 'string' && value.trim()) {
-      return parseCsvEnv(value);
-    }
-    return [];
+    return super.getStringArray(key);
   }
 
   public async getSecretString(key: FeSiteSettingKey): Promise<string> {
-    const definition = getFeSiteSettingDefinition(key);
-    if (!definition.isSensitive) {
-      return this.getString(key);
-    }
-
-    const snapshot = await this.loadSnapshot();
-    const stored = snapshot.values.get(key);
-    if (typeof stored !== 'string' || !stored.trim()) {
-      return '';
-    }
-
-    return this.decryptSecret(stored);
+    return super.getSecretString(key);
   }
 
   public async getValue(
     key: FeSiteSettingKey
   ): Promise<FeSiteSettingPrimitive> {
-    const definition = getFeSiteSettingDefinition(key);
-    const snapshot = await this.loadSnapshot();
-    const stored = snapshot.values.get(key);
-    if (stored !== undefined) {
-      return stored;
-    }
-    return resolveFeSiteSettingDefaultValue(definition);
+    return (await super.getValue(key)) as FeSiteSettingPrimitive;
   }
 
-  /**
-   * CORS from `api.cors_rules`; cached in {@link MemoryKvCacheService} (no TTL).
-   */
-  public async getCorsConfig(): Promise<RuntimeCorsConfig> {
-    return this.cache.getOrSet(FE_RUNTIME_CORS_CACHE_KEY, () =>
-      this.loadCorsConfigFromStore()
-    );
+  public async getCorsConfig(): Promise<RuntimeCorsConfigType> {
+    return (await super.getCorsConfig()) as RuntimeCorsConfigType;
   }
 
   protected resolveDefaultCorsMethods(): readonly string[] {
@@ -256,7 +176,7 @@ export class SiteSettingsService {
       : Object.freeze(['GET', 'POST', 'OPTIONS']);
   }
 
-  protected async loadCorsConfigFromStore(): Promise<RuntimeCorsConfig> {
+  protected async loadCorsConfigFromStore(): Promise<RuntimeCorsConfigType> {
     const rulesRaw = await this.getValue(FE_SITE_SETTING_KEYS.API_CORS_RULES);
     const apiCorsAllowedMethods = this.resolveDefaultCorsMethods();
     const parsedRules = this.normalizeCorsRules(rulesRaw);
@@ -311,7 +231,6 @@ export class SiteSettingsService {
     const mailReady = ['memory', 'resend'].includes(
       mailProvider.trim().toLowerCase()
     );
-    // 邮件重置仅 Supabase upstream 支持；开关开启且邮件通道可用时才对外暴露。
     const passwordResetEnabled =
       passwordResetFlag &&
       mailReady &&
@@ -355,7 +274,9 @@ export class SiteSettingsService {
         };
       }
 
-      const value = stored ?? resolveFeSiteSettingDefaultValue(definition);
+      const value =
+        (stored as FeSiteSettingPrimitive | undefined) ??
+        resolveFeSiteSettingDefaultValue(definition);
 
       return {
         key: definition.key,
@@ -436,12 +357,12 @@ export class SiteSettingsService {
       });
     }
 
-    await this.repo.upsertMany(rows);
+    await this.store.upsertMany(rows);
     await this.invalidateCache();
 
     if (corsRulesForCache) {
       await this.cache.setItem(
-        FE_RUNTIME_CORS_CACHE_KEY,
+        RUNTIME_CORS_CACHE_KEY,
         buildRuntimeCorsConfig(
           corsRulesForCache,
           this.resolveDefaultCorsMethods()
@@ -461,22 +382,17 @@ export class SiteSettingsService {
     if (missing.length === 0) {
       return;
     }
-    await this.repo.upsertMany(missing);
+    await this.store.upsertMany(missing);
   }
 
-  protected async loadSnapshot(): Promise<SnapshotType> {
-    const cached = await this.cache.getItem<CachedSnapshotType>(CACHE_KEY);
-    if (cached) {
-      return fromCachedSnapshot(cached);
-    }
-
-    let rows = await this.repo.getAll();
+  protected async buildSnapshot(): Promise<SiteSettingsSnapshotType> {
+    let rows = await this.store.getAll();
     if (rows.length < FE_SITE_SETTING_DEFINITIONS.length) {
       await this.ensureSeeded(new Set(rows.map((row) => row.key)));
-      rows = await this.repo.getAll();
+      rows = await this.store.getAll();
     }
 
-    const values = new Map<string, FeSiteSettingPrimitive>();
+    const values = new Map<string, SiteSettingPrimitiveType>();
     const sources = new Map<string, 'db' | 'default'>();
     const descriptions = new Map<string, string>();
 
@@ -488,7 +404,7 @@ export class SiteSettingsService {
       if (definition.isSensitive) {
         values.set(row.key, String(row.value ?? ''));
       } else {
-        values.set(row.key, row.value as FeSiteSettingPrimitive);
+        values.set(row.key, row.value as SiteSettingPrimitiveType);
       }
       sources.set(row.key, 'db');
       if (row.description?.trim()) {
@@ -500,19 +416,13 @@ export class SiteSettingsService {
       if (values.has(definition.key)) {
         continue;
       }
-      values.set(definition.key, resolveFeSiteSettingDefaultValue(definition));
+      values.set(
+        definition.key,
+        resolveFeSiteSettingDefaultValue(definition) as SiteSettingPrimitiveType
+      );
       sources.set(definition.key, 'default');
     }
 
-    const snapshot: SnapshotType = {
-      values,
-      sources,
-      descriptions
-    };
-
-    await this.cache.setItem(CACHE_KEY, toCachedSnapshot(snapshot), {
-      ttlMs: CACHE_TTL_MS
-    });
-    return snapshot;
+    return { values, sources, descriptions };
   }
 }

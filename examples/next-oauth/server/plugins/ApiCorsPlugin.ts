@@ -1,7 +1,11 @@
 import {
-  apiCorsPreflightResponse,
+  ApiCorsPlugin as KitApiCorsPlugin,
   buildApiCorsHeaders,
-  createLogger
+  buildRuntimeCorsConfig,
+  createLogger,
+  type ApiCorsPluginOptionsType,
+  type BootstrapServerContext,
+  type RuntimeCorsConfigType
 } from '@qlover/next-kit/server';
 import { I } from '@config/ioc-identifiter';
 import type { NextOAuthServerIocMap } from '@server/BootstrapServer';
@@ -9,69 +13,31 @@ import { ServerConfig } from '@server/ServerConfig';
 import { createServerIoc } from '@server/serverIoc';
 import { MemoryKvCacheService } from '@server/services/MemoryKvCacheService';
 import {
-  FE_RUNTIME_CORS_CACHE_KEY,
+  RUNTIME_CORS_CACHE_KEY,
   SiteSettingsService
 } from '@server/services/SiteSettingsService';
-import {
-  buildRuntimeCorsConfig,
-  type RuntimeCorsConfig
-} from '@server/utils/resolveRuntimeCorsConfig';
 import { ServerContext } from '@server/utils/ServerContext';
-import type {
-  BootstrapServerContext,
-  BootstrapServerPlugin
-} from '@qlover/next-kit/server';
-import type { NextRequest } from 'next/server';
-import type { NextResponse } from 'next/server';
 
-export type ApiCorsPluginOptions = {
-  /** Pathname for rule matching (defaults to request URL pathname). */
-  readonly path?: string;
-  readonly credentials?: boolean;
-  /**
-   * Request used when mounted on NextApiServer (onBefore).
-   * Standalone {@link preflight} / {@link resolveHeaders} pass req as argument.
-   */
-  readonly request?: NextRequest;
-};
+export type ApiCorsPluginOptions = Omit<
+  ApiCorsPluginOptionsType,
+  'loader' | 'applyResponseHeaders' | 'fallbackConfig'
+>;
 
 /**
- * CORS unit used both standalone and as a NextApiServer plugin.
- *
- * - Standalone: `new ApiCorsPlugin(opts).preflight(req)`
- * - Pipeline: `.use(new ApiCorsPlugin({ ...opts, request: req }))`
+ * next-oauth CORS：从 SiteSettings 加载，headers 写入 ServerContext。
  */
-export class ApiCorsPlugin implements BootstrapServerPlugin<NextOAuthServerIocMap> {
-  public readonly pluginName = 'ApiCorsPlugin';
-
-  constructor(private readonly options: ApiCorsPluginOptions = {}) {}
-
-  /** Standalone OPTIONS (no NextApiServer). */
-  public async preflight(req: NextRequest): Promise<NextResponse> {
-    const config = await this.loadConfig();
-    return apiCorsPreflightResponse(req, config, {
-      path: this.options.path,
-      credentials: this.options.credentials
-    });
-  }
-
-  /** Standalone: resolve Allow-* headers for a request. */
-  public async resolveHeaders(
-    req: NextRequest
-  ): Promise<HeadersInit | undefined> {
-    const config = await this.loadConfig();
-    return buildApiCorsHeaders(req, config, {
-      path: this.options.path,
-      credentials: this.options.credentials
+export class ApiCorsPlugin extends KitApiCorsPlugin<NextOAuthServerIocMap> {
+  constructor(options: ApiCorsPluginOptions = {}) {
+    super({
+      ...options,
+      fallbackConfig: () => ApiCorsPlugin.envFallbackConfig()
     });
   }
 
   /**
-   * NextApiServer onBefore: load via IOC and stash headers on ServerContext.
-
    * @override
-      */
-  public async onBefore({
+   */
+  public override async onBefore({
     parameters: { IOC }
   }: BootstrapServerContext<NextOAuthServerIocMap>): Promise<void> {
     const req = this.options.request;
@@ -79,7 +45,9 @@ export class ApiCorsPlugin implements BootstrapServerPlugin<NextOAuthServerIocMa
       return;
     }
 
-    const config = await this.loadConfig(IOC);
+    const config = await this.loadConfig({
+      IOC
+    } as BootstrapServerContext<NextOAuthServerIocMap>['parameters']);
     const headers = buildApiCorsHeaders(req, config, {
       path: this.options.path,
       credentials: this.options.credentials
@@ -92,12 +60,12 @@ export class ApiCorsPlugin implements BootstrapServerPlugin<NextOAuthServerIocMa
   }
 
   /**
-   * Prefer SiteSettingsService (MemoryKv write-through).
-   * Without IOC (standalone), spin a minimal server IOC; env fallback last.
+   * @override
    */
-  protected async loadConfig(
-    IOC?: BootstrapServerContext<NextOAuthServerIocMap>['parameters']['IOC']
-  ): Promise<RuntimeCorsConfig> {
+  protected override async loadConfig(
+    parameters?: BootstrapServerContext<NextOAuthServerIocMap>['parameters']
+  ): Promise<RuntimeCorsConfigType> {
+    const IOC = parameters?.IOC;
     if (IOC) {
       return IOC(SiteSettingsService).getCorsConfig();
     }
@@ -112,14 +80,11 @@ export class ApiCorsPlugin implements BootstrapServerPlugin<NextOAuthServerIocMa
     }
 
     const fallback = ApiCorsPlugin.envFallbackConfig();
-    await new MemoryKvCacheService().setItem(
-      FE_RUNTIME_CORS_CACHE_KEY,
-      fallback
-    );
+    await new MemoryKvCacheService().setItem(RUNTIME_CORS_CACHE_KEY, fallback);
     return fallback;
   }
 
-  protected static envFallbackConfig(): RuntimeCorsConfig {
+  protected static envFallbackConfig(): RuntimeCorsConfigType {
     const config = new ServerConfig();
     const methods =
       config.apiCorsAllowedMethods.length > 0

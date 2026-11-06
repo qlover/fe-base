@@ -50,13 +50,53 @@ function isOptions(value: unknown): value is KvCacheSetOptions {
 export class MemoryKvCacheService implements KvCacheInterface {
   private readonly store: Map<string, MemoryKvEntry>;
   private readonly nowMs: MemoryKvCacheClock;
+  private readonly inflight: Map<string, Promise<unknown>>;
 
   constructor(options?: {
     readonly store?: Map<string, MemoryKvEntry>;
     readonly nowMs?: MemoryKvCacheClock;
+    /** Share across instances when using a process-wide store. */
+    readonly inflight?: Map<string, Promise<unknown>>;
   }) {
     this.store = options?.store ?? new Map();
     this.nowMs = options?.nowMs ?? Date.now;
+    this.inflight = options?.inflight ?? new Map();
+  }
+
+  /**
+   * Cache-aside: return cached value, or run `factory` once (coalesced) and store.
+   */
+  public async getOrSet<T>(
+    key: string,
+    factory: () => Promise<T>,
+    options?: KvCacheSetOptions
+  ): Promise<T> {
+    const hit = await this.getItem<T>(key);
+    if (hit !== null) {
+      return hit;
+    }
+
+    const existing = this.inflight.get(key) as Promise<T> | undefined;
+    if (existing) {
+      return existing;
+    }
+
+    const self: { pending?: Promise<T> } = {};
+    const isCurrent = (): boolean => this.inflight.get(key) === self.pending;
+    self.pending = (async () => {
+      const value = await factory();
+      if (isCurrent()) {
+        await this.setItem(key, value, options);
+      }
+      return value;
+    })().finally(() => {
+      if (isCurrent()) {
+        this.inflight.delete(key);
+      }
+    });
+
+    this.inflight.set(key, self.pending);
+    return self.pending;
   }
 
   public async setItem<T>(
@@ -72,6 +112,7 @@ export class MemoryKvCacheService implements KvCacheInterface {
     if (ttlMs != null && (!Number.isFinite(ttlMs) || ttlMs <= 0)) {
       throw new Error('KvCache: ttlMs must be a positive finite number');
     }
+    this.inflight.delete(key);
     this.store.set(key, {
       json: JSON.stringify(value),
       expiresAtMs: ttlMs == null ? null : this.nowMs() + ttlMs
@@ -111,16 +152,23 @@ export class MemoryKvCacheService implements KvCacheInterface {
     _options?: KvCacheSetOptions
   ): Promise<void> {
     assertKey(key);
+    this.inflight.delete(key);
     this.store.delete(key);
   }
 
   public async clear(): Promise<void> {
+    this.inflight.clear();
     this.store.clear();
   }
 
   public async removeByPrefix(prefix: string): Promise<number> {
     if (!prefix.trim()) {
       throw new Error('KvCache: prefix must be a non-empty string');
+    }
+    for (const key of [...this.inflight.keys()]) {
+      if (key.startsWith(prefix)) {
+        this.inflight.delete(key);
+      }
     }
     let removed = 0;
     for (const key of [...this.store.keys()]) {
