@@ -2,10 +2,20 @@ import { API_CLIENTS_2, API_CLIENTS_ROTATE_SECRET } from './apiRoutes';
 import { useLocaleRoutes } from './common';
 import { i18nConfig } from './i18n';
 import type { LocaleType } from './i18n';
+import { SETTINGS_LOGGED_IN_ROUTES } from './SettingsNavConfig';
 import type { NextURL } from 'next/dist/server/web/next-url';
 import type { NextRequest } from 'next/server';
 
 export * from './apiRoutes';
+
+export {
+  ROUTE_SETTINGS,
+  ROUTE_SETTINGS_SECURITY,
+  ROUTE_SETTINGS_LANGUAGE,
+  ROUTE_SETTINGS_APPEARANCE,
+  ROUTE_SETTINGS_FEEDBACK,
+  SETTINGS_LOGGED_IN_ROUTES
+} from './SettingsNavConfig';
 
 /**
  * 登录页面路由地址
@@ -187,6 +197,7 @@ export const LOGINED_PAGES = [
   ROUTE_ADMIN_FEEDBACK,
   ROUTE_REQUEST_LOGS,
   ROUTE_ACCOUNT,
+  ...SETTINGS_LOGGED_IN_ROUTES,
   ROUTE_DEVELOPER_APPS,
   ROUTE_OAUTH_PLAYGROUND,
   // Consent requires an app session; gate here so unauthenticated users

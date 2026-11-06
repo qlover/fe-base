@@ -4,6 +4,7 @@ import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import { LocalStorage } from '@qlover/next-kit/client';
 import { StringEncryptor, cookiesConfig } from '@qlover/next-kit/common';
 import { I18nService } from '@/impls/I18nService';
+import { LocalePreferenceService } from '@/impls/LocalePreferenceService';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
 import { ZustandCounterService } from '@/impls/ZustandCounterService';
@@ -54,6 +55,10 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
     ioc.bind(I.ZustandCounterServiceInterface, new ZustandCounterService());
+    ioc.bind(
+      I.LocalePreferenceServiceInterface,
+      ioc.get(LocalePreferenceService)
+    );
     ioc.bind(OAuthClientsApi, ioc.get(OAuthClientsApi));
     ioc.bind(AdminRolesApi, ioc.get(AdminRolesApi));
     ioc.bind(AdminPermissionsApi, ioc.get(AdminPermissionsApi));

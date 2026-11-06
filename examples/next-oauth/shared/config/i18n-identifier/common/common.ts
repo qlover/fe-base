@@ -219,6 +219,13 @@ export const COMMON_SIGNED_IN_AS = 'common:signed_in_as';
 export const COMMON_ACCOUNT_CENTER = 'common:account_center';
 
 /**
+ * @description Settings center menu item
+ * @localZh 设置
+ * @localEn Settings
+ */
+export const COMMON_SETTINGS_CENTER = 'common:settings_center';
+
+/**
  * @description App header nav - Docs
  * @localZh 文档
  * @localEn Docs

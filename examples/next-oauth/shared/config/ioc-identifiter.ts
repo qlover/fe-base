@@ -1,4 +1,5 @@
 import type { I18nService } from '@/impls/I18nService';
+import type { LocalePreferenceService } from '@/impls/LocalePreferenceService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { ZustandCounterService } from '@/impls/ZustandCounterService';
@@ -30,6 +31,7 @@ export const IOCIdentifier = Object.freeze({
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
   ZustandCounterServiceInterface: 'ZustandCounterServiceInterface',
+  LocalePreferenceServiceInterface: 'LocalePreferenceServiceInterface',
   /**
    * OAuth 包装服务提供接口
    */
@@ -75,6 +77,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
   [IOCIdentifier.ZustandCounterServiceInterface]: ZustandCounterService;
+  [IOCIdentifier.LocalePreferenceServiceInterface]: LocalePreferenceService;
   [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 

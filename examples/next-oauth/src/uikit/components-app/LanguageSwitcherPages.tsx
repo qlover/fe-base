@@ -13,6 +13,8 @@ import {
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
+import { I } from '@config/ioc-identifiter';
+import { useIOC } from '../hook/useIOC';
 
 /**
  * Language switcher for Pages Router routes (uses `next/router`).
@@ -22,6 +24,7 @@ export function LanguageSwitcherPages() {
   const currentLocale = useLocale() as LocaleType;
   const [isPending, setIsPending] = useState(false);
   const mounted = useMountedClient();
+  const localePreference = useIOC(I.LocalePreferenceServiceInterface);
 
   const localeRouter = useMemo(
     () =>
@@ -54,6 +57,7 @@ export function LanguageSwitcherPages() {
       try {
         const { asPath } = router;
         const nextLocale = value as LocaleType;
+        localePreference.write(nextLocale);
         persistLocaleCookie(nextLocale);
 
         const url = new URL(asPath, window.location.origin);
@@ -72,7 +76,7 @@ export function LanguageSwitcherPages() {
         setIsPending(false);
       }
     },
-    [isPending, currentLocale, router, localeRouter]
+    [isPending, currentLocale, router, localeRouter, localePreference]
   );
 
   const currentLocaleLabel =

@@ -15,7 +15,12 @@ import {
   ROUTE_DOCS_OAUTH,
   ROUTE_OAUTH_PLAYGROUND,
   ROUTE_REGISTER,
-  ROUTE_REQUEST_LOGS
+  ROUTE_REQUEST_LOGS,
+  ROUTE_SETTINGS,
+  ROUTE_SETTINGS_APPEARANCE,
+  ROUTE_SETTINGS_FEEDBACK,
+  ROUTE_SETTINGS_LANGUAGE,
+  ROUTE_SETTINGS_SECURITY
 } from '@config/route';
 
 const locales = i18nConfig.supportedLngs;
@@ -65,6 +70,26 @@ export const routing = defineRouting({
     [ROUTE_ACCOUNT]: {
       en: '/account',
       zh: '/account'
+    },
+    [ROUTE_SETTINGS]: {
+      en: '/settings',
+      zh: '/settings'
+    },
+    [ROUTE_SETTINGS_SECURITY]: {
+      en: '/settings/security',
+      zh: '/settings/security'
+    },
+    [ROUTE_SETTINGS_LANGUAGE]: {
+      en: '/settings/language',
+      zh: '/settings/language'
+    },
+    [ROUTE_SETTINGS_APPEARANCE]: {
+      en: '/settings/appearance',
+      zh: '/settings/appearance'
+    },
+    [ROUTE_SETTINGS_FEEDBACK]: {
+      en: '/settings/feedback',
+      zh: '/settings/feedback'
     },
     [ROUTE_OAUTH_AUTHORIZE]: {
       en: '/oauth/authorize',

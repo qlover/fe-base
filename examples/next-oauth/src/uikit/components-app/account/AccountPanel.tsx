@@ -10,10 +10,10 @@ import { UserService } from '@/impls/UserService';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useUserAuth } from '@/uikit/hook/useUserAuth';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
-import { AccountFeedbackForm } from '@/uikit/components-app/account/AccountFeedbackForm';
 import { BindEmailForm } from '@/uikit/components-app/account/BindEmailForm';
-import { ChangePasswordForm } from '@/uikit/components-app/account/ChangePasswordForm';
 import { LinkedLoginsSection } from '@/uikit/components-app/account/LinkedLoginsSection';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { toBusinessEmail } from '@shared/utils/phoneUserIdentity';
 import {
   maskPhoneForDisplay,
@@ -21,6 +21,11 @@ import {
 } from '@shared/utils/userIdentity';
 import { I } from '@config/ioc-identifiter';
 import type { AccountI18nInterface } from '@config/i18n-mapping/accountI18n';
+import { settingsI18n } from '@config/i18n-mapping/settingsI18n';
+import {
+  ROUTE_SETTINGS_FEEDBACK,
+  ROUTE_SETTINGS_SECURITY
+} from '@config/SettingsNavConfig';
 import {
   displayNameUpdateSchema,
   isValidDisplayName
@@ -67,6 +72,7 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
   const gateway = useIOC(AppUserGateway);
   const dialog = useIOC(I.DialogHandler);
   const t = useWarnTranslations();
+  const settingsTt = useI18nMapping(settingsI18n);
 
   const storedRawName = user?.name?.trim() ?? '';
   const [editingName, setEditingName] = useState(false);
@@ -295,40 +301,38 @@ export function AccountPanel({ tt }: { tt: AccountI18nInterface }) {
         </section>
       ) : null}
 
-      <div className={clsx(needsBindEmail && 'lg:col-span-2')}>
-        <AccountFeedbackForm tt={tt} />
-      </div>
-
       <section
         className={clsx(
           'rounded-2xl border border-primary-border bg-primary p-5 sm:p-6',
           needsBindEmail && 'lg:col-span-2'
         )}
+        data-testid="AccountSettingsLinks"
       >
         <h2 className="mb-4 text-base font-semibold text-primary-text">
-          {tt.passwordSectionTitle}
+          {settingsTt.title}
         </h2>
-        {email ? (
-          <ChangePasswordForm
-            labels={{
-              description: tt.passwordDescription,
-              noPasswordHint: tt.passwordNoPasswordHint,
-              currentPlaceholder: tt.passwordCurrentPlaceholder,
-              newPlaceholder: tt.passwordNewPlaceholder,
-              confirmPlaceholder: tt.passwordConfirmPlaceholder,
-              submit: tt.passwordSubmit,
-              success: tt.passwordSuccess,
-              errorFallback: tt.passwordError,
-              invalid: tt.passwordInvalid,
-              mismatch: tt.passwordMismatch,
-              same: tt.passwordSame
-            }}
-          />
-        ) : (
-          <p className="text-sm text-secondary-text">
-            {tt.passwordEmailRequired}
-          </p>
-        )}
+        <ul className="space-y-2 text-sm">
+          <li>
+            <LocaleLink
+              href={ROUTE_SETTINGS_SECURITY}
+              title={settingsTt.accountLinkPassword}
+              className="text-brand hover:underline"
+              data-testid="AccountLinkPasswordSettings"
+            >
+              {settingsTt.accountLinkPassword}
+            </LocaleLink>
+          </li>
+          <li>
+            <LocaleLink
+              href={ROUTE_SETTINGS_FEEDBACK}
+              title={settingsTt.accountLinkFeedback}
+              className="text-brand hover:underline"
+              data-testid="AccountLinkFeedbackSettings"
+            >
+              {settingsTt.accountLinkFeedback}
+            </LocaleLink>
+          </li>
+        </ul>
       </section>
     </div>
   );
