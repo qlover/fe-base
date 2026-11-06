@@ -1,4 +1,5 @@
 import type {
+  LlmCallOptionsType,
   LlmChatCompletionType,
   LlmChatMessageType,
   LlmChatStreamPartType,
@@ -15,7 +16,8 @@ export interface LlmAgentInterface {
    */
   completions(
     messages: readonly LlmChatMessageType[],
-    params?: LlmCompletionsParamsType
+    params?: LlmCompletionsParamsType,
+    options?: LlmCallOptionsType
   ): Promise<LlmChatCompletionType>;
 
   /**

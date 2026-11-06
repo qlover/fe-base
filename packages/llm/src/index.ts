@@ -10,6 +10,7 @@ export { LlmError } from './errors/LlmError';
 export {
   LLM_CHAT_STREAM_PART_KIND,
   type LlmAgentOptionsType,
+  type LlmCallOptionsType,
   type LlmChatCompletionType,
   type LlmChatMessageType,
   type LlmChatStreamPartKindType,

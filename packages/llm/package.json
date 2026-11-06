@@ -1,7 +1,7 @@
 {
   "name": "@qlover/llm",
   "description": "Isomorphic OpenAI-compatible LLM client (completions, streaming text/reasoning, optional Node proxy fetch)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "sideEffects": false,
@@ -19,6 +19,11 @@
       "types": "./dist/node.d.ts",
       "import": "./dist/node.js",
       "require": "./dist/node.cjs"
+    },
+    "./executor": {
+      "types": "./dist/executor.d.ts",
+      "import": "./dist/executor.js",
+      "require": "./dist/executor.cjs"
     }
   },
   "files": [
@@ -51,6 +56,12 @@
   "license": "ISC",
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "@qlover/fe-corekit": "^3.0.0"
+  },
+  "devDependencies": {
+    "@qlover/fe-corekit": "workspace:*"
   },
   "optionalDependencies": {
     "undici": "^7.0.0"

@@ -14,7 +14,8 @@ export default defineConfig([
   {
     entry: {
       index: 'src/index.ts',
-      node: 'src/node/index.ts'
+      node: 'src/node/index.ts',
+      executor: 'src/executor/index.ts'
     },
     format: ['cjs'],
     dts: false,
@@ -28,7 +29,8 @@ export default defineConfig([
   {
     entry: {
       index: 'src/index.ts',
-      node: 'src/node/index.ts'
+      node: 'src/node/index.ts',
+      executor: 'src/executor/index.ts'
     },
     format: ['esm'],
     dts: {

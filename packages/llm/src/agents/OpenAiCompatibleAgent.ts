@@ -3,6 +3,7 @@ import type { LlmAgentInterface } from '../interfaces/LlmAgentInterface';
 import {
   LLM_CHAT_STREAM_PART_KIND,
   type LlmAgentOptionsType,
+  type LlmCallOptionsType,
   type LlmChatCompletionType,
   type LlmChatMessageType,
   type LlmChatStreamPartType,
@@ -47,7 +48,8 @@ export class OpenAiCompatibleAgent implements LlmAgentInterface {
    */
   public async completions(
     messages: readonly LlmChatMessageType[],
-    params?: LlmCompletionsParamsType
+    params?: LlmCompletionsParamsType,
+    options?: LlmCallOptionsType
   ): Promise<LlmChatCompletionType> {
     const response = await this.fetchImpl(this.chatCompletionsUrl(), {
       method: 'POST',
@@ -57,7 +59,8 @@ export class OpenAiCompatibleAgent implements LlmAgentInterface {
         ...params,
         messages,
         stream: false
-      })
+      }),
+      signal: options?.signal
     });
     const text = await response.text();
     if (!response.ok) {

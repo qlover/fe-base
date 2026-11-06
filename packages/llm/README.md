@@ -66,7 +66,28 @@ const agent = createLlmAgent({
 });
 ```
 
+## Lifecycle（超时 / 重试）
+
+peer：`@qlover/fe-corekit`
+
+```ts
+import { createLlmAgent } from '@qlover/llm';
+import { createLlmExecutor } from '@qlover/llm/executor';
+
+const executor = createLlmExecutor({
+  agent: createLlmAgent({ apiKey, baseUrl, model }),
+  timeoutMs: 30_000,
+  retry: { maxRetries: 3, retryDelayMs: 1000 }
+});
+
+await executor.completions([{ role: 'user', content: 'hi' }]);
+```
+
+- completions：超时 + 可重试（429/502/503/504）
+- 流式：仅超时/中止，默认不重试（避免半截流重放）
+- 可继续 `executor.getCompletionsExecutor().use(customPlugin)`
+
 ## 边界
 
-- **进包**：协议客户端、SSE 解析、可选 Node 代理
+- **进包**：协议客户端、SSE 解析、可选 Node 代理、可选 Lifecycle 门面
 - **不进包**：站点设置、业务 Agent 配置、工具调用编排、译档装箱策略

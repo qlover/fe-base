@@ -19,9 +19,14 @@ export type LlmCompletionsParamsType = {
   readonly stop?: string | readonly string[];
 } & Readonly<Record<string, unknown>>;
 
-export type LlmStreamChatOptionsType = {
+export type LlmCallOptionsType = {
   readonly signal?: AbortSignal;
+};
+
+export type LlmStreamChatOptionsType = LlmCallOptionsType & {
   readonly params?: LlmCompletionsParamsType;
+  /** 仅 executor 层使用：请求超时（毫秒）。 */
+  readonly timeoutMs?: number;
 };
 
 /**
