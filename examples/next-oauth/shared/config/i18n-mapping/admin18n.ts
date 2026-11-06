@@ -299,6 +299,8 @@ export const adminSettings18n = Object.freeze({
   keywords: settingsKeys.ADMIN_SETTINGS_KEYWORDS,
   sectionAuth: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH,
   sectionAuthDesc: settingsKeys.ADMIN_SETTINGS_SECTION_AUTH_DESC,
+  sectionAliyunSms: settingsKeys.ADMIN_SETTINGS_SECTION_ALIYUN_SMS,
+  sectionAliyunSmsDesc: settingsKeys.ADMIN_SETTINGS_SECTION_ALIYUN_SMS_DESC,
   sectionOpenai: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI,
   sectionOpenaiDesc: settingsKeys.ADMIN_SETTINGS_SECTION_OPENAI_DESC,
   sectionApi: settingsKeys.ADMIN_SETTINGS_SECTION_API,

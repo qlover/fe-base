@@ -23,6 +23,7 @@ import {
   safeEqualOtp
 } from '@server/repositorys/FePhoneOtpsRepository';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
+import { AliyunSmsPhoneOtpProvider } from '@server/services/phoneOtp/AliyunSmsPhoneOtpProvider';
 import { MemoryPhoneOtpProvider } from '@server/services/phoneOtp/MemoryPhoneOtpProvider';
 import type { PhoneOtpProviderInterface } from '@server/services/phoneOtp/PhoneOtpProviderInterface';
 import { SiteSettingsService } from '@server/services/SiteSettingsService';
@@ -58,6 +59,8 @@ export class PhoneOtpService {
     protected readonly supabaseBridge: SupabaseRepo<unknown>,
     @inject(MemoryPhoneOtpProvider)
     protected readonly memoryProvider: MemoryPhoneOtpProvider,
+    @inject(AliyunSmsPhoneOtpProvider)
+    protected readonly aliyunSmsProvider: AliyunSmsPhoneOtpProvider,
     @inject(I.OAuthWrapperProviderInterface)
     protected readonly oauthProvider: OAuthWrapperProviderInterface,
     @inject(SupabaseSessionMintService)
@@ -183,7 +186,9 @@ export class PhoneOtpService {
     if (name === 'memory') {
       return this.memoryProvider;
     }
-    // Future: `aliyun` → return this.aliyunProvider
+    if (name === 'aliyun') {
+      return this.aliyunSmsProvider;
+    }
     throw new ExecutorError(
       API_OTP_CODE_INVALID,
       `Unsupported app-owned phone OTP provider: ${name}`

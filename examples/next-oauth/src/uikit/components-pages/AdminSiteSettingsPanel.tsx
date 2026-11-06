@@ -391,6 +391,14 @@ export function AdminSiteSettingsPanel({
 
   const phoneOtpProviderKey = FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER;
 
+  const aliyunSmsKeys = [
+    FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_ID,
+    FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_SECRET,
+    FE_SITE_SETTING_KEYS.ALIYUN_SMS_SIGN_NAME,
+    FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_CODE,
+    FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_PARAM_KEY
+  ] as const;
+
   const openaiKeys = [
     FE_SITE_SETTING_KEYS.OPENAI_BASE_URL,
     FE_SITE_SETTING_KEYS.OPENAI_API_KEY
@@ -454,7 +462,10 @@ export function AdminSiteSettingsPanel({
               )
                 .trim()
                 .toLowerCase();
-              return raw === 'supabase' ? 'supabase' : 'memory';
+              if (raw === 'supabase' || raw === 'aliyun') {
+                return raw;
+              }
+              return 'memory';
             })()}
             onChange={(event) =>
               setDraftValue(phoneOtpProviderKey, event.target.value)
@@ -463,8 +474,45 @@ export function AdminSiteSettingsPanel({
           >
             <option value="memory">memory（Admin 监控看码）</option>
             <option value="supabase">supabase（Supabase SMS）</option>
+            <option value="aliyun">aliyun（阿里云短信）</option>
           </select>
         </SettingRow>
+      </SettingsSection>
+
+      <SettingsSection
+        title={tt.sectionAliyunSms}
+        description={tt.sectionAliyunSmsDesc}
+        saveLabel={tt.save}
+        savingLabel={tt.saving}
+        saving={savingSection === 'aliyun_sms'}
+        onSave={() => patchSection('aliyun_sms', [...aliyunSmsKeys])}
+      >
+        {aliyunSmsKeys.map((key) => {
+          const entry = byKey.get(key);
+          const raw = getDraftValue(draft, entry, key);
+          const isSensitive = entry?.isSensitive;
+          const value =
+            isSensitive && raw === FE_SITE_SETTING_SECRET_UNCHANGED
+              ? ''
+              : String(raw);
+          return (
+            <SettingRow
+              key={key}
+              entry={entry}
+              tt={tt}
+              layout="stacked"
+              highlighted={highlightedAnchor === key}
+            >
+              <input
+                type={isSensitive ? 'password' : 'text'}
+                value={value}
+                placeholder={isSensitive ? tt.secretHint : undefined}
+                onChange={(event) => setDraftValue(key, event.target.value)}
+                className={formFieldClass}
+              />
+            </SettingRow>
+          );
+        })}
       </SettingsSection>
 
       <SettingsSection

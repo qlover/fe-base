@@ -35,6 +35,22 @@ export const ADMIN_SETTINGS_SECTION_AUTH_DESC =
   'admin_settings:section__auth_desc';
 
 /**
+ * @description Aliyun SMS section title
+ * @localZh 阿里云短信
+ * @localEn Aliyun SMS
+ */
+export const ADMIN_SETTINGS_SECTION_ALIYUN_SMS =
+  'admin_settings:section__aliyun_sms';
+
+/**
+ * @description Aliyun SMS section description
+ * @localZh 手机验证码通道选 aliyun 时必填；AccessKey Secret 加密存储。
+ * @localEn Required when phone OTP channel is aliyun; AccessKey Secret is encrypted at rest.
+ */
+export const ADMIN_SETTINGS_SECTION_ALIYUN_SMS_DESC =
+  'admin_settings:section__aliyun_sms_desc';
+
+/**
  * @description OpenAI-compatible API section title
  * @localZh OpenAI 兼容 API
  * @localEn OpenAI-compatible API

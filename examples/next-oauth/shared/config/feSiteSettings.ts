@@ -4,11 +4,25 @@ export const FE_SITE_SETTING_KEYS = {
    * Phone OTP delivery channel.
    * - `memory`: app-owned codes (Admin 验证码监控可见明文)
    * - `supabase`: Supabase Auth SMS (需在 Supabase 启用 Phone)
-   * Add more providers (e.g. aliyun) via PhoneOtpProviderInterface.
+   * - `aliyun`: 阿里云短信（见 aliyun_sms.*）
    */
   AUTH_PHONE_OTP_PROVIDER: 'auth.phone_otp_provider',
   AUTH_GITHUB_OAUTH_ENABLED: 'auth.github_oauth_enabled',
   AUTH_GOOGLE_OAUTH_ENABLED: 'auth.google_oauth_enabled',
+
+  /** 阿里云短信 AccessKey ID。 */
+  ALIYUN_SMS_ACCESS_KEY_ID: 'aliyun_sms.access_key_id',
+  /** 阿里云短信 AccessKey Secret（敏感，加密存储）。 */
+  ALIYUN_SMS_ACCESS_KEY_SECRET: 'aliyun_sms.access_key_secret',
+  /** 短信签名（控制台已审）。 */
+  ALIYUN_SMS_SIGN_NAME: 'aliyun_sms.sign_name',
+  /** 短信模板 CODE（须含验证码变量，默认变量名 code）。 */
+  ALIYUN_SMS_TEMPLATE_CODE: 'aliyun_sms.template_code',
+  /**
+   * 模板中验证码变量名，默认 `code`。
+   * 对应 TemplateParam：`{"<key>":"<otp>"}`。
+   */
+  ALIYUN_SMS_TEMPLATE_PARAM_KEY: 'aliyun_sms.template_param_key',
 
   OPENAI_API_KEY: 'openai.api_key',
   OPENAI_BASE_URL: 'openai.base_url',
@@ -92,9 +106,45 @@ export const FE_SITE_SETTING_DEFINITIONS: readonly FeSiteSettingDefinition[] =
       key: FE_SITE_SETTING_KEYS.AUTH_PHONE_OTP_PROVIDER,
       label: '手机验证码通道',
       description:
-        'memory：本地发码，Admin「验证码监控」可见明文；supabase：走 Supabase Auth SMS。新增短信商时实现 Provider 后在此切换。',
+        'memory：本地发码，Admin「验证码监控」可见明文；supabase：Supabase Auth SMS；aliyun：阿里云短信（下方配置）。',
       isSensitive: false,
       defaultValue: 'memory'
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_ID,
+      label: '阿里云 AccessKey ID',
+      description: '短信通道为 aliyun 时必填。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_ACCESS_KEY_SECRET,
+      label: '阿里云 AccessKey Secret',
+      description:
+        '短信通道为 aliyun 时必填。必须配置 ENCRYPTION_KEY 加密存储，界面不回显明文。',
+      isSensitive: true,
+      requiresEncryption: true
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_SIGN_NAME,
+      label: '短信签名',
+      description: '阿里云短信控制台已审核通过的签名名称。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_CODE,
+      label: '短信模板 CODE',
+      description: '已审核模板代码；模板内容需包含验证码变量（默认变量名 code）。',
+      isSensitive: false,
+      defaultValue: ''
+    },
+    {
+      key: FE_SITE_SETTING_KEYS.ALIYUN_SMS_TEMPLATE_PARAM_KEY,
+      label: '模板验证码变量名',
+      description: 'TemplateParam 中验证码字段名，默认 code。',
+      isSensitive: false,
+      defaultValue: 'code'
     },
     {
       key: FE_SITE_SETTING_KEYS.AUTH_GITHUB_OAUTH_ENABLED,

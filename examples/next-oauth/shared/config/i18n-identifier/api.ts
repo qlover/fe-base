@@ -295,6 +295,20 @@ export const API_MAIL_PROVIDER_NOT_READY = 'api:mail_provider_not_ready';
 export const API_MAIL_SEND_FAILED = 'api:mail_send_failed';
 
 /**
+ * @description SMS provider missing required settings
+ * @localZh 短信通道配置不完整
+ * @localEn SMS provider is not fully configured
+ */
+export const API_SMS_PROVIDER_NOT_READY = 'api:sms_provider_not_ready';
+
+/**
+ * @description SMS provider rejected or failed to send
+ * @localZh 短信发送失败，请稍后重试
+ * @localEn Failed to send SMS. Please try again later
+ */
+export const API_SMS_SEND_FAILED = 'api:sms_send_failed';
+
+/**
  * @description Recipient email is invalid
  * @localZh 收件邮箱格式不正确
  * @localEn Recipient email is invalid
