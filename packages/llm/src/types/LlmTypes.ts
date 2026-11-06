@@ -25,8 +25,6 @@ export type LlmCallOptionsType = {
 
 export type LlmStreamChatOptionsType = LlmCallOptionsType & {
   readonly params?: LlmCompletionsParamsType;
-  /** 仅 executor 层使用：请求超时（毫秒）。 */
-  readonly timeoutMs?: number;
 };
 
 /**

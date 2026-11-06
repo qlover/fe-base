@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LlmError, createLlmAgent } from '../src/index';
-import { createLlmExecutor } from '../src/executor';
+import {
+  LlmRetryPlugin,
+  LlmTimeoutPlugin,
+  createLlmExecutor
+} from '../src/executor';
 
 describe('LlmExecutor', () => {
   afterEach(() => {
@@ -8,7 +12,32 @@ describe('LlmExecutor', () => {
     vi.unstubAllGlobals();
   });
 
-  it('retries completions on 503 then succeeds', async () => {
+  it('without plugins just runs agent once', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () =>
+        JSON.stringify({
+          choices: [{ message: { content: 'ok' } }]
+        })
+    });
+    const executor = createLlmExecutor({
+      agent: createLlmAgent({
+        apiKey: 'k',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'm',
+        fetch: fetchMock as unknown as typeof fetch
+      })
+    });
+    const result = await executor.completions([
+      { role: 'user', content: 'hi' }
+    ]);
+    expect(result.choices[0]?.message?.content).toBe('ok');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('retries via LlmRetryPlugin on 503', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -27,16 +56,14 @@ describe('LlmExecutor', () => {
           })
       });
 
-    const agent = createLlmAgent({
-      apiKey: 'k',
-      baseUrl: 'https://api.example.com/v1',
-      model: 'm',
-      fetch: fetchMock as unknown as typeof fetch
-    });
     const executor = createLlmExecutor({
-      agent,
-      retry: { maxRetries: 3, retryDelayMs: 0 }
-    });
+      agent: createLlmAgent({
+        apiKey: 'k',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'm',
+        fetch: fetchMock as unknown as typeof fetch
+      })
+    }).use(new LlmRetryPlugin({ maxRetries: 3, retryDelayMs: 0 }));
 
     const result = await executor.completions([
       { role: 'user', content: 'hi' }
@@ -45,22 +72,20 @@ describe('LlmExecutor', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it('does not retry AbortError', async () => {
+  it('LlmRetryPlugin does not retry AbortError', async () => {
     const fetchMock = vi.fn().mockImplementation(() => {
       const error = new Error('aborted');
       error.name = 'AbortError';
       return Promise.reject(error);
     });
-    const agent = createLlmAgent({
-      apiKey: 'k',
-      baseUrl: 'https://api.example.com/v1',
-      model: 'm',
-      fetch: fetchMock as unknown as typeof fetch
-    });
     const executor = createLlmExecutor({
-      agent,
-      retry: { maxRetries: 3, retryDelayMs: 0 }
-    });
+      agent: createLlmAgent({
+        apiKey: 'k',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'm',
+        fetch: fetchMock as unknown as typeof fetch
+      })
+    }).use(new LlmRetryPlugin({ maxRetries: 3, retryDelayMs: 0 }));
 
     await expect(
       executor.completions([{ role: 'user', content: 'hi' }])
@@ -68,23 +93,21 @@ describe('LlmExecutor', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('does not retry 401 LlmError', async () => {
+  it('LlmRetryPlugin does not retry 401', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       status: 401,
       statusText: 'Unauthorized',
       text: async () => 'nope'
     });
-    const agent = createLlmAgent({
-      apiKey: 'k',
-      baseUrl: 'https://api.example.com/v1',
-      model: 'm',
-      fetch: fetchMock as unknown as typeof fetch
-    });
     const executor = createLlmExecutor({
-      agent,
-      retry: { maxRetries: 3, retryDelayMs: 0 }
-    });
+      agent: createLlmAgent({
+        apiKey: 'k',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'm',
+        fetch: fetchMock as unknown as typeof fetch
+      })
+    }).use(new LlmRetryPlugin({ maxRetries: 3, retryDelayMs: 0 }));
 
     await expect(
       executor.completions([{ role: 'user', content: 'hi' }])
@@ -92,7 +115,7 @@ describe('LlmExecutor', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('passes merged abort signal into completions fetch', async () => {
+  it('LlmTimeoutPlugin merges signal when used', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -102,20 +125,19 @@ describe('LlmExecutor', () => {
           choices: [{ message: { content: 'x' } }]
         })
     });
-    const agent = createLlmAgent({
-      apiKey: 'k',
-      baseUrl: 'https://api.example.com/v1',
-      model: 'm',
-      fetch: fetchMock as unknown as typeof fetch
-    });
     const executor = createLlmExecutor({
-      agent,
-      retry: false,
-      timeoutMs: 5_000
+      agent: createLlmAgent({
+        apiKey: 'k',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'm',
+        fetch: fetchMock as unknown as typeof fetch
+      }),
+      plugins: [new LlmTimeoutPlugin()]
     });
     const external = new AbortController();
     await executor.completions([{ role: 'user', content: 'hi' }], undefined, {
-      signal: external.signal
+      signal: external.signal,
+      timeoutMs: 5_000
     });
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(init.signal).toBeDefined();

@@ -5,6 +5,7 @@ import type {
 } from '@qlover/fe-corekit';
 import { LlmError } from '../errors/LlmError';
 import type { LlmExecutorParamsType } from './LlmExecutorParams';
+import { unwrapExecutorError } from './unwrapExecutorError';
 
 export type LlmRetryPluginOptionsType = {
   /** 含首次在内的最大尝试次数。默认 3。 */
@@ -18,11 +19,12 @@ export type LlmRetryPluginOptionsType = {
  * 默认：对 429/502/503/504 与非 Abort 网络错重试；用户中止不重试。
  */
 export function defaultLlmShouldRetry(error: unknown): boolean {
-  if (error instanceof Error && error.name === 'AbortError') {
+  const raw = unwrapExecutorError(error);
+  if (raw instanceof Error && raw.name === 'AbortError') {
     return false;
   }
-  if (error instanceof LlmError) {
-    const status = error.status;
+  if (raw instanceof LlmError) {
+    const status = raw.status;
     return (
       status === 429 || status === 502 || status === 503 || status === 504
     );
@@ -31,8 +33,9 @@ export function defaultLlmShouldRetry(error: unknown): boolean {
 }
 
 /**
- * 可选 Lifecycle 重试插件（高级用法）。
- * 默认门面 {@link LlmExecutor} 在类内做 completions 重试；需要自定义 exec 链时可挂此插件。
+ * Lifecycle 重试插件：在 `onExec` 包装任务（须 `await` 任务，才能捕到 Promise 拒绝）。
+ *
+ * 对流式任务请设 `enableRetry: false`，或不要对本任务挂本插件。
  */
 export class LlmRetryPlugin
   implements
@@ -59,8 +62,7 @@ export class LlmRetryPlugin
   ): ExecutorTask<R, P> {
     return async (ctx: ExecutorContextInterface<P, R>): Promise<R> => {
       if (ctx.parameters?.enableRetry === false) {
-        const result = task(ctx);
-        return result instanceof Promise ? result : Promise.resolve(result);
+        return await Promise.resolve(task(ctx));
       }
 
       let attempt = 0;
@@ -68,8 +70,7 @@ export class LlmRetryPlugin
       while (attempt < this.maxRetries) {
         attempt += 1;
         try {
-          const result = task(ctx);
-          return result instanceof Promise ? result : Promise.resolve(result);
+          return await Promise.resolve(task(ctx));
         } catch (error: unknown) {
           lastError = error;
           const canRetry =

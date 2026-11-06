@@ -68,24 +68,35 @@ const agent = createLlmAgent({
 
 ## Lifecycle（超时 / 重试）
 
-peer：`@qlover/fe-corekit`
+peer：`@qlover/fe-corekit`  
+默认**不挂任何策略**；超时 / 重试由调用方显式装配。
 
 ```ts
 import { createLlmAgent } from '@qlover/llm';
-import { createLlmExecutor } from '@qlover/llm/executor';
+import {
+  createLlmExecutor,
+  LlmTimeoutPlugin,
+  LlmRetryPlugin,
+  createTimeoutSignal
+} from '@qlover/llm/executor';
 
 const executor = createLlmExecutor({
-  agent: createLlmAgent({ apiKey, baseUrl, model }),
-  timeoutMs: 30_000,
-  retry: { maxRetries: 3, retryDelayMs: 1000 }
+  agent: createLlmAgent({ apiKey, baseUrl, model })
+})
+  .use(new LlmTimeoutPlugin())
+  .use(new LlmRetryPlugin({ maxRetries: 3, retryDelayMs: 1000 }));
+
+await executor.completions([{ role: 'user', content: 'hi' }], undefined, {
+  timeoutMs: 30_000
 });
 
-await executor.completions([{ role: 'user', content: 'hi' }]);
+// 流式不经 Lifecycle；超时请自行传 signal
+for await (const part of executor.streamChatParts(messages, {
+  signal: createTimeoutSignal(30_000)
+})) {
+  // ...
+}
 ```
-
-- completions：超时 + 可重试（429/502/503/504）
-- 流式：仅超时/中止，默认不重试（避免半截流重放）
-- 可继续 `executor.getCompletionsExecutor().use(customPlugin)`
 
 ## 边界
 
