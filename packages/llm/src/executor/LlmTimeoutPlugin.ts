@@ -17,6 +17,9 @@ export class LlmTimeoutPlugin
   public readonly pluginName = 'LlmTimeoutPlugin';
   public readonly onlyOne = true;
 
+  /**
+   * @override
+   */
   public onBefore(
     ctx: ExecutorContextInterface<LlmExecutorParamsType, unknown>
   ): LlmExecutorParamsType {

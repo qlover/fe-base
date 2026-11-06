@@ -56,6 +56,9 @@ export class LlmRetryPlugin
     this.shouldRetry = options.shouldRetry ?? defaultLlmShouldRetry;
   }
 
+  /**
+   * @override
+   */
   public onExec<R, P extends LlmExecutorParamsType = LlmExecutorParamsType>(
     _context: ExecutorContextInterface<P, R>,
     task: ExecutorTask<R, P>
