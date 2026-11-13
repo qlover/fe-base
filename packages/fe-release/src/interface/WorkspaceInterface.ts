@@ -62,6 +62,14 @@ export interface WorkspaceInterface {
   changelog?: string;
 
   /**
+   * 本包本次发布使用的 semver 递增。
+   *
+   * Github 在 `onBefore` 里根据 PR 正文 `## Release increments` 写入。
+   * ChangesetVersion 写 changeset 时优先使用命令行配置，其次用这个字段，最后才用全局 increment。
+   */
+  readonly increment?: string;
+
+  /**
    * Whether this workspace is an internal dependent bumped only because a
    * dependency was released (not directly changed in git).
    *

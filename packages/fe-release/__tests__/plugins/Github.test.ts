@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { writeFileSync, unlinkSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Github from '../../src/plugins/Github';
 import { GithubManager } from '../../src/implments/GithubManager';
 import { GithubChangelog } from '../../src/implments/changelog/GithubChangelog';
@@ -128,6 +130,46 @@ describe('Github Plugin', () => {
       await plugin.onExec();
 
       expect(enrichSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('applyPullRequestPackageIncrements', () => {
+    it('writes Release increments onto the matching workspace', () => {
+      const eventPath = join(process.cwd(), '.tmp-github-pr-body.json');
+      writeFileSync(
+        eventPath,
+        JSON.stringify({
+          pull_request: {
+            body: [
+              '## Release increments',
+              '',
+              '- pkg-a: minor',
+              '- packages/missing: major'
+            ].join('\n')
+          }
+        }),
+        'utf8'
+      );
+
+      const previous = process.env.GITHUB_EVENT_PATH;
+      process.env.GITHUB_EVENT_PATH = eventPath;
+      try {
+        // @ts-expect-error call protected method for testing
+        plugin.applyPullRequestPackageIncrements();
+      } finally {
+        if (previous === undefined) {
+          delete process.env.GITHUB_EVENT_PATH;
+        } else {
+          process.env.GITHUB_EVENT_PATH = previous;
+        }
+        if (existsSync(eventPath)) {
+          unlinkSync(eventPath);
+        }
+      }
+
+      expect(context.workspaces).toHaveLength(1);
+      expect(context.workspaces?.[0].increment).toBe('minor');
+      expect(context.workspaces?.[0].name).toBe('pkg-a');
     });
   });
 

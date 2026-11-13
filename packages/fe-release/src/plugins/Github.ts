@@ -7,7 +7,8 @@
  * delegates GitHub API calls to {@link GithubManager}.
  *
  * Pipeline phases:
- * - **onBefore**: validate GitHub token; seed {@link ReleaseFormatter} context
+ * - **onBefore**: validate GitHub token; seed {@link ReleaseFormatter} context;
+ *   copy `## Release increments` from the merged PR body onto each workspace
  * - **onExec**: enrich workspace changelogs with PR/commit links via {@link GithubChangelog}
  * - **onSuccess**:
  *   - `createPR` — create release branch, commit, push, and open PR (unless skipped)
@@ -49,8 +50,12 @@
  * }
  * ```
  */
+import { existsSync, readFileSync } from 'node:fs';
 import type ReleaseContext from '../implments/ReleaseContext';
 import { GithubManager } from '../implments/GithubManager';
+import { PackageIncrementResolver } from '../implments/PackageIncrementResolver';
+import { PullRequestIncrementSectionParser } from '../implments/PullRequestIncrementSectionParser';
+import { createWorkspaceValue } from '../utils/createWorkspace';
 import type { GitRepositoryParsedType } from './GitBase';
 import GitBase, { type GitBaseProps } from './GitBase';
 import { GithubChangelog } from '../implments/changelog/GithubChangelog';
@@ -321,6 +326,84 @@ export default class Github extends GitBase<GithubProps> {
     });
 
     this.logger.info(`Github mode: ${this.mode}`);
+    this.applyPullRequestPackageIncrements();
+  }
+
+  /**
+   * 把 PR 正文 `## Release increments` 写到已选出的 workspace 上。
+   *
+   * Workspaces 的 onBefore 已经先跑完。没有 PR 正文或没有该小节时保持原样。
+   */
+  protected applyPullRequestPackageIncrements(): void {
+    const body = this.readPullRequestBody();
+    if (!body) {
+      return;
+    }
+
+    const parsed = new PullRequestIncrementSectionParser().parse(body);
+    if (Object.keys(parsed).length === 0) {
+      return;
+    }
+
+    const workspaces = this.context.workspaces;
+    if (!workspaces || workspaces.length === 0) {
+      this.logger.info(
+        'Pull request lists package increments, but no workspaces are selected'
+      );
+      return;
+    }
+
+    const resolver = new PackageIncrementResolver({
+      packageIncrements: parsed
+    });
+    let applied = 0;
+    const next = workspaces.map((workspace) => {
+      const increment = resolver.resolve(workspace);
+      if (!increment) {
+        return workspace;
+      }
+
+      applied += 1;
+      this.logger.info(
+        `${workspace.name} increment from pull request: ${increment}`
+      );
+      return createWorkspaceValue({
+        ...workspace,
+        increment,
+        packageJson: workspace.packageJson,
+        rootPath: this.context.rootPath
+      });
+    });
+
+    if (applied === 0) {
+      this.logger.info(
+        'Pull request package increments did not match selected workspaces'
+      );
+      return;
+    }
+
+    this.context.setWorkspaces(next);
+  }
+
+  protected readPullRequestBody(): string | undefined {
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    if (!eventPath || !existsSync(eventPath)) {
+      return undefined;
+    }
+
+    try {
+      const event = JSON.parse(readFileSync(eventPath, 'utf8')) as {
+        pull_request?: { body?: string | null };
+      };
+      const body = event.pull_request?.body;
+      return typeof body === 'string' && body.length > 0 ? body : undefined;
+    } catch (error) {
+      this.logger.debug(
+        'Failed to read pull_request.body from GITHUB_EVENT_PATH',
+        error
+      );
+      return undefined;
+    }
   }
 
   public async onExec(): Promise<void> {

@@ -73,7 +73,20 @@
  * |-------|----------|---------|
  * | `preRelease` | Manual on feature PR | Gate: merge triggers create-release-pr job |
  * | `CI-Release` | Auto on `release/*` PR | Identifies automated release PR; merge triggers publish; skips general-check |
- * | `increment:major` / `increment:minor` / `increment:patch` | Manual on PR | Override semver bump (default: patch) |
+ * | `increment:major` / `increment:minor` / `increment:patch` | Manual on PR | Default semver bump for packages not listed below (default: patch) |
+ *
+ * Per-package bumps stay in the merged PR body, not in extra labels:
+ *
+ * ```md
+ * ## Release increments
+ *
+ * - @qlover/code2markdown: minor
+ * - fe-release: patch
+ * ```
+ *
+ * Github.onBefore writes those values onto each workspace. ChangesetVersion
+ * then prefers `--changesetVersion.package-increments`, then `workspace.increment`,
+ * then the global label or `-i`.
  *
  * Do **not** put `CI-Release` on feature PRs — use **`preRelease`** to request a release.
  *

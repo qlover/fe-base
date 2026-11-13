@@ -63,6 +63,30 @@ describe('ChangesetVersion Plugin', () => {
       expect(plugin.getIncrement()).toBe('major');
     });
 
+    it('should prefer packageIncrements over workspace.increment', () => {
+      plugin.setConfig({
+        packageIncrements: { 'pkg-a': 'minor' }
+      });
+
+      expect(plugin.getIncrement({ ...workspace, increment: 'patch' })).toBe(
+        'minor'
+      );
+    });
+
+    it('should use workspace.increment written from the pull request', () => {
+      plugin.setConfig({ increment: 'patch' });
+
+      expect(plugin.getIncrement({ ...workspace, increment: 'major' })).toBe(
+        'major'
+      );
+    });
+
+    it('should keep the global increment when the package has no override', () => {
+      plugin.setConfig({ increment: 'minor' });
+
+      expect(plugin.getIncrement(workspace)).toBe('minor');
+    });
+
     it('should read increment label from GITHUB_EVENT_PATH', () => {
       const eventPath = join(process.cwd(), '.tmp-github-event.json');
       vi.mocked(existsSync).mockImplementation((path) => path === eventPath);

@@ -66,6 +66,11 @@ import {
   worksapce2name
 } from '../utils/createWorkspace';
 import { releaseJson } from '../defaults';
+import { PackageIncrementResolver } from '../implments/PackageIncrementResolver';
+import {
+  VersionIncrement,
+  type VersionIncrementType
+} from '../interface/PackageIncrementResolverInterface';
 
 export type ChangesetVersionMode = 'version' | 'publish' | 'both';
 
@@ -162,6 +167,17 @@ export interface ChangesetVersionProps
    * @default false
    */
   useTrustedPublishing?: boolean;
+
+  /**
+   * 按包覆盖 semver increment。
+   *
+   * key 为包名、包目录或目录名，value 为 `patch` | `minor` | `major`。
+   * 同一包上，这里的值优先于 PR 正文写到 workspace 上的 `increment`。
+   *
+   * CLI: `--changesetVersion.package-increments @qlover/a=minor,fe-release=patch`
+   * fe-config: `release.changesetVersion.packageIncrements`
+   */
+  packageIncrements?: Readonly<Record<string, string>>;
 }
 
 const CHANGESET_FILE_TEMPLATE =
@@ -679,7 +695,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         dependencyRelease: workspace.dependencyRelease,
         dependencyReleaseOf: workspace.dependencyReleaseOf,
         lastTag: workspace.lastTag,
-        tagName: workspace.tagName
+        tagName: workspace.tagName,
+        increment: workspace.increment
       });
     });
   }
@@ -705,7 +722,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         changelog: workspace.changelog,
         dependencyRelease: workspace.dependencyRelease,
         dependencyReleaseOf: workspace.dependencyReleaseOf,
-        lastTag: workspace.lastTag
+        lastTag: workspace.lastTag,
+        increment: this.getIncrement(workspace)
       });
 
       // Always derive tagName from the on-disk release version.
@@ -845,7 +863,29 @@ export default class ChangesetVersion extends ScriptPlugin<
     }
   }
 
-  public getIncrement(): string {
+  /**
+   * 单个包的 increment。
+   *
+   * 命令行配置优先，其次是 Github 写在 workspace 上的值，最后是全局 increment。
+   */
+  public getIncrement(workspace?: WorkspaceInterface): string {
+    if (workspace) {
+      const configured = this.createPackageIncrementResolver().resolve(
+        workspace
+      );
+      if (configured) {
+        return configured;
+      }
+
+      if (isWorkspaceIncrement(workspace.increment)) {
+        return workspace.increment;
+      }
+    }
+
+    return this.getGlobalIncrement();
+  }
+
+  protected getGlobalIncrement(): string {
     const labels = this.getIncrementLabels();
 
     if (labels.includes('increment:major')) {
@@ -865,6 +905,14 @@ export default class ChangesetVersion extends ScriptPlugin<
       this.context.parameters.changesetVersion?.increment ||
       releaseJson.changesetVersion.increment
     );
+  }
+
+  protected createPackageIncrementResolver(): PackageIncrementResolver {
+    return new PackageIncrementResolver({
+      packageIncrements:
+        this.config.packageIncrements ||
+        this.context.parameters.changesetVersion?.packageIncrements
+    });
   }
 
   /**
@@ -922,7 +970,7 @@ export default class ChangesetVersion extends ScriptPlugin<
 
     const changesetName = worksapce2name(workspace).replace(/[\/\\]/g, '_');
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
-    const increment = this.getIncrement();
+    const increment = this.getIncrement(workspace);
 
     this.logger.debug(
       `${worksapce2name(workspace)} increment is: ${increment}`
@@ -947,4 +995,14 @@ export default class ChangesetVersion extends ScriptPlugin<
 
     writeFileSync(changesetPath, fileContent, 'utf-8');
   }
+}
+
+function isWorkspaceIncrement(
+  value: string | undefined
+): value is VersionIncrementType {
+  return (
+    value === VersionIncrement.patch ||
+    value === VersionIncrement.minor ||
+    value === VersionIncrement.major
+  );
 }
