@@ -75,6 +75,7 @@ shared/   # 前后端共用：config（路由、i18n）、interfaces、schemas�
 
 - **路由常量**：`shared/config/route.ts`、`shared/config/apiRoutes.ts`（后者由 `tools/generateApiRoutes.ts` 在 `next dev` / `build` 时自动生成，勿手改）
 - **i18n 约定**：`shared/config/i18n-identifier/`（带 `@localZh` / `@localEn` 的文案键）→ `shared/config/i18n-mapping/`（页面/组件所需子集）。说明见 [docs/i18n.md](./docs/i18n.md)
+- **客户端后台任务约定**：Bootstrap 插件式 `start`/`stop` + `enqueue`，见 [docs/client-background-plugin.md](./docs/client-background-plugin.md)
 - **鉴权实现**：`server/providers/SupabaseAuthProvider.ts`、`server/services/SessionService.ts`、`server/services/AuthUserService.ts`
 
 ## 页面与接口

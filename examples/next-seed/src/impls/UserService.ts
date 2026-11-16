@@ -1,6 +1,7 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { inject, injectable } from '@shared/container';
 import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
+import type { UserScopedResettableInterface } from '@interfaces/UserScopedResettableInterface';
 import type {
   SignOtpResult,
   SignWithOtpParams,
@@ -21,8 +22,11 @@ const USER_ROLES = new Set([0, 1]);
 @injectable()
 export class UserService
   extends CorekitBridgeUserService<UserSchema, UserCredential>
-  implements UserServiceInterface
+  implements UserServiceInterface, UserScopedResettableInterface
 {
+  protected pendingRefresh: Promise<boolean> | null = null;
+  protected sessionSettled = false;
+
   constructor(
     @inject(AppUserGateway)
     userApi: UserServiceGatewayInterface
@@ -96,21 +100,19 @@ export class UserService
   }
 
   public refreshUser(params?: AppApiConfig): Promise<boolean> {
-    // TODO: 验证是否有 token 有才进行刷新
-
     if (this.isAuthenticated()) {
       return Promise.resolve(true);
+    }
+    if (this.pendingRefresh != null) {
+      return this.pendingRefresh;
     }
 
     this.getStore().start();
 
-    return this.refreshUserInfo(null, params)
+    const pending = this.refreshUserInfo(null, params)
       .then((result) => {
         if (result && this.isUser(result.data)) {
-          this.getStore().success(result.data, {
-            credential_token: result.data.credential_token
-          });
-
+          this.applySessionUser(result.data);
           return true;
         }
 
@@ -120,7 +122,78 @@ export class UserService
       .catch((error) => {
         this.getStore().failed(error);
         return false;
+      })
+      .finally(() => {
+        if (this.pendingRefresh === pending) {
+          this.pendingRefresh = null;
+        }
+        this.sessionSettled = true;
       });
+
+    this.pendingRefresh = pending;
+    return pending;
+  }
+
+  /**
+   * @override
+   */
+  public async awaitSessionReady(): Promise<boolean> {
+    if (this.isAuthenticated()) {
+      return true;
+    }
+    if (this.pendingRefresh == null && !this.sessionSettled) {
+      return this.refreshUser({
+        disabledDialogError: true,
+        disabledLoggerError: true
+      });
+    }
+    if (this.pendingRefresh != null) {
+      await this.pendingRefresh;
+    }
+    return this.isAuthenticated();
+  }
+
+  /**
+   * @override
+   */
+  public expireSession(): void {
+    this.sessionSettled = true;
+    this.getStore().reset();
+  }
+
+  /**
+   * 用服务端返回的会话用户覆盖本地 store。
+   *
+   * @override
+   * @param user - 嵌入会话用户
+   */
+  public applySessionUser(user: UserSchema): void {
+    if (!this.isUser(user)) {
+      return;
+    }
+    this.getStore().success(user, {
+      credential_token: user.credential_token
+    });
+    this.sessionSettled = true;
+  }
+
+  /**
+   * @override
+   */
+  public resetUserScope(): void {
+    // Seed 暂无 RBAC / 权限 store；预留挂钩供后续用户作用域状态登记。
+  }
+
+  /**
+   * @override
+   */
+  public async logout<R = void>(
+    params?: unknown,
+    config?: unknown
+  ): Promise<R> {
+    await super.logout(params, config);
+    this.sessionSettled = true;
+    return undefined as R;
   }
 
   public async sendOtp(params: SignWithOtpParams): Promise<SignOtpResult> {

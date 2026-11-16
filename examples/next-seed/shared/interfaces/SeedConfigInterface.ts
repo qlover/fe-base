@@ -14,7 +14,6 @@ export interface SeedServerConfigInterface extends SharedConfigInterface {
   readonly siteUrl: string;
   readonly logPrefixTemplate: string;
   readonly userTokenKey: string;
-  readonly jwtSecret: string;
   readonly appHost: string;
   readonly stringEncryptorKey: string;
 
@@ -26,13 +25,8 @@ export interface SeedServerConfigInterface extends SharedConfigInterface {
    */
   readonly jwtExpiresIn: StringValue;
 
-  readonly openaiBaseUrl: string;
-  readonly openaiApiKey: string;
-
-  /** HttpOnly OAuth session cookie signing secret. */
+  /** HttpOnly session cookie signing secret. */
   readonly sessionSecret: string;
-  /** AES-256-GCM key for encrypted provider tokens in DB. */
-  readonly encryptionKey: string;
 
   /** Allowed CORS origins from `API_CORS_ALLOWED_ORIGINS`; empty disables CORS. */
   readonly apiCorsAllowedOrigins: readonly string[];

@@ -9,6 +9,10 @@ import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
+import {
+  LOCALE_PREFERENCE_QUERY_KEYS,
+  persistLocaleCookie
+} from '@shared/utils/localePreference';
 import { localeQueryParam, useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
@@ -69,11 +73,17 @@ export function LanguageSwitcher() {
       if (!mounted || isPending || value === currentLocale) return;
 
       startTransition(() => {
+        const nextLocale = value as LocaleType;
+        persistLocaleCookie(nextLocale);
+
         if (useLocaleRoutes) {
           const pathParams = pathParamsFromNextParams(params);
           const query = Object.fromEntries(
             new URLSearchParams(window.location.search)
           );
+          for (const key of LOCALE_PREFERENCE_QUERY_KEYS) {
+            delete query[key];
+          }
 
           router.replace(
             {
@@ -81,15 +91,24 @@ export function LanguageSwitcher() {
               params: pathParams,
               ...(Object.keys(query).length > 0 ? { query } : {})
             } as never,
-            { locale: value }
+            { locale: nextLocale }
           );
           return;
         }
 
+        const search = new URLSearchParams(window.location.search);
+        for (const key of LOCALE_PREFERENCE_QUERY_KEYS) {
+          search.delete(key);
+        }
+        const qs = search.toString();
         const currentPath =
-          pathname + window.location.search + window.location.hash;
+          pathname + (qs ? `?${qs}` : '') + window.location.hash;
         router.replace(
-          localeRouter!.switchLocale(currentPath, currentLocale, value) as '/'
+          localeRouter!.switchLocale(
+            currentPath,
+            currentLocale,
+            nextLocale
+          ) as '/'
         );
       });
     },

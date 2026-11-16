@@ -524,8 +524,8 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3
       '@brain-toolkit/react-kit':
-        specifier: ^0.5.0
-        version: 0.5.0(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+        specifier: ^0.6.1
+        version: 0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
@@ -2209,14 +2209,6 @@ packages:
 
   '@brain-toolkit/brain-user@0.2.5':
     resolution: {integrity: sha512-SuQOdzixmMfJRvOTbA/ljR8UPWkEV/4RiK5Qv3a+ZNafEPkMHgbikofLNpu18yM525byxgdKQqrgxl9tdFcnsw==}
-
-  '@brain-toolkit/react-kit@0.5.0':
-    resolution: {integrity: sha512-IWtnaoftnPNCq4JrUpzhIFM78meAADwSPPM9M8tG1ad4rw1FgeZV09IVUvIl0U9AuvY03D2LQ6Wiy7nzrOfDqA==}
-    peerDependencies:
-      '@qlover/corekit-bridge': ^3.4.0
-      '@qlover/fe-corekit': ^3.4.0
-      '@qlover/slice-store-react': ^1.4.2
-      react: '>=18.0.0'
 
   '@brain-toolkit/react-kit@0.6.1':
     resolution: {integrity: sha512-KD1sZqka0DafeOoW71QNeYJOI984ii48YJMUYlGfilU1kn8d/YvXdpFLX5e/2DXDnOsqalVuXDIbzE8z4dN4lA==}
@@ -15600,13 +15592,6 @@ snapshots:
       - yaml
       - zustand
 
-  '@brain-toolkit/react-kit@0.5.0(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      '@qlover/corekit-bridge': link:packages/corekit-bridge
-      '@qlover/fe-corekit': link:packages/fe-corekit
-      '@qlover/slice-store-react': 1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-
   '@brain-toolkit/react-kit@0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@qlover/corekit-bridge': link:packages/corekit-bridge
@@ -23814,7 +23799,7 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0))
       eslint-plugin-import-x: 4.16.2(@typescript-eslint/utils@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint@10.4.1(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
@@ -23835,11 +23820,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0)):
+  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3)
       eslint: 10.4.1(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
       eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint@10.4.1(jiti@2.7.0)))(eslint-plugin-import@2.32.0)(eslint@10.4.1(jiti@2.7.0))
@@ -23914,7 +23899,7 @@ snapshots:
       - supports-color
     optional: true
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.2.0
@@ -23925,7 +23910,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 10.4.1(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0))
+      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@10.4.1(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.17.0
       is-glob: 4.0.3
@@ -23937,7 +23922,7 @@ snapshots:
       string.prototype.trimend: 1.0.10
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 8.60.1(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
