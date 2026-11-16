@@ -10,7 +10,7 @@
  * 1. `getProjectWorkspaces()` — scan `packagesDirectories` or `find-workspaces`
  * 2. `getChangedPackages()` — filter by git diff or `changeLabels`
  * 3. `listPendingSinceLastTag()` — when enabled, append packages changed after
- *    their last release tag but absent from the compare-ref diff (bump as patch)
+ *    their last release tag but absent from the compare-ref diff
  * 4. `appendDependencyReleaseWorkspaces()` — append dependents via
  *    `@changesets/get-dependents-graph` when `includeDependencyReleases` is true
  * 5. `getLastTagName()` — resolve per-workspace baseline tag for changelog generation
@@ -175,7 +175,8 @@ export interface WorkspacesProps extends ScriptPluginProps {
   /**
    * 把「上次发布 tag 之后目录仍有改动、但不在本次 compareRef diff 里」的包一并纳入 version。
    *
-   * 这些包标记 `pendingSinceLastTag`，changeset 固定 patch。
+   * 这些包标记 `pendingSinceLastTag`。没有单独指定 increment 时，
+   * 有 `increment:*` 标签就跟标签，否则 patch。
    * 没有历史 tag 的包只打日志，不自动纳入。
    * 本次 compareRef 已经选中的包不打这个标记，仍走全局 increment。
    *
@@ -660,7 +661,7 @@ export default class Workspaces extends ScriptPlugin<
       }
 
       this.logger.info(
-        `${workspace.name} changed since ${lastTag}, include as patch`
+        `${workspace.name} changed since ${lastTag}, include`
       );
       pending.push(
         createWorkspaceValue({

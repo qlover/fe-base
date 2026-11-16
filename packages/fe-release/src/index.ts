@@ -50,7 +50,8 @@
  * ```
  *
  * Packages changed since their own last release tag, but absent from this PR
- * diff, are included. With no per-package increment they bump as patch.
+ * diff, are included. With an `increment:*` label they use that label; otherwise
+ * they bump as patch. A `## Release increments` entry for that package wins.
  * Packages with no release tag are left out. Publish mode does not pass this flag.
  *
  * Open **`release/*`** PRs with **`CI-Release`** skip `general-check`.
@@ -91,8 +92,8 @@
  *
  * Github.onBefore writes those values onto each workspace. ChangesetVersion
  * then prefers `--changesetVersion.package-increments`, then `workspace.increment`,
- * then patch for packages only included because they changed since the last tag,
- * then the global label or `-i`.
+ * then the `increment:*` label for every selected package. Packages included only
+ * because they changed since the last tag stay on patch when that label is absent.
  *
  * Do **not** put `CI-Release` on feature PRs — use **`preRelease`** to request a release.
  *

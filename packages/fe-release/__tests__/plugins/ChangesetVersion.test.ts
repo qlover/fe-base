@@ -49,11 +49,40 @@ describe('ChangesetVersion Plugin', () => {
   });
 
   describe('getIncrement', () => {
-    it('should bump pending-since-last-tag packages as patch', () => {
+    it('should keep pending packages on patch when no increment label is set', () => {
       plugin.setConfig({ increment: 'minor' });
 
       expect(
         plugin.getIncrement({ ...workspace, pendingSinceLastTag: true })
+      ).toBe('patch');
+    });
+
+    it('should bump pending packages with the increment label', () => {
+      context.setParameters({
+        workspaces: {
+          changeLabels: ['increment:minor']
+        }
+      });
+      plugin.setConfig({ increment: 'patch' });
+
+      expect(
+        plugin.getIncrement({ ...workspace, pendingSinceLastTag: true })
+      ).toBe('minor');
+    });
+
+    it('should let a pull request increment override the label for a pending package', () => {
+      context.setParameters({
+        workspaces: {
+          changeLabels: ['increment:minor']
+        }
+      });
+
+      expect(
+        plugin.getIncrement({
+          ...workspace,
+          pendingSinceLastTag: true,
+          increment: 'patch'
+        })
       ).toBe('patch');
     });
 

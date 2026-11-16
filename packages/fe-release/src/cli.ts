@@ -291,7 +291,7 @@ function programArgs() {
     )
     .option(
       '--workspaces.include-pending-since-last-tag',
-      'Also version packages changed since their last tag but absent from compare-ref; those packages bump patch (fe-config: release.workspaces.includePendingSinceLastTag)'
+      'Also version packages changed since their last tag but absent from compare-ref. Without an increment label or per-package override they bump patch (fe-config: release.workspaces.includePendingSinceLastTag)'
     )
     .option(
       '-l, --workspaces.change-labels <changeLabels>',
