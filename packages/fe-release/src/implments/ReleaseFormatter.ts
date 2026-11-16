@@ -343,7 +343,8 @@ export class ReleaseFormatter {
           version: workspace.newVersion || workspace.version,
           newVersion: workspace.newVersion || workspace.version,
           changeTypeSection: this.getChangeTypeSection(
-            workspace.pendingSinceLastTag ? 'patch' : undefined
+            workspace.increment ||
+              (workspace.pendingSinceLastTag ? 'patch' : undefined)
           )
         })
       )
@@ -353,7 +354,7 @@ export class ReleaseFormatter {
   /**
    * 把 semver increment 写成 Changesets 风格的小节标题。
    *
-   * @param workspaceIncrement 按包覆盖的 increment；缺省时用本次发布的全局 increment
+   * @param workspaceIncrement 按包写入的 increment；补进来且未指定的包传 patch；缺省时用全局 increment
    */
   protected getChangeTypeSection(workspaceIncrement?: string): string {
     const increment = (

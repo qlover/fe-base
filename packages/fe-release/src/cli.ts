@@ -140,6 +140,43 @@ const splitWithComma = (value: string) =>
   value.split(',').filter((value) => value != null && value != '');
 
 /**
+ * 解析 `--changesetVersion.package-increments @qlover/a=minor,fe-release=patch`。
+ */
+const parsePackageIncrements = (value: string): Record<string, string> => {
+  const result: Record<string, string> = {};
+
+  for (const part of value.split(',')) {
+    const trimmed = part.trim();
+    if (!trimmed) {
+      continue;
+    }
+
+    const separator = trimmed.lastIndexOf('=');
+    const name = separator > 0 ? trimmed.slice(0, separator).trim() : '';
+    const increment = separator > 0 ? trimmed.slice(separator + 1).trim() : '';
+
+    if (
+      !name ||
+      (increment !== 'patch' && increment !== 'minor' && increment !== 'major')
+    ) {
+      throw new Error(
+        `Invalid package increment "${trimmed}". Expected name=patch|minor|major`
+      );
+    }
+
+    result[name] = increment;
+  }
+
+  if (Object.keys(result).length === 0) {
+    throw new Error(
+      'Invalid --changesetVersion.package-increments. Expected name=patch|minor|major'
+    );
+  }
+
+  return result;
+};
+
+/**
  * Configures and parses command-line arguments
  *
  * Sets up the command-line interface using Commander.js with all
@@ -200,6 +237,11 @@ function programArgs() {
         return value;
       },
       DEFAULT_INCREMENT
+    )
+    .option(
+      '--changesetVersion.package-increments <packageIncrements>',
+      'Per-package semver bump, comma-separated name=patch|minor|major. Overrides the PR Release increments section (fe-config: release.changesetVersion.packageIncrements)',
+      parsePackageIncrements
     )
     .option(
       '--changesetVersion.skip',

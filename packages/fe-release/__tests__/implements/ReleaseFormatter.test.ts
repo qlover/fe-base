@@ -112,6 +112,34 @@ describe('ReleaseFormatter', () => {
     expect(body).toContain('- feat: add feature');
   });
 
+  it('should use each workspace increment in the PR body', () => {
+    const formatter = new ReleaseFormatter(engine, {
+      increment: 'patch'
+    });
+
+    const body = formatter.getPRBody(
+      [
+        { ...workspaces[0], increment: 'minor' },
+        {
+          name: 'pkg-b',
+          version: '2.0.0',
+          newVersion: '2.0.1',
+          path: 'packages/b',
+          root: '/repo/packages/b',
+          packageJson: { name: 'pkg-b', version: '2.0.0' },
+          changelog: '- fix: bug'
+        }
+      ],
+      releaseBranchResult,
+      context
+    );
+
+    expect(body).toContain('### pkg-a@1.0.1');
+    expect(body).toContain('#### Minor Changes');
+    expect(body).toContain('### pkg-b@2.0.1');
+    expect(body).toContain('#### Patch Changes');
+  });
+
   it('should title pending-since-last-tag packages as Patch Changes', () => {
     const formatter = new ReleaseFormatter(engine, {
       increment: 'minor'
