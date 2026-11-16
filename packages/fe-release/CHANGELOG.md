@@ -1,5 +1,22 @@
 # @qlover/fe-release
 
+## 5.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **fe-release:** 有 increment 标签时补发包跟随标签 ([83eb54a](https://github.com/qlover/fe-base/commit/83eb54a4518d428ef3916d40b2e25c8d6deb29d4)) ([#727](https://github.com/qlover/fe-base/pull/727))
+
+- **fe-release:** 支持按包指定版本递增 ([bdd73a5](https://github.com/qlover/fe-base/commit/bdd73a5b7b5dc6b8fb909ddce10a81e1443704f3)) ([#725](https://github.com/qlover/fe-base/pull/725))
+
+- **fe-release:** 补发上次 tag 之后仍有改动的包 ([fa40615](https://github.com/qlover/fe-base/commit/fa40615f2e042336fa8c5a66675df39cd597159e)) ([#726](https://github.com/qlover/fe-base/pull/726))
+
+### Patch Changes
+
+- Update dependency **@qlover/env-loader** from `1.1.3` to `1.2.0`
+- Update dependency **@qlover/scripts-context** from `2.4.0` to `2.4.1`
+
 ## 5.3.4
 
 ### Patch Changes

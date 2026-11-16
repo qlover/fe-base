@@ -1,5 +1,14 @@
 # examples/react-seed
 
+## 1.7.0
+
+### Minor Changes
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.12.0` to `0.13.0`
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.4`
+
 ## 1.6.1
 
 ### Patch Changes

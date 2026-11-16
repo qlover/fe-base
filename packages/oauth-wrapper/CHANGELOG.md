@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.13.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **oauth-wrapper:** 支持按设备记住授权同意并自动放行 ([fb6f248](https://github.com/qlover/fe-base/commit/fb6f24876802e6de47e9f24c1103b807c3eb9656)) ([#716](https://github.com/qlover/fe-base/pull/716))
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.4`
+
 ## 0.12.0
 
 ### Minor Changes

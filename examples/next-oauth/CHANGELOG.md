@@ -1,5 +1,91 @@
 # examples/next-oauth
 
+## 1.8.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 请求审计改为白名单，语言包支持 namespaces ([dc05792](https://github.com/qlover/fe-base/commit/dc05792fcdbf6fba6e6fb16baaabd2a2cf20909d)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 对齐应用会话与 Supabase cookie ([8cd03dd](https://github.com/qlover/fe-base/commit/8cd03dd1c7fffb486ec6e347268f597891018d0f)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** API 加 Server-Timing，Auth 防 hydration ([ddae365](https://github.com/qlover/fe-base/commit/ddae365d12dfe55d581dffc13d78f938485451c2)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** redirect 挂会话 cookie，请求级权限 ([3f04c82](https://github.com/qlover/fe-base/commit/3f04c8270eaf4cdcb3ce728fb92eed626a9ebf41)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 收尾 env/OG/日志列/后台插件 ([4de88e3](https://github.com/qlover/fe-base/commit/4de88e3d7898b6d1d85dd6fdfcf9cebad720ff04)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 事务邮件与忘记/重置密码 ([5d5a5c7](https://github.com/qlover/fe-base/commit/5d5a5c7f7961c4e81ee849849cc30cd1755e4122)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 个人中心自助修改显示名 ([4f75828](https://github.com/qlover/fe-base/commit/4f758283feda60f22fbfc5737147bee25d3bde05)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 手机号账户绑定邮箱并可合并 ([5853ac4](https://github.com/qlover/fe-base/commit/5853ac4ce5b4bb9fbc42eacbe36ac590c981f6ce)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 个人中心展示已关联登录 ([080c4f7](https://github.com/qlover/fe-base/commit/080c4f730c60dd0e03668e19ab5429d7f381fe53)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 会话闸门与独立权限 Store ([be70c98](https://github.com/qlover/fe-base/commit/be70c981f37618ec12d10c53a8ca6ee55f9eaa0f)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 管理后台壳与站点设置加密 ([c55358a](https://github.com/qlover/fe-base/commit/c55358a7306b6fac0fbf83cd439095317f26d3ae)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 公开更新日志页 ([efa798e](https://github.com/qlover/fe-base/commit/efa798e00e6267200fc5fcb04273ae68754c8193)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 管理后台概览首页 ([f611d41](https://github.com/qlover/fe-base/commit/f611d41c1144b6187997c2d18d89691685555b89)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 用户反馈提交与后台列表 ([f5cd8d2](https://github.com/qlover/fe-base/commit/f5cd8d2f3b6acdfc5d374651eb42d298090cbbb9)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 反馈截图、GitHub Issue 与 ilikeOr ([d81975b](https://github.com/qlover/fe-base/commit/d81975be37159708a99b7e4d7c817f37ec1e6179)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 ilikeOr、SSE 与离开未保存拦截 ([726800c](https://github.com/qlover/fe-base/commit/726800c3f74bc042fb39758571484827dd069847)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 用户设置中心与语言跟随系统 ([1a83ec5](https://github.com/qlover/fe-base/commit/1a83ec5ae456b8e862ed7e81de3d06563aa0ede1)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 接线离开未保存守卫与 ilike 转义 ([e4fa8f2](https://github.com/qlover/fe-base/commit/e4fa8f2422194d4bee04acad1d3139fd1ee33b76)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 接入阿里云短信 OTP 通道 ([82ba363](https://github.com/qlover/fe-base/commit/82ba36393a030d6e2d527a8d9a317895d8518bee)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 SiteSettings 基类与 ApiCorsPlugin ([e6fe771](https://github.com/qlover/fe-base/commit/e6fe771584ed675e7abbddba41b56d9f92e2cbe1)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 RequirePermissionPlugin 与权限门契约 ([49f5cde](https://github.com/qlover/fe-base/commit/49f5cde7b42e88310e4328262a62791f2565d020)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 新增个人中心页并支持修改密码 ([7f666b0](https://github.com/qlover/fe-base/commit/7f666b02bb75f00810254e13c8285501a2fcfe9d)) ([#720](https://github.com/qlover/fe-base/pull/720))
+
+- **next-oauth:** 模板接入设备级信任并优化授权页 ([3d2d4fe](https://github.com/qlover/fe-base/commit/3d2d4fe0d4fabcc445154c84b72eaf64e71ff353)) ([#716](https://github.com/qlover/fe-base/pull/716))
+
+- **next-oauth:** 扩展权限点与导航种子 ([f3ec32e](https://github.com/qlover/fe-base/commit/f3ec32e8d79027884a95cf0bfd6fe7fb858d1b5f)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** 权限目录管理页 ([aa69681](https://github.com/qlover/fe-base/commit/aa69681751c4822efc907525b8687e75a245bdaa)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** Memory KV 监控页 ([6973ac9](https://github.com/qlover/fe-base/commit/6973ac9a2480052e35439bc1885c085c7ea440ad)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **admin:** OTP 限流监控页 ([da1ce7b](https://github.com/qlover/fe-base/commit/da1ce7b29ec4a9d9bd0ccdac98c252b86ea242e5)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+- **auth:** 可插拔手机 OTP 并合并 SQL ([803d4a4](https://github.com/qlover/fe-base/commit/803d4a4f168702cb8d21152b839e46b9998a2f4f)) ([#714](https://github.com/qlover/fe-base/pull/714))
+
+#### 🐞 Bug Fixes
+
+- **next-oauth:** 加固 Admin 客户端与请求日志用户隔离 ([062d0b7](https://github.com/qlover/fe-base/commit/062d0b7630ae611f4ad27d31e1e95b21b9eaf494)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 修正 ClientSeo 与 API 错误对外脱敏 ([c538211](https://github.com/qlover/fe-base/commit/c5382114211cbd5bd69717e4440ceb8c77715b82)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 语言切换不被 query 拉回，并加入 after 调度器 ([40541e5](https://github.com/qlover/fe-base/commit/40541e56a5a696fac64f13d1dae418e872d9eb72)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 修密码登录 refresh，会话少 upsert ([1c2d6cd](https://github.com/qlover/fe-base/commit/1c2d6cd6f17a3cfdd0b1325e31031c1ea084872f)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 路由常量净化与 Auth 错误 i18n ([9a0c92b](https://github.com/qlover/fe-base/commit/9a0c92b351357f3133a44ff0200ed6884508cdc6)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 请求日志仅落库失败 ([0822e5b](https://github.com/qlover/fe-base/commit/0822e5bb80f570903e91472c476ac0968cce4a17)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 修复手机号资料同步唯一约束冲突 ([b90c2ef](https://github.com/qlover/fe-base/commit/b90c2eff6019a3b241f3299478a3c46bc9e22eb8)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **deps:** 统一 next 与 supabase 版本消除双副本 ([089ca68](https://github.com/qlover/fe-base/commit/089ca680eb7e1870eb175577ba58c73dd79cce09)) ([#712](https://github.com/qlover/fe-base/pull/712))
+
+### Patch Changes
+
+- Update dependency **@qlover/next-kit** from `1.5.4` to `1.6.0`
+- Update dependency **@qlover/oauth-wrapper** from `0.12.0` to `0.13.0`
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.4`
+
 ## 1.7.0
 
 ### Minor Changes

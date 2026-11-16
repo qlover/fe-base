@@ -1,5 +1,34 @@
 # @qlover/next-kit
 
+## 1.6.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 请求审计改为白名单，语言包支持 namespaces ([dc05792](https://github.com/qlover/fe-base/commit/dc05792fcdbf6fba6e6fb16baaabd2a2cf20909d)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-oauth:** 收尾 env/OG/日志列/后台插件 ([4de88e3](https://github.com/qlover/fe-base/commit/4de88e3d7898b6d1d85dd6fdfcf9cebad720ff04)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 ilikeOr、SSE 与离开未保存拦截 ([726800c](https://github.com/qlover/fe-base/commit/726800c3f74bc042fb39758571484827dd069847)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 SiteSettings 基类与 ApiCorsPlugin ([e6fe771](https://github.com/qlover/fe-base/commit/e6fe771584ed675e7abbddba41b56d9f92e2cbe1)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 下沉 RequirePermissionPlugin 与权限门契约 ([49f5cde](https://github.com/qlover/fe-base/commit/49f5cde7b42e88310e4328262a62791f2565d020)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+#### 🐞 Bug Fixes
+
+- **next-kit:** 补上站点设置接口方法的 override 注释 ([b60a550](https://github.com/qlover/fe-base/commit/b60a550d870eb9c61a3515ab52b54ecd23c7fd5c)) ([#727](https://github.com/qlover/fe-base/pull/727))
+
+- **next-oauth:** 加固 Admin 客户端与请求日志用户隔离 ([062d0b7](https://github.com/qlover/fe-base/commit/062d0b7630ae611f4ad27d31e1e95b21b9eaf494)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+- **next-kit:** 修正 ClientSeo 与 API 错误对外脱敏 ([c538211](https://github.com/qlover/fe-base/commit/c5382114211cbd5bd69717e4440ceb8c77715b82)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
+### Patch Changes
+
+- Update dependency **@qlover/oauth-wrapper** from `0.12.0` to `0.13.0`
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.4`
+
 ## 1.5.4
 
 ### Patch Changes
