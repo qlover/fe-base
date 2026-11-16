@@ -9,10 +9,12 @@
  * Discovery flow (`onBefore`):
  * 1. `getProjectWorkspaces()` — scan `packagesDirectories` or `find-workspaces`
  * 2. `getChangedPackages()` — filter by git diff or `changeLabels`
- * 3. `appendDependencyReleaseWorkspaces()` — append dependents via
+ * 3. `listPendingSinceLastTag()` — when enabled, append packages changed after
+ *    their last release tag but absent from the compare-ref diff (bump as patch)
+ * 4. `appendDependencyReleaseWorkspaces()` — append dependents via
  *    `@changesets/get-dependents-graph` when `includeDependencyReleases` is true
- * 4. `getLastTagName()` — resolve per-workspace baseline tag for changelog generation
- * 5. `context.setWorkspaces()` — publish final workspace list to {@link ReleaseContext}
+ * 5. `getLastTagName()` — resolve per-workspace baseline tag for changelog generation
+ * 6. `context.setWorkspaces()` — publish final workspace list to {@link ReleaseContext}
  *
  * `dependencyRelease` workspaces are consumed by {@link ChangesetVersion} and
  * {@link Github} to decide whether to generate changelogs, write changeset files,
@@ -169,6 +171,21 @@ export interface WorkspacesProps extends ScriptPluginProps {
    * @example `'abc1234'` or `'origin/master'`
    */
   compareRef?: string;
+
+  /**
+   * 把「上次发布 tag 之后目录仍有改动、但不在本次 compareRef diff 里」的包一并纳入 version。
+   *
+   * 这些包标记 `pendingSinceLastTag`，changeset 固定 patch。
+   * 没有历史 tag 的包只打日志，不自动纳入。
+   * 本次 compareRef 已经选中的包不打这个标记，仍走全局 increment。
+   *
+   * 默认关闭。publish 阶段不要打开，否则会把尚未写进发布 PR 的包算进发布列表。
+   *
+   * CLI: `--workspaces.include-pending-since-last-tag`
+   *
+   * @default false
+   */
+  includePendingSinceLastTag?: boolean;
 
   /**
    * Template for package change labels in monorepos
@@ -594,9 +611,14 @@ export default class Workspaces extends ScriptPlugin<
       this.logger.debug('Changed paths: empty');
     }
 
-    const filtered = projectWorkspaces.filter((workspace) =>
+    const selected = projectWorkspaces.filter((workspace) =>
       changedPaths.includes(workspace.path)
     );
+    const pending = await this.listPendingSinceLastTag(
+      projectWorkspaces,
+      new Set(selected.map((workspace) => workspace.path))
+    );
+    const filtered = [...selected, ...pending];
 
     const workspacePaths = filtered.map((w) => w.path);
     this.logger.info(
@@ -604,5 +626,69 @@ export default class Workspaces extends ScriptPlugin<
     );
 
     return filtered;
+  }
+
+  /**
+   * 扫描本次 diff 没选中、但上次发布 tag 之后仍有文件改动的包。
+   */
+  protected async listPendingSinceLastTag(
+    projectWorkspaces: WorkspaceInterface[],
+    selectedPaths: ReadonlySet<string>
+  ): Promise<WorkspaceInterface[]> {
+    if (this.config.includePendingSinceLastTag !== true) {
+      return [];
+    }
+
+    const pending: WorkspaceInterface[] = [];
+
+    for (const workspace of projectWorkspaces) {
+      if (selectedPaths.has(workspace.path)) {
+        continue;
+      }
+
+      const lastTag = await this.getLastTagName(workspace);
+      if (!lastTag) {
+        this.logger.info(
+          `${workspace.name} has no release tag, skip pending scan`
+        );
+        continue;
+      }
+
+      const changed = await this.hasChangesSinceTag(lastTag, workspace.path);
+      if (!changed) {
+        continue;
+      }
+
+      this.logger.info(
+        `${workspace.name} changed since ${lastTag}, include as patch`
+      );
+      pending.push(
+        createWorkspaceValue({
+          ...workspace,
+          pendingSinceLastTag: true,
+          lastTag,
+          packageJson: workspace.packageJson,
+          rootPath: this.context.rootPath
+        })
+      );
+    }
+
+    return pending;
+  }
+
+  protected async hasChangesSinceTag(
+    lastTag: string,
+    packagePath: string
+  ): Promise<boolean> {
+    const result = await this.shell.exec(
+      ['git', 'diff', '--name-only', `${lastTag}...HEAD`, '--', packagePath],
+      { dryRun: false }
+    );
+
+    if (typeof result !== 'string') {
+      return false;
+    }
+
+    return result.split('\n').some((line) => line.trim().length > 0);
   }
 }

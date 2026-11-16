@@ -81,6 +81,7 @@ export const releaseJson = {
   workspaces: {
     tagTemplate: '${name}@${version}',
     tagMatch: '${name}@*',
-    includeDependencyReleases: true
+    includeDependencyReleases: true,
+    includePendingSinceLastTag: false
   }
 } as const;

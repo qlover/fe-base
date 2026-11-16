@@ -679,7 +679,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         dependencyRelease: workspace.dependencyRelease,
         dependencyReleaseOf: workspace.dependencyReleaseOf,
         lastTag: workspace.lastTag,
-        tagName: workspace.tagName
+        tagName: workspace.tagName,
+        pendingSinceLastTag: workspace.pendingSinceLastTag
       });
     });
   }
@@ -705,7 +706,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         changelog: workspace.changelog,
         dependencyRelease: workspace.dependencyRelease,
         dependencyReleaseOf: workspace.dependencyReleaseOf,
-        lastTag: workspace.lastTag
+        lastTag: workspace.lastTag,
+        pendingSinceLastTag: workspace.pendingSinceLastTag
       });
 
       // Always derive tagName from the on-disk release version.
@@ -845,7 +847,18 @@ export default class ChangesetVersion extends ScriptPlugin<
     }
   }
 
-  public getIncrement(): string {
+  /**
+   * 单个包的 increment。上次 tag 之后才补进来的包固定 patch。
+   */
+  public getIncrement(workspace?: WorkspaceInterface): string {
+    if (workspace?.pendingSinceLastTag) {
+      return 'patch';
+    }
+
+    return this.getGlobalIncrement();
+  }
+
+  protected getGlobalIncrement(): string {
     const labels = this.getIncrementLabels();
 
     if (labels.includes('increment:major')) {
@@ -922,7 +935,7 @@ export default class ChangesetVersion extends ScriptPlugin<
 
     const changesetName = worksapce2name(workspace).replace(/[\/\\]/g, '_');
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
-    const increment = this.getIncrement();
+    const increment = this.getIncrement(workspace);
 
     this.logger.debug(
       `${worksapce2name(workspace)} increment is: ${increment}`

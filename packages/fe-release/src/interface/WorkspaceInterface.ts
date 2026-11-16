@@ -62,6 +62,15 @@ export interface WorkspaceInterface {
   changelog?: string;
 
   /**
+   * 不在本次 compareRef diff 里，因上次发布 tag 之后目录仍有改动而被纳入。
+   *
+   * 为 true 时 changeset 固定 patch，不跟随本次 PR 的全局 increment。
+   *
+   * @default false
+   */
+  readonly pendingSinceLastTag?: boolean;
+
+  /**
    * Whether this workspace is an internal dependent bumped only because a
    * dependency was released (not directly changed in git).
    *
