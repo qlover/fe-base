@@ -1,3 +1,4 @@
+import { isAbortError } from '@qlover/fe-corekit/aborter';
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { isRequestAdapterResponse } from '@qlover/fe-corekit/request';
 import { isNextKitApiError } from '@qlover/next-kit/common';
@@ -51,6 +52,11 @@ export class AppApiPlugin implements LifecyclePluginInterface<
     context: ExecutorContextInterface<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;
+
+    // Expected when AborterPlugin replaces same abortId or effect cleanup stops.
+    if (isAbortError(error)) {
+      return;
+    }
 
     this.loggerError(parameters, error);
 

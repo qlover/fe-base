@@ -4,6 +4,7 @@ import { StorageExecutor } from '@qlover/fe-corekit/storage';
 import { LocalStorage } from '@qlover/next-kit/client';
 import { StringEncryptor, cookiesConfig } from '@qlover/next-kit/common';
 import { I18nService } from '@/impls/I18nService';
+import { LocalePreferenceService } from '@/impls/LocalePreferenceService';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
 import { IOCIdentifier as I } from '@config/ioc-identifiter';
@@ -41,6 +42,10 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.I18nServiceInterface, new I18nService());
     ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
+    ioc.bind(
+      I.LocalePreferenceServiceInterface,
+      ioc.get(LocalePreferenceService)
+    );
 
     new AppApiRegister(JSON).register(ioc);
   }

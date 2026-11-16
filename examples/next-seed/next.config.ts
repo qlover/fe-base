@@ -1,9 +1,13 @@
+import { Env } from '@qlover/env-loader';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { generateApiRoutes } from './tools/generateApiRoutes';
 import { generateAppThemeCss } from './tools/generateAppThemeCss';
 import { generateLocales } from './tools/generateLocales';
 import { getLocalIpAddress } from './tools/getLocalIpAddress';
 import type { NextConfig } from 'next';
+
+// Monorepo: load ancestor `.env` then package overrides (`APP_ENV` preferred last).
+Env.searchEnv({ envVar: 'APP_ENV' });
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

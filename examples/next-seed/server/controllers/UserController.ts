@@ -8,8 +8,11 @@ import {
   type LoginSchema
 } from '@qlover/next-kit/common';
 import { ResultHandlerContext } from '@qlover/next-kit/server';
-import { z } from 'zod';
 import { inject, injectable } from '@shared/container';
+import {
+  signWithEmailOtpSchema,
+  signWithPhoneOtpSchema
+} from '@schemas/AuthOtpSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { LoginProviderResult } from '@interfaces/UserServiceInterface';
 import { ServerConfig } from '@server/ServerConfig';
@@ -21,17 +24,6 @@ import type {
 } from '../interfaces/UserServiceInterface';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { ValidatorInterface } from '@qlover/next-kit/common';
-
-/** Local replacements for the removed `@qlover/oauth-wrapper` OTP request schemas. */
-const signWithPhoneOtpSchema = z.object({
-  phone: z.string(),
-  token: z.string().optional()
-});
-
-const signWithEmailOtpSchema = z.object({
-  email: z.email(),
-  token: z.string().optional()
-});
 
 @injectable()
 export class UserController {

@@ -1,4 +1,5 @@
 import type { I18nService } from '@/impls/I18nService';
+import type { LocalePreferenceService } from '@/impls/LocalePreferenceService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
@@ -27,6 +28,7 @@ export const IOCIdentifier = Object.freeze({
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
+  LocalePreferenceServiceInterface: 'LocalePreferenceServiceInterface',
   /**
    * Auth 提供者接口（server-only）
    */
@@ -68,6 +70,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
+  [IOCIdentifier.LocalePreferenceServiceInterface]: LocalePreferenceService;
   [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 

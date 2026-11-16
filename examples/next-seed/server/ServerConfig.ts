@@ -46,7 +46,6 @@ export class ServerConfig implements SeedServerConfigInterface {
   public readonly userTokenKey: string =
     process.env.NEXT_PUBLIC_USER_TOKEN_KEY ?? '';
 
-  public readonly jwtSecret: string = process.env.JWT_SECRET ?? '';
   /**
    * login user token expires in
    *
@@ -55,14 +54,10 @@ export class ServerConfig implements SeedServerConfigInterface {
    */
   public readonly jwtExpiresIn: StringValue = '30 days';
 
-  public readonly openaiBaseUrl: string = process.env.CEREBRAS_BASE_URL ?? '';
-  public readonly openaiApiKey: string = process.env.CEREBRAS_API_KEY ?? '';
   public readonly stringEncryptorKey: string =
     process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY ?? '';
 
   public readonly sessionSecret: string = process.env.SESSION_SECRET ?? '';
-
-  public readonly encryptionKey: string = process.env.ENCRYPTION_KEY ?? '';
 
   public readonly apiCorsAllowedOrigins: readonly string[] = parseCsvEnv(
     process.env.API_CORS_ALLOWED_ORIGINS
@@ -79,7 +74,7 @@ export class ServerConfig implements SeedServerConfigInterface {
   public readonly sessionKey: string =
     process.env.SESSION_KEY ??
     process.env.OAUTH_SESSION_KEY ??
-    'next_oauth_session';
+    'next_seed_session';
 
   /** Same `NEXT_PUBLIC_` key as AppConfig so client/server stay aligned. */
   public readonly oauthUpstreamProvider = resolveOAuthUpstreamProvider(
