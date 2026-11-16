@@ -197,6 +197,63 @@ describe('Workspaces Plugin', () => {
   });
 
   describe('getWorkspaces', () => {
+    it('should include packages changed since their last tag when enabled', async () => {
+      workspaces.setConfig({ includePendingSinceLastTag: true });
+      vi.spyOn(workspaces.shell, 'exec').mockImplementation(async (cmd) => {
+        const command = Array.isArray(cmd) ? cmd.join(' ') : String(cmd);
+
+        if (command.includes('...HEAD --')) {
+          return 'packages/package-b/src/index.ts';
+        }
+
+        if (command.includes('git diff --name-only')) {
+          return 'packages/package-a/index.ts';
+        }
+
+        if (command.includes('git for-each-ref') && command.includes('package-b@')) {
+          return 'package-b@0.2.0|2024-01-01T00:00:00Z';
+        }
+
+        return '';
+      });
+
+      const workspacesResult = await (
+        workspaces as unknown as {
+          getWorkspaces: () => Promise<WorkspaceValue[]>;
+        }
+      ).getWorkspaces();
+
+      expect(workspacesResult.map((item) => item.path)).toEqual([
+        'packages/package-a',
+        'packages/package-b'
+      ]);
+      expect(workspacesResult[0].pendingSinceLastTag).toBeUndefined();
+      expect(workspacesResult[1].pendingSinceLastTag).toBe(true);
+    });
+
+    it('should skip packages without a release tag', async () => {
+      workspaces.setConfig({ includePendingSinceLastTag: true });
+      vi.spyOn(workspaces.shell, 'exec').mockImplementation(async (cmd) => {
+        const command = Array.isArray(cmd) ? cmd.join(' ') : String(cmd);
+        if (
+          command.includes('git diff --name-only') &&
+          !command.includes('...HEAD --')
+        ) {
+          return 'packages/package-a/index.ts';
+        }
+        return '';
+      });
+
+      const workspacesResult = await (
+        workspaces as unknown as {
+          getWorkspaces: () => Promise<WorkspaceValue[]>;
+        }
+      ).getWorkspaces();
+
+      expect(workspacesResult).toHaveLength(1);
+      expect(workspacesResult[0].path).toBe('packages/package-a');
+    });
+
     it('should return changed workspaces list', async () => {
       const workspacesResult = await (
         workspaces as unknown as {

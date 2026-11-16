@@ -248,6 +248,10 @@ function programArgs() {
       'Left side of git diff <compareRef>...HEAD for changed packages (default: origin/<sourceBranch>; use PR base.sha after merge-to-master)'
     )
     .option(
+      '--workspaces.include-pending-since-last-tag',
+      'Also version packages changed since their last tag but absent from compare-ref; those packages bump patch (fe-config: release.workspaces.includePendingSinceLastTag)'
+    )
+    .option(
       '-l, --workspaces.change-labels <changeLabels>',
       'Change labels used to detect changed packages, comma-separated',
       splitWithComma

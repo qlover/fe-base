@@ -333,7 +333,6 @@ export class ReleaseFormatter {
       return '';
     }
 
-    const changeTypeSection = this.getChangeTypeSection();
     const batchTpl = this.config.batchPRBody || releaseJson.github.batchPRBody;
 
     return workspaces
@@ -343,17 +342,25 @@ export class ReleaseFormatter {
           // Prefer bumped version in PR changelog section headers
           version: workspace.newVersion || workspace.version,
           newVersion: workspace.newVersion || workspace.version,
-          changeTypeSection
+          changeTypeSection: this.getChangeTypeSection(
+            workspace.pendingSinceLastTag ? 'patch' : undefined
+          )
         })
       )
       .join('\n');
   }
 
   /**
-   * Map semver increment to Changesets-style section title.
+   * 把 semver increment 写成 Changesets 风格的小节标题。
+   *
+   * @param workspaceIncrement 按包覆盖的 increment；缺省时用本次发布的全局 increment
    */
-  protected getChangeTypeSection(): string {
-    const increment = (this.config.increment || 'patch').toLowerCase();
+  protected getChangeTypeSection(workspaceIncrement?: string): string {
+    const increment = (
+      workspaceIncrement ||
+      this.config.increment ||
+      'patch'
+    ).toLowerCase();
 
     if (increment === 'major') {
       return 'Major Changes';
