@@ -1,5 +1,13 @@
 # @qlover/env-loader
 
+## 1.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **next-oauth:** 收尾 env/OG/日志列/后台插件 ([4de88e3](https://github.com/qlover/fe-base/commit/4de88e3d7898b6d1d85dd6fdfcf9cebad720ff04)) ([#724](https://github.com/qlover/fe-base/pull/724))
+
 ## 1.1.3
 
 ### Patch Changes

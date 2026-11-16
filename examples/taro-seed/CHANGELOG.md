@@ -1,5 +1,13 @@
 # examples/taro-seed
 
+## 2.4.0
+
+### Minor Changes
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.4`
+
 ## 2.3.1
 
 ### Patch Changes
