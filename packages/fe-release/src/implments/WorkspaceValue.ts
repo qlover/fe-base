@@ -46,6 +46,7 @@ export class WorkspaceValue implements WorkspaceInterface {
   public lastTag?: string;
   public changelog?: string;
   public increment?: string;
+  public pendingSinceLastTag?: boolean;
   public dependencyRelease?: boolean;
   public dependencyReleaseOf?: string;
 
@@ -58,6 +59,7 @@ export class WorkspaceValue implements WorkspaceInterface {
     this.root = options.root;
     this.packageJson = options.packageJson;
     this.increment = options.increment;
+    this.pendingSinceLastTag = options.pendingSinceLastTag;
   }
 
   public static toWorkspace(workspace: WorkspaceValueOptions): WorkspaceValue {
@@ -83,6 +85,10 @@ export class WorkspaceValue implements WorkspaceInterface {
 
     if (this.lastTag) {
       result += ` lastTag=${this.lastTag}`;
+    }
+
+    if (this.pendingSinceLastTag) {
+      result += ' pendingSinceLastTag';
     }
 
     if (this.newVersion && this.newVersion !== this.version) {

@@ -696,7 +696,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         dependencyReleaseOf: workspace.dependencyReleaseOf,
         lastTag: workspace.lastTag,
         tagName: workspace.tagName,
-        increment: workspace.increment
+        increment: workspace.increment,
+        pendingSinceLastTag: workspace.pendingSinceLastTag
       });
     });
   }
@@ -723,7 +724,8 @@ export default class ChangesetVersion extends ScriptPlugin<
         dependencyRelease: workspace.dependencyRelease,
         dependencyReleaseOf: workspace.dependencyReleaseOf,
         lastTag: workspace.lastTag,
-        increment: this.getIncrement(workspace)
+        increment: this.getIncrement(workspace),
+        pendingSinceLastTag: workspace.pendingSinceLastTag
       });
 
       // Always derive tagName from the on-disk release version.
@@ -866,7 +868,8 @@ export default class ChangesetVersion extends ScriptPlugin<
   /**
    * 单个包的 increment。
    *
-   * 命令行配置优先，其次是 Github 写在 workspace 上的值，最后是全局 increment。
+   * 命令行配置优先，其次是 Github 写在 workspace 上的值。
+   * 都没有、且包是上次 tag 之后补进来的，固定 patch，最后才用全局 increment。
    */
   public getIncrement(workspace?: WorkspaceInterface): string {
     if (workspace) {
@@ -879,6 +882,10 @@ export default class ChangesetVersion extends ScriptPlugin<
 
       if (isWorkspaceIncrement(workspace.increment)) {
         return workspace.increment;
+      }
+
+      if (workspace.pendingSinceLastTag) {
+        return 'patch';
       }
     }
 

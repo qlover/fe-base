@@ -45,8 +45,13 @@
  * ```bash
  * # Equivalent local / CI command (create release PR)
  * fe-release -V -s master \
+ *   --workspaces.include-pending-since-last-tag \
  *   --changesetVersion.ignore-non-updated-packages
  * ```
+ *
+ * Packages changed since their own last release tag, but absent from this PR
+ * diff, are included. With no per-package increment they bump as patch.
+ * Packages with no release tag are left out. Publish mode does not pass this flag.
  *
  * Open **`release/*`** PRs with **`CI-Release`** skip `general-check`.
  *
@@ -86,6 +91,7 @@
  *
  * Github.onBefore writes those values onto each workspace. ChangesetVersion
  * then prefers `--changesetVersion.package-increments`, then `workspace.increment`,
+ * then patch for packages only included because they changed since the last tag,
  * then the global label or `-i`.
  *
  * Do **not** put `CI-Release` on feature PRs — use **`preRelease`** to request a release.

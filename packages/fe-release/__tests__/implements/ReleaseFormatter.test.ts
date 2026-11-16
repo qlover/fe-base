@@ -140,6 +140,20 @@ describe('ReleaseFormatter', () => {
     expect(body).toContain('#### Patch Changes');
   });
 
+  it('should title pending-since-last-tag packages as Patch Changes', () => {
+    const formatter = new ReleaseFormatter(engine, {
+      increment: 'minor'
+    });
+
+    const body = formatter.getPRBody(
+      [{ ...workspaces[0], pendingSinceLastTag: true }],
+      releaseBranchResult,
+      context
+    );
+
+    expect(body).toContain('#### Patch Changes');
+  });
+
   it('should use Minor Changes when increment is minor', () => {
     const formatter = new ReleaseFormatter(engine, {
       increment: 'minor'

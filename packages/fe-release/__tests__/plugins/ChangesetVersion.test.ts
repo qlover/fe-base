@@ -49,6 +49,24 @@ describe('ChangesetVersion Plugin', () => {
   });
 
   describe('getIncrement', () => {
+    it('should bump pending-since-last-tag packages as patch', () => {
+      plugin.setConfig({ increment: 'minor' });
+
+      expect(
+        plugin.getIncrement({ ...workspace, pendingSinceLastTag: true })
+      ).toBe('patch');
+    });
+
+    it('should let an explicit increment override a pending package', () => {
+      expect(
+        plugin.getIncrement({
+          ...workspace,
+          pendingSinceLastTag: true,
+          increment: 'major'
+        })
+      ).toBe('major');
+    });
+
     it('should use config increment by default', () => {
       plugin.setConfig({ increment: 'minor' });
       expect(plugin.getIncrement()).toBe('minor');
