@@ -65,15 +65,16 @@ export interface WorkspaceInterface {
    * 本包本次发布使用的 semver 递增。
    *
    * Github 在 `onBefore` 里根据 PR 正文 `## Release increments` 写入。
-   * ChangesetVersion 写 changeset 时优先使用命令行配置，其次用这个字段。
-   * 都没有、且包是上次 tag 之后补进来的，则用 patch；否则用全局 increment。
+   * ChangesetVersion 写 changeset 时优先使用命令行配置，其次用这个字段，
+   * 再其次用 `increment:*` 标签。补进来的包在没有标签时用 patch。
    */
   readonly increment?: string;
 
   /**
    * 不在本次 compareRef diff 里，因上次发布 tag 之后目录仍有改动而被纳入。
    *
-   * 没有单独指定 increment 时，changeset 固定 patch。
+   * 没有单独指定 increment、也没有 `increment:*` 标签时，changeset 用 patch。
+   * 有标签时跟标签走。
    *
    * @default false
    */

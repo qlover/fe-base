@@ -122,10 +122,16 @@ export abstract class AbstractSiteSettingsService
     return snapshot;
   }
 
+  /**
+   * @override
+   */
   public async invalidateCache(): Promise<void> {
     await this.cache.removeItem(this.getSnapshotCacheKey());
   }
 
+  /**
+   * @override
+   */
   public async getBoolean(key: string): Promise<boolean> {
     const value = await this.getValue(key);
     if (typeof value === 'boolean') {
@@ -143,6 +149,9 @@ export abstract class AbstractSiteSettingsService
     return false;
   }
 
+  /**
+   * @override
+   */
   public async getString(key: string): Promise<string> {
     const value = await this.getValue(key);
     if (typeof value === 'string') {
@@ -160,6 +169,9 @@ export abstract class AbstractSiteSettingsService
     return '';
   }
 
+  /**
+   * @override
+   */
   public async getStringArray(key: string): Promise<string[]> {
     const value = await this.getValue(key);
     if (Array.isArray(value)) {
@@ -173,6 +185,9 @@ export abstract class AbstractSiteSettingsService
     return [];
   }
 
+  /**
+   * @override
+   */
   public async getSecretString(key: string): Promise<string> {
     if (!this.isSensitiveKey(key)) {
       return this.getString(key);
@@ -187,6 +202,9 @@ export abstract class AbstractSiteSettingsService
     return this.decryptSecret(stored);
   }
 
+  /**
+   * @override
+   */
   public async getValue(key: string): Promise<SiteSettingPrimitiveType> {
     const snapshot = await this.loadSnapshot();
     const stored = snapshot.values.get(key);
@@ -196,6 +214,9 @@ export abstract class AbstractSiteSettingsService
     return this.resolveDefaultValue(key);
   }
 
+  /**
+   * @override
+   */
   public async getCorsConfig(): Promise<ApiCorsConfig> {
     return this.cache.getOrSet(this.getCorsCacheKey(), () =>
       this.loadCorsConfigFromStore()

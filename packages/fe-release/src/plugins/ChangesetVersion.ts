@@ -868,8 +868,9 @@ export default class ChangesetVersion extends ScriptPlugin<
   /**
    * 单个包的 increment。
    *
-   * 命令行配置优先，其次是 Github 写在 workspace 上的值。
-   * 都没有、且包是上次 tag 之后补进来的，固定 patch，最后才用全局 increment。
+   * 命令行按包配置优先，其次是 PR 正文写入的 `workspace.increment`。
+   * 都没有时：有 `increment:*` 标签就用标签；补进来的包在没有标签时用 patch；
+   * 本次 diff 里的包则用 `-i` 或配置里的全局 increment。
    */
   public getIncrement(workspace?: WorkspaceInterface): string {
     if (workspace) {
@@ -885,14 +886,17 @@ export default class ChangesetVersion extends ScriptPlugin<
       }
 
       if (workspace.pendingSinceLastTag) {
-        return 'patch';
+        return this.getLabelIncrement() ?? 'patch';
       }
     }
 
     return this.getGlobalIncrement();
   }
 
-  protected getGlobalIncrement(): string {
+  /**
+   * PR 上的 `increment:major|minor|patch`。没有这类标签时返回 undefined。
+   */
+  protected getLabelIncrement(): string | undefined {
     const labels = this.getIncrementLabels();
 
     if (labels.includes('increment:major')) {
@@ -907,7 +911,12 @@ export default class ChangesetVersion extends ScriptPlugin<
       return 'patch';
     }
 
+    return undefined;
+  }
+
+  protected getGlobalIncrement(): string {
     return (
+      this.getLabelIncrement() ||
       this.config.increment ||
       this.context.parameters.changesetVersion?.increment ||
       releaseJson.changesetVersion.increment
