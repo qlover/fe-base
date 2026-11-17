@@ -1,15 +1,18 @@
 import { inject, injectable } from '@shared/container';
 import {
   API_ADMIN_FEEDBACK,
-  API_ADMIN_FEEDBACK_GITHUB_ISSUE
+  API_ADMIN_FEEDBACK_GITHUB_ISSUE,
+  API_ADMIN_FEEDBACK_SYNC_SCREENSHOTS
 } from '@config/apiRoutes';
 import {
   userFeedbackAdminGithubIssueOkSchema,
   userFeedbackAdminListSchema,
   userFeedbackAdminStatusOkSchema,
+  userFeedbackAdminSyncScreenshotsOkSchema,
   type UserFeedbackAdminGithubIssueOkType,
   type UserFeedbackAdminListType,
   type UserFeedbackAdminStatusOkType,
+  type UserFeedbackAdminSyncScreenshotsOkType,
   type UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
 import { AppApiRequester } from './AppApiRequester';
@@ -52,6 +55,20 @@ export class AdminFeedbackApi {
     );
     const envelope = response.data as NextKitApiSuccess<unknown>;
     return userFeedbackAdminGithubIssueOkSchema.parse(
+      envelope.data ?? envelope
+    );
+  }
+
+  public async syncScreenshots(
+    id: string
+  ): Promise<UserFeedbackAdminSyncScreenshotsOkType> {
+    const path = API_ADMIN_FEEDBACK_SYNC_SCREENSHOTS.replace(
+      ':id',
+      encodeURIComponent(id)
+    );
+    const response = await this.appApiRequester.post(path, {});
+    const envelope = response.data as NextKitApiSuccess<unknown>;
+    return userFeedbackAdminSyncScreenshotsOkSchema.parse(
       envelope.data ?? envelope
     );
   }

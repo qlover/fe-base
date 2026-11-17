@@ -44,6 +44,8 @@ export type TableProps<T> = {
   className?: string;
   /** Min width for horizontal scroll (e.g. `64rem`). */
   minWidthClass?: string;
+  /** 行点击（详情抽屉等）；单元格内交互需自行 stopPropagation。 */
+  onRowClick?: (record: T, index: number) => void;
   'data-testid'?: string;
 };
 
@@ -82,6 +84,7 @@ export function Table<T extends object>({
   paginationLabels,
   className,
   minWidthClass = 'min-w-[64rem]',
+  onRowClick,
   'data-testid': testId = 'Table'
 }: TableProps<T>) {
   const tableTt = useI18nMapping({
@@ -159,7 +162,17 @@ export function Table<T extends object>({
                 <tr
                   data-testid="Table"
                   key={resolveRowKey(rowKey, record, index)}
-                  className="hover:bg-elevated/50 transition-colors"
+                  className={clsx(
+                    'hover:bg-elevated/50 transition-colors',
+                    onRowClick && 'cursor-pointer'
+                  )}
+                  onClick={
+                    onRowClick
+                      ? () => {
+                          onRowClick(record, index);
+                        }
+                      : undefined
+                  }
                 >
                   {columns.map((col) => {
                     const value = cellValue(record, col.dataIndex);

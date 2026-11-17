@@ -5,6 +5,15 @@ alwaysApply: true
 
 # Git 提交规范
 
+## 提交前必须质检（硬性）
+
+**每次** `git commit` 之前，必须先对本次改动涉及的包 / 应用跑通：
+
+1. `lint:fix`（或该包等价的 `eslint --fix`）
+2. `type-check`（或 `tsc` / 该包声明的 typecheck 脚本）
+
+未通过质检不得提交。不要等用户再提醒。
+
 1. **提交说明使用中文**（subject 与 body）。
 
 2. **禁止作者类页脚**：严禁在 commit message 末尾追加任何作者 / 共同作者 / Signed-off / Cursor 归属类 trailer。正文在「标题 + 可选 body」结束后即止。禁止示例：
@@ -38,10 +47,11 @@ type(scope?): 中文标题
 - type：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `chore`
 - 用户未要求时，不要在 footer 写 Breaking Change / issue 引用。
 
-5. **禁止手改发布产物（changesets 自动生成）**：
+5. **禁止手改发版产物（version / CHANGELOG / changeset）**：
    - **禁止**手动编辑各包根目录的 `CHANGELOG.md`（含 `packages/*/CHANGELOG.md`）。
    - **禁止**为「顺便发版」手改 `packages/*/package.json` 的 `version` 字段。
-   - 版本与 CHANGELOG 由 **changesets / CI 发版流程**写入；功能 PR 只改源码与测试，需要发版时按仓库惯例补 `.changeset/*.md`（若流程要求），**不要**直接改 CHANGELOG 或 version。
+   - **禁止**主动新增或修改 `.changeset/*.md`（除非用户**明文**要求补 changeset）。
+   - 版本、CHANGELOG、changeset 由 **changesets / CI 发版流程**（或用户本人）写入；功能 PR 只改源码与测试等实现，**不要**直接改 CHANGELOG、version，也**不要**擅自加 changeset。
 
 ### Examples
 
