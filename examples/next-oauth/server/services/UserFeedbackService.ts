@@ -1,10 +1,22 @@
+import { ExecutorError } from '@qlover/fe-corekit/executor';
+import { after } from 'next/server';
 import { inject, injectable } from '@shared/container';
+import {
+  API_FEEDBACK_NOT_FOUND,
+  API_FEEDBACK_SCREENSHOT_EMPTY,
+  API_FEEDBACK_SCREENSHOT_SYNC_FAILED,
+  API_FEEDBACK_SCREENSHOT_TOO_LARGE,
+  API_FEEDBACK_SCREENSHOT_TYPE_UNSUPPORTED,
+  API_FEEDBACK_SCREENSHOTS_REQUIRED,
+  API_FEEDBACK_SCREENSHOTS_TOO_MANY
+} from '@config/i18n-identifier/api';
 import {
   FEEDBACK_SCREENSHOT_MAX_BYTES,
   FEEDBACK_SCREENSHOT_MAX_COUNT,
   type UserFeedbackAdminGithubIssueOkType,
   type UserFeedbackAdminListType,
   type UserFeedbackAdminStatusOkType,
+  type UserFeedbackAdminSyncScreenshotsOkType,
   type UserFeedbackCreateBodyType,
   type UserFeedbackCreateOkType,
   type UserFeedbackListPublicType,
@@ -12,7 +24,7 @@ import {
   type UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
 import { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
-import { FeedbackIssueSyncService } from '@server/services/feedback-github/FeedbackIssueSyncService';
+import { GithubFeedbackIssueBundle } from '@server/services/feedback-github/GithubFeedbackIssueBundle';
 import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
 
 export type FeedbackScreenshotUploadType = {
@@ -22,7 +34,7 @@ export type FeedbackScreenshotUploadType = {
 };
 
 /**
- * 用户反馈业务编排（截图上传 + 手动 GitHub Issue；不自动建 Issue）。
+ * 用户反馈业务编排（截图上传 + Admin 手动 GitHub Issue；不自动建 Issue）。
  */
 @injectable()
 export class UserFeedbackService {
@@ -31,8 +43,8 @@ export class UserFeedbackService {
     protected readonly feedbackRepository: UserFeedbackRepository,
     @inject(RequestAuthUserIdService)
     protected readonly requestAuthUserId: RequestAuthUserIdService,
-    @inject(FeedbackIssueSyncService)
-    protected readonly issueSyncService: FeedbackIssueSyncService
+    @inject(GithubFeedbackIssueBundle)
+    protected readonly issueBundle: GithubFeedbackIssueBundle
   ) {}
 
   public async createForCurrentUser(
@@ -68,27 +80,89 @@ export class UserFeedbackService {
       status
     );
     if (saved === null) {
-      throw new Error('feedback not found');
+      throw new ExecutorError(API_FEEDBACK_NOT_FOUND);
     }
     return { ok: true, id: feedbackId, status: saved };
   }
 
   /**
-   * 管理端手动创建 GitHub Issue；已有 Issue 时直接返回现状。
-   * 自动同步入口见 {@link FeedbackIssueSyncService.syncFeedback}（本服务不在提交时调用）。
+   * 管理端手动创建 GitHub Issue；已有 Issue 时仍会触发截图同步。
    */
   public async createGithubIssueForAdmin(
     feedbackId: string
   ): Promise<UserFeedbackAdminGithubIssueOkType> {
-    await this.issueSyncService.syncFeedback(feedbackId, { manual: true });
+    await this.issueBundle.sync.syncFeedback(feedbackId, { manual: true });
     const item = await this.feedbackRepository.findByIdAsAdmin(feedbackId);
     if (!item) {
-      throw new Error('feedback not found');
+      throw new ExecutorError(API_FEEDBACK_NOT_FOUND);
     }
     return {
       ok: true,
       id: item.id,
       githubSyncStatus: item.githubSyncStatus,
+      githubIssueNumber: item.githubIssueNumber,
+      githubIssueUrl: item.githubIssueUrl,
+      githubSyncError: item.githubSyncError
+    };
+  }
+
+  /**
+   * Admin 补挂截图到已有 Issue（或先确保 Issue 存在再挂图）。
+   */
+  public async syncScreenshotsForAdmin(
+    feedbackId: string
+  ): Promise<UserFeedbackAdminSyncScreenshotsOkType> {
+    const existing = await this.feedbackRepository.findByIdAsAdmin(feedbackId);
+    if (!existing) {
+      throw new ExecutorError(API_FEEDBACK_NOT_FOUND);
+    }
+    const before =
+      await this.feedbackRepository.findScreenshotSyncStateAsAdmin(feedbackId);
+    if (before && before.paths.length > 0) {
+      await this.feedbackRepository.forceScreenshotCountAsAdmin(feedbackId, 0);
+    }
+    let postedCount = await this.issueBundle.screenshots.syncScreenshots(
+      feedbackId,
+      { manual: true }
+    );
+    const afterFirst =
+      await this.feedbackRepository.findScreenshotSyncStateAsAdmin(feedbackId);
+    if (afterFirst && afterFirst.paths.length > afterFirst.postedCount) {
+      await this.issueBundle.sync.syncFeedback(feedbackId, { manual: true });
+      postedCount += await this.issueBundle.screenshots.syncScreenshots(
+        feedbackId,
+        { manual: true }
+      );
+    }
+    postedCount +=
+      await this.issueBundle.screenshots.ensureGithubScreenshotComments(
+        feedbackId,
+        { manual: true }
+      );
+    const item = await this.feedbackRepository.findByIdAsAdmin(feedbackId);
+    if (!item) {
+      throw new ExecutorError(API_FEEDBACK_NOT_FOUND);
+    }
+    const afterAll =
+      await this.feedbackRepository.findScreenshotSyncStateAsAdmin(feedbackId);
+    const screenshotError =
+      typeof item.githubSyncError === 'string' &&
+      item.githubSyncError.startsWith('screenshot:');
+    if (
+      !afterAll ||
+      afterAll.paths.length > afterAll.postedCount ||
+      screenshotError ||
+      (postedCount === 0 && afterAll.paths.length > 0) ||
+      (postedCount === 0 &&
+        afterAll.paths.length === 0 &&
+        afterAll.githubUrls.length === 0)
+    ) {
+      throw new ExecutorError(API_FEEDBACK_SCREENSHOT_SYNC_FAILED);
+    }
+    return {
+      ok: true,
+      id: item.id,
+      postedCount,
       githubIssueNumber: item.githubIssueNumber,
       githubIssueUrl: item.githubIssueUrl,
       githubSyncError: item.githubSyncError
@@ -103,31 +177,33 @@ export class UserFeedbackService {
     files: readonly FeedbackScreenshotUploadType[]
   ): Promise<UserFeedbackScreenshotsOkType> {
     if (files.length === 0) {
-      throw new Error('screenshots required');
+      throw new ExecutorError(API_FEEDBACK_SCREENSHOTS_REQUIRED);
     }
     if (files.length > FEEDBACK_SCREENSHOT_MAX_COUNT) {
-      throw new Error('too many screenshots');
+      throw new ExecutorError(API_FEEDBACK_SCREENSHOTS_TOO_MANY);
     }
     const ownedId = await this.feedbackRepository.findOwnedId(feedbackId);
     if (ownedId === null) {
-      throw new Error('feedback not found');
+      throw new ExecutorError(API_FEEDBACK_NOT_FOUND);
     }
     const userId = await this.requestAuthUserId.requireUserId();
     const paths: string[] = [];
     for (const [index, file] of files.entries()) {
       if (file.bytes.byteLength === 0) {
-        throw new Error('empty screenshot');
+        throw new ExecutorError(API_FEEDBACK_SCREENSHOT_EMPTY);
       }
       if (file.bytes.byteLength > FEEDBACK_SCREENSHOT_MAX_BYTES) {
-        throw new Error('screenshot too large');
+        throw new ExecutorError(API_FEEDBACK_SCREENSHOT_TOO_LARGE);
       }
       if (!isAllowedImageType(file.contentType)) {
-        throw new Error('unsupported screenshot type');
+        throw new ExecutorError(API_FEEDBACK_SCREENSHOT_TYPE_UNSUPPORTED);
       }
+      const ext = extensionForContentType(file.contentType);
       const objectPath = this.feedbackRepository.buildScreenshotObjectPath(
         userId,
         feedbackId,
-        index
+        index,
+        ext
       );
       await this.feedbackRepository.uploadScreenshotObject(
         objectPath,
@@ -141,7 +217,19 @@ export class UserFeedbackService {
       userId,
       paths
     );
+    after(() => {
+      void this.syncScreenshotsAfterAttach(feedbackId);
+    });
     return { ok: true, screenshotPaths: [...saved] };
+  }
+
+  /**
+   * 截图入库后：仅尝试挂到已有 Issue；无 Issue 时不自动创建（Admin 手动）。
+   */
+  protected async syncScreenshotsAfterAttach(
+    feedbackId: string
+  ): Promise<void> {
+    await this.issueBundle.screenshots.syncScreenshots(feedbackId);
   }
 }
 
@@ -152,4 +240,14 @@ function isAllowedImageType(contentType: string): boolean {
     contentType === 'image/webp' ||
     contentType === 'image/jpg'
   );
+}
+
+function extensionForContentType(contentType: string): string {
+  if (contentType === 'image/png') {
+    return 'png';
+  }
+  if (contentType === 'image/webp') {
+    return 'webp';
+  }
+  return 'jpg';
 }

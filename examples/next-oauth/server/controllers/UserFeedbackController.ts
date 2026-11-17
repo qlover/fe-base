@@ -8,6 +8,7 @@ import {
   type UserFeedbackAdminGithubIssueOkType,
   type UserFeedbackAdminListType,
   type UserFeedbackAdminStatusOkType,
+  type UserFeedbackAdminSyncScreenshotsOkType,
   type UserFeedbackCreateOkType,
   type UserFeedbackListPublicType,
   type UserFeedbackScreenshotsOkType
@@ -73,6 +74,19 @@ export class UserFeedbackController {
       );
     }
     return this.feedbackService.createGithubIssueForAdmin(parsed.data.id);
+  }
+
+  public async syncAdminScreenshots(body: {
+    readonly id: string;
+  }): Promise<UserFeedbackAdminSyncScreenshotsOkType> {
+    const parsed = userFeedbackAdminGithubIssueBodySchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ExecutorError(
+        API_REQUEST_BODY_EMPTY,
+        'Invalid sync screenshots body'
+      );
+    }
+    return this.feedbackService.syncScreenshotsForAdmin(parsed.data.id);
   }
 
   public async attachScreenshots(

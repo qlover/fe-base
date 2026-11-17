@@ -341,7 +341,9 @@ export const adminFeedback18n = Object.freeze({
   refresh: feedbackKeys.ADMIN_FEEDBACK_REFRESH,
   loadFailed: feedbackKeys.ADMIN_FEEDBACK_LOAD_FAILED,
   forbidden: feedbackKeys.ADMIN_FEEDBACK_FORBIDDEN,
+  empty: feedbackKeys.ADMIN_FEEDBACK_EMPTY,
   colCreated: feedbackKeys.ADMIN_FEEDBACK_COL_CREATED,
+  colTime: feedbackKeys.ADMIN_FEEDBACK_COL_TIME,
   colUser: feedbackKeys.ADMIN_FEEDBACK_COL_USER,
   colCategory: feedbackKeys.ADMIN_FEEDBACK_COL_CATEGORY,
   colBody: feedbackKeys.ADMIN_FEEDBACK_COL_BODY,
@@ -362,7 +364,30 @@ export const adminFeedback18n = Object.freeze({
   githubRetry: feedbackKeys.ADMIN_FEEDBACK_GITHUB_RETRY,
   githubSkipped: feedbackKeys.ADMIN_FEEDBACK_GITHUB_SKIPPED,
   githubFailed: feedbackKeys.ADMIN_FEEDBACK_GITHUB_FAILED,
-  githubPending: feedbackKeys.ADMIN_FEEDBACK_GITHUB_PENDING
+  githubPending: feedbackKeys.ADMIN_FEEDBACK_GITHUB_PENDING,
+  createIssue: feedbackKeys.ADMIN_FEEDBACK_CREATE_ISSUE,
+  syncScreenshots: feedbackKeys.ADMIN_FEEDBACK_SYNC_SCREENSHOTS,
+  syncScreenshotsFailed: feedbackKeys.ADMIN_FEEDBACK_SYNC_SCREENSHOTS_FAILED,
+  githubNotConfigured: feedbackKeys.ADMIN_FEEDBACK_GITHUB_NOT_CONFIGURED,
+  githubCreateFailed: feedbackKeys.ADMIN_FEEDBACK_GITHUB_CREATE_FAILED,
+  statusChangeFailed: feedbackKeys.ADMIN_FEEDBACK_STATUS_CHANGE_FAILED,
+  detailTitle: feedbackKeys.ADMIN_FEEDBACK_DETAIL_TITLE,
+  detailClose: feedbackKeys.ADMIN_FEEDBACK_DETAIL_CLOSE,
+  detailSectionSummary: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_SUMMARY,
+  detailSectionBody: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_BODY,
+  detailSectionScreenshots:
+    feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_SCREENSHOTS,
+  detailSectionPage: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_PAGE,
+  detailSectionSubmitter: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_SUBMITTER,
+  detailSectionEnvironment:
+    feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_ENVIRONMENT,
+  detailSectionGithub: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SECTION_GITHUB,
+  detailFeedbackId: feedbackKeys.ADMIN_FEEDBACK_DETAIL_FEEDBACK_ID,
+  detailUserId: feedbackKeys.ADMIN_FEEDBACK_DETAIL_USER_ID,
+  detailNoScreenshots: feedbackKeys.ADMIN_FEEDBACK_DETAIL_NO_SCREENSHOTS,
+  detailNoPage: feedbackKeys.ADMIN_FEEDBACK_DETAIL_NO_PAGE,
+  detailNoContext: feedbackKeys.ADMIN_FEEDBACK_DETAIL_NO_CONTEXT,
+  detailSyncStatus: feedbackKeys.ADMIN_FEEDBACK_DETAIL_SYNC_STATUS
 });
 
 export const adminMailLogs18n = Object.freeze({

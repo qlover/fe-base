@@ -365,3 +365,57 @@ export const API_BIND_EMAIL_PHONE_CONFLICT = 'api:bind_email_phone_conflict';
  * @localEn Binding email is not supported for this OAuth upstream
  */
 export const API_BIND_EMAIL_UNSUPPORTED = 'api:bind_email_unsupported';
+
+/**
+ * @description Feedback not found or access denied
+ * @localZh 反馈不存在或无权访问
+ * @localEn Feedback not found or access denied
+ */
+export const API_FEEDBACK_NOT_FOUND = 'api:feedback_not_found';
+
+/**
+ * @description Feedback screenshots are required
+ * @localZh 请至少上传一张截图
+ * @localEn Please upload at least one screenshot
+ */
+export const API_FEEDBACK_SCREENSHOTS_REQUIRED =
+  'api:feedback_screenshots_required';
+
+/**
+ * @description Too many feedback screenshots
+ * @localZh 截图数量超出限制
+ * @localEn Too many screenshots
+ */
+export const API_FEEDBACK_SCREENSHOTS_TOO_MANY =
+  'api:feedback_screenshots_too_many';
+
+/**
+ * @description Feedback screenshot file is empty
+ * @localZh 截图文件为空
+ * @localEn Screenshot file is empty
+ */
+export const API_FEEDBACK_SCREENSHOT_EMPTY = 'api:feedback_screenshot_empty';
+
+/**
+ * @description Feedback screenshot exceeds size limit
+ * @localZh 截图文件过大
+ * @localEn Screenshot file is too large
+ */
+export const API_FEEDBACK_SCREENSHOT_TOO_LARGE =
+  'api:feedback_screenshot_too_large';
+
+/**
+ * @description Feedback screenshot content type is not allowed
+ * @localZh 不支持的截图格式
+ * @localEn Unsupported screenshot type
+ */
+export const API_FEEDBACK_SCREENSHOT_TYPE_UNSUPPORTED =
+  'api:feedback_screenshot_type_unsupported';
+
+/**
+ * @description Feedback screenshot sync to GitHub Issue failed
+ * @localZh 截图未能挂到 GitHub Issue，请重试
+ * @localEn Failed to attach screenshots to the GitHub Issue; please retry
+ */
+export const API_FEEDBACK_SCREENSHOT_SYNC_FAILED =
+  'api:feedback_screenshot_sync_failed';

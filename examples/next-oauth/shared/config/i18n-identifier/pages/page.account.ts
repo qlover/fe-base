@@ -447,3 +447,11 @@ export const PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_LABEL =
  */
 export const PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_HINT =
   'page_account:feedback_screenshots_hint';
+
+/**
+ * @description Feedback created but screenshots upload failed
+ * @localZh 反馈已提交，但截图上传失败，可稍后重试
+ * @localEn Feedback submitted, but screenshot upload failed
+ */
+export const PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_ERROR =
+  'page_account:feedback_screenshots_error';

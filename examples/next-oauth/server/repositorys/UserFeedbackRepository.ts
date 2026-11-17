@@ -4,6 +4,7 @@ import { inject, injectable } from '@shared/container';
 import { FeTables } from '@config/feTables';
 import {
   FEEDBACK_SCREENSHOT_BUCKET,
+  FEEDBACK_SCREENSHOT_MAX_COUNT,
   FEEDBACK_SCREENSHOT_SIGNED_URL_EXPIRES_SEC,
   UserFeedbackGithubSyncStatus,
   UserFeedbackStatus,
@@ -16,6 +17,7 @@ import {
   type UserFeedbackCategoryType,
   type UserFeedbackGithubSyncStatusType,
   type UserFeedbackItemPublicType,
+  type UserFeedbackScreenshotSyncStateType,
   type UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
 import { RequestAuthUserIdService } from '@server/services/RequestAuthUserIdService';
@@ -24,7 +26,7 @@ const SELECT_OWN =
   'id,user_id,category,body,page_url,user_agent,client_context,screenshot_paths,status,created_at' as const;
 
 const SELECT_ADMIN =
-  'id,user_id,category,body,page_url,user_agent,client_context,screenshot_paths,status,created_at,github_issue_number,github_issue_url,github_sync_status,github_sync_error,fe_users(display_name)' as const;
+  'id,user_id,category,body,page_url,user_agent,client_context,screenshot_paths,github_screenshot_urls,status,created_at,github_issue_number,github_issue_url,github_sync_status,github_sync_error,fe_users(display_name)' as const;
 
 const GITHUB_SYNC_ERROR_MAX = 500;
 
@@ -46,6 +48,7 @@ type FeedbackAdminDbRowType = FeedbackDbRowType & {
   readonly github_issue_url: string | null;
   readonly github_sync_status: string | null;
   readonly github_sync_error: string | null;
+  readonly github_screenshot_urls: string[] | null;
   readonly fe_users:
     | { readonly display_name: string | null }
     | { readonly display_name: string | null }[]
@@ -129,8 +132,7 @@ export class UserFeedbackRepository {
     const rows = (response.data ?? []) as FeedbackAdminDbRowType[];
     const items: UserFeedbackAdminItemType[] = [];
     for (const row of rows) {
-      const paths = screenshotPathsOf(row);
-      const urls = await this.createSignedUrls(paths);
+      const urls = await this.resolveAdminScreenshotUrls(row);
       items.push(mapAdminRow(row, urls));
     }
     return items;
@@ -150,8 +152,7 @@ export class UserFeedbackRepository {
     if (!row) {
       return null;
     }
-    const paths = screenshotPathsOf(row);
-    const urls = await this.createSignedUrls(paths);
+    const urls = await this.resolveAdminScreenshotUrls(row);
     return mapAdminRow(row, urls);
   }
 
@@ -207,6 +208,132 @@ export class UserFeedbackRepository {
         `feedback screenshot upload failed: ${response.error.message}`
       );
     }
+  }
+
+  /**
+   * 评论成功后：落库 GitHub raw URL，删除本地 Storage，清空 paths / count。
+   */
+  public async releaseLocalScreenshotsAfterGithubAsAdmin(
+    feedbackId: string,
+    githubUrls: readonly string[],
+    localPaths: readonly string[]
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    if (localPaths.length > 0) {
+      const removed = await supabase.storage
+        .from(FEEDBACK_SCREENSHOT_BUCKET)
+        .remove([...localPaths]);
+      if (removed.error) {
+        throw new Error(
+          `feedback screenshot remove failed: ${removed.error.message}`
+        );
+      }
+    }
+    const current = await supabase
+      .from(FeTables.userFeedback)
+      .select('github_screenshot_urls')
+      .eq('id', feedbackId)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(current);
+    const existing = (
+      (
+        current.data as {
+          readonly github_screenshot_urls: string[] | null;
+        } | null
+      )?.github_screenshot_urls ?? []
+    ).filter((url) => typeof url === 'string' && url.length > 0);
+    const merged = [...existing];
+    for (const url of githubUrls) {
+      if (!merged.includes(url)) {
+        merged.push(url);
+      }
+    }
+    const result = await supabase
+      .from(FeTables.userFeedback)
+      .update({
+        github_screenshot_urls: merged.slice(0, FEEDBACK_SCREENSHOT_MAX_COUNT),
+        screenshot_paths: [],
+        github_screenshot_count: 0,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', feedbackId);
+    this.supabaseBridge.throwIfError(result);
+  }
+
+  public async findScreenshotSyncStateAsAdmin(
+    feedbackId: string
+  ): Promise<UserFeedbackScreenshotSyncStateType | null> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .select(
+        'github_issue_number,github_issue_url,screenshot_paths,github_screenshot_count,github_screenshot_urls'
+      )
+      .eq('id', feedbackId)
+      .maybeSingle();
+    this.supabaseBridge.throwIfError(response);
+    const row = response.data as {
+      readonly github_issue_number: number | null;
+      readonly github_issue_url: string | null;
+      readonly screenshot_paths: string[] | null;
+      readonly github_screenshot_count: number | null;
+      readonly github_screenshot_urls: string[] | null;
+    } | null;
+    if (!row) {
+      return null;
+    }
+    return {
+      issueNumber: row.github_issue_number ?? null,
+      issueUrl: row.github_issue_url ?? null,
+      paths: row.screenshot_paths ?? [],
+      postedCount: row.github_screenshot_count ?? 0,
+      githubUrls: row.github_screenshot_urls ?? []
+    };
+  }
+
+  public async compareAndSetScreenshotCountAsAdmin(
+    feedbackId: string,
+    from: number,
+    to: number
+  ): Promise<boolean> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .update({ github_screenshot_count: to })
+      .eq('id', feedbackId)
+      .eq('github_screenshot_count', from)
+      .select('id');
+    this.supabaseBridge.throwIfError(response);
+    return (response.data ?? []).length > 0;
+  }
+
+  /**
+   * Admin 手动同步：强制把 screenshot count 设为指定值（不走 CAS）。
+   */
+  public async forceScreenshotCountAsAdmin(
+    feedbackId: string,
+    count: number
+  ): Promise<void> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase
+      .from(FeTables.userFeedback)
+      .update({
+        github_screenshot_count: count,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', feedbackId);
+    this.supabaseBridge.throwIfError(response);
+  }
+
+  public async downloadScreenshotObject(objectPath: string): Promise<Buffer> {
+    const supabase = this.supabaseBridge.getAdminSupabase();
+    const response = await supabase.storage
+      .from(FEEDBACK_SCREENSHOT_BUCKET)
+      .download(objectPath);
+    if (response.error || !response.data) {
+      throw new Error(response.error?.message ?? 'screenshot download failed');
+    }
+    return Buffer.from(await response.data.arrayBuffer());
   }
 
   public async updateGithubSyncAsAdmin(
@@ -285,14 +412,28 @@ export class UserFeedbackRepository {
   }
 
   /**
-   * 生成临时对象路径：`{userId}/{feedbackId}/{uuid}-{index}.jpg`
+   * 生成临时对象路径：`{userId}/{feedbackId}/{uuid}-{index}.{ext}`
    */
   public buildScreenshotObjectPath(
     userId: string,
     feedbackId: string,
-    index: number
+    index: number,
+    extension: string = 'jpg'
   ): string {
-    return `${userId}/${feedbackId}/${randomUUID()}-${String(index)}.jpg`;
+    return `${userId}/${feedbackId}/${randomUUID()}-${String(index)}.${extension}`;
+  }
+
+  protected async resolveAdminScreenshotUrls(
+    row: FeedbackAdminDbRowType
+  ): Promise<string[]> {
+    const localPaths = row.screenshot_paths ?? [];
+    if (localPaths.length > 0) {
+      return this.createSignedUrls(localPaths);
+    }
+    return (row.github_screenshot_urls ?? []).slice(
+      0,
+      FEEDBACK_SCREENSHOT_MAX_COUNT
+    );
   }
 
   protected async createSignedUrls(
@@ -303,7 +444,7 @@ export class UserFeedbackRepository {
     }
     const supabase = this.supabaseBridge.getAdminSupabase();
     const urls: string[] = [];
-    for (const path of paths) {
+    for (const path of paths.slice(0, FEEDBACK_SCREENSHOT_MAX_COUNT)) {
       const response = await supabase.storage
         .from(FEEDBACK_SCREENSHOT_BUCKET)
         .createSignedUrl(path, FEEDBACK_SCREENSHOT_SIGNED_URL_EXPIRES_SEC);
@@ -364,6 +505,7 @@ export function mapAdminRow(
     clientContext: parseClientContext(row.client_context),
     screenshotPaths: paths,
     screenshotUrls: [...screenshotUrls],
+    hasLocalScreenshots: paths.length > 0,
     status: userFeedbackStatusSchema.parse(row.status),
     githubIssueNumber: row.github_issue_number,
     githubIssueUrl: row.github_issue_url,

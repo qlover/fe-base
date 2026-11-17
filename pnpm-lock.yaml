@@ -309,6 +309,9 @@ importers:
       '@brain-toolkit/brain-user':
         specifier: ^0.2.5
         version: 0.2.5(@types/node@20.11.5)(less@4.6.4)(lightningcss@1.32.0)(reflect-metadata@0.2.2)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.1)(zustand@5.0.14(@types/react@19.2.13)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)))
+      '@brain-toolkit/issue-forge':
+        specifier: 0.1.1
+        version: 0.1.1
       '@brain-toolkit/react-kit':
         specifier: ^0.6.1
         version: 0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -2213,6 +2216,9 @@ packages:
 
   '@brain-toolkit/brain-user@0.2.5':
     resolution: {integrity: sha512-SuQOdzixmMfJRvOTbA/ljR8UPWkEV/4RiK5Qv3a+ZNafEPkMHgbikofLNpu18yM525byxgdKQqrgxl9tdFcnsw==}
+
+  '@brain-toolkit/issue-forge@0.1.1':
+    resolution: {integrity: sha512-6g2VzuNxLylRq2AtHEZNKw+EVPRLp8GHwVMQAXB5rrnK1AE5NZsV5bGX9Qi3wF0LcDSmxklh9s5mtucG/qcUQQ==}
 
   '@brain-toolkit/react-kit@0.6.1':
     resolution: {integrity: sha512-KD1sZqka0DafeOoW71QNeYJOI984ii48YJMUYlGfilU1kn8d/YvXdpFLX5e/2DXDnOsqalVuXDIbzE8z4dN4lA==}
@@ -15964,6 +15970,10 @@ snapshots:
       - tsx
       - yaml
       - zustand
+
+  '@brain-toolkit/issue-forge@0.1.1':
+    dependencies:
+      jsonwebtoken: 9.0.3
 
   '@brain-toolkit/react-kit@0.6.1(@qlover/corekit-bridge@packages+corekit-bridge)(@qlover/fe-corekit@packages+fe-corekit)(@qlover/slice-store-react@1.5.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:

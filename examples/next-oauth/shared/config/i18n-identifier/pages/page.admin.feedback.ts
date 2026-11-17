@@ -197,3 +197,180 @@ export const ADMIN_FEEDBACK_GITHUB_FAILED = 'admin_feedback:github_failed';
  * @localEn Pending
  */
 export const ADMIN_FEEDBACK_GITHUB_PENDING = 'admin_feedback:github_pending';
+
+/**
+ * @description Create GitHub issue (drawer / list)
+ * @localZh 创建 Issue
+ * @localEn Create Issue
+ */
+export const ADMIN_FEEDBACK_CREATE_ISSUE = 'admin_feedback:create_issue';
+
+/**
+ * @description Publish screenshots to GitHub Issue button
+ * @localZh 发布截图
+ * @localEn Publish screenshots
+ */
+export const ADMIN_FEEDBACK_SYNC_SCREENSHOTS =
+  'admin_feedback:sync_screenshots';
+
+/**
+ * @description Publish screenshots failed
+ * @localZh 发布截图失败
+ * @localEn Failed to publish screenshots
+ */
+export const ADMIN_FEEDBACK_SYNC_SCREENSHOTS_FAILED =
+  'admin_feedback:sync_screenshots_failed';
+
+/**
+ * @description GitHub not configured
+ * @localZh GitHub App 未配置完整，无法创建 Issue
+ * @localEn GitHub App is not fully configured
+ */
+export const ADMIN_FEEDBACK_GITHUB_NOT_CONFIGURED =
+  'admin_feedback:github_not_configured';
+
+/**
+ * @description Create Issue failed
+ * @localZh 创建 GitHub Issue 失败
+ * @localEn Failed to create GitHub Issue
+ */
+export const ADMIN_FEEDBACK_GITHUB_CREATE_FAILED =
+  'admin_feedback:github_create_failed';
+
+/**
+ * @description Status change failed
+ * @localZh 更新状态失败
+ * @localEn Failed to update status
+ */
+export const ADMIN_FEEDBACK_STATUS_CHANGE_FAILED =
+  'admin_feedback:status_change_failed';
+
+/**
+ * @description Empty list
+ * @localZh 暂无反馈
+ * @localEn No feedback yet
+ */
+export const ADMIN_FEEDBACK_EMPTY = 'admin_feedback:empty';
+
+/**
+ * @description Column: time
+ * @localZh 时间
+ * @localEn Time
+ */
+export const ADMIN_FEEDBACK_COL_TIME = 'admin_feedback:col_time';
+
+/**
+ * @description Feedback detail drawer title
+ * @localZh 反馈详情
+ * @localEn Feedback detail
+ */
+export const ADMIN_FEEDBACK_DETAIL_TITLE = 'admin_feedback:detail_title';
+
+/**
+ * @description Close detail drawer
+ * @localZh 关闭
+ * @localEn Close
+ */
+export const ADMIN_FEEDBACK_DETAIL_CLOSE = 'admin_feedback:detail_close';
+
+/**
+ * @description Detail section: summary
+ * @localZh 摘要
+ * @localEn Summary
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_SUMMARY =
+  'admin_feedback:detail_section_summary';
+
+/**
+ * @description Detail section: body
+ * @localZh 内容
+ * @localEn Body
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_BODY =
+  'admin_feedback:detail_section_body';
+
+/**
+ * @description Detail section: screenshots
+ * @localZh 截图
+ * @localEn Screenshots
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_SCREENSHOTS =
+  'admin_feedback:detail_section_screenshots';
+
+/**
+ * @description Detail section: page
+ * @localZh 页面
+ * @localEn Page
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_PAGE =
+  'admin_feedback:detail_section_page';
+
+/**
+ * @description Detail section: submitter
+ * @localZh 提交人
+ * @localEn Submitter
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_SUBMITTER =
+  'admin_feedback:detail_section_submitter';
+
+/**
+ * @description Detail section: environment
+ * @localZh 设备与环境
+ * @localEn Device & environment
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_ENVIRONMENT =
+  'admin_feedback:detail_section_environment';
+
+/**
+ * @description Detail section: GitHub
+ * @localZh GitHub
+ * @localEn GitHub
+ */
+export const ADMIN_FEEDBACK_DETAIL_SECTION_GITHUB =
+  'admin_feedback:detail_section_github';
+
+/**
+ * @description Feedback ID label
+ * @localZh 反馈 ID
+ * @localEn Feedback ID
+ */
+export const ADMIN_FEEDBACK_DETAIL_FEEDBACK_ID =
+  'admin_feedback:detail_feedback_id';
+
+/**
+ * @description User ID label
+ * @localZh 用户 ID
+ * @localEn User ID
+ */
+export const ADMIN_FEEDBACK_DETAIL_USER_ID = 'admin_feedback:detail_user_id';
+
+/**
+ * @description No screenshots in detail
+ * @localZh 无截图
+ * @localEn No screenshots
+ */
+export const ADMIN_FEEDBACK_DETAIL_NO_SCREENSHOTS =
+  'admin_feedback:detail_no_screenshots';
+
+/**
+ * @description No page URL
+ * @localZh 未记录页面
+ * @localEn No page URL
+ */
+export const ADMIN_FEEDBACK_DETAIL_NO_PAGE = 'admin_feedback:detail_no_page';
+
+/**
+ * @description No client context
+ * @localZh 无设备信息
+ * @localEn No device info
+ */
+export const ADMIN_FEEDBACK_DETAIL_NO_CONTEXT =
+  'admin_feedback:detail_no_context';
+
+/**
+ * @description GitHub sync status label
+ * @localZh 同步状态
+ * @localEn Sync status
+ */
+export const ADMIN_FEEDBACK_DETAIL_SYNC_STATUS =
+  'admin_feedback:detail_sync_status';
