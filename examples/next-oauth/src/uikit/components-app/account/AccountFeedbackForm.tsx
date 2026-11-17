@@ -18,7 +18,7 @@ const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 
 /**
- * 个人中心提交反馈表单（可选截图，提交后再上传）。
+ * 个人中心提交反馈表单（可选截图；截图失败时仍视为部分成功）。
  */
 export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
   const api = useIOC(UserFeedbackApi);
@@ -30,6 +30,7 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [screenshotsFailed, setScreenshotsFailed] = useState(false);
 
   const categoryLabels: Record<UserFeedbackCategoryType, string> = {
     bug: tt.feedbackCategoryBug,
@@ -49,8 +50,9 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
     setSaving(true);
     setError(null);
     setSuccess(false);
+    setScreenshotsFailed(false);
     try {
-      const created = await api.create({
+      const result = await api.submit({
         category,
         body: trimmed,
         pageUrl:
@@ -60,14 +62,13 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           language: typeof navigator !== 'undefined' ? navigator.language : '',
           userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
-        }
+        },
+        screenshots: files
       });
-      if (files.length > 0) {
-        await api.uploadScreenshots(created.item.id, files);
-      }
       setBody('');
       setFiles([]);
       setSuccess(true);
+      setScreenshotsFailed(result.screenshotsFailed);
     } catch {
       setError(tt.feedbackError);
     } finally {
@@ -141,8 +142,11 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
           </span>
         </label>
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        {success ? (
+        {success && !screenshotsFailed ? (
           <p className="text-sm text-emerald-600">{tt.feedbackSuccess}</p>
+        ) : null}
+        {success && screenshotsFailed ? (
+          <p className="text-sm text-amber-600">{tt.feedbackScreenshotsError}</p>
         ) : null}
         <button
           type="submit"

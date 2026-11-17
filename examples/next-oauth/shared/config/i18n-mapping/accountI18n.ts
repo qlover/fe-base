@@ -74,7 +74,8 @@ export const accountI18n = Object.freeze({
   feedbackCategoryContent: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT,
   feedbackCategoryOther: accountKeys.PAGE_ACCOUNT_FEEDBACK_CATEGORY_OTHER,
   feedbackScreenshotsLabel: accountKeys.PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_LABEL,
-  feedbackScreenshotsHint: accountKeys.PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_HINT
+  feedbackScreenshotsHint: accountKeys.PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_HINT,
+  feedbackScreenshotsError: accountKeys.PAGE_ACCOUNT_FEEDBACK_SCREENSHOTS_ERROR
 });
 
 export type AccountI18nInterface = typeof accountI18n;

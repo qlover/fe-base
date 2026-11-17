@@ -147,6 +147,8 @@ export const userFeedbackAdminItemSchema = z.object({
   clientContext: feedbackClientContextSchema.nullable(),
   screenshotPaths: z.array(z.string().min(1).max(500)).max(3),
   screenshotUrls: z.array(z.string().min(1)).max(3),
+  /** 本地 Storage 仍有待同步 / 未清理的截图 */
+  hasLocalScreenshots: z.boolean(),
   status: userFeedbackStatusSchema,
   githubIssueNumber: z.number().int().positive().nullable(),
   githubIssueUrl: z.string().nullable(),
@@ -215,3 +217,25 @@ export const userFeedbackAdminGithubIssueOkSchema = z.object({
 export type UserFeedbackAdminGithubIssueOkType = z.infer<
   typeof userFeedbackAdminGithubIssueOkSchema
 >;
+
+export const userFeedbackAdminSyncScreenshotsOkSchema = z.object({
+  ok: z.literal(true),
+  id: z.string().uuid(),
+  postedCount: z.number().int().nonnegative(),
+  githubIssueNumber: z.number().int().nullable(),
+  githubIssueUrl: z.string().nullable(),
+  githubSyncError: z.string().nullable()
+});
+
+export type UserFeedbackAdminSyncScreenshotsOkType = z.infer<
+  typeof userFeedbackAdminSyncScreenshotsOkSchema
+>;
+
+/** 截图同步状态（Repository ↔ issue-forge Host）。 */
+export type UserFeedbackScreenshotSyncStateType = {
+  readonly issueNumber: number | null;
+  readonly issueUrl: string | null;
+  readonly paths: readonly string[];
+  readonly postedCount: number;
+  readonly githubUrls: readonly string[];
+};
