@@ -42,4 +42,8 @@
  *
  * @see {@link https://github.com/qlover/fe-base/tree/main/packages/corekit-node} for detailed documentation
  */
-export * from './encrypt';
+/**
+ * Node 原生 ESM 不支持目录导入。本包由 tsc 原样发出这些路径，
+ * 因此必须写到 `index.js`。
+ */
+export * from './encrypt/index.js';
