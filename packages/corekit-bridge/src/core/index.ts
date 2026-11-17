@@ -152,17 +152,21 @@
  * - Storage Token Service (StorageTokenService)
  * - Theme Service (ThemeService)
  */
-export * from './bootstrap';
-export * from './color-log';
-export * from './gateway-service';
-export * from './ioc';
-export * from './message-sender';
-export * from './request-plugins';
-export * from './resources';
-export * from './response-stream';
-export * from './storage';
-export * from './store-state';
-export * from './theme-service';
-export * from './thread';
-export * from './ui';
-export * from './url-helper';
+/**
+ * Node 原生 ESM 不支持目录导入。主入口 tsup 使用 `bundle: false`，会原样保留这些路径，
+ * 因此必须写到 `index.js`，与 `package.json` 子路径 exports 一致。
+ */
+export * from './bootstrap/index.js';
+export * from './color-log/index.js';
+export * from './gateway-service/index.js';
+export * from './ioc/index.js';
+export * from './message-sender/index.js';
+export * from './request-plugins/index.js';
+export * from './resources/index.js';
+export * from './response-stream/index.js';
+export * from './storage/index.js';
+export * from './store-state/index.js';
+export * from './theme-service/index.js';
+export * from './thread/index.js';
+export * from './ui/index.js';
+export * from './url-helper/index.js';
