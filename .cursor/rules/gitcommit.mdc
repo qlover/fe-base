@@ -5,6 +5,15 @@ alwaysApply: true
 
 # Git 提交规范
 
+## 提交前必须质检（硬性）
+
+**每次** `git commit` 之前，必须先对本次改动涉及的包 / 应用跑通：
+
+1. `lint:fix`（或该包等价的 `eslint --fix`）
+2. `type-check`（或 `tsc` / 该包声明的 typecheck 脚本）
+
+未通过质检不得提交。不要等用户再提醒。
+
 1. **提交说明使用中文**（subject 与 body）。
 
 2. **禁止作者类页脚**：严禁在 commit message 末尾追加任何作者 / 共同作者 / Signed-off / Cursor 归属类 trailer。正文在「标题 + 可选 body」结束后即止。禁止示例：
