@@ -1,5 +1,13 @@
 # @qlover/corekit-node
 
+## 1.0.7
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **corekit-node:** 补上 ESM 相对导入的文件后缀 ([0e0731e](https://github.com/qlover/fe-base/commit/0e0731eb644f3c5c38647c21de18bc8573de8fdf)) ([#731](https://github.com/qlover/fe-base/pull/731))
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @qlover/corekit-bridge
 
+## 3.4.5
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **corekit-bridge:** 主入口改为 Node 可解析的 ESM 路径 ([b2ba604](https://github.com/qlover/fe-base/commit/b2ba60482013dbe03cab989b1530a237c74171f3)) ([#731](https://github.com/qlover/fe-base/pull/731))
+
 ## 3.4.4
 
 ### Patch Changes

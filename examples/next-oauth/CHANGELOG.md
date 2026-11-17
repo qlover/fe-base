@@ -1,5 +1,24 @@
 # examples/next-oauth
 
+## 1.8.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-oauth:** 对齐 PAM 反馈截图同步 GitHub ([2455c46](https://github.com/qlover/fe-base/commit/2455c465fe2330e667e2e570dacc19d34712e606)) ([#730](https://github.com/qlover/fe-base/pull/730))
+
+#### 🐞 Bug Fixes
+
+- **examples:** 为 /login 别名补根 layout ([e2f7cdd](https://github.com/qlover/fe-base/commit/e2f7cdd4e35b441b27261c97c8a48a3e2c1741d7)) ([#731](https://github.com/qlover/fe-base/pull/731))
+
+#### ♻️ Refactors
+
+- **examples:** 去掉不再需要的 transpilePackages ([4bee1ba](https://github.com/qlover/fe-base/commit/4bee1bafe7b24257274701ac6fbbb2e87b4d96c0)) ([#731](https://github.com/qlover/fe-base/pull/731))
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.5`
+- Update dependency **@qlover/next-kit** from `1.6.0` to `1.6.1`
+- Update dependency **@qlover/oauth-wrapper** from `0.13.0` to `0.13.1`
+
 ## 1.8.0
 
 ### Minor Changes

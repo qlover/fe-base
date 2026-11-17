@@ -1,5 +1,23 @@
 # examples/next-seed
 
+## 2.4.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-seed:** 同步 oauth 壳级基建 ([9af8930](https://github.com/qlover/fe-base/commit/9af89300dd167aaf9565d311a61dd6ef28d71b25)) ([#729](https://github.com/qlover/fe-base/pull/729))
+
+#### 🐞 Bug Fixes
+
+- **examples:** 为 /login 别名补根 layout ([e2f7cdd](https://github.com/qlover/fe-base/commit/e2f7cdd4e35b441b27261c97c8a48a3e2c1741d7)) ([#731](https://github.com/qlover/fe-base/pull/731))
+
+#### ♻️ Refactors
+
+- **examples:** 去掉不再需要的 transpilePackages ([4bee1ba](https://github.com/qlover/fe-base/commit/4bee1bafe7b24257274701ac6fbbb2e87b4d96c0)) ([#731](https://github.com/qlover/fe-base/pull/731))
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.5`
+- Update dependency **@qlover/next-kit** from `1.6.0` to `1.6.1`
+
 ## 2.4.0
 
 ### Minor Changes
