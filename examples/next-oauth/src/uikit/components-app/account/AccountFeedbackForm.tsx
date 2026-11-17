@@ -146,7 +146,9 @@ export function AccountFeedbackForm({ tt }: { tt: AccountI18nInterface }) {
           <p className="text-sm text-emerald-600">{tt.feedbackSuccess}</p>
         ) : null}
         {success && screenshotsFailed ? (
-          <p className="text-sm text-amber-600">{tt.feedbackScreenshotsError}</p>
+          <p className="text-sm text-amber-600">
+            {tt.feedbackScreenshotsError}
+          </p>
         ) : null}
         <button
           type="submit"

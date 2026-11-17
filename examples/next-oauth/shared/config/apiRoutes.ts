@@ -15,16 +15,6 @@
 export const API_ADMIN_FEEDBACK = '/api/admin/feedback' as const;
 
 /**
- * API path: `/api/admin/feedback/github-issue`
- *
- * @see [src/app/api/admin/feedback/github-issue/route.ts](../../src/app/api/admin/feedback/github-issue/route.ts)
- *
- * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/github-issue/route.ts`
- */
-export const API_ADMIN_FEEDBACK_GITHUB_ISSUE =
-  '/api/admin/feedback/github-issue' as const;
-
-/**
  * API path: `/api/admin/feedback/:id/sync-screenshots`
  *
  * @see [src/app/api/admin/feedback/[id]/sync-screenshots/route.ts](../../src/app/api/admin/feedback/[id]/sync-screenshots/route.ts)
@@ -33,6 +23,16 @@ export const API_ADMIN_FEEDBACK_GITHUB_ISSUE =
  */
 export const API_ADMIN_FEEDBACK_SYNC_SCREENSHOTS =
   '/api/admin/feedback/:id/sync-screenshots' as const;
+
+/**
+ * API path: `/api/admin/feedback/github-issue`
+ *
+ * @see [src/app/api/admin/feedback/github-issue/route.ts](../../src/app/api/admin/feedback/github-issue/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/admin/feedback/github-issue/route.ts`
+ */
+export const API_ADMIN_FEEDBACK_GITHUB_ISSUE =
+  '/api/admin/feedback/github-issue' as const;
 
 /**
  * API path: `/api/admin/locales`
@@ -450,8 +450,8 @@ export const API_WEBHOOKS_GITHUB = '/api/webhooks/github' as const;
 
 export type ApiRoutePath =
   | typeof API_ADMIN_FEEDBACK
-  | typeof API_ADMIN_FEEDBACK_GITHUB_ISSUE
   | typeof API_ADMIN_FEEDBACK_SYNC_SCREENSHOTS
+  | typeof API_ADMIN_FEEDBACK_GITHUB_ISSUE
   | typeof API_ADMIN_LOCALES
   | typeof API_ADMIN_LOCALES_IMPORT
   | typeof API_ADMIN_LOCALES_NAMESPACES

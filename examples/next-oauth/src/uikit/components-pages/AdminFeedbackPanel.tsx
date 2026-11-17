@@ -121,10 +121,7 @@ export function AdminFeedbackPanel({
   }, [canRead, load]);
 
   const handleStatusChange = useCallback(
-    async (
-      row: UserFeedbackAdminItemType,
-      status: UserFeedbackStatusType
-    ) => {
+    async (row: UserFeedbackAdminItemType, status: UserFeedbackStatusType) => {
       if (!canWrite || row.status === status || pendingId !== null) {
         return;
       }
@@ -240,14 +237,7 @@ export function AdminFeedbackPanel({
         actionStore.emit({ targetId: null });
       }
     },
-    [
-      actionStore,
-      api,
-      canWrite,
-      listStore,
-      pendingId,
-      tt.syncScreenshotsFailed
-    ]
+    [actionStore, api, canWrite, listStore, pendingId, tt.syncScreenshotsFailed]
   );
 
   const columns = useMemo((): TableColumn<UserFeedbackAdminItemType>[] => {

@@ -331,9 +331,7 @@ export class UserFeedbackRepository {
       .from(FEEDBACK_SCREENSHOT_BUCKET)
       .download(objectPath);
     if (response.error || !response.data) {
-      throw new Error(
-        response.error?.message ?? 'screenshot download failed'
-      );
+      throw new Error(response.error?.message ?? 'screenshot download failed');
     }
     return Buffer.from(await response.data.arrayBuffer());
   }

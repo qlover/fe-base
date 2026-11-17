@@ -20,13 +20,13 @@ import {
 import { inject, injectable } from '@shared/container';
 import { FE_SITE_SETTING_KEYS } from '@config/feSiteSettings';
 import { I } from '@config/ioc-identifiter';
-import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type {
   FeedbackClientContextType,
   UserFeedbackAdminItemType,
   UserFeedbackGithubSyncStatusType,
   UserFeedbackStatusType
 } from '@schemas/UserFeedbackSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { GithubForgeAppClient } from '@server/adapters/GithubForgeAppClient';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
 import { UserFeedbackRepository } from '@server/repositorys/UserFeedbackRepository';
@@ -87,9 +87,7 @@ type GithubFeedbackRawConfigType = {
  * 反馈→Issue 唯一 DI 入口：Host（含模板变量）+ 模板 + webhook 验签。
  */
 @injectable()
-export class GithubFeedbackIssueBundle
-  implements IssueWebhookVerifierInterface
-{
+export class GithubFeedbackIssueBundle implements IssueWebhookVerifierInterface {
   public readonly sync: FeedbackIssueSyncEngine;
   public readonly screenshots: FeedbackIssueScreenshotSyncEngine;
   public readonly status: FeedbackIssueStatusSyncEngine;
