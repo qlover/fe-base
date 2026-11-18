@@ -1,6 +1,6 @@
-import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
 import { isPublicPath, redirectToPath } from '@config/route';
 
 export async function supabaseProxySession(request: NextRequest) {
@@ -10,13 +10,13 @@ export async function supabaseProxySession(request: NextRequest) {
 
   // If the env vars are not set, skip proxy check. You can remove this
   // once you setup the project.
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     return supabaseResponse;
   }
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
-  const supabase = createServerClient(SUPABASE_URL!, SUPABASE_KEY!, {
+  const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     // global: {
     //   fetch: (input, init) => {
     //     console.log('proxy supabase globals fetch', input, init);

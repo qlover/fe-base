@@ -216,15 +216,15 @@ export const PAGE_ACCOUNT_BIND_SECTION_TITLE =
 
 /**
  * @description Bind email form description
- * @localZh 验证后可将邮箱绑定到当前账号；若邮箱已存在将合并到该邮箱账号
- * @localEn Verify to bind this email. If it already belongs to another account, accounts will be merged.
+ * @localZh 验证码发到当前账号的手机号，通过后绑定该邮箱
+ * @localEn A code is sent to this account's phone. After it checks out, the email is bound.
  */
 export const PAGE_ACCOUNT_BIND_DESCRIPTION = 'page_account:bind_description';
 
 /**
  * @description Bind email merge hint
- * @localZh 合并后仅保留邮箱账号，手机号会挂到该账号
- * @localEn After merge only the email account remains; your phone moves to it.
+ * @localZh 验证码与登录验证码相同。memory 通道可在管理端验证码监控查看
+ * @localEn Same code channel as phone sign-in. In memory mode, read it from the admin OTP monitor.
  */
 export const PAGE_ACCOUNT_BIND_MERGE_HINT = 'page_account:bind_merge_hint';
 
@@ -238,8 +238,8 @@ export const PAGE_ACCOUNT_BIND_EMAIL_PLACEHOLDER =
 
 /**
  * @description Bind email OTP placeholder
- * @localZh 邮箱验证码
- * @localEn Email verification code
+ * @localZh 手机验证码
+ * @localEn Phone verification code
  */
 export const PAGE_ACCOUNT_BIND_OTP_PLACEHOLDER =
   'page_account:bind_otp_placeholder';

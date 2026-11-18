@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import type { LinkProps } from 'next/link';
+import Link from 'next/link.js';
+import type { LinkProps } from 'next/link.js';
 import type { ReactNode, HTMLAttributes, FC } from 'react';
 
 export type LocaleLinkHref =

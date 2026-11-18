@@ -9,8 +9,8 @@ import type { NextRequest } from 'next/server';
  *   post:
  *     tags:
  *       - User
- *     summary: Send bind-email OTP
- *     description: Phone-only accounts request an email OTP to bind a business email. Rate-limited by client IP.
+ *     summary: Send bind-email phone OTP
+ *     description: Phone-only accounts request a phone OTP to bind a business email. Rate-limited by client IP. The code is delivered on the account phone channel (memory codes are visible in the admin OTP monitor).
  *     requestBody:
  *       required: true
  *       content:

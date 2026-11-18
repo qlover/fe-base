@@ -367,6 +367,20 @@ export const API_BIND_EMAIL_PHONE_CONFLICT = 'api:bind_email_phone_conflict';
 export const API_BIND_EMAIL_UNSUPPORTED = 'api:bind_email_unsupported';
 
 /**
+ * @description Bind-email target is already used by another account
+ * @localZh 该邮箱已被其他账号使用
+ * @localEn This email is already used by another account
+ */
+export const API_BIND_EMAIL_TAKEN = 'api:bind_email_taken';
+
+/**
+ * @description Current account has no phone to receive the bind-email code
+ * @localZh 当前账号没有手机号，无法发送验证码
+ * @localEn This account has no phone number to receive a verification code
+ */
+export const API_BIND_EMAIL_NO_PHONE = 'api:bind_email_no_phone';
+
+/**
  * @description Feedback not found or access denied
  * @localZh 反馈不存在或无权访问
  * @localEn Feedback not found or access denied
