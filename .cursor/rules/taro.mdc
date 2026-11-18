@@ -1,0 +1,24 @@
+---
+description: Taro 示例 — 多端 API、请求适配与页面配置
+globs: examples/taro-seed/**
+alwaysApply: false
+---
+
+# Taro 示例
+
+改 `examples/taro-seed` 时生效。协作与编码见 `general.mdc`。这里没有 Next 的 Route / Controller / Repository。
+
+1. **多端默认**：页面与组件走 Taro API。共享代码禁止直接用 `window`、`document`、`localStorage`、`fetch`。仅 H5 的分支要显式隔开。
+2. **请求**：经 `AppRequester` + `createTaroRequestAdapter`（`Taro.request`）。禁止在页面里散落 `Taro.request`，也不要把浏览器 `fetch` 当主路径。
+3. **存储**：经 `kvStorage` / `objectStorage`（`Taro.setStorageSync`）。禁止直接 `localStorage`。
+4. **运行时**：小程序没有全局 `Response`。Mock 用 `MockPlugin`，不要假设 DOM 的 `Response`。
+5. **页面**：放在 `src/pages`，每个页面配 `index.config.ts`。应用配置在 `app.config.ts`。`config/` 只放构建配置，不写业务分支。
+6. **主题与样式**：Tailwind 经 weapp-tailwindcss。主题走 `ThemeService` 与 `Taro.onThemeChange`，不假设 `document.documentElement`。
+7. **组装**：IOC 与 `BootstrapClient` 在 `app.tsx`。业务 Service 放 `src/impls`。
+8. **能力优先** `@qlover/fe-corekit`、`@qlover/corekit-bridge`。禁止在 example 里复制同名工具。
+9. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名。
+
+```text
+✅ 页面 → UserService → AppRequester → Taro.request
+❌ 页面里直接 Taro.request / localStorage / window
+```

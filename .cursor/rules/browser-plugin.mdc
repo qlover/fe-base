@@ -1,0 +1,25 @@
+---
+description: 浏览器扩展示例 — popup / content 隔离与 Shadow DOM 样式
+globs: examples/browser-plugin-seed/**
+alwaysApply: false
+---
+
+# 浏览器扩展示例
+
+改 `examples/browser-plugin-seed` 时生效。协作与编码见 `general.mdc`。这里没有 Next 的 Route / Controller / Repository。
+
+1. **入口分开**：Popup 用 `src/popup.tsx`，Content Script 用 `src/content.tsx`。background、options 按 Plasmo 约定另开入口。禁止把 Popup 的 React Router 和页面状态写进 Content Script。
+2. **Content UI 在 Shadow DOM**。样式走 `getStyle`：`:root` 改为 `:host`，`rem` 按固定字号换成 `px`。禁止把 Popup 的全局样式原样注入宿主页。
+3. **扩展 API**：`chrome.*` 只在扩展上下文里用，不在 `shared` 里当成普通 Web API。权限写在 manifest，不在业务里临时扩大。
+4. **跨入口状态**：Popup 与 Content 的 `localStorage` 不互通。要共享的状态走扩展消息或 `chrome.storage`，不要假设两边读写同一份 `localStorage`。
+5. **路由只在 Popup**。Content Script 不是多页应用。
+6. **组装**：各入口自己挂 IOC。业务 Service 放 `src/impls`，共享契约放 `shared/`。
+7. **能力优先** `@qlover/fe-corekit`、`@qlover/corekit-bridge`。禁止在 example 里复制同名工具。
+8. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名。
+
+```text
+✅ popup 路由页 → UserService → AppRequester
+✅ content 样式经 getStyle 收进 Shadow DOM
+❌ content 里挂一套 Popup 路由
+❌ 把 popup 的 style.css 原样注入宿主页
+```

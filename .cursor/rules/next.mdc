@@ -1,0 +1,29 @@
+---
+description: Next 示例分层 — Route / Controller / Service / Repository，以及 next-kit
+globs: examples/next-oauth/**,examples/next-seed/**
+alwaysApply: false
+---
+
+# Next 示例
+
+改 `examples/next-oauth` 或 `examples/next-seed` 时生效。协作与编码见 `general.mdc`。提交与发版见 `gitcommit.mdc`。
+
+1. **Route**（`src/app/api/**/route.ts`）：只做鉴权插件、`NextApiServer`、原样读 body / query、`IOC(XxxController)` 并返回结果。禁止 Zod、业务判断、直接访问 Repository、拼 SQL、调上游、加解密、日志级编排。
+2. **Controller**（`server/controllers/*Controller.ts`）：入参 / 出参校验、调 Service、组装 DTO。禁止访问 DB、请求上游、加密落库。
+3. **Service**（`server/services/*Service.ts`）：业务编排。禁止直接 `createClient` 或散落 supabase 查询。
+4. **Repository**（`server/repositorys/*Repository.ts`）：表读写与行映射。禁止业务策略、拼 prompt、调外部 API。网关类 Adapter 不经 Repository 伪装。
+5. **依赖只向下**：Route → Controller → Service → Repository。客户端（`src/impls` / Panel）只调 `fetch` / `*Api`，不得复制服务端逻辑。
+6. **无表可不建 Repository**，但不得因此把 DB 写进 Controller 或 Route。纯算法若抽 Util，仍须满足总纲 Util 准入。
+7. **后台任务不进 Route**。drain 用可 `start` / `stop` 的内存任务，业务面只 enqueue。
+8. **通用能力优先 `@qlover/next-kit`**。example 里禁止再复制一套同名工具。
+9. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名；改到的文件可顺手去掉。
+10. **生成物不手改**。文件头标了 Auto-generated，或由 `next dev` / `build` 写出的文件，只改上游再让脚本重写。`shared/config/apiRoutes.ts` 由 `generateApiRoutes` 按 `src/app/api/**/route.ts` 生成：先落 route，常量名以生成为准，禁止臆造 `API_*`；生成结果与仓库不一致时，把生成后的文件一并提交。`public/locales/*.json` 改 `i18n-identifier` 后由 `generateLocales` 写；`src/styles/generated/theme.css` 改 `shared/config/theme` 后由 `generateAppThemeCss` 写。sitemap 由 `next-sitemap` 在 build 时写出。
+11. **页面样式走 Pages 入口**。Pages Router 用 `src/styles/pages.css` → `tailwind-pages.css`，扫描 `src/pages`。App Router 用 `src/styles/index.css` → `tailwind-app.css`，扫描 `src/app` 与 app 侧 uikit。页面样式写在 Pages 入口，不写进 `generated/theme.css`，也不塞进 App 入口。
+12. **Supabase 错误**：`await` 之后用 `throwIfError(result)`。禁止 `if (error) throw new Error(error.message)`。
+
+```text
+✅ route → UserController → UserService → UserRepository
+❌ route.ts 里 schema.parse / Repository.update
+❌ Controller 内 supabase.from(...)
+❌ if (error) throw new Error(error.message)
+```
