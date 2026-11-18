@@ -1,5 +1,5 @@
 ---
-description: Taro 示例 — 多端 API、请求适配与页面配置
+description: Taro 示例 — 多端 API、请求适配、页面与生成文案
 globs: examples/taro-seed/**
 alwaysApply: false
 ---
@@ -8,17 +8,25 @@ alwaysApply: false
 
 改 `examples/taro-seed` 时生效。协作与编码见 `general.mdc`。这里没有 Next 的 Route / Controller / Repository。
 
-1. **多端默认**：页面与组件走 Taro API。共享代码禁止直接用 `window`、`document`、`localStorage`、`fetch`。仅 H5 的分支要显式隔开。
-2. **请求**：经 `AppRequester` + `createTaroRequestAdapter`（`Taro.request`）。禁止在页面里散落 `Taro.request`，也不要把浏览器 `fetch` 当主路径。
-3. **存储**：经 `kvStorage` / `objectStorage`（`Taro.setStorageSync`）。禁止直接 `localStorage`。
-4. **运行时**：小程序没有全局 `Response`。Mock 用 `MockPlugin`，不要假设 DOM 的 `Response`。
-5. **页面**：放在 `src/pages`，每个页面配 `index.config.ts`。应用配置在 `app.config.ts`。`config/` 只放构建配置，不写业务分支。
-6. **主题与样式**：Tailwind 经 weapp-tailwindcss。主题走 `ThemeService` 与 `Taro.onThemeChange`，不假设 `document.documentElement`。
-7. **组装**：IOC 与 `BootstrapClient` 在 `app.tsx`。业务 Service 放 `src/impls`。
-8. **能力优先** `@qlover/fe-corekit`、`@qlover/corekit-bridge`。禁止在 example 里复制同名工具。
-9. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名。
+1. **多端默认**。页面与组件用 `@tarojs/components` 和 Taro API。共享代码禁止直接用 `div`、`window`、`document`、`localStorage`、`fetch`。只有 H5 才需要的分支用 `TARO_ENV === 'h5'` 显式隔开，不把浏览器 API 写进小程序路径。
+2. **页面登记**。页面放在 `src/pages/<名>/`，每个页面有 `index.tsx` 和 `index.config.ts`（`definePageConfig`）。新页面写入 `src/config/route.ts` 的 `APP_ROUTES_PAGES`，由 `app.config.ts` 引用。禁止只建目录、不进 `pages` 列表。
+3. **请求**。页面调 `src/impls` 里的 Service。Service 走 `AppRequester`（`RequestExecutor` + `createTaroRequestAdapter`，底层 `Taro.request`）。接口常量放 `src/config`，禁止在页面里散落 `Taro.request`，也不要把浏览器 `fetch` 当主路径。
+4. **存储**。经 `kvStorage` / `objectStorage`（`Taro.setStorageSync`）。禁止直接 `localStorage`。
+5. **Mock**。小程序没有全局 `Response`。非生产环境用 `MockPlugin` 挂到 `AppRequester`，不要假设 DOM 的 `Response`。
+6. **构建配置与业务配置分开**。根下 `config/` 只放 Taro `defineConfig`（alias、vite 插件、`designWidth: 750`）。`weapp-tailwindcss` 的 `rem2rpx` 只服务小程序；H5 / harmony / rn 保持关闭。业务常量放 `src/config`，不写进 `defineConfig`。
+7. **主题与样式**。样式入口是 `src/styles/index.css`，Tailwind 经 weapp-tailwindcss。主题走 `ThemeService`：小程序用 class（`Page` 上的 theme class），H5 用 `data-theme`。系统主题读 `Taro.getSystemInfoSync` / `Taro.onThemeChange`，不假设 `document.documentElement`。
+8. **文案生成**。键写在 `src/config/i18n-identifier`，页面映射写在 `src/config/i18n-mapping`。`src/assets/locales/*.json` 由 `ts2locales` 在 Vite 构建时生成，且被 gitignore。禁止手改 JSON；改标识后重新构建。
+9. **组装**。IOC 在 `app.tsx` 创建。`useLaunch` 里调用 `bootstrapApp`，不把启动逻辑散进页面 `useEffect`。业务 Service 放 `src/impls`。
+10. **能力优先** `@qlover/fe-corekit`、`@qlover/corekit-bridge`。禁止在 example 里复制同名工具。
+11. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名。
 
 ```text
 ✅ 页面 → UserService → AppRequester → Taro.request
-❌ 页面里直接 Taro.request / localStorage / window
+✅ 新页面：src/pages + index.config.ts + APP_ROUTES_PAGES
+✅ 文案改 i18n-identifier，不改 locales/*.json
+
+❌ 页面里直接 Taro.request / localStorage / window / div
+❌ 只建页面目录，不写入 app.config 的 pages
+❌ 小程序路径里用 document 或 fetch
+❌ 手改 src/assets/locales/*.json
 ```
