@@ -1,10 +1,10 @@
-import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
 import {
   createClient as createSupabaseClient,
   type SupabaseClient
 } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
 
 /**
  * Decode JWT payload without verifying signature (config sanity check only).
@@ -36,9 +36,9 @@ function requireSupabaseUrl(): string {
 }
 
 function requireAnonKey(): string {
-  const key = SUPABASE_KEY?.trim();
+  const key = SUPABASE_ANON_KEY?.trim();
   if (!key) {
-    throw new Error('SUPABASE_ANON_KEY / SUPABASE_KEY is required');
+    throw new Error('SUPABASE_ANON_KEY is required');
   }
   return key;
 }

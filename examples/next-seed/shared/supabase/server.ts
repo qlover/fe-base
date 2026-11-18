@@ -1,7 +1,7 @@
-import { SUPABASE_KEY, SUPABASE_URL } from '@qlover/next-kit/common';
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
 
 /**
  * Especially important if using Fluid compute: Don't put this client in a
@@ -11,7 +11,7 @@ import { cookies } from 'next/headers';
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createSupabaseServerClient(SUPABASE_URL!, SUPABASE_KEY!, {
+  return createSupabaseServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     // global: {
     //   fetch: (input, init) => {
     //     console.log('supabase globals fetch', input, init);

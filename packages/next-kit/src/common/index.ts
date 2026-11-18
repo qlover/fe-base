@@ -21,8 +21,6 @@ export {
 export type { LoginProviderType } from './config/defaults';
 export * from './config/i18nIdentifiers';
 
-export { SUPABASE_URL, SUPABASE_KEY } from './supabase/conts';
-
 export { StringEncryptor } from './StringEncryptor';
 export { Datetime } from './utils/Datetime';
 export {
