@@ -9,8 +9,8 @@ import type { NextRequest } from 'next/server';
  *   post:
  *     tags:
  *       - User
- *     summary: Verify bind-email OTP
- *     description: Binds the email to the current phone account, or merges into an existing email account when the address is already registered.
+ *     summary: Verify bind-email phone OTP
+ *     description: Checks the phone OTP, then binds the email to the current account.
  *     requestBody:
  *       required: true
  *       content:

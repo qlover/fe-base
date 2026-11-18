@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { oauthUpstreamProviders } from '@config/common';
 import {
   API_BIND_EMAIL_ALREADY_BOUND,
-  API_BIND_EMAIL_PHONE_CONFLICT,
+  API_BIND_EMAIL_NO_PHONE,
+  API_BIND_EMAIL_TAKEN,
   API_BIND_EMAIL_UNSUPPORTED,
   API_OTP_CODE_INVALID
 } from '@config/i18n-identifier/api';
@@ -12,25 +13,17 @@ import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrap
 import type { UserServiceInterface } from '@server/interfaces/UserServiceInterface';
 import type { FeUserRow } from '@server/repositorys/FeUsersRepository';
 import type { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
-import type { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
+import type { PhoneOtpService } from '@server/services/PhoneOtpService';
 import type { SupabaseSessionMintService } from '@server/services/SupabaseSessionMintService';
 import type { LoggerInterface } from '@qlover/logger';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { SupabaseRepo } from '@qlover/next-kit/server';
 
-const verifyOtp = vi.fn();
 const updateUserById = vi.fn();
 const deleteUser = vi.fn();
-const signInWithOtp = vi.fn();
-
-vi.mock('@shared/supabase/server', () => ({
-  createEphemeralAuthClient: () => ({
-    auth: {
-      signInWithOtp,
-      verifyOtp
-    }
-  })
-}));
+const maybeSingle = vi.fn();
+const sendPhoneOtp = vi.fn();
+const consumePhoneOtp = vi.fn();
 
 const { BindEmailService } = await import('@server/services/BindEmailService');
 
@@ -69,47 +62,36 @@ function createService(options?: {
   upstream?: string;
   findByEmail?: FeUserRow | null;
   current?: FeUserRow;
+  profiles?: Record<string, FeUserRow | null>;
 }): {
   service: InstanceType<typeof BindEmailService>;
   feUsers: {
     findById: ReturnType<typeof vi.fn>;
     findByEmail: ReturnType<typeof vi.fn>;
     updateEmailAndPhone: ReturnType<typeof vi.fn>;
-    deleteById: ReturnType<typeof vi.fn>;
-    getSystemRoleKey: ReturnType<typeof vi.fn>;
-    setSystemRole: ReturnType<typeof vi.fn>;
-  };
-  oauthRepo: {
-    reassignClientOwner: ReturnType<typeof vi.fn>;
-    reassignRefreshTokensUserId: ReturnType<typeof vi.fn>;
-    deleteUserCredentials: ReturnType<typeof vi.fn>;
-    reassignConsentGrantsUserId: ReturnType<typeof vi.fn>;
-    reassignUserLinks: ReturnType<typeof vi.fn>;
   };
 } {
+  const current = options?.current ?? PHONE_USER;
   const feUsers = {
-    findById: vi.fn().mockResolvedValue(options?.current ?? PHONE_USER),
+    findById: vi.fn().mockImplementation(async (id: string) => {
+      if (options?.profiles && id in options.profiles) {
+        return options.profiles[id];
+      }
+      if (id === current.id) {
+        return current;
+      }
+      return null;
+    }),
     findByEmail: vi
       .fn()
       .mockResolvedValue(
         options?.findByEmail === undefined ? null : options.findByEmail
       ),
     updateEmailAndPhone: vi.fn().mockImplementation(async (params) => ({
-      ...(options?.current ?? PHONE_USER),
+      ...current,
       ...params,
-      email: params.email ?? (options?.current ?? PHONE_USER).email
-    })),
-    deleteById: vi.fn().mockResolvedValue(undefined),
-    getSystemRoleKey: vi.fn().mockResolvedValue('user'),
-    setSystemRole: vi.fn().mockResolvedValue(EMAIL_USER)
-  };
-
-  const oauthRepo = {
-    reassignClientOwner: vi.fn().mockResolvedValue(undefined),
-    reassignRefreshTokensUserId: vi.fn().mockResolvedValue(undefined),
-    deleteUserCredentials: vi.fn().mockResolvedValue(undefined),
-    reassignConsentGrantsUserId: vi.fn().mockResolvedValue(undefined),
-    reassignUserLinks: vi.fn().mockResolvedValue(undefined)
+      email: params.email ?? current.email
+    }))
   };
 
   const supabaseBridge = {
@@ -119,7 +101,16 @@ function createService(options?: {
           updateUserById,
           deleteUser
         }
-      }
+      },
+      schema: () => ({
+        from: () => ({
+          select: () => ({
+            eq: () => ({
+              maybeSingle
+            })
+          })
+        })
+      })
     }),
     throwIfError: (result: { error?: unknown }) => {
       if (result?.error) {
@@ -144,6 +135,11 @@ function createService(options?: {
     getSessionUser: vi.fn().mockResolvedValue(SESSION_USER)
   };
 
+  const phoneOtp = {
+    send: sendPhoneOtp,
+    consume: consumePhoneOtp
+  };
+
   const service = new BindEmailService(
     {
       info: vi.fn(),
@@ -156,21 +152,22 @@ function createService(options?: {
     } as SeedServerConfigInterface,
     supabaseBridge as unknown as SupabaseRepo<unknown>,
     feUsers as unknown as FeUsersRepository,
-    oauthRepo as unknown as OAuthWrapperRepository,
     oauthProvider,
     sessionMint as unknown as SupabaseSessionMintService,
-    userService as unknown as UserServiceInterface
+    userService as unknown as UserServiceInterface,
+    phoneOtp as unknown as PhoneOtpService
   );
 
-  return { service, feUsers, oauthRepo };
+  return { service, feUsers };
 }
 
 describe('BindEmailService.send', () => {
   beforeEach(() => {
-    signInWithOtp.mockReset().mockResolvedValue({ data: {}, error: null });
-    verifyOtp.mockReset();
+    sendPhoneOtp.mockReset().mockResolvedValue({ expired: 1 });
+    consumePhoneOtp.mockReset().mockResolvedValue(undefined);
     updateUserById.mockReset().mockResolvedValue({ data: {}, error: null });
     deleteUser.mockReset().mockResolvedValue({ data: {}, error: null });
+    maybeSingle.mockReset().mockResolvedValue({ data: null, error: null });
   });
 
   it('rejects when upstream is not Supabase', async () => {
@@ -193,35 +190,55 @@ describe('BindEmailService.send', () => {
       .catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ExecutorError);
     expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_ALREADY_BOUND);
-    expect(signInWithOtp).not.toHaveBeenCalled();
+    expect(sendPhoneOtp).not.toHaveBeenCalled();
   });
 
-  it('sends OTP when the account has no business email', async () => {
+  it('rejects when the account has no phone', async () => {
+    const { service } = createService({
+      current: { ...PHONE_USER, phone: null }
+    });
+    const error = await service
+      .send({ currentUserId: 'phone-user', email: 'a@example.com' })
+      .catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ExecutorError);
+    expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_NO_PHONE);
+  });
+
+  it('rejects when the email belongs to another account', async () => {
+    const { service } = createService({ findByEmail: EMAIL_USER });
+    const error = await service
+      .send({ currentUserId: 'phone-user', email: 'a@example.com' })
+      .catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ExecutorError);
+    expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_TAKEN);
+    expect(sendPhoneOtp).not.toHaveBeenCalled();
+  });
+
+  it('sends a phone OTP for the current account', async () => {
     const { service } = createService();
     const result = await service.send({
       currentUserId: 'phone-user',
-      email: 'a@example.com'
-    });
-    expect(signInWithOtp).toHaveBeenCalledWith({
       email: 'a@example.com',
-      options: { shouldCreateUser: true }
+      clientIp: '127.0.0.1'
     });
-    expect(result.expired).toBeGreaterThan(0);
+    expect(sendPhoneOtp).toHaveBeenCalledWith({
+      phone: '+8613800138000',
+      clientIp: '127.0.0.1'
+    });
+    expect(result.expired).toBe(1);
   });
 });
 
 describe('BindEmailService.verify', () => {
   beforeEach(() => {
-    signInWithOtp.mockReset();
-    verifyOtp.mockReset().mockResolvedValue({
-      data: { user: { id: 'phone-user' } },
-      error: null
-    });
+    sendPhoneOtp.mockReset();
+    consumePhoneOtp.mockReset().mockResolvedValue(undefined);
     updateUserById.mockReset().mockResolvedValue({ data: {}, error: null });
     deleteUser.mockReset().mockResolvedValue({ data: {}, error: null });
+    maybeSingle.mockReset().mockResolvedValue({ data: null, error: null });
   });
 
-  it('binds email to the current phone user when the address is free', async () => {
+  it('binds the email after the phone code is consumed', async () => {
     const { service, feUsers } = createService({ findByEmail: null });
     const result = await service.verify({
       currentUserId: 'phone-user',
@@ -229,26 +246,24 @@ describe('BindEmailService.verify', () => {
       token: '123456'
     });
 
+    expect(consumePhoneOtp).toHaveBeenCalledWith({
+      phone: '+8613800138000',
+      token: '123456'
+    });
     expect(result.merged).toBe(false);
     expect(feUsers.updateEmailAndPhone).toHaveBeenCalledWith({
       userId: 'phone-user',
       email: 'a@example.com'
     });
+    expect(updateUserById).toHaveBeenCalledWith('phone-user', {
+      email: 'a@example.com',
+      email_confirm: true
+    });
     expect(result.user.email).toBe('a@example.com');
   });
 
-  it('rejects merge when the email account already has a different phone', async () => {
-    verifyOtp.mockResolvedValue({
-      data: { user: { id: 'email-user' } },
-      error: null
-    });
-    const { service, oauthRepo } = createService({
-      findByEmail: {
-        ...EMAIL_USER,
-        phone: '+8613900139000'
-      }
-    });
-
+  it('rejects when another account already uses the email', async () => {
+    const { service, feUsers } = createService({ findByEmail: EMAIL_USER });
     const error = await service
       .verify({
         currentUserId: 'phone-user',
@@ -258,39 +273,36 @@ describe('BindEmailService.verify', () => {
       .catch((e: unknown) => e);
 
     expect(error).toBeInstanceOf(ExecutorError);
-    expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_PHONE_CONFLICT);
-    expect(oauthRepo.reassignClientOwner).not.toHaveBeenCalled();
+    expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_TAKEN);
+    expect(consumePhoneOtp).not.toHaveBeenCalled();
+    expect(feUsers.updateEmailAndPhone).not.toHaveBeenCalled();
   });
 
-  it('merges into the existing email account when OTP belongs to that user', async () => {
-    verifyOtp.mockResolvedValue({
-      data: { user: { id: 'email-user' } },
-      error: null
-    });
-    const { service, feUsers, oauthRepo } = createService({
-      findByEmail: EMAIL_USER
+  it('releases a leftover auth user that has no profile', async () => {
+    maybeSingle.mockResolvedValue({ data: { id: 'leftover-id' }, error: null });
+    const { service } = createService({
+      profiles: { 'leftover-id': null }
     });
 
-    const result = await service.verify({
+    await service.verify({
       currentUserId: 'phone-user',
       email: 'a@example.com',
       token: '123456'
     });
 
-    expect(result.merged).toBe(true);
-    expect(oauthRepo.reassignClientOwner).toHaveBeenCalledWith(
-      'phone-user',
-      'email-user'
+    expect(updateUserById).toHaveBeenCalledWith(
+      'leftover-id',
+      expect.objectContaining({ email_confirm: true })
     );
-    expect(feUsers.deleteById).toHaveBeenCalledWith('phone-user');
-    expect(deleteUser).toHaveBeenCalledWith('phone-user');
+    expect(deleteUser).toHaveBeenCalledWith('leftover-id');
+    expect(updateUserById).toHaveBeenCalledWith('phone-user', {
+      email: 'a@example.com',
+      email_confirm: true
+    });
   });
 
   it('rejects invalid OTP', async () => {
-    verifyOtp.mockResolvedValue({
-      data: { user: null },
-      error: { message: 'bad' }
-    });
+    consumePhoneOtp.mockRejectedValue(new ExecutorError(API_OTP_CODE_INVALID));
     const { service } = createService();
     const error = await service
       .verify({

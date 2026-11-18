@@ -1,8 +1,6 @@
 import { ExecutorError } from '@qlover/fe-corekit/executor';
 import { SupabaseRepo } from '@qlover/next-kit/server';
-import { SystemRole } from '@shared/auth/systemRole';
 import { inject, injectable } from '@shared/container';
-import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
 import {
   PHONE_PLACEHOLDER_EMAIL_SUFFIX,
   toBusinessEmail
@@ -10,7 +8,8 @@ import {
 import { oauthUpstreamProviders } from '@config/common';
 import {
   API_BIND_EMAIL_ALREADY_BOUND,
-  API_BIND_EMAIL_PHONE_CONFLICT,
+  API_BIND_EMAIL_NO_PHONE,
+  API_BIND_EMAIL_TAKEN,
   API_BIND_EMAIL_UNSUPPORTED,
   API_NOT_AUTHORIZED,
   API_OTP_CODE_INVALID
@@ -25,17 +24,16 @@ import {
   FeUsersRepository,
   type FeUserRow
 } from '@server/repositorys/FeUsersRepository';
-import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
+import { PhoneOtpService } from '@server/services/PhoneOtpService';
 import { SupabaseSessionMintService } from '@server/services/SupabaseSessionMintService';
 import type { LoggerInterface } from '@qlover/logger';
 import type { UserSchema } from '@qlover/next-kit/common';
 import type { SignOtpResult } from '@qlover/oauth-wrapper';
-import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 /**
- * 手机号账户绑定邮箱：OTP 校验后挂到当前用户，或合并进已有邮箱账户。
+ * 手机号账户绑定邮箱：向当前手机号发验证码，核对内存/短信记录后再写入邮箱。
  */
 @injectable()
 export class BindEmailService implements BindEmailServiceInterface {
@@ -47,14 +45,14 @@ export class BindEmailService implements BindEmailServiceInterface {
     protected readonly supabaseBridge: SupabaseRepo<unknown>,
     @inject(FeUsersRepository)
     protected readonly feUsersRepository: FeUsersRepository,
-    @inject(OAuthWrapperRepository)
-    protected readonly oauthRepository: OAuthWrapperRepository,
     @inject(I.OAuthWrapperProviderInterface)
     protected readonly oauthProvider: OAuthWrapperProviderInterface,
     @inject(SupabaseSessionMintService)
     protected readonly sessionMint: SupabaseSessionMintService,
     @inject(OAuthUserService)
-    protected readonly userService: UserServiceInterface
+    protected readonly userService: UserServiceInterface,
+    @inject(PhoneOtpService)
+    protected readonly phoneOtpService: PhoneOtpService
   ) {}
 
   /**
@@ -63,22 +61,19 @@ export class BindEmailService implements BindEmailServiceInterface {
   public async send(params: {
     readonly currentUserId: string;
     readonly email: string;
+    readonly clientIp?: string;
   }): Promise<SignOtpResult> {
     this.assertSupabaseUpstream();
     const email = params.email.trim().toLowerCase();
     const current = await this.requireFeUser(params.currentUserId);
     this.assertCanBind(current, email);
+    await this.assertEmailAvailable(email, current.id);
+    const phone = this.requirePhone(current);
 
-    const supabase = this.createEphemeralAuthClient();
-    const result = await supabase.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: true }
+    return this.phoneOtpService.send({
+      phone,
+      clientIp: params.clientIp
     });
-    this.supabaseBridge.throwIfError(result);
-
-    return {
-      expired: Math.floor(Date.now() / 1000) + 3600
-    };
   }
 
   /**
@@ -98,25 +93,14 @@ export class BindEmailService implements BindEmailServiceInterface {
 
     const current = await this.requireFeUser(params.currentUserId);
     this.assertCanBind(current, email);
-
-    const otpUser = await this.verifyEmailOtp(email, token);
-    const existing = await this.feUsersRepository.findByEmail(email);
-
-    if (existing && existing.id !== params.currentUserId) {
-      const user = await this.mergePhoneUserIntoEmailUser({
-        phoneUser: current,
-        emailUser: existing,
-        email,
-        verifiedAuthUserId: otpUser.id
-      });
-      return { merged: true, user };
-    }
-
-    const user = await this.bindEmailToCurrentUser({
-      current,
-      email,
-      otpUser
+    await this.assertEmailAvailable(email, current.id);
+    await this.phoneOtpService.consume({
+      phone: this.requirePhone(current),
+      token
     });
+    await this.releaseLeftoverAuthEmail(email, current.id);
+
+    const user = await this.bindEmailToCurrentUser(current, email);
     return { merged: false, user };
   }
 
@@ -144,62 +128,83 @@ export class BindEmailService implements BindEmailServiceInterface {
     }
   }
 
-  protected async verifyEmailOtp(email: string, token: string): Promise<User> {
-    const authClient = this.createEphemeralAuthClient();
-    const verified = await authClient.auth.verifyOtp({
-      email,
-      token,
-      type: 'email'
-    });
-    if (verified.error || !verified.data.user?.id) {
-      throw new ExecutorError(API_OTP_CODE_INVALID);
+  protected requirePhone(current: FeUserRow): string {
+    const phone = current.phone?.trim() ?? '';
+    if (!phone) {
+      throw new ExecutorError(API_BIND_EMAIL_NO_PHONE);
     }
-    return verified.data.user;
+    return phone;
   }
 
-  protected createEphemeralAuthClient(): SupabaseClient {
-    return createSharedEphemeralAuthClient();
+  protected async assertEmailAvailable(
+    email: string,
+    currentUserId: string
+  ): Promise<void> {
+    const existing = await this.feUsersRepository.findByEmail(email);
+    if (existing && existing.id !== currentUserId) {
+      throw new ExecutorError(API_BIND_EMAIL_TAKEN);
+    }
   }
 
-  protected async bindEmailToCurrentUser(params: {
-    readonly current: FeUserRow;
-    readonly email: string;
-    readonly otpUser: User;
-  }): Promise<UserSchema> {
-    const { current, email, otpUser } = params;
+  /**
+   * 先前的邮箱注册确认可能已经占住 auth.users。没有业务档案时清掉，再把邮箱挂到当前用户。
+   */
+  protected async releaseLeftoverAuthEmail(
+    email: string,
+    currentUserId: string
+  ): Promise<void> {
+    const holderId = await this.findAuthUserIdByEmail(email);
+    if (!holderId || holderId === currentUserId) {
+      return;
+    }
+
+    const profile = await this.feUsersRepository.findById(holderId);
+    if (profile) {
+      throw new ExecutorError(API_BIND_EMAIL_TAKEN);
+    }
+
     const admin = this.supabaseBridge.getAdminSupabase();
+    const discardEmail = `discard.${holderId.replace(/-/g, '')}${PHONE_PLACEHOLDER_EMAIL_SUFFIX}`;
+    const cleared = await admin.auth.admin.updateUserById(holderId, {
+      email: discardEmail,
+      email_confirm: true
+    });
+    this.supabaseBridge.throwIfError(cleared);
 
-    if (otpUser.id !== current.id) {
-      const discardEmail = `discard.${otpUser.id.replace(/-/g, '')}${PHONE_PLACEHOLDER_EMAIL_SUFFIX}`;
-      const cleared = await admin.auth.admin.updateUserById(otpUser.id, {
-        email: discardEmail,
-        email_confirm: true
+    const deleted = await admin.auth.admin.deleteUser(holderId);
+    if (deleted.error) {
+      this.logger.warn('BindEmailService: failed deleting leftover auth user', {
+        holderId,
+        error: deleted.error
       });
-      this.supabaseBridge.throwIfError(cleared);
-
-      const updated = await admin.auth.admin.updateUserById(current.id, {
-        email,
-        email_confirm: true
-      });
-      this.supabaseBridge.throwIfError(updated);
-
-      await this.feUsersRepository
-        .deleteById(otpUser.id)
-        .catch(() => undefined);
-      const deleted = await admin.auth.admin.deleteUser(otpUser.id);
-      if (deleted.error) {
-        this.logger.warn('BindEmailService: failed deleting temp otp user', {
-          otpUserId: otpUser.id,
-          error: deleted.error
-        });
-      }
-    } else {
-      const updated = await admin.auth.admin.updateUserById(current.id, {
-        email,
-        email_confirm: true
-      });
-      this.supabaseBridge.throwIfError(updated);
     }
+  }
+
+  protected async findAuthUserIdByEmail(email: string): Promise<string | null> {
+    const admin = this.supabaseBridge.getAdminSupabase();
+    const { data, error } = await admin
+      .schema('auth')
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    if (error || !data) {
+      return null;
+    }
+    const row = data as { id?: string };
+    return row.id?.trim() || null;
+  }
+
+  protected async bindEmailToCurrentUser(
+    current: FeUserRow,
+    email: string
+  ): Promise<UserSchema> {
+    const admin = this.supabaseBridge.getAdminSupabase();
+    const updated = await admin.auth.admin.updateUserById(current.id, {
+      email,
+      email_confirm: true
+    });
+    this.supabaseBridge.throwIfError(updated);
 
     await this.feUsersRepository.updateEmailAndPhone({
       userId: current.id,
@@ -207,66 +212,6 @@ export class BindEmailService implements BindEmailServiceInterface {
     });
 
     return this.reloginAsUser({ userId: current.id, email });
-  }
-
-  protected async mergePhoneUserIntoEmailUser(params: {
-    readonly phoneUser: FeUserRow;
-    readonly emailUser: FeUserRow;
-    readonly email: string;
-    readonly verifiedAuthUserId: string;
-  }): Promise<UserSchema> {
-    const { phoneUser: A, emailUser: B, email, verifiedAuthUserId } = params;
-
-    if (verifiedAuthUserId !== B.id) {
-      throw new ExecutorError(API_OTP_CODE_INVALID);
-    }
-
-    const phone = A.phone?.trim() || null;
-    const bPhone = B.phone?.trim() || null;
-    if (bPhone && phone && bPhone !== phone) {
-      throw new ExecutorError(API_BIND_EMAIL_PHONE_CONFLICT);
-    }
-
-    await this.oauthRepository.reassignClientOwner(A.id, B.id);
-    await this.oauthRepository.reassignRefreshTokensUserId(A.id, B.id);
-    await this.oauthRepository.deleteUserCredentials(A.id);
-    await this.oauthRepository.reassignConsentGrantsUserId(A.id, B.id);
-    await this.oauthRepository.reassignUserLinks(A.id, B.id);
-
-    const roleA = await this.feUsersRepository.getSystemRoleKey(A.id);
-    const roleB = await this.feUsersRepository.getSystemRoleKey(B.id);
-    if (roleA === SystemRole.Admin && roleB !== SystemRole.Admin) {
-      await this.feUsersRepository.setSystemRole(B.id, SystemRole.Admin);
-    }
-
-    if (phone) {
-      await this.feUsersRepository.updateEmailAndPhone({
-        userId: A.id,
-        phone: null
-      });
-    }
-
-    await this.feUsersRepository.updateEmailAndPhone({
-      userId: B.id,
-      email,
-      phone: phone ?? bPhone,
-      displayName: B.display_name ?? A.display_name ?? null
-    });
-
-    const admin = this.supabaseBridge.getAdminSupabase();
-    if (phone) {
-      const phoneUpdate = await admin.auth.admin.updateUserById(B.id, {
-        phone,
-        phone_confirm: true
-      });
-      this.supabaseBridge.throwIfError(phoneUpdate);
-    }
-
-    await this.feUsersRepository.deleteById(A.id);
-    const deleted = await admin.auth.admin.deleteUser(A.id);
-    this.supabaseBridge.throwIfError(deleted);
-
-    return this.reloginAsUser({ userId: B.id, email });
   }
 
   protected async reloginAsUser(params: {

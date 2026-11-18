@@ -296,7 +296,7 @@ export class UserController {
   }
 
   /**
-   * 向目标邮箱发送绑定用 OTP。
+   * 向当前账号的手机号发送绑定用验证码。
    *
    * @param body - `{ email }`
    * @param request - 用于 IP 发码限流
@@ -317,12 +317,13 @@ export class UserController {
     await this.otpSendRateLimit.assertCanSend(clientIp);
     return this.bindEmailService.send({
       currentUserId: user.id,
-      email: parsed.data.email
+      email: parsed.data.email,
+      clientIp
     });
   }
 
   /**
-   * 校验邮箱 OTP 并完成绑定或账户合并。
+   * 校验手机验证码并完成邮箱绑定。
    *
    * @param body - `{ email, token }`
    */

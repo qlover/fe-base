@@ -117,10 +117,13 @@ export class PhoneOtpService {
     };
   }
 
-  public async verifyAndLogin(params: {
+  /**
+   * 校验并消费一条待验证的手机验证码，不登录。
+   */
+  public async consume(params: {
     phone: string;
     token: string;
-  }): Promise<SignOtpResult> {
+  }): Promise<void> {
     const phone = normalizePhoneE164(params.phone);
     const token = params.token.trim();
     if (!/^\+[1-9]\d{7,14}$/.test(phone) || !/^\d{4,8}$/.test(token)) {
@@ -152,6 +155,14 @@ export class PhoneOtpService {
     }
 
     await this.otpsRepo.markVerified(pending.id);
+  }
+
+  public async verifyAndLogin(params: {
+    phone: string;
+    token: string;
+  }): Promise<SignOtpResult> {
+    const phone = normalizePhoneE164(params.phone);
+    await this.consume({ phone, token: params.token });
 
     const user = await this.ensureAuthUserForPhone(phone);
     await this.feUsersRepository.ensureProfile({
