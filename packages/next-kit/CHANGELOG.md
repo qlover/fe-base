@@ -1,5 +1,20 @@
 # @qlover/next-kit
 
+## 1.6.2
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **next-kit:** LocaleLink 改为引入 next/link.js ([83e4b71](https://github.com/qlover/fe-base/commit/83e4b71c81b90ea95e4b5749e396955b6838ec04)) ([#733](https://github.com/qlover/fe-base/pull/733))
+
+#### ♻️ Refactors
+
+- **next-kit:** Supabase 连接变量改由应用读取 ([6714323](https://github.com/qlover/fe-base/commit/67143231b752f089f9b4a6ca0a8166b9f2c4e21f)) ([#733](https://github.com/qlover/fe-base/pull/733))
+
+- **next-kit:** IOC 容器改由应用创建 ([1a83c0b](https://github.com/qlover/fe-base/commit/1a83c0b9e445aee27cd3bcadf2325b0b5b315fb8)) ([#733](https://github.com/qlover/fe-base/pull/733))
+- Update dependency **@qlover/oauth-wrapper** from `0.13.1` to `0.13.2`
+
 ## 1.6.1
 
 ### Patch Changes

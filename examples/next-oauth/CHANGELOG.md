@@ -1,5 +1,21 @@
 # examples/next-oauth
 
+## 1.8.2
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **next-oauth:** 绑定邮箱改为校验手机验证码 ([1ac815f](https://github.com/qlover/fe-base/commit/1ac815f716077ad184f0d3caf9a4d6eb935769ae)) ([#733](https://github.com/qlover/fe-base/pull/733))
+
+#### ♻️ Refactors
+
+- **next-kit:** Supabase 连接变量改由应用读取 ([6714323](https://github.com/qlover/fe-base/commit/67143231b752f089f9b4a6ca0a8166b9f2c4e21f)) ([#733](https://github.com/qlover/fe-base/pull/733))
+
+- **next-kit:** IOC 容器改由应用创建 ([1a83c0b](https://github.com/qlover/fe-base/commit/1a83c0b9e445aee27cd3bcadf2325b0b5b315fb8)) ([#733](https://github.com/qlover/fe-base/pull/733))
+- Update dependency **@qlover/next-kit** from `1.6.1` to `1.6.2`
+- Update dependency **@qlover/oauth-wrapper** from `0.13.1` to `0.13.2`
+
 ## 1.8.1
 
 ### Patch Changes

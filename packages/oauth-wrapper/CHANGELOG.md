@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.2
+
+### Patch Changes
+
 ## 0.13.0
 
 ### Minor Changes
