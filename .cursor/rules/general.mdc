@@ -17,6 +17,7 @@ alwaysApply: true
    - **frontmatter**：`description` 一句话。总纲与提交规范 `alwaysApply: true`。只在某目录生效的写 `globs`，且 `alwaysApply: false`。
    - **正文**：一级标题，接着一句生效范围。一条一个编号，`**短标题**：` 后写要求和禁止。同一范围只追加编号；新栈才新建文件。
    - **正反例**：集中放文末一个 `text` 块，用 `✅` / `❌`。不在每条下面再嵌一套例子。
+8. **首次 push 附 PR**：分支第一次 `git push` 成功后，回复里给出创建 PR 的地址（写明 base 分支）和可直接粘贴的标题、正文（Summary、Test plan）。同一分支之后再 push 不必重复，除非用户要求改说明。用户没要求创建 PR 时只给文本，不自动 `gh pr create`。
 
 ## 编码
 
