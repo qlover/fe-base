@@ -1,5 +1,12 @@
 # @qlover/next-kit
 
+## 1.6.1
+
+### Patch Changes
+
+- Update dependency **@qlover/corekit-bridge** from `3.4.4` to `3.4.5`
+- Update dependency **@qlover/oauth-wrapper** from `0.13.0` to `0.13.1`
+
 ## 1.6.0
 
 ### Minor Changes
