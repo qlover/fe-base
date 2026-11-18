@@ -9,7 +9,6 @@ import {
 } from 'react';
 import {
   createIOCFunction,
-  ReflectionIOCContainer,
   type IOCContainerInterface,
   type IOCFunctionInterface,
   type IOCRegisterInterface
@@ -37,8 +36,13 @@ export type CreateIOCReactResult<IdentifierMap> = {
   IOCProvider: (props: {
     children: ReactNode;
     register: IOCRegisterInterface<IOCContainerInterface>;
-    /** Defaults to `new ReflectionIOCContainer(logger)`. */
-    createContainer?: (logger?: LoggerInterface) => IOCContainerInterface;
+    /**
+     * 必须在应用侧创建容器（从 `@qlover/corekit-bridge/ioc` 导入
+     * `ReflectionIOCContainer`），与 `@inject` / `@injectable` 共用同一模块实例。
+     * 若在 next-kit 包内默认 `new ReflectionIOCContainer()`，外置加载时会出现
+     * 两份 Symbol 元数据，导致注入为 undefined。
+     */
+    createContainer: (logger?: LoggerInterface) => IOCContainerInterface;
     logger?: LoggerInterface;
   }) => ReactNode;
 };
@@ -46,6 +50,8 @@ export type CreateIOCReactResult<IdentifierMap> = {
 /**
  * Factory for typed IOC React context / hook / provider.
  * Apps pass their `IOCIdentifierMap` as the generic and inject registration.
+ *
+ * `IOCProvider` 必须传入应用侧的 `createContainer`（见类型注释）。
  */
 export function createIOCReact<
   IdentifierMap
@@ -81,15 +87,13 @@ export function createIOCReact<
   function IOCProvider(props: {
     children: ReactNode;
     register: IOCRegisterInterface<IOCContainerInterface>;
-    createContainer?: (logger?: LoggerInterface) => IOCContainerInterface;
+    createContainer: (logger?: LoggerInterface) => IOCContainerInterface;
     logger?: LoggerInterface;
   }) {
     const { children, register, createContainer, logger } = props;
 
     const [IOC] = useState(() => {
-      const containerImpl: IOCContainerInterface = createContainer
-        ? createContainer(logger)
-        : new ReflectionIOCContainer(logger);
+      const containerImpl: IOCContainerInterface = createContainer(logger);
       const ioc = createIOCFunction<IdentifierMap>(containerImpl);
       register.register(ioc.implemention!, ioc);
       return ioc;

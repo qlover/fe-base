@@ -13,6 +13,12 @@ Status of extracting shared Next.js shell code from `examples/next-seed` / `exam
 | hooks/utils | useStrictEffect, useMountedClient, useReturnTo, useWarnTranslations, useI18nMapping |
 | IOC | `createIOCReact()` factory |
 
+> **IOCProvider `createContainer`（必填）：** 必须从应用代码
+> `import { ReflectionIOCContainer } from '@qlover/corekit-bridge/ioc'` 再传入
+> `createContainer={(l) => new ReflectionIOCContainer(l)}`。
+> 与 `@inject` 共用同一模块实例；勿依赖 next-kit 内部默认创建容器
+> （外置 `@qlover/next-kit/client` 时会出现双份 Symbol，注入为 undefined）。
+
 > **Note:** `useStore` / `useSliceStoreAdapter` / `isSliceStoreAdapter` moved to
 > `@brain-toolkit/react-kit` (require `>=0.5.0`). Apps should import from there.
 ## Examples rewired
