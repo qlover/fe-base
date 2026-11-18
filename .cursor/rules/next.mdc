@@ -1,0 +1,49 @@
+---
+description: Next 示例 — 服务端分层、后台任务、生成物与页面样式
+globs: examples/next-oauth/**,examples/next-seed/**
+alwaysApply: false
+---
+
+# Next 示例
+
+改 `examples/next-oauth` 或 `examples/next-seed` 时生效。协作与编码见 `general.mdc`。提交与发版见 `gitcommit.mdc`。
+
+1. **一开始就分层**。新增或扩展 HTTP API 时按 Route → Controller → Service → Repository 落文件。禁止先写在 `route.ts` 里跑通再拆，禁止跳层。
+2. **Route**（`src/app/api/**/route.ts`）：只做鉴权插件、`NextApiServer`、原样读 body / query、`IOC(XxxController)` 并返回结果。禁止 Zod、业务判断、直接访问 Repository、拼 SQL、调上游、加解密、日志级编排。
+3. **Controller**（`server/controllers/*Controller.ts`）：入参 / 出参校验（Zod / Validator）、调 Service、组装 DTO。禁止访问 DB、请求上游、加密落库。
+4. **Service**（`server/services/*Service.ts`）：业务编排、策略，调用 Repository / 其它 Service / Resolver。禁止直接 `createClient` 或散落 supabase 查询。
+5. **Repository**（`server/repositorys/*Repository.ts`）：表读写，映射 DB 行与领域类型。禁止业务策略、拼 prompt、调外部 API。网关类 Adapter 不经 Repository 伪装。
+6. **依赖只向下**：Route → Controller → Service → Repository。客户端（`src/impls` / Panel）只调 `fetch` / `*Api` / 客户端 Service，不得复制服务端逻辑，也不得绕过 API 假造服务端行为。服务端不反向依赖 UI。
+7. **新能力落文件**。无表可不建 Repository，但不得因此把 DB 写进 Controller 或 Route。纯算法若抽 Util，仍须满足总纲 Util 准入。契约放 `shared/schemas/XxxSchema.ts`。
+
+| 层 | 路径 |
+| --- | --- |
+| Route | `src/app/api/**/route.ts` |
+| Controller | `server/controllers/XxxController.ts` |
+| Service | `server/services/XxxService.ts` |
+| Repository | `server/repositorys/XxxRepository.ts`（有持久化时） |
+| Schema | `shared/schemas/XxxSchema.ts` |
+
+8. **后台任务的范围**。能离开当前页继续 drain / 同步 / 预拉的工作，做成内存任务，不强制 Web Worker。必须跟当前页交互的瞬时逻辑（路由同步、本页 UI 状态）不放进这类任务。细则见该示例的 `docs/client-background-plugin.md`。
+9. **业务面只 enqueue**。禁止在 Panel 或页面 Service 的 mount / dispose / `visibility` / `pagehide` 里直接 `sync` 整队。
+10. **任务自己管生命周期**。独立类提供 `start` / `stop` / `enqueue*`，作为 `BootstrapExecutorPlugin` 挂到 `BootstrapClient.getPlugins`。`start` 幂等，`stop` 清 timer 和监听。idle、`visibilitychange`、`online`、`pagehide` + keepalive 由任务自己注册。
+11. **启动点可换**。默认在 session bootstrap 里 `start()`。若改成进某页才 start，只改 `getPlugins` 的组装，不把 drain 写回页面 Service。换路由不得依赖「还停在某个页面」才能排空队列。
+12. **后台任务不进 Route**。服务端分层不承担客户端 Bootstrap 的 drain。
+13. **通用能力优先 `@qlover/next-kit`**。example 里禁止再复制一套同名工具。
+14. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名；改到的文件可顺手去掉。
+15. **生成物不手改**。文件头标了 Auto-generated，或由 `next dev` / `build` 写出的文件，只改上游再让脚本重写。`shared/config/apiRoutes.ts` 由 `generateApiRoutes` 按 `src/app/api/**/route.ts` 生成：先落 route，常量名以生成为准，禁止臆造 `API_*`；生成结果与仓库不一致时，把生成后的文件一并提交。`public/locales/*.json` 改 `i18n-identifier` 后由 `generateLocales` 写；`src/styles/generated/theme.css` 改 `shared/config/theme` 后由 `generateAppThemeCss` 写。sitemap 由 `next-sitemap` 在 build 时写出。
+16. **页面样式走 Pages 入口**。Pages Router 用 `src/styles/pages.css` → `tailwind-pages.css`，扫描 `src/pages`。App Router 用 `src/styles/index.css` → `tailwind-app.css`，扫描 `src/app` 与 app 侧 uikit。页面样式写在 Pages 入口，不写进 `generated/theme.css`，也不塞进 App 入口。
+17. **Supabase 错误**：`await` 之后用 `throwIfError(result)`。禁止 `if (error) throw new Error(error.message)`。
+
+```text
+✅ route → UserController → UserService → UserRepository
+✅ route 内仅 IOC(Controller)，Zod 在 Controller
+✅ 业务面 enqueue → BootstrapClient.getPlugins 里的任务 start 后 drain
+
+❌ route.ts 里 schema.parse / Repository.update
+❌ Controller 内 supabase.from(...)
+❌ 先写在 route 里跑通再拆
+❌ if (error) throw new Error(error.message)
+❌ 页面 dispose 里直接 sync 整队
+❌ 把 idle / keepalive / 重试写进 Panel 的 useEffect
+```

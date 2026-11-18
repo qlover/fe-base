@@ -1,0 +1,32 @@
+---
+description: 浏览器扩展示例 — popup / content 隔离、Shadow DOM 与生成文案
+globs: examples/browser-plugin-seed/**
+alwaysApply: false
+---
+
+# 浏览器扩展示例
+
+改 `examples/browser-plugin-seed` 时生效。协作与编码见 `general.mdc`。这里没有 Next 的 Route / Controller / Repository。框架是 Plasmo。
+
+1. **入口分开**。Popup 是 `src/popup.tsx`，Content Script 是 `src/content.tsx`。background、options 按 Plasmo 约定另开入口文件。每个入口自己挂需要的 IOC，不共享另一入口的 React 树。禁止把 Popup 的路由和页面状态写进 Content Script。
+2. **Popup 才有路由**。路由表在 `shared/config/router.ts`。`popup.tsx` 用懒加载 `RouterComponentMap` 交给 `RouterProvider`。页面放 `src/pages`。Content Script 不是多页应用；注入页上的小组件放 `src/features`。
+3. **Content UI 在 Shadow DOM**。样式经 `getStyle`：`:root` 改成 `:host(fe-csui)`，`rem` 按 16px 换成 `px`。禁止把 Popup 的 `style.css` 原样注入宿主页。`matches` 写在该文件的 `PlasmoCSConfig`，不默认扩大到业务不需要的站点。
+4. **类名带 `fe:` 前缀**。Tailwind 在 `src/styles/tailwind.css` 里 `prefix(fe)`，用来和宿主页类名隔开。组件 `className` 继续写 `fe:`。这不是标识符前缀，不要把它删掉。
+5. **扩展 API**。`chrome.*` 只在扩展上下文里用，不在 `shared` 里当成普通 Web API。`host_permissions` 写在 `package.json` 的 `manifest`，不在业务里临时扩大。
+6. **跨入口状态**。Popup 与 Content 的 `localStorage` 不互通。要共享的状态走扩展消息或 `chrome.storage`，不要假设两边读写同一份 `localStorage`。
+7. **请求与契约**。Popup 页面调 `src/impls` 的 Service，请求走 `AppRequester`。共享配置、接口、schema 放 `shared/`。禁止在 Content Script 里直接操作宿主页的业务 DOM 来充当扩展 UI。
+8. **文案生成**。键写在 `shared/config/i18n-identifier`。`src/assets/locales/*.json` 由 `srcripts/startup.js` 在 `dev` / `build` 前生成。禁止手改 JSON；改标识后重新跑 startup。
+9. **能力优先** `@qlover/fe-corekit`、`@qlover/corekit-bridge`。禁止在 example 里复制同名工具。
+10. **新代码不加 `Fe` / `fe_` 前缀**。存量不强制整库重命名。Tailwind 的 `fe:` 类前缀保留，见第 4 条。
+
+```text
+✅ popup：router.ts → RouterProvider → 页面 → UserService → AppRequester
+✅ content：PlasmoCSConfig + getStyle，小组件放 src/features
+✅ 类名保持 fe:z-50 这种 prefix(fe)
+
+❌ content 里挂一套 Popup 路由
+❌ 把 popup 的 style.css 原样注入宿主页
+❌ 删掉 fe: 前缀，或在 shared 里直接调 chrome.*
+❌ 手改 src/assets/locales/*.json
+❌ 用 localStorage 当 Popup 和 Content 的共享存储
+```
