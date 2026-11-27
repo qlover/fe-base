@@ -4,6 +4,7 @@ import {
   type SupabaseClient
 } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { getRuntimeEnv } from '@shared/env/RuntimeEnvBridge';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
 
 /**
@@ -44,7 +45,7 @@ function requireAnonKey(): string {
 }
 
 function requireServiceRoleKey(): string {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const key = getRuntimeEnv('SUPABASE_SERVICE_ROLE_KEY')?.trim();
   if (!key) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY is required for OAuth operations'
