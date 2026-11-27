@@ -21,6 +21,7 @@ import type { SupabaseRepo } from '@qlover/next-kit/server';
 
 const updateUserById = vi.fn();
 const deleteUser = vi.fn();
+const listUsers = vi.fn();
 const maybeSingle = vi.fn();
 const sendPhoneOtp = vi.fn();
 const consumePhoneOtp = vi.fn();
@@ -99,7 +100,8 @@ function createService(options?: {
       auth: {
         admin: {
           updateUserById,
-          deleteUser
+          deleteUser,
+          listUsers
         }
       },
       schema: () => ({
@@ -235,6 +237,9 @@ describe('BindEmailService.verify', () => {
     consumePhoneOtp.mockReset().mockResolvedValue(undefined);
     updateUserById.mockReset().mockResolvedValue({ data: {}, error: null });
     deleteUser.mockReset().mockResolvedValue({ data: {}, error: null });
+    listUsers
+      .mockReset()
+      .mockResolvedValue({ data: { users: [] }, error: null });
     maybeSingle.mockReset().mockResolvedValue({ data: null, error: null });
   });
 
@@ -299,6 +304,55 @@ describe('BindEmailService.verify', () => {
       email: 'a@example.com',
       email_confirm: true
     });
+  });
+
+  it('falls back to listUsers when auth schema lookup fails', async () => {
+    maybeSingle.mockResolvedValue({
+      data: null,
+      error: { message: 'Invalid schema: auth' }
+    });
+    listUsers.mockResolvedValue({
+      data: {
+        users: [{ id: 'leftover-id', email: 'a@example.com' }]
+      },
+      error: null
+    });
+    const { service } = createService({
+      profiles: { 'leftover-id': null }
+    });
+
+    await service.verify({
+      currentUserId: 'phone-user',
+      email: 'a@example.com',
+      token: '123456'
+    });
+
+    expect(listUsers).toHaveBeenCalled();
+    expect(updateUserById).toHaveBeenCalledWith(
+      'leftover-id',
+      expect.objectContaining({ email_confirm: true })
+    );
+    expect(deleteUser).toHaveBeenCalledWith('leftover-id');
+  });
+
+  it('maps duplicate-email auth error to bind_email_taken', async () => {
+    updateUserById.mockResolvedValue({
+      data: null,
+      error: {
+        message: 'A user with this email address has already been registered'
+      }
+    });
+    const { service } = createService({ findByEmail: null });
+    const error = await service
+      .verify({
+        currentUserId: 'phone-user',
+        email: 'a@example.com',
+        token: '123456'
+      })
+      .catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ExecutorError);
+    expect((error as ExecutorError).id).toBe(API_BIND_EMAIL_TAKEN);
   });
 
   it('rejects invalid OTP', async () => {
