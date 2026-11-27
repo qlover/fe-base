@@ -10,7 +10,6 @@ import { API_OAUTH_WRAPPER_AUTH_FAILED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
-import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import {
   ensureConsentDevice,
@@ -35,8 +34,7 @@ export class OAuthWrapperController {
   @inject(I.Logger)
   protected logger!: LoggerInterface;
 
-  protected stringEncryptor: StringEncryptor;
-  protected secureCookie: boolean;
+  protected stringEncryptorInstance?: StringEncryptor;
 
   constructor(
     @inject(LoginValidator)
@@ -45,14 +43,27 @@ export class OAuthWrapperController {
     protected oauthProvider: OAuthWrapperProviderInterface,
     @inject(OAuthUserService)
     protected oauthService: OAuthUserService,
-    @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
-    @inject(Base64Serializer) base64Serializer: Base64Serializer
-  ) {
-    this.stringEncryptor = new StringEncryptor(
-      serverConfig.stringEncryptorKey,
-      base64Serializer
-    );
-    this.secureCookie = serverConfig.isProduction;
+    @inject(I.AppConfig)
+    protected readonly serverConfig: SeedServerConfigInterface,
+    @inject(Base64Serializer)
+    protected readonly base64Serializer: Base64Serializer
+  ) {}
+
+  /**
+   * 惰性创建；密钥用时再读，避免构造期 snapshot。
+   */
+  protected get stringEncryptor(): StringEncryptor {
+    if (!this.stringEncryptorInstance) {
+      this.stringEncryptorInstance = new StringEncryptor(
+        this.serverConfig.stringEncryptorKey,
+        this.base64Serializer
+      );
+    }
+    return this.stringEncryptorInstance;
+  }
+
+  protected get secureCookie(): boolean {
+    return this.serverConfig.isProduction;
   }
 
   /**

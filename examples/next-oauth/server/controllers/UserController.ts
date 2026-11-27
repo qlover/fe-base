@@ -28,6 +28,7 @@ import {
   API_NOT_AUTHORIZED,
   API_OTP_CODE_INVALID
 } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import {
   bindEmailSendSchema,
   bindEmailVerifySchema,
@@ -47,7 +48,6 @@ import type { LinkedLoginServiceInterface } from '@server/interfaces/LinkedLogin
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
 import type { UserProfileServiceInterface } from '@server/interfaces/UserProfileServiceInterface';
 import { FeUsersRepository } from '@server/repositorys/FeUsersRepository';
-import { ServerConfig } from '@server/ServerConfig';
 import { BindEmailService } from '@server/services/BindEmailService';
 import { ChangePasswordService } from '@server/services/ChangePasswordService';
 import { LinkedLoginService } from '@server/services/LinkedLoginService';
@@ -75,7 +75,8 @@ export type SessionUserWithPermissions = UserSchema & SessionUserPermissions;
 
 @injectable()
 export class UserController {
-  protected stringEncryptor: StringEncryptor;
+  protected stringEncryptorInstance?: StringEncryptor;
+
   constructor(
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
@@ -84,8 +85,10 @@ export class UserController {
     @inject(OAuthUserService) protected userService: UserServiceInterface,
     @inject(RequestLogsRepository)
     protected requestLogsRepository: RequestLogsRepository,
-    @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
-    @inject(Base64Serializer) base64Serializer: Base64Serializer,
+    @inject(I.AppConfig)
+    protected readonly serverConfig: SeedServerConfigInterface,
+    @inject(Base64Serializer)
+    protected readonly base64Serializer: Base64Serializer,
     @inject(OtpSendRateLimitService)
     protected otpSendRateLimit: OtpSendRateLimitService,
     @inject(RolePermissionService)
@@ -104,11 +107,19 @@ export class UserController {
     protected sessionGuard: SupabaseSessionGuardInterface,
     @inject(RequestLocaleResolver)
     protected localeResolver: RequestLocaleResolver
-  ) {
-    this.stringEncryptor = new StringEncryptor(
-      serverConfig.stringEncryptorKey,
-      base64Serializer
-    );
+  ) {}
+
+  /**
+   * 惰性创建；密钥用时再读，避免构造期 snapshot。
+   */
+  protected get stringEncryptor(): StringEncryptor {
+    if (!this.stringEncryptorInstance) {
+      this.stringEncryptorInstance = new StringEncryptor(
+        this.serverConfig.stringEncryptorKey,
+        this.base64Serializer
+      );
+    }
+    return this.stringEncryptorInstance;
   }
 
   /**

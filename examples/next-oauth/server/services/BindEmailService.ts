@@ -24,7 +24,6 @@ import {
   FeUsersRepository,
   type FeUserRow
 } from '@server/repositorys/FeUsersRepository';
-import { ServerConfig } from '@server/ServerConfig';
 import { OAuthUserService } from '@server/services/OAuthUserService';
 import { PhoneOtpService } from '@server/services/PhoneOtpService';
 import { SupabaseSessionMintService } from '@server/services/SupabaseSessionMintService';
@@ -39,7 +38,7 @@ import type { SignOtpResult } from '@qlover/oauth-wrapper';
 export class BindEmailService implements BindEmailServiceInterface {
   constructor(
     @inject(I.Logger) protected readonly logger: LoggerInterface,
-    @inject(ServerConfig)
+    @inject(I.AppConfig)
     protected readonly serverConfig: SeedServerConfigInterface,
     @inject(SupabaseRepo)
     protected readonly supabaseBridge: SupabaseRepo<unknown>,

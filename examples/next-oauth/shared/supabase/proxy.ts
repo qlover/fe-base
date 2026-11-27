@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
+import { getRuntimeEnv } from '@shared/env/RuntimeEnvBridge';
 import { isPublicPath, redirectToPath } from '@config/route';
 
 export async function supabaseProxySession(request: NextRequest) {
@@ -8,15 +8,18 @@ export async function supabaseProxySession(request: NextRequest) {
     request
   });
 
+  const supabaseUrl = getRuntimeEnv('SUPABASE_URL')?.trim();
+  const supabaseAnonKey = getRuntimeEnv('SUPABASE_ANON_KEY')?.trim();
+
   // If the env vars are not set, skip proxy check. You can remove this
   // once you setup the project.
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  if (!supabaseUrl || !supabaseAnonKey) {
     return supabaseResponse;
   }
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
-  const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     // global: {
     //   fetch: (input, init) => {
     //     console.log('proxy supabase globals fetch', input, init);

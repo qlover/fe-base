@@ -133,10 +133,8 @@ export class SupabaseOAuthProvider
   @inject(I.ServerContextInterface)
   protected serverContext!: ServerContextInterface;
 
-  protected readonly appHost: string;
-
   constructor(
-    @inject(I.AppConfig) config: SeedServerConfigInterface,
+    @inject(I.AppConfig) protected readonly config: SeedServerConfigInterface,
     @inject(OAuthWrapperRepository)
     oauthRepo: OAuthWrapperRepositoryInterface,
     @inject(PasswordEncrypt)
@@ -152,7 +150,13 @@ export class SupabaseOAuthProvider
       new LazyTokenEncryption(config),
       oauthRepo
     );
-    this.appHost = config.appHost;
+  }
+
+  /**
+   * 惰性读 `SITE_URL`：避免构造期快照。
+   */
+  protected get appHost(): string {
+    return this.config.appHost;
   }
 
   /**
