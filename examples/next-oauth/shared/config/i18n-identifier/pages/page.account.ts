@@ -325,7 +325,7 @@ export const PAGE_ACCOUNT_LINKED_ERROR = 'page_account:linked_error';
 
 /**
  * @description Feedback section title
- * @localZh �������
+ * @localZh 反馈
  * @localEn Feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE =
@@ -333,7 +333,7 @@ export const PAGE_ACCOUNT_FEEDBACK_SECTION_TITLE =
 
 /**
  * @description Feedback section description
- * @localZh ���������������������Ľ�����
+ * @localZh 告诉我们遇到的问题或改进想法
  * @localEn Tell us about issues or ideas for improvement
  */
 export const PAGE_ACCOUNT_FEEDBACK_DESCRIPTION =
@@ -341,7 +341,7 @@ export const PAGE_ACCOUNT_FEEDBACK_DESCRIPTION =
 
 /**
  * @description Feedback category label
- * @localZh ����
+ * @localZh 分类
  * @localEn Category
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL =
@@ -349,7 +349,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_LABEL =
 
 /**
  * @description Feedback body label
- * @localZh ����
+ * @localZh 详情
  * @localEn Details
  */
 export const PAGE_ACCOUNT_FEEDBACK_BODY_LABEL =
@@ -357,7 +357,7 @@ export const PAGE_ACCOUNT_FEEDBACK_BODY_LABEL =
 
 /**
  * @description Feedback body placeholder
- * @localZh �뾡���������ֲ������������
+ * @localZh 请尽量说明复现步骤与期望结果
  * @localEn Include steps to reproduce and what you expected
  */
 export const PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER =
@@ -365,28 +365,28 @@ export const PAGE_ACCOUNT_FEEDBACK_BODY_PLACEHOLDER =
 
 /**
  * @description Feedback submit
- * @localZh �ύ����
+ * @localZh 提交反馈
  * @localEn Submit feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SUBMIT = 'page_account:feedback_submit';
 
 /**
  * @description Feedback success
- * @localZh ��л�������������յ�
- * @localEn Thanks �� we received your feedback
+ * @localZh 感谢反馈，我们已收到
+ * @localEn Thanks — we received your feedback
  */
 export const PAGE_ACCOUNT_FEEDBACK_SUCCESS = 'page_account:feedback_success';
 
 /**
  * @description Feedback error
- * @localZh �ύʧ�ܣ����Ժ�����
+ * @localZh 提交失败，请稍后重试
  * @localEn Failed to submit. Please try again.
  */
 export const PAGE_ACCOUNT_FEEDBACK_ERROR = 'page_account:feedback_error';
 
 /**
  * @description Feedback category bug
- * @localZh ȱ��
+ * @localZh 缺陷
  * @localEn Bug
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG =
@@ -394,7 +394,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_BUG =
 
 /**
  * @description Feedback category ux
- * @localZh ����
+ * @localZh 体验
  * @localEn UX
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX =
@@ -402,7 +402,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_UX =
 
 /**
  * @description Feedback category feature
- * @localZh ���ܽ���
+ * @localZh 功能建议
  * @localEn Feature
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE =
@@ -410,7 +410,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_FEATURE =
 
 /**
  * @description Feedback category performance
- * @localZh ����
+ * @localZh 性能
  * @localEn Performance
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE =
@@ -418,7 +418,7 @@ export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_PERFORMANCE =
 
 /**
  * @description Feedback category content
- * @localZh ����
+ * @localZh 内容
  * @localEn Content
  */
 export const PAGE_ACCOUNT_FEEDBACK_CATEGORY_CONTENT =

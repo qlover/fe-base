@@ -187,11 +187,53 @@ export class BindEmailService implements BindEmailServiceInterface {
       .select('id')
       .eq('email', email)
       .maybeSingle();
-    if (error || !data) {
+
+    if (error) {
+      this.logger.warn(
+        'BindEmailService: auth.users 按邮箱查询失败，回退 listUsers',
+        { error: error.message }
+      );
+      return this.findAuthUserIdByEmailViaList(email);
+    }
+
+    if (!data) {
       return null;
     }
     const row = data as { id?: string };
     return row.id?.trim() || null;
+  }
+
+  /**
+   * PostgREST 未开放 `auth` schema 时，用 Admin listUsers 分页查找。
+   */
+  protected async findAuthUserIdByEmailViaList(
+    email: string
+  ): Promise<string | null> {
+    const admin = this.supabaseBridge.getAdminSupabase();
+    const normalized = email.toLowerCase();
+    let page = 1;
+    const perPage = 200;
+
+    for (;;) {
+      const listed = await admin.auth.admin.listUsers({ page, perPage });
+      if (listed.error) {
+        this.logger.warn('BindEmailService: listUsers 查找邮箱失败', {
+          error: listed.error
+        });
+        return null;
+      }
+      const users = listed.data?.users ?? [];
+      const match = users.find(
+        (user) => user.email?.toLowerCase() === normalized
+      );
+      if (match?.id) {
+        return match.id;
+      }
+      if (users.length < perPage) {
+        return null;
+      }
+      page += 1;
+    }
   }
 
   protected async bindEmailToCurrentUser(
@@ -203,6 +245,25 @@ export class BindEmailService implements BindEmailServiceInterface {
       email,
       email_confirm: true
     });
+    if (updated.error) {
+      const message = updated.error.message?.toLowerCase() ?? '';
+      if (
+        message.includes('already been registered') ||
+        message.includes('already registered') ||
+        message.includes('email_exists') ||
+        message.includes('duplicate')
+      ) {
+        this.logger.warn('BindEmailService: 目标邮箱已被 auth 占用', {
+          userId: current.id,
+          error: updated.error
+        });
+        throw new ExecutorError(API_BIND_EMAIL_TAKEN);
+      }
+      this.logger.error('BindEmailService: updateUserById 失败', {
+        userId: current.id,
+        error: updated.error
+      });
+    }
     this.supabaseBridge.throwIfError(updated);
 
     await this.feUsersRepository.updateEmailAndPhone({
@@ -219,7 +280,8 @@ export class BindEmailService implements BindEmailServiceInterface {
   }): Promise<UserSchema> {
     const session = await this.sessionMint.mintSessionForAuthUser({
       userId: params.userId,
-      email: params.email
+      email: params.email,
+      allowPasswordFallback: true
     });
     if (!this.oauthProvider.loginWithSession) {
       throw new Error('OAuth provider does not support loginWithSession');

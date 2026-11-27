@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { inject, injectable } from '@shared/container';
 import { createEphemeralAuthClient as createSharedEphemeralAuthClient } from '@shared/supabase/server';
-import { PHONE_PLACEHOLDER_EMAIL_SUFFIX } from '@shared/utils/phoneUserIdentity';
+import { isPhonePlaceholderEmail } from '@shared/utils/phoneUserIdentity';
 import { I } from '@config/ioc-identifiter';
 import type { LoggerInterface } from '@qlover/logger';
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
@@ -22,6 +22,11 @@ export class SupabaseSessionMintService {
   public async mintSessionForAuthUser(params: {
     userId: string;
     email: string;
+    /**
+     * 绑定真实邮箱后 magic-link 可能失败；显式允许时再走临时密码铸票。
+     * 默认仍仅对手机占位邮箱自动回退。
+     */
+    allowPasswordFallback?: boolean;
   }): Promise<Session> {
     const email = params.email.trim();
     if (!email) {
@@ -34,9 +39,8 @@ export class SupabaseSessionMintService {
     try {
       return await this.mintViaMagicLink(email, params.userId);
     } catch (error) {
-      const allowPasswordFallback = email
-        .toLowerCase()
-        .endsWith(PHONE_PLACEHOLDER_EMAIL_SUFFIX);
+      const allowPasswordFallback =
+        params.allowPasswordFallback === true || isPhonePlaceholderEmail(email);
       if (!allowPasswordFallback) {
         throw error instanceof Error
           ? error

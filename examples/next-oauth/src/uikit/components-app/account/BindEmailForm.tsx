@@ -15,12 +15,17 @@ const inputClass =
   'border-primary-border text-primary-text placeholder:text-tertiary-text focus:border-brand focus:ring-brand w-full rounded-xl border bg-bg-container px-4 py-3 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0';
 
 function resolveError(err: unknown, fallback: string, t: TranslateFn): string {
+  const translateOrFallback = (key: string): string => {
+    const text = t(key);
+    return !text || text === key ? fallback : text;
+  };
+
   if (err instanceof ExecutorError && isI18nKey(err.id)) {
-    return t(err.id);
+    return translateOrFallback(err.id);
   }
   if (err instanceof Error) {
     if (isI18nKey(err.message)) {
-      return t(err.message);
+      return translateOrFallback(err.message);
     }
     return err.message || fallback;
   }
