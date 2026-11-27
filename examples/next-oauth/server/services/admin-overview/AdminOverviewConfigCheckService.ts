@@ -1,4 +1,5 @@
 import { inject, injectable } from '@shared/container';
+import { getRuntimeEnv } from '@shared/env/RuntimeEnvBridge';
 import { FE_SITE_SETTING_KEYS } from '@config/feSiteSettings';
 import { I } from '@config/ioc-identifiter';
 import {
@@ -52,7 +53,7 @@ export class AdminOverviewConfigCheckService {
       },
       {
         key: AdminOverviewCheckKey.serviceRoleKey,
-        state: process.env.SUPABASE_SERVICE_ROLE_KEY
+        state: getRuntimeEnv('SUPABASE_SERVICE_ROLE_KEY')
           ? AdminOverviewCheckState.ok
           : AdminOverviewCheckState.warn
       },

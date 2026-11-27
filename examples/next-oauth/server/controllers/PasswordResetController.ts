@@ -8,6 +8,7 @@ import {
   API_MAIL_RECIPIENT_INVALID,
   API_PASSWORD_RESET_TOKEN_INVALID
 } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import { isValidPassword } from '@schemas/ChangePasswordSchema';
 import type { ResetTokenVerifyResultType } from '@schemas/PasswordResetSchema';
 import {
@@ -19,7 +20,6 @@ import type {
   PasswordResetRequestMetaType,
   PasswordResetServiceInterface
 } from '@server/interfaces/PasswordResetServiceInterface';
-import { ServerConfig } from '@server/ServerConfig';
 import { PasswordResetService } from '@server/services/PasswordResetService';
 import { RequestLocaleResolver } from '@server/services/RequestLocaleResolver';
 import type { NextRequest } from 'next/server';
@@ -30,20 +30,30 @@ import type { NextRequest } from 'next/server';
  */
 @injectable()
 export class PasswordResetController {
-  protected readonly stringEncryptor: StringEncryptor;
+  protected stringEncryptorInstance?: StringEncryptor;
 
   constructor(
     @inject(PasswordResetService)
     protected readonly passwordResetService: PasswordResetServiceInterface,
     @inject(RequestLocaleResolver)
     protected readonly localeResolver: RequestLocaleResolver,
-    @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
-    @inject(Base64Serializer) base64Serializer: Base64Serializer
-  ) {
-    this.stringEncryptor = new StringEncryptor(
-      serverConfig.stringEncryptorKey,
-      base64Serializer
-    );
+    @inject(I.AppConfig)
+    protected readonly serverConfig: SeedServerConfigInterface,
+    @inject(Base64Serializer)
+    protected readonly base64Serializer: Base64Serializer
+  ) {}
+
+  /**
+   * 惰性创建；密钥用时再读，避免构造期 snapshot。
+   */
+  protected get stringEncryptor(): StringEncryptor {
+    if (!this.stringEncryptorInstance) {
+      this.stringEncryptorInstance = new StringEncryptor(
+        this.serverConfig.stringEncryptorKey,
+        this.base64Serializer
+      );
+    }
+    return this.stringEncryptorInstance;
   }
 
   /**

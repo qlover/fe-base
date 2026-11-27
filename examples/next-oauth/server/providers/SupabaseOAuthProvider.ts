@@ -1,7 +1,6 @@
 import { LoginParams } from '@qlover/corekit-bridge';
 import { UserRole, userSchema, type UserSchema } from '@qlover/next-kit/common';
 import { PasswordEncrypt } from '@qlover/next-kit/server';
-import { TokenEncryption } from '@qlover/next-kit/server';
 import { SupabaseRepo } from '@qlover/next-kit/server';
 import { OAuthWrapperService } from '@qlover/oauth-wrapper';
 import jwt from 'jsonwebtoken';
@@ -13,6 +12,7 @@ import { localePage, ROUTE_CALLBACK_EMAIL_LOGIN } from '@config/route';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { SupabaseSessionGuardInterface } from '@server/interfaces/SupabaseSessionGuardInterface';
+import { LazyTokenEncryption } from '@server/providers/LazyTokenEncryption';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { SupabaseSessionGuardService } from '@server/services/SupabaseSessionGuardService';
@@ -133,10 +133,8 @@ export class SupabaseOAuthProvider
   @inject(I.ServerContextInterface)
   protected serverContext!: ServerContextInterface;
 
-  protected readonly appHost: string;
-
   constructor(
-    @inject(I.AppConfig) config: SeedServerConfigInterface,
+    @inject(I.AppConfig) protected readonly config: SeedServerConfigInterface,
     @inject(OAuthWrapperRepository)
     oauthRepo: OAuthWrapperRepositoryInterface,
     @inject(PasswordEncrypt)
@@ -149,10 +147,16 @@ export class SupabaseOAuthProvider
   ) {
     super(
       new OAuthSessionService(config),
-      new TokenEncryption(config.encryptionKey),
+      new LazyTokenEncryption(config),
       oauthRepo
     );
-    this.appHost = config.appHost;
+  }
+
+  /**
+   * 惰性读 `SITE_URL`：避免构造期快照。
+   */
+  protected get appHost(): string {
+    return this.config.appHost;
   }
 
   /**

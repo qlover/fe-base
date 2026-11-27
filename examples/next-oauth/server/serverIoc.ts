@@ -16,6 +16,7 @@ import { BrainUserOAuthProvider } from './providers/BrainUserOAuthProvider';
 import { GenericUpstreamOAuthProvider } from './providers/GenericUpstreamOAuthProvider';
 import { SupabaseOAuthProvider } from './providers/SupabaseOAuthProvider';
 import { FeSupabaseRepo } from './repositorys/FeSupabaseRepo';
+import { ServerConfig } from './ServerConfig';
 import { ServerContext } from './utils/ServerContext';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -54,7 +55,9 @@ const ServerIocRegister: IOCRegisterInterface<
     const { logger, config: serverConfig } = options!;
 
     ioc.bind(I.Logger, logger);
+    // 与 PAM 一致：业务只注入 I.AppConfig。额外 bind 类令牌，避免反射误 new 空配置。
     ioc.bind(I.AppConfig, serverConfig);
+    ioc.bind(ServerConfig, serverConfig);
     ioc.bind(I.ServerContextInterface, ioc.get(ServerContext));
 
     const supabaseDeps = {

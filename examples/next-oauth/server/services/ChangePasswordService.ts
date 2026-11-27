@@ -17,7 +17,6 @@ import { isValidPassword } from '@schemas/ChangePasswordSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { PasswordChangedNotifyServiceInterface } from '@server/interfaces/PasswordChangedNotifyServiceInterface';
 import type { PasswordResetRequestMetaType } from '@server/interfaces/PasswordResetServiceInterface';
-import { ServerConfig } from '@server/ServerConfig';
 import { PasswordChangedNotifyService } from '@server/services/PasswordChangedNotifyService';
 import { resolveSupabaseLoginPassword } from '@server/utils/supabaseLoginPassword';
 import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
@@ -36,7 +35,7 @@ export class ChangePasswordService {
     protected readonly supabaseBridge: SupabaseRepo<unknown>,
     @inject(PasswordEncrypt)
     protected readonly encryptor: EncryptorInterface<string, string>,
-    @inject(ServerConfig)
+    @inject(I.AppConfig)
     protected readonly serverConfig: SeedServerConfigInterface,
     @inject(PasswordChangedNotifyService)
     protected readonly passwordChangedNotify: PasswordChangedNotifyServiceInterface

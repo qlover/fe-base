@@ -4,7 +4,7 @@ import {
   type SupabaseClient
 } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@shared/supabase/env';
+import { getRuntimeEnv } from '@shared/env/RuntimeEnvBridge';
 
 /**
  * Decode JWT payload without verifying signature (config sanity check only).
@@ -28,7 +28,7 @@ function readJwtRole(jwt: string): string | null {
 }
 
 function requireSupabaseUrl(): string {
-  const url = SUPABASE_URL?.trim();
+  const url = getRuntimeEnv('SUPABASE_URL')?.trim();
   if (!url) {
     throw new Error('SUPABASE_URL is required');
   }
@@ -36,7 +36,7 @@ function requireSupabaseUrl(): string {
 }
 
 function requireAnonKey(): string {
-  const key = SUPABASE_ANON_KEY?.trim();
+  const key = getRuntimeEnv('SUPABASE_ANON_KEY')?.trim();
   if (!key) {
     throw new Error('SUPABASE_ANON_KEY is required');
   }
@@ -44,7 +44,7 @@ function requireAnonKey(): string {
 }
 
 function requireServiceRoleKey(): string {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const key = getRuntimeEnv('SUPABASE_SERVICE_ROLE_KEY')?.trim();
   if (!key) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY is required for OAuth operations'

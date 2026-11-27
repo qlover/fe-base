@@ -6,7 +6,6 @@ import {
 } from '@brain-toolkit/brain-user';
 import { LoginParams } from '@qlover/corekit-bridge';
 import { UserRole, UserSchema } from '@qlover/next-kit/common';
-import { TokenEncryption } from '@qlover/next-kit/server';
 import {
   OAuthWrapperService,
   type OAuthIdentityStore,
@@ -24,9 +23,11 @@ import { I } from '@config/ioc-identifiter';
 import { oauthLocalUserConfig } from '@config/oauthLocalUser';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
+import { LazyTokenEncryption } from '@server/providers/LazyTokenEncryption';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { SupabaseOAuthIdentityStore } from '@server/services/SupabaseOAuthIdentityStore';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 
 function resolveBrainEmail(user: BrainUser): string {
@@ -66,7 +67,7 @@ export class BrainUserOAuthProvider
   protected readonly logger!: LoggerInterface;
 
   protected gateway: BrainUserGateway;
-  protected tokenEncryption: TokenEncryption;
+  protected tokenEncryption: EncryptorInterface<string, string>;
 
   constructor(
     @inject(I.AppConfig) config: SeedServerConfigInterface,
@@ -75,7 +76,7 @@ export class BrainUserOAuthProvider
     protected readonly identityStore: SupabaseOAuthIdentityStore
   ) {
     const oauthSession = new OAuthSessionService(config);
-    const tokenEncryption = new TokenEncryption(config.encryptionKey);
+    const tokenEncryption = new LazyTokenEncryption(config);
     super(oauthSession, tokenEncryption, oauthRepo);
     this.gateway = new BrainUserGateway(
       createBrainUserOptions().requestAdapter
