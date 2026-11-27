@@ -1,6 +1,5 @@
 import { LoginParams } from '@qlover/corekit-bridge';
 import { UserRole, UserSchema } from '@qlover/next-kit/common';
-import { TokenEncryption } from '@qlover/next-kit/server';
 import {
   OAuthWrapperService,
   type OAuthIdentityStore,
@@ -19,10 +18,12 @@ import { oauthLocalUserConfig } from '@config/oauthLocalUser';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { OAuthWrapperProviderInterface } from '@server/interfaces/OAuthWrapperProviderInterface';
 import type { UpstreamOidcUserInfoType } from '@server/interfaces/UpstreamOidcClientInterface';
+import { LazyTokenEncryption } from '@server/providers/LazyTokenEncryption';
 import { OAuthWrapperRepository } from '@server/repositorys/OAuthWrapperRepository';
 import { OAuthSessionService } from '@server/services/OAuthSessionService';
 import { SupabaseOAuthIdentityStore } from '@server/services/SupabaseOAuthIdentityStore';
 import { UpstreamOidcClient } from '@server/services/UpstreamOidcClient';
+import type { EncryptorInterface } from '@qlover/fe-corekit/encrypt';
 import type { LoggerInterface } from '@qlover/logger';
 
 export type GenericUpstreamSessionType = OAuthSessionPayload & {
@@ -62,7 +63,7 @@ export class GenericUpstreamOAuthProvider
   @inject(I.Logger)
   protected readonly logger!: LoggerInterface;
 
-  protected tokenEncryption: TokenEncryption;
+  protected tokenEncryption: EncryptorInterface<string, string>;
 
   constructor(
     @inject(I.AppConfig) config: SeedServerConfigInterface,
@@ -73,7 +74,7 @@ export class GenericUpstreamOAuthProvider
     protected readonly oidcClient: UpstreamOidcClient
   ) {
     const oauthSession = new OAuthSessionService(config);
-    const tokenEncryption = new TokenEncryption(config.encryptionKey);
+    const tokenEncryption = new LazyTokenEncryption(config);
     super(oauthSession, tokenEncryption, oauthRepo);
     this.tokenEncryption = tokenEncryption;
   }

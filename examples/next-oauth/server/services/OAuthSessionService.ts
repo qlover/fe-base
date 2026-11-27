@@ -43,18 +43,23 @@ export class OAuthSessionService
     OAuthSessionServiceInterface,
     OAuthSessionInterface<OAuthSessionPayload, UserSchema>
 {
-  protected secure: boolean;
-  protected sessionSecret: string;
-  protected sessionKey: string;
-  constructor(config: SeedServerConfigInterface) {
-    if (!config.sessionSecret || !config.oauthSessionKey) {
-      throw new Error(
-        'Session secret or session key is not set, You can set process.env.SESSION_SECRET and process.env.OAUTH_SESSION_KEY to fix this error'
-      );
-    }
-    this.sessionSecret = config.sessionSecret;
-    this.sessionKey = config.oauthSessionKey;
-    this.secure = config.isProduction;
+  /**
+   * 持有 config，密钥经 getter 惰性读。
+   * IOC 可能在环境变量齐备前构造本类；构造期禁止抄空密钥或抛错。
+   * 经典 `process.env` 与按请求绑袋均可：用时再读。
+   */
+  constructor(protected readonly config: SeedServerConfigInterface) {}
+
+  protected get sessionSecret(): string {
+    return this.config.sessionSecret?.trim() ?? '';
+  }
+
+  protected get sessionKey(): string {
+    return this.config.oauthSessionKey?.trim() ?? '';
+  }
+
+  protected get secure(): boolean {
+    return this.config.isProduction;
   }
 
   protected parseJWT(raw: string, secret: string): OAuthSessionPayload | null {
@@ -69,8 +74,13 @@ export class OAuthSessionService
   }
 
   protected generateJWT(payload: OAuthSessionPayload): string {
-    const token = jwt.sign(payload, this.sessionSecret, { expiresIn: '7d' });
-    return token;
+    const secret = this.sessionSecret;
+    if (!secret || !this.sessionKey) {
+      throw new Error(
+        'Session secret or session key is not set, You can set process.env.SESSION_SECRET and process.env.OAUTH_SESSION_KEY to fix this error'
+      );
+    }
+    return jwt.sign(payload, secret, { expiresIn: '7d' });
   }
 
   /**
