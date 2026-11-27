@@ -349,11 +349,16 @@ export class UserController {
     if (!parsed.success) {
       throw new ExecutorError(API_OTP_CODE_INVALID);
     }
-    return this.bindEmailService.verify({
+    const result = await this.bindEmailService.verify({
       currentUserId: user.id,
       email: parsed.data.email,
       token: parsed.data.token
     });
+    // 附带 system_role / permissions，避免客户端 applySessionUser 回落成普通用户。
+    return {
+      ...result,
+      user: await this.withPermissions(result.user)
+    };
   }
 
   /**
